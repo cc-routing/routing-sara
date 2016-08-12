@@ -5,9 +5,6 @@
  */
 package cz.certicon.routing.model.graph;
 
-import cz.certicon.routing.model.graph.Graph;
-import cz.certicon.routing.model.graph.Node;
-import cz.certicon.routing.model.graph.Edge;
 import cz.certicon.routing.utils.collections.ImmutableIterator;
 import java.util.Iterator;
 import java.util.List;
@@ -16,6 +13,7 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NonNull;
 import lombok.Singular;
+import lombok.ToString;
 import lombok.Value;
 
 /**
