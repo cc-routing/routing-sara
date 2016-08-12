@@ -49,11 +49,11 @@ public class RouteTest {
     public void testBuilder() {
         System.out.println( "builder" );
         Route.RouteBuilder builder = Route.builder();
-        Node a = new Node( 0, new ArrayList<Edge>() );
-        Node b = new Node( 1, new ArrayList<Edge>() );
-        Node c = new Node( 2, new ArrayList<Edge>() );
-        Node d = new Node( 3, new ArrayList<Edge>() );
-        Node e = new Node( 4, new ArrayList<Edge>() );
+        Node a = new Node( 0 );
+        Node b = new Node( 1 );
+        Node c = new Node( 2 );
+        Node d = new Node( 3 );
+        Node e = new Node( 4 );
         Edge ab = new Edge( 0, false, a, b, Distance.newInstance( 0 ) );
         Edge bc = new Edge( 1, false, c, b, Distance.newInstance( 0 ) );
         Edge cd = new Edge( 2, false, c, d, Distance.newInstance( 0 ) );
@@ -66,23 +66,23 @@ public class RouteTest {
     /**
      * Test of builder method, of class Route.
      */
-    @Test(expected=IllegalArgumentException.class)
+    @Test( expected = IllegalArgumentException.class )
     public void testBuilderOneway() {
         System.out.println( "builder_oneway" );
         Route.RouteBuilder builder = Route.builder();
-        Node a = new Node( 0, new ArrayList<Edge>() );
-        Node b = new Node( 1, new ArrayList<Edge>() );
-        Node c = new Node( 2, new ArrayList<Edge>() );
-        Node d = new Node( 3, new ArrayList<Edge>() );
-        Node e = new Node( 4, new ArrayList<Edge>() );
+        Node a = new Node( 0 );
+        Node b = new Node( 1 );
+        Node c = new Node( 2 );
+        Node d = new Node( 3 );
+        Node e = new Node( 4 );
         Edge ab = new Edge( 0, false, a, b, Distance.newInstance( 0 ) );
         Edge bc = new Edge( 1, true, c, b, Distance.newInstance( 0 ) );
         Edge cd = new Edge( 2, false, c, d, Distance.newInstance( 0 ) );
         Edge de = new Edge( 3, false, e, d, Distance.newInstance( 0 ) );
 
         Route route = builder.addAsLast( cd ).addAsFirst( bc ).addAsLast( de ).addAsFirst( ab ).build();
-        
+
 //        assertEquals( route.toString(), "Route(edges=[Edge(id=0, oneway=false, source=Node(id=0), target=Node(id=1), length=Distance(value=0.0)), Edge(id=1, oneway=false, source=Node(id=2), target=Node(id=1), length=Distance(value=0.0)), Edge(id=2, oneway=false, source=Node(id=2), target=Node(id=3), length=Distance(value=0.0)), Edge(id=3, oneway=false, source=Node(id=4), target=Node(id=3), length=Distance(value=0.0))], source=Node(id=0), target=Node(id=4))" );
-     }
+    }
 
 }

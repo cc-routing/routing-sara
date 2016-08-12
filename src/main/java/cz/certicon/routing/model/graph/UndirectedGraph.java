@@ -5,6 +5,7 @@
  */
 package cz.certicon.routing.model.graph;
 
+import cz.certicon.routing.model.values.Distance;
 import cz.certicon.routing.utils.collections.ImmutableIterator;
 import java.util.Iterator;
 import java.util.List;
@@ -13,7 +14,6 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NonNull;
 import lombok.Singular;
-import lombok.ToString;
 import lombok.Value;
 
 /**
@@ -76,6 +76,11 @@ public class UndirectedGraph implements Graph {
     @Override
     public Node getOtherNode( Edge edge, Node node ) {
         return edge.getTarget().equals( node ) ? edge.getSource() : edge.getTarget();
+    }
+
+    @Override
+    public Distance getTurnCost( Node node, Edge from, Edge to ) {
+        return node.getTurnTable().getCost( node.getEdgePosition( from ), node.getEdgePosition( to ) );
     }
 
 }

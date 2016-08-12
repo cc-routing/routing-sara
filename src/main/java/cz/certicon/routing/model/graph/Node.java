@@ -6,40 +6,68 @@
 package cz.certicon.routing.model.graph;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
-import lombok.AccessLevel;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
-import lombok.NonNull;
 import lombok.ToString;
-import lombok.Value;
+import lombok.experimental.NonFinal;
 
 /**
  *
  * @author Michael Blaha {@literal <michael.blaha@certicon.cz>}
  */
-@Value
 @ToString( exclude = { "edges", "edgePositionMap" } )
 @EqualsAndHashCode( exclude = { "edges", "edgePositionMap" } )
 public class Node {
 
-    long id;
-    @NonNull
-    @Getter( AccessLevel.NONE )
-    ArrayList<Edge> edges;
-    @NonNull
-    @Getter( AccessLevel.NONE )
-    Map<Edge, Integer> edgePositionMap;
+    @Getter
+    private final long id;
+    @NonFinal
+    @Getter
+    private TurnTable turnTable;
+    private final ArrayList<Edge> edges;
+    private final Map<Edge, Integer> edgePositionMap;
+    private boolean locked = false;
 
-    public Node( long id, ArrayList<Edge> edges ) {
+    public Node( long id ) {
         this.id = id;
-        this.edges = edges;
         this.edgePositionMap = new HashMap<>();
-        for ( int i = 0; i < edges.size(); i++ ) {
-            edgePositionMap.put( edges.get( i ), i );
+        this.edges = new ArrayList<>();
+    }
+
+    public Node addEdge( Edge edge ) {
+        checkLock();
+        if ( !edgePositionMap.containsKey( edge ) ) {
+//            System.out.println( "adding edge: " + edge.getId() + " to " + toString( edges ) );
+            edges.add( edge );
+            edgePositionMap.put( edge, edges.size() - 1 );
+//            System.out.println( "result: " + toString( edges ) );
         }
+        return this;
+    }
+
+    public Node addEdge( Edge edge, int position ) {
+        checkLock();
+        if ( !edgePositionMap.containsKey( edge ) ) {
+//            System.out.println( "adding edge: " + edge.getId() + ", [" + position + "] to " + toString( edges ) );
+            while ( edges.size() <= position ) {
+                edges.add( null );
+            }
+            edges.set( position, edge );
+            edgePositionMap.put( edge, position );
+//            System.out.println( "result: " + toString( edges ) );
+        }
+        return this;
+    }
+
+    public Node setTurnTable( TurnTable turnTable ) {
+        checkLock();
+        this.turnTable = turnTable;
+        return this;
     }
 
     public int getEdgePosition( Edge edge ) {
@@ -52,6 +80,20 @@ public class Node {
 
     public Iterator<Edge> getOutgoingEdges() {
         return new OutgoingEdgeIterator( this );
+    }
+
+    public int getDegree() {
+        return edges.size();
+    }
+
+    private void checkLock() {
+        if ( locked ) {
+            throw new IllegalStateException( "This object is locked against modification." );
+        }
+    }
+
+    public synchronized void lock() {
+        this.locked = true;
     }
 
     private abstract class FilteringEdgeIterator implements Iterator<Edge> {
@@ -121,7 +163,7 @@ public class Node {
 
         @Override
         boolean isValid( Node node, Edge edge ) {
-            return !edge.isOneway() || edge.getSource().equals( node );
+            return edge != null && ( !edge.isOneway() || edge.getSource().equals( node ) );
         }
 
     }
@@ -134,8 +176,19 @@ public class Node {
 
         @Override
         boolean isValid( Node node, Edge edge ) {
-            return !edge.isOneway() || edge.getTarget().equals( node );
+            return edge != null && ( !edge.isOneway() || edge.getTarget().equals( node ) );
         }
 
+    }
+
+    private static String toString( List<Edge> list ) {
+        StringBuilder sb = new StringBuilder();
+        sb.append( "[" );
+        for ( int i = 0; i < list.size(); i++ ) {
+            Edge edge = list.get( i );
+            sb.append( edge != null ? edge.getId() : "null" ).append( "," );
+        }
+        sb.replace( sb.length() - 1, sb.length(), "]" );
+        return sb.toString();
     }
 }

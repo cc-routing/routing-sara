@@ -5,6 +5,7 @@
  */
 package cz.certicon.routing.model.graph;
 
+import cz.certicon.routing.model.values.Distance;
 import java.util.Iterator;
 
 /**
@@ -83,4 +84,14 @@ public interface Graph {
      * @return the other node
      */
     Node getOtherNode( Edge edge, Node node );
+
+    /**
+     * Returns cost of the turn from edge to edge via the given node
+     *
+     * @param node crossroad node
+     * @param from from (turn origin) edge
+     * @param to to (turn destination) edge
+     * @return cost of the turn
+     */
+    public Distance getTurnCost( Node node, Edge from, Edge to );
 }
