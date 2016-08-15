@@ -1,1 +1,0 @@
-# Seznam Routing Algorithm
