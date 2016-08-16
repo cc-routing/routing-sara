@@ -6,21 +6,18 @@
 package cz.certicon.routing.model.graph;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
-import lombok.ToString;
 import lombok.experimental.NonFinal;
 
 /**
  *
  * @author Michael Blaha {@literal <michael.blaha@certicon.cz>}
  */
-@ToString( exclude = { "edges", "edgePositionMap" } )
 @EqualsAndHashCode( exclude = { "edges", "edgePositionMap" } )
 public class Node {
 
@@ -71,6 +68,17 @@ public class Node {
     }
 
     public int getEdgePosition( Edge edge ) {
+        if ( !edgePositionMap.containsKey( edge ) ) {
+            StringBuilder sb = new StringBuilder();
+            for ( Map.Entry<Edge, Integer> e : edgePositionMap.entrySet() ) {
+                if ( edge.equals( e.getKey() ) ) {
+                    sb.append( "contains=" ).append( edgePositionMap.containsKey( edge ) );
+                    sb.append( "THIS_ONE_EQUALS:" );
+                }
+                sb.append( e.getKey() ).append( "=>" ).append( e.getValue() ).append( "," );
+            }
+            throw new IllegalArgumentException( "Unknown edge: " + edge + ", \n\tknown edges: " + sb );
+        }
         return edgePositionMap.get( edge );
     }
 
@@ -94,6 +102,32 @@ public class Node {
 
     public synchronized void lock() {
         this.locked = true;
+    }
+
+    @Override
+    public String toString() {
+        StringBuilder sb = new StringBuilder();
+        for ( Edge edge : edges ) {
+            sb.append( edge.getId() ).append( "," );
+        }
+        if ( sb.length() > 1 ) {
+            sb.replace( sb.length() - 1, sb.length(), "}\n\t" );
+        } else {
+            sb.append( "}" );
+        }
+        String edgesString = sb.toString();
+        sb = new StringBuilder();
+        sb.append( "{" );
+        for ( Map.Entry<Edge, Integer> entry : edgePositionMap.entrySet() ) {
+            sb.append( entry.getKey().getId() ).append( "=>" ).append( entry.getValue() ).append( "," );
+        }
+        if ( sb.length() > 1 ) {
+            sb.replace( sb.length() - 1, sb.length(), "}\n\t" );
+        } else {
+            sb.append( "}" );
+        }
+        String edgesMapString = sb.toString();
+        return "Node{id=" + id + ", locked=" + locked + ", turnTable=" + turnTable + ", edges=" + edgesString + ", edgePositionMap=" + edgesMapString + "}";
     }
 
     private abstract class FilteringEdgeIterator implements Iterator<Edge> {

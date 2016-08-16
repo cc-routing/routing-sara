@@ -5,12 +5,16 @@
  */
 package cz.certicon.routing.algorithm.sra.preprocessing.assembly;
 
+import cz.certicon.routing.model.graph.Graph;
+
 /**
  * Builds partitions using time-consuming techniques on reduced graph.
  * Uses greedy algorithm, local search heuristics, evolutionary algorithm and combinations.
  *
  * @author Michael Blaha {@literal <michael.blaha@certicon.cz>}
  */
-public class Assembler {
-    
+public interface Assembler {
+    // return more
+    // - node info
+    Graph assemble(Graph graph);
 }

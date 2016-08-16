@@ -6,6 +6,7 @@
 package cz.certicon.routing.model.graph;
 
 import cz.certicon.routing.model.values.Distance;
+import lombok.EqualsAndHashCode;
 import lombok.NonNull;
 import lombok.Value;
 
@@ -14,6 +15,7 @@ import lombok.Value;
  * @author Michael Blaha {@literal <michael.blaha@certicon.cz>}
  */
 @Value
+@EqualsAndHashCode( exclude = { "source", "target" } )
 public class Edge {
 
     long id;
@@ -30,4 +32,9 @@ public class Edge {
     Node target;
     @NonNull
     Distance length;
+
+    @Override
+    public String toString() {
+        return "Edge{id=" + id + ", oneway=" + oneway + ", length=" + length + ", source=Node{id=" + source.getId() + "}, target=Node{id=" + target.getId() + "}}";
+    }
 }

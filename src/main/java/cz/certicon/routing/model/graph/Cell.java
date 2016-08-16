@@ -3,16 +3,16 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package cz.certicon.routing.algorithm.sra.preprocessing.filtering;
+package cz.certicon.routing.model.graph;
 
-import cz.certicon.routing.model.graph.Graph;
+import lombok.Value;
 
 /**
- * Reduces graph size while preserving overall structure.
  *
  * @author Michael Blaha {@literal <michael.blaha@certicon.cz>}
  */
-public interface Filter {
-
-    Graph filter( Graph graph );
+@Value
+public class Cell {
+    int id;
+    Graph overlayGraph;
 }

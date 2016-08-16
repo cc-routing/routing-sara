@@ -112,6 +112,17 @@ public class UndirectedGraphTest {
         return edge;
     }
 
+    private Edge createEdge( List<Edge> edges, long id, boolean oneway, Node source, Node target, double distance, boolean addToNode ) {
+        Edge edge = new Edge( id, oneway, source, target, Distance.newInstance( distance ) );
+        edges.add( edge );
+        if ( addToNode ) {
+            source.addEdge( edge );
+            target.addEdge( edge );
+        }
+        edgeMap.put( id, edge );
+        return edge;
+    }
+
     /**
      * Test of getNodesCount method, of class UndirectedGraph.
      */
