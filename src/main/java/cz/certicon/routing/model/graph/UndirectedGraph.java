@@ -34,8 +34,8 @@ public class UndirectedGraph implements Graph {
     @Getter( AccessLevel.NONE )
     @Singular
     List<Edge> edges;
-    @Getter( AccessLevel.NONE )
-    Map<Node, Coordinate> coordinates;
+//    @Getter( AccessLevel.NONE )
+//    Map<Node, Coordinate> coordinates;
 
     @Override
     public int getNodesCount() {
@@ -94,13 +94,14 @@ public class UndirectedGraph implements Graph {
 
     @Override
     public Coordinate getNodeCoordinate( Node node ) {
-        if ( coordinates == null ) {
-            throw new IllegalStateException( "Coordinates not set" );
-        }
-        if ( !coordinates.containsKey( node ) ) {
-            throw new IllegalArgumentException( "Unknown node: " + node );
-        }
-        return coordinates.get( node );
+        return node.getCoordinate();
+//        if ( coordinates == null ) {
+//            throw new IllegalStateException( "Coordinates not set" );
+//        }
+//        if ( !coordinates.containsKey( node ) ) {
+//            throw new IllegalArgumentException( "Unknown node: " + node );
+//        }
+//        return coordinates.get( node );
     }
 
 }

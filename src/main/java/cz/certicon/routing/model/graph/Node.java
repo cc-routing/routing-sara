@@ -5,6 +5,7 @@
  */
 package cz.certicon.routing.model.graph;
 
+import cz.certicon.routing.model.values.Coordinate;
 import cz.certicon.routing.utils.collections.ImmutableIterator;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -27,6 +28,8 @@ public class Node {
     @NonFinal
     @Getter
     private TurnTable turnTable;
+    @Getter
+    private Coordinate coordinate;
     private final ArrayList<Edge> edges;
     private final Map<Edge, Integer> edgePositionMap;
     private boolean locked = false;
@@ -65,6 +68,12 @@ public class Node {
     public Node setTurnTable( TurnTable turnTable ) {
         checkLock();
         this.turnTable = turnTable;
+        return this;
+    }
+
+    public Node setCoordinate( Coordinate coordinate ) {
+        checkLock();
+        this.coordinate = coordinate;
         return this;
     }
 
@@ -132,7 +141,7 @@ public class Node {
             sb.append( "}" );
         }
         String edgesMapString = sb.toString();
-        return "Node{id=" + id + ", locked=" + locked + ", turnTable=" + turnTable + ", edges=" + edgesString + ", edgePositionMap=" + edgesMapString + "}";
+        return "Node{id=" + id + ", locked=" + locked + ", coordinate = " + coordinate + ", turnTable=" + turnTable + ", edges=" + edgesString + ", edgePositionMap=" + edgesMapString + "}";
     }
 
     private abstract class FilteringEdgeIterator implements Iterator<Edge> {
