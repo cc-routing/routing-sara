@@ -5,10 +5,12 @@
  */
 package cz.certicon.routing.model.graph;
 
+import cz.certicon.routing.model.values.Coordinate;
 import cz.certicon.routing.model.values.Distance;
 import cz.certicon.routing.utils.collections.ImmutableIterator;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
@@ -32,6 +34,8 @@ public class UndirectedGraph implements Graph {
     @Getter( AccessLevel.NONE )
     @Singular
     List<Edge> edges;
+    @Getter( AccessLevel.NONE )
+    Map<Node, Coordinate> coordinates;
 
     @Override
     public int getNodesCount() {
@@ -86,6 +90,17 @@ public class UndirectedGraph implements Graph {
     @Override
     public Iterator<Edge> getEdges( Node node ) {
         return node.getEdges();
+    }
+
+    @Override
+    public Coordinate getNodeCoordinate( Node node ) {
+        if ( coordinates == null ) {
+            throw new IllegalStateException( "Coordinates not set" );
+        }
+        if ( !coordinates.containsKey( node ) ) {
+            throw new IllegalArgumentException( "Unknown node: " + node );
+        }
+        return coordinates.get( node );
     }
 
 }

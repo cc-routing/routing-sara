@@ -5,6 +5,7 @@
  */
 package cz.certicon.routing.model.graph;
 
+import cz.certicon.routing.model.values.Coordinate;
 import cz.certicon.routing.model.values.Distance;
 import java.util.Iterator;
 
@@ -101,5 +102,14 @@ public interface Graph {
      * @param to to (turn destination) edge
      * @return cost of the turn
      */
-    public Distance getTurnCost( Node node, Edge from, Edge to );
+    Distance getTurnCost( Node node, Edge from, Edge to );
+
+    /**
+     * Returns Coordinate (latitude, longitude) of the given node. Might throw
+     * IllegalStateException, if the Coordinates are not set
+     *
+     * @param node given node
+     * @return coordinate
+     */
+    Coordinate getNodeCoordinate( Node node );
 }

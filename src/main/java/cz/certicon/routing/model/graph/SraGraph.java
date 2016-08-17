@@ -5,6 +5,7 @@
  */
 package cz.certicon.routing.model.graph;
 
+import cz.certicon.routing.model.values.Coordinate;
 import cz.certicon.routing.model.values.Distance;
 import java.util.Iterator;
 import java.util.Map;
@@ -83,5 +84,10 @@ public class SraGraph implements Graph {
     @Override
     public Iterator<Edge> getEdges( Node node ) {
         return graph.getEdges( node );
+    }
+
+    @Override
+    public Coordinate getNodeCoordinate( Node node ) {
+        return graph.getNodeCoordinate( node );
     }
 }

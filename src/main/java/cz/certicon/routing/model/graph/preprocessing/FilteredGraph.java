@@ -9,6 +9,7 @@ import cz.certicon.routing.model.graph.Edge;
 import cz.certicon.routing.model.graph.Graph;
 import cz.certicon.routing.model.graph.Node;
 import cz.certicon.routing.model.graph.UndirectedGraph;
+import cz.certicon.routing.model.values.Coordinate;
 import cz.certicon.routing.model.values.Distance;
 import gnu.trove.map.TObjectIntMap;
 import java.util.Iterator;
@@ -84,5 +85,10 @@ public class FilteredGraph implements Graph {
 
     public int getNodeSize( Node node ) {
         return nodeSize.get( node );
+    }
+
+    @Override
+    public Coordinate getNodeCoordinate( Node node ) {
+        return graph.getNodeCoordinate( node );
     }
 }
