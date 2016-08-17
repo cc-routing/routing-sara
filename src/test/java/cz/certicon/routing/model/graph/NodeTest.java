@@ -75,7 +75,7 @@ public class NodeTest {
         for ( Node node : nodes ) {
             node.lock();
         }
-        UndirectedGraph g = new UndirectedGraph( nodes, edges );
+        UndirectedGraph g = UndirectedGraph.builder().nodes( nodes ).edges( edges ).build();
         return g;
     }
 
