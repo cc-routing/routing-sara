@@ -79,4 +79,9 @@ public class SraGraph implements Graph {
         }
         return nodeInfoMap.get( node );
     }
+
+    @Override
+    public Iterator<Edge> getEdges( Node node ) {
+        return graph.getEdges( node );
+    }
 }

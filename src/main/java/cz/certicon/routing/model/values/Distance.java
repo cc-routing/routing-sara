@@ -19,11 +19,15 @@ public class Distance implements Number<Distance> {
     private static final double EPS = 10E-10;
 
     private static final Distance DISTANCE_ZERO = new Distance( 0 );
+    private static final Distance DISTANCE_ONE = new Distance( 1 );
     private static final Distance DISTANCE_INFINITY = new Distance( Double.MAX_VALUE );
 
     public static Distance newInstance( double dist ) {
         if ( DoubleComparator.isEqualTo( dist, 0, EPS ) ) {
             return DISTANCE_ZERO;
+        }
+        if ( DoubleComparator.isEqualTo( dist, 1, EPS ) ) {
+            return DISTANCE_ONE;
         }
         if ( DoubleComparator.isEqualTo( dist, Double.MAX_VALUE, EPS ) || dist == Double.POSITIVE_INFINITY ) {
             return DISTANCE_INFINITY;

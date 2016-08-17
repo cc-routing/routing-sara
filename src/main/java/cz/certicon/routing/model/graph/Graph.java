@@ -44,6 +44,14 @@ public interface Graph {
     Iterator<Edge> getEdges();
 
     /**
+     * Returns iterator of edges adjacent to the given node
+     *
+     * @param node given node
+     * @return iterator of node's edges
+     */
+    Iterator<Edge> getEdges( Node node );
+
+    /**
      * Returns iterator of edges incoming to the given node
      *
      * @param node given node

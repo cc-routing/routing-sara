@@ -5,15 +5,17 @@
  */
 package cz.certicon.routing.algorithm.sra.preprocessing.filtering;
 
-import cz.certicon.routing.model.graph.Graph;
-import cz.certicon.routing.model.graph.preprocessing.FilteredGraph;
+import cz.certicon.routing.model.graph.Node;
 
 /**
- * Reduces graph size while preserving overall structure.
  *
  * @author Michael Blaha {@literal <michael.blaha@certicon.cz>}
  */
-public interface Filter {
+interface NodeSizeContainer {
 
-    FilteredGraph filter( Graph graph );
+    void put( Node node, int size );
+
+    int getSize( Node node );
+    
+    void clear();
 }

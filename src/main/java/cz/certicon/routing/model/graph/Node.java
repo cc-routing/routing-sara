@@ -5,6 +5,7 @@
  */
 package cz.certicon.routing.model.graph;
 
+import cz.certicon.routing.utils.collections.ImmutableIterator;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -88,6 +89,10 @@ public class Node {
 
     public Iterator<Edge> getOutgoingEdges() {
         return new OutgoingEdgeIterator( this );
+    }
+
+    public Iterator<Edge> getEdges() {
+        return new ImmutableIterator<>( edges.iterator() );
     }
 
     public int getDegree() {

@@ -5,16 +5,33 @@
  */
 package cz.certicon.routing.algorithm.sra.preprocessing.filtering;
 
+import cz.certicon.routing.model.graph.Edge;
 import cz.certicon.routing.model.graph.Graph;
 import cz.certicon.routing.model.graph.Node;
-import java.util.AbstractSet;
+import cz.certicon.routing.model.graph.UndirectedGraph;
+import cz.certicon.routing.model.graph.preprocessing.FilteredGraph;
+import cz.certicon.routing.model.values.Distance;
+import gnu.trove.TIntCollection;
+import gnu.trove.function.TIntFunction;
+import gnu.trove.iterator.TIntIterator;
+import gnu.trove.list.TIntList;
+import gnu.trove.list.array.TIntArrayList;
+import gnu.trove.map.TIntIntMap;
+import gnu.trove.map.TIntObjectMap;
+import gnu.trove.map.TObjectIntMap;
+import gnu.trove.map.hash.TIntIntHashMap;
+import gnu.trove.map.hash.TIntObjectHashMap;
+import gnu.trove.map.hash.TObjectIntHashMap;
+import gnu.trove.procedure.TIntProcedure;
+import gnu.trove.set.TIntSet;
+import gnu.trove.set.hash.TIntHashSet;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
+import java.util.LinkedList;
 import java.util.List;
-import java.util.Map;
+import java.util.Queue;
 import java.util.Random;
 import java.util.Set;
 import lombok.Value;
@@ -26,6 +43,8 @@ import lombok.experimental.Wither;
  */
 @Value
 public class NaturalCutsFilter implements Filter {
+
+    private static final int NODE_INIT_SIZE = 1;
 
     @Wither
     private final double cellRatio; // alpha
@@ -50,146 +69,197 @@ public class NaturalCutsFilter implements Filter {
     }
 
     @Override
-    public Graph filter( Graph graph ) {
+    public FilteredGraph filter( Graph graph ) {
+        // NOTE: contraction
+        // - foreach node
+        // -- remove node
+        // -- preserve paths (create edges between all the neighbors)
+        ElementContainer<Edge> cutEdges = getCutEdges( graph );
+        // split graph into regions bounded by the cut edges
+        SplitGraphMessenger splitGraphResult = splitGraph( graph, cutEdges );
+        // build new filtered graph
+        FilteredGraph filteredGraph = buildFilteredGraph( splitGraphResult.getFragmentNeighbors(), splitGraphResult.getFragmentSizeMap() );
+        // nodeSizes // splitGraph.fragmentSizeMap
+        return filteredGraph;
+    }
+
+    private ElementContainer<Edge> getCutEdges( Graph graph ) {
+        // init structures
+        ElementContainer<Edge> cutEdges = new SetElementContainer<>();
+        ElementContainer<Node> coreNodes = new SetElementContainer<>();
+        ElementContainer<Node> ringNodes = new SetElementContainer<>();
+        NodeSizeContainer nodeSizeContainer = new MapNodeSizeContainer();
+        Queue<Node> nodeQueue = new LinkedList<>();
+        RandomSet<Node> randomNodes = new MixRandomSet<>( graph.getNodesCount() );
         // TODO need structure which allows random pick and fast element removal (target element)
         // conside using set and converting to array or iterator for random pick - how many random picks???
-        RandomSet<Node> nodes = new RandomSet<>( graph.getNodesCount() );
         Iterator<Node> nodeIterator = graph.getNodes();
         while ( nodeIterator.hasNext() ) {
-            nodes.add( nodeIterator.next() );
+            Node node = nodeIterator.next();
+            randomNodes.add( node );
+            nodeSizeContainer.put( node, NODE_INIT_SIZE );
         }
-
         Random random = new Random();
         // until there are no nodes left
-        while ( !nodes.isEmpty() ) {
+        while ( !randomNodes.isEmpty() ) {
             // pick a node (=center) at random (a node that does not belong to any core)
-            Node center = nodes.pollRandom( random );
+            Node center = randomNodes.pollRandom( random );
             // create tree T via BFS from center at maximal size of cellRatio * maxCellSize, where size is a sum of tree's nodes' sizes
-            // TODO what is node size? 1 at the beginning, then sum of contracted nodes inside this node
-            // all the nodes added to tree before it reached cellRatio * maxCellSize / coreRatioInverse form a "core"
-            // other nodes in the tree form a "ring"
+            nodeQueue.add( center );
+            // NOTE: what is node size? 1 at the beginning, then sum of contracted nodes inside this node
+            int sum = nodeSizeContainer.getSize( center );
+            while ( !nodeQueue.isEmpty() ) {
+                Node node = nodeQueue.poll();
+                int size = nodeSizeContainer.getSize( node );
+                // all the nodes added to tree before it reached cellRatio * maxCellSize / coreRatioInverse form a "core"
+                if ( sum + size <= cellRatio * maxCellSize / coreRatioInverse ) {
+                    sum += size;
+                    coreNodes.add( node );
+                    // other nodes in the tree form a "ring"
+                } else if ( sum + size <= cellRatio * maxCellSize ) {
+                    sum += size;
+                    ringNodes.add( node );
+                } else {
+                    nodeQueue.clear();
+                    break;
+                }
+                Iterator<Edge> edges = graph.getEdges( node );
+                while ( edges.hasNext() ) {
+                    Edge edge = edges.next();
+                    Node target = graph.getOtherNode( edge, node );
+                    if ( !coreNodes.isContained( target ) && !ringNodes.isContained( target ) ) {
+                        nodeQueue.add( target );
+                    }
+                }
+            }
             // contract core into a single node s
             // contract ring into a single node t
             // perform s-t minimal cut algorithm between them
-            // CONTRACTION
-            // - foreach node
-            // -- remove node
-            // -- preserve paths (create edges between all the neighbors)
+            // mark edges from minimal cut as "cut edges"
+            cutEdges.addAll( minimalCut( graph, coreNodes, ringNodes ) );
+            // remove all core nodes from the queue
+            for ( Node coreNode : coreNodes ) {
+                randomNodes.remove( coreNode );
+            }
+            coreNodes.clear();
+            ringNodes.clear();
         }
-
-        throw new UnsupportedOperationException( "Not supported yet." ); //To change body of generated methods, choose Tools | Templates.
+        return cutEdges;
     }
 
-//    private static class RandomSet<E> {
-//
-//        private final Set<E> set;
-//
-//        public RandomSet() {
-//            set = new HashSet<>();
-//        }
-//
-//        public RandomSet( int initialCapacity ) {
-//            set = new HashSet<>( initialCapacity );
-//
-//        }
-//
-//        public void add( E element ) {
-//            set.add( element );
-//        }
-//
-//        public void remove( E element ) {
-//            set.remove( element );
-//        }
-//
-//        public E random() {
-//
-//        }
-//    }
-    private static class RandomSet<E> extends AbstractSet<E> {
-
-        private final List<E> dta;
-        private final Map<E, Integer> idx;
-
-        public RandomSet() {
-            dta = new ArrayList<>();
-            idx = new HashMap<>();
-        }
-
-        public RandomSet( int initialCapacity ) {
-            dta = new ArrayList<>( initialCapacity );
-            idx = new HashMap<>( initialCapacity );
-        }
-
-        public RandomSet( Collection<E> items ) {
-            dta = new ArrayList<>( items.size() );
-            idx = new HashMap<>( items.size() );
-            for ( E item : items ) {
-                idx.put( item, dta.size() );
-                dta.add( item );
+    private Collection<Edge> minimalCut( Graph graph, ElementContainer<Node> coreNodes, ElementContainer<Node> ringNodes ) {
+        Set<Edge> cutEdges = new HashSet<>();
+        for ( Node coreNode : coreNodes ) {
+            Iterator<Edge> edges = coreNode.getEdges();
+            while ( edges.hasNext() ) {
+                Edge edge = edges.next();
+                Node target = graph.getOtherNode( edge, coreNode );
+                if ( ringNodes.isContained( target ) ) {
+                    cutEdges.add( edge );
+                }
             }
         }
+        return cutEdges;
+    }
 
-        @Override
-        public boolean add( E item ) {
-            if ( idx.containsKey( item ) ) {
-                return false;
+    private SplitGraphMessenger splitGraph( Graph graph, ElementContainer<Edge> cutEdges ) {
+        Queue<Node> nodeQueue = new LinkedList<>();
+        NodeSizeContainer nodeSizeContainer = new MapNodeSizeContainer();
+        Iterator<Node> nodeIterator = graph.getNodes();
+        while ( nodeIterator.hasNext() ) {
+            nodeSizeContainer.put( nodeIterator.next(), NODE_INIT_SIZE );
+        }
+        // contract each region (connected component) into a single node calles "fragment", preserve connections (without duplicates)
+        // - determine fragments
+        int fragment = 0;
+        TObjectIntMap<Node> fragmentMap = new TObjectIntHashMap<>();
+        TIntObjectMap<Node> fragmentCenterMap = new TIntObjectHashMap<>();
+        ElementContainer<Node> nodeContainer = new SetElementContainer<>();
+        nodeContainer.addAll( graph.getNodes() );
+        TIntList sizeMap = new TIntArrayList();
+        // -- foreach node
+        while ( !nodeContainer.isEmpty() ) {
+            Node center = nodeContainer.any();
+            fragmentCenterMap.put( fragment, center );
+            nodeQueue.add( center );
+            int sum = 0;
+            // -- search connected component
+            while ( !nodeQueue.isEmpty() ) {
+                Node node = nodeQueue.poll();
+                // -- mark each reached node as a part of current fragment
+                fragmentMap.put( node, fragment );
+                sum += nodeSizeContainer.getSize( node );
+                nodeContainer.remove( node );
+                Iterator<Edge> edges = graph.getEdges( node );
+                // -- repeat for all its neighbors, do not consider cut edges
+                while ( edges.hasNext() ) {
+                    Edge edge = edges.next();
+                    if ( !cutEdges.isContained( edge ) ) {
+                        Node target = graph.getOtherNode( edge, node );
+                        nodeQueue.add( target );
+                    }
+                }
             }
-            idx.put( item, dta.size() );
-            dta.add( item );
-            return true;
+            sizeMap.add( sum );
+            fragment++;
         }
-
-        /**
-         * Override element at position <code>id</code> with last element.
-         *
-         * @param id
-         */
-        public E removeAt( int id ) {
-            if ( id >= dta.size() ) {
-                return null;
+        // - determine neighboring areas
+        TIntSet[] fragmentNeighbors = new TIntSet[fragment];
+        // -- foreach fragment
+        for ( int i = 0; i < fragment; i++ ) {
+            fragmentNeighbors[i] = new TIntHashSet();
+            Node center = fragmentCenterMap.get( i );
+            nodeQueue.add( center );
+            // -- find all neighbors
+            while ( !nodeQueue.isEmpty() ) {
+                Node node = nodeQueue.poll();
+                Iterator<Edge> edges = graph.getEdges( node );
+                // -- for all neighbors, if they are connected via regular edge, repeat for them, if via cut edge, add fragment neighbor
+                while ( edges.hasNext() ) {
+                    Edge edge = edges.next();
+                    Node target = graph.getOtherNode( edge, node );
+                    if ( !cutEdges.isContained( edge ) ) { // continue searching
+                        nodeQueue.add( target );
+                    } else { // add fragment neighbor
+                        fragmentNeighbors[i].add( fragmentMap.get( target ) );
+                    }
+                }
             }
-            E res = dta.get( id );
-            idx.remove( res );
-            E last = dta.remove( dta.size() - 1 );
-            // skip filling the hole if last is removed
-            if ( id < dta.size() ) {
-                idx.put( last, id );
-                dta.set( id, last );
+        }
+        return new SplitGraphMessenger( fragmentNeighbors, sizeMap.toArray() );
+    }
+
+    private FilteredGraph buildFilteredGraph( TIntSet[] fragmentNeighbors, int[] fragmentSizeMap ) {
+        List<Node> nodes = new ArrayList<>();
+        TObjectIntMap<Node> nodeSizeMap = new TObjectIntHashMap<>();
+        for ( int i = 0; i < fragmentNeighbors.length; i++ ) {
+            Node node = new Node( i );
+            nodes.add( node );
+            nodeSizeMap.put( node, fragmentSizeMap[i] );
+        }
+        int edgeCounter = 0;
+        List<Edge> edges = new ArrayList<>();
+        for ( int i = 0; i < fragmentNeighbors.length; i++ ) {
+            TIntSet fragmentNeighbor = fragmentNeighbors[i];
+            TIntIterator iterator = fragmentNeighbor.iterator();
+            while ( iterator.hasNext() ) {
+                int neighbor = iterator.next();
+                if ( neighbor > i ) { // has not been added yet
+                    Edge edge = new Edge( edgeCounter++, false, nodes.get( i ), nodes.get( neighbor ), Distance.newInstance( 1.0 ) );
+                    nodes.get( i ).addEdge( edge );
+                    nodes.get( neighbor ).addEdge( edge );
+                    edges.add( edge );
+                }
             }
-            return res;
+            nodes.get( i ).lock();
         }
+        return new FilteredGraph( UndirectedGraph.builder().nodes( nodes ).edges( edges ).build(), nodeSizeMap );
+    }
 
-        @Override
-        public boolean remove( Object item ) {
-            @SuppressWarnings( value = "element-type-mismatch" )
-            Integer id = idx.get( item );
-            if ( id == null ) {
-                return false;
-            }
-            removeAt( id );
-            return true;
-        }
+    @Value
+    private static class SplitGraphMessenger {
 
-        public E get( int i ) {
-            return dta.get( i );
-        }
-
-        public E pollRandom( Random rnd ) {
-            if ( dta.isEmpty() ) {
-                return null;
-            }
-            int id = rnd.nextInt( dta.size() );
-            return removeAt( id );
-        }
-
-        @Override
-        public int size() {
-            return dta.size();
-        }
-
-        @Override
-        public Iterator<E> iterator() {
-            return dta.iterator();
-        }
+        TIntSet[] fragmentNeighbors;
+        int[] fragmentSizeMap;
     }
 }

@@ -3,17 +3,17 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package cz.certicon.routing.model.graph;
+package cz.certicon.routing.model.graph.preprocessing;
 
+import cz.certicon.routing.model.graph.Edge;
+import cz.certicon.routing.model.graph.Graph;
+import cz.certicon.routing.model.graph.Node;
+import cz.certicon.routing.model.graph.UndirectedGraph;
 import cz.certicon.routing.model.values.Distance;
-import cz.certicon.routing.utils.collections.ImmutableIterator;
+import gnu.trove.map.TObjectIntMap;
 import java.util.Iterator;
-import java.util.List;
 import lombok.AccessLevel;
-import lombok.Builder;
 import lombok.Getter;
-import lombok.NonNull;
-import lombok.Singular;
 import lombok.Value;
 
 /**
@@ -21,71 +21,68 @@ import lombok.Value;
  * @author Michael Blaha {@literal <michael.blaha@certicon.cz>}
  */
 @Value
-@Builder
-public class UndirectedGraph implements Graph {
+public class FilteredGraph implements Graph {
 
-    @NonNull
+    UndirectedGraph graph;
     @Getter( AccessLevel.NONE )
-    @Singular
-    List<Node> nodes;
-    @NonNull
-    @Getter( AccessLevel.NONE )
-    @Singular
-    List<Edge> edges;
+    TObjectIntMap<Node> nodeSize;
 
     @Override
     public int getNodesCount() {
-        return nodes.size();
+        return graph.getNodesCount();
     }
 
     @Override
     public Iterator<Node> getNodes() {
-        return new ImmutableIterator<>( nodes.iterator() );
+        return graph.getNodes();
     }
 
     @Override
     public int getEdgeCount() {
-        return edges.size();
+        return graph.getEdgeCount();
     }
 
     @Override
     public Iterator<Edge> getEdges() {
-        return new ImmutableIterator<>( edges.iterator() );
+        return graph.getEdges();
     }
 
     @Override
     public Iterator<Edge> getIncomingEdges( Node node ) {
-        return node.getIncomingEdges();
+        return graph.getIncomingEdges( node );
     }
 
     @Override
     public Iterator<Edge> getOutgoingEdges( Node node ) {
-        return node.getOutgoingEdges();
+        return graph.getOutgoingEdges( node );
     }
 
     @Override
     public Node getSourceNode( Edge edge ) {
-        return edge.getSource();
+        return graph.getSourceNode( edge );
     }
 
     @Override
     public Node getTargetNode( Edge edge ) {
-        return edge.getTarget();
+        return graph.getTargetNode( edge );
     }
 
     @Override
     public Node getOtherNode( Edge edge, Node node ) {
-        return edge.getTarget().equals( node ) ? edge.getSource() : edge.getTarget();
+        return graph.getOtherNode( edge, node );
     }
 
     @Override
     public Distance getTurnCost( Node node, Edge from, Edge to ) {
-        return node.getTurnTable().getCost( node.getEdgePosition( from ), node.getEdgePosition( to ) );
+        return graph.getTurnCost( node, from, to );
     }
 
     @Override
     public Iterator<Edge> getEdges( Node node ) {
-        return node.getEdges();
+        return graph.getEdges( node );
     }
 
+    public int getNodeSize( Node node ) {
+        return nodeSize.get( node );
+    }
 }

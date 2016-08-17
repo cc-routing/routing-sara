@@ -5,15 +5,19 @@
  */
 package cz.certicon.routing.algorithm.sra.preprocessing.filtering;
 
-import cz.certicon.routing.model.graph.Graph;
-import cz.certicon.routing.model.graph.preprocessing.FilteredGraph;
+import java.util.Random;
+import java.util.Set;
 
 /**
- * Reduces graph size while preserving overall structure.
  *
  * @author Michael Blaha {@literal <michael.blaha@certicon.cz>}
+ * @param <E> element type
  */
-public interface Filter {
+interface RandomSet<E> extends Set<E> {
 
-    FilteredGraph filter( Graph graph );
+    public E removeAt( int id );
+
+    public E get( int i );
+
+    public E pollRandom( Random rnd );
 }
