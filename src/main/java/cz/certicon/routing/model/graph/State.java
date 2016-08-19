@@ -3,19 +3,21 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package cz.certicon.routing.algorithm.sra.preprocessing.filtering;
+package cz.certicon.routing.model.graph;
 
-import cz.certicon.routing.model.graph.Node;
+import lombok.Value;
 
 /**
  *
  * @author Michael Blaha {@literal <michael.blaha@certicon.cz>}
  */
-interface NodeSizeContainer {
+@Value
+public class State {
 
-    void put( Node node, int size );
-
-    int getSize( Node node );
+    Node node;
+    Edge edge;
     
-    void clear();
+    public boolean isFirst(){
+        return edge == null;
+    }
 }

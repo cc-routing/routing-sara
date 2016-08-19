@@ -3,7 +3,7 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package cz.certicon.routing.algorithm.sra.preprocessing.assembly;
+package cz.certicon.routing.algorithm.sara.preprocessing.assembly;
 
 import cz.certicon.routing.model.graph.Graph;
 

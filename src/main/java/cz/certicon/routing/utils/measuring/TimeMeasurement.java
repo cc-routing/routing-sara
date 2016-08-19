@@ -5,8 +5,8 @@
  */
 package cz.certicon.routing.utils.measuring;
 
-import cz.certicon.routing.model.basic.Time;
-import cz.certicon.routing.model.basic.TimeUnits;
+import cz.certicon.routing.model.values.Time;
+import cz.certicon.routing.model.values.TimeUnits;
 
 /**
  * Time measurement class. Uses {@link TimeUnits} to determine the time unit.

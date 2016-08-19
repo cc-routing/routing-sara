@@ -141,7 +141,7 @@ public class Node {
             sb.append( "}" );
         }
         String edgesMapString = sb.toString();
-        return "Node{id=" + id + ", locked=" + locked + ", coordinate = " + coordinate + ", turnTable=" + turnTable + ", edges=" + edgesString + ", edgePositionMap=" + edgesMapString + "}";
+        return "Node{id=" + id + ", locked=" + locked + ", coordinate = " + coordinate + ", edges=" + edgesString + ", turnTable=" + turnTable + ", edgePositionMap=" + edgesMapString + "}";
     }
 
     private abstract class FilteringEdgeIterator implements Iterator<Edge> {

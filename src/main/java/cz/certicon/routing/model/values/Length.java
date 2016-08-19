@@ -3,7 +3,7 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package cz.certicon.routing.model.basic;
+package cz.certicon.routing.model.values;
 
 import java.util.Objects;
 
@@ -13,7 +13,7 @@ import java.util.Objects;
  *
  * @author Michael Blaha {@literal <michael.blaha@certicon.cz>}
  */
-public class Length {
+public class Length implements Number<Length> {
 
     private final LengthUnits lengthUnits;
     private final long nanometers;
@@ -117,6 +117,41 @@ public class Length {
             return false;
         }
         return true;
+    }
+
+    @Override
+    public boolean isPositive() {
+        return nanometers > 0;
+    }
+
+    @Override
+    public boolean isNegative() {
+        return nanometers < 0;
+    }
+
+    @Override
+    public Length absolute() {
+        return new Length( lengthUnits, lengthUnits.fromNano( Math.abs( nanometers ) ) );
+    }
+
+    @Override
+    public Length add( Length other ) {
+        return new Length( lengthUnits, lengthUnits.fromNano( nanometers + other.nanometers ) );
+    }
+
+    @Override
+    public Length substract( Length other ) {
+        return new Length( lengthUnits, lengthUnits.fromNano( nanometers - other.nanometers ) );
+    }
+
+    @Override
+    public Length divide( Length other ) {
+        return new Length( lengthUnits, lengthUnits.fromNano( nanometers / other.nanometers ) );
+    }
+
+    @Override
+    public Length multiply( Length other ) {
+        return new Length( lengthUnits, lengthUnits.fromNano( nanometers * other.nanometers ) );
     }
 
 }

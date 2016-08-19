@@ -3,17 +3,19 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package cz.certicon.routing.algorithm.sra.preprocessing.filtering;
+package cz.certicon.routing.view;
 
+import cz.certicon.routing.model.graph.Edge;
 import cz.certicon.routing.model.graph.Graph;
-import cz.certicon.routing.model.graph.preprocessing.FilteredGraph;
+import java.util.List;
 
 /**
- * Reduces graph size while preserving overall structure.
  *
  * @author Michael Blaha {@literal <michael.blaha@certicon.cz>}
  */
-public interface Filter {
+public interface RouteViewer {
+    
+    public void addRoute( Graph graph, List<Edge> edges );
 
-    FilteredGraph filter( Graph graph );
+    public void display();
 }

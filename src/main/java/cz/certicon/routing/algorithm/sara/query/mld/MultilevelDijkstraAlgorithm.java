@@ -3,7 +3,7 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package cz.certicon.routing.algorithm.sra.query.mld;
+package cz.certicon.routing.algorithm.sara.query.mld;
 
 import cz.certicon.routing.algorithm.RoutingAlgorithm;
 import cz.certicon.routing.model.Route;

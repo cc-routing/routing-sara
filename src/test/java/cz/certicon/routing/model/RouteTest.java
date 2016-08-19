@@ -60,7 +60,7 @@ public class RouteTest {
         Edge de = new Edge( 3, false, e, d, Distance.newInstance( 0 ) );
 
         Route route = builder.addAsLast( cd ).addAsFirst( bc ).addAsLast( de ).addAsFirst( ab ).build();
-        assertEquals( "Route(edges=[Edge{id=0, oneway=false, length=Distance(value=0.0), source=Node{id=0}, target=Node{id=1}}, Edge{id=1, oneway=false, length=Distance(value=0.0), source=Node{id=2}, target=Node{id=1}}, Edge{id=2, oneway=false, length=Distance(value=0.0), source=Node{id=2}, target=Node{id=3}}, Edge{id=3, oneway=false, length=Distance(value=0.0), source=Node{id=4}, target=Node{id=3}}], source=Node{id=0, locked=false, turnTable=null, edges=}, edgePositionMap={}}, target=Node{id=4, locked=false, turnTable=null, edges=}, edgePositionMap={}})", route.toString() );
+        assertEquals( "Route(edges=[Edge{id=0, oneway=false, length=Distance(value=0.0), source=Node{id=0}, target=Node{id=1}}, Edge{id=1, oneway=false, length=Distance(value=0.0), source=Node{id=2}, target=Node{id=1}}, Edge{id=2, oneway=false, length=Distance(value=0.0), source=Node{id=2}, target=Node{id=3}}, Edge{id=3, oneway=false, length=Distance(value=0.0), source=Node{id=4}, target=Node{id=3}}], source=Node{id=0, locked=false, coordinate = null, edges=}, turnTable=null, edgePositionMap={}}, target=Node{id=4, locked=false, coordinate = null, edges=}, turnTable=null, edgePositionMap={}})", route.toString() );
     }
 
     /**

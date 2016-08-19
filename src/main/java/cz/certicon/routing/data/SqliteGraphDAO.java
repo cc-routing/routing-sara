@@ -87,7 +87,7 @@ public class SqliteGraphDAO implements GraphDAO {
                         nodeMap.get( rs.getLong( "target" ) ),
                         Distance.newInstance( rs.getDouble( "metric_length" ) ) ); // TODO choose metric
                 long posNode = rs.getLong( "node_id" );
-                int position = rs.getInt( "order" );
+                int position = rs.getInt( "position" );
                 nodeMap.get( posNode ).addEdge( edge, position );
                 edgeSet.add( edge );
             }

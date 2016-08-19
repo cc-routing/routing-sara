@@ -18,7 +18,7 @@ import lombok.Value;
  * @author Michael Blaha {@literal <michael.blaha@certicon.cz>}
  */
 @Value
-public class SraGraph implements Graph {
+public class SaraGraph implements Graph {
 
     private final UndirectedGraph graph;
     @Getter( AccessLevel.NONE )

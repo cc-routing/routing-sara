@@ -5,8 +5,8 @@
  */
 package cz.certicon.routing.utils.measuring;
 
-import cz.certicon.routing.model.basic.TimeUnits;
-import cz.certicon.routing.model.basic.Time;
+import cz.certicon.routing.model.values.TimeUnits;
+import cz.certicon.routing.model.values.Time;
 import java.util.HashMap;
 import java.util.Map;
 

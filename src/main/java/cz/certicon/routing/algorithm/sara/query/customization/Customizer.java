@@ -3,7 +3,7 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package cz.certicon.routing.algorithm.sra.query.customization;
+package cz.certicon.routing.algorithm.sara.query.customization;
 
 /**
  * Pre-computes data for the boundary edges for each cell (bottom-up) using

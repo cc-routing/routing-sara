@@ -3,7 +3,7 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package cz.certicon.routing.model.basic;
+package cz.certicon.routing.model.values;
 
 import java.util.Objects;
 
@@ -12,7 +12,7 @@ import java.util.Objects;
  *
  * @author Michael Blaha {@literal <michael.blaha@certicon.cz>}
  */
-public class Time {
+public class Time implements Number<Time> {
 
     private final TimeUnits timeUnits;
     private final long nanoseconds;
@@ -75,17 +75,6 @@ public class Time {
     }
 
     /**
-     * Adds time to this time. Returns new instance.
-     *
-     * @param time other time
-     * @return new instance of {@link Time} as a result of addition of this time
-     * and the other time
-     */
-    public Time add( Time time ) {
-        return new Time( timeUnits, getTime() + timeUnits.fromNano( time.getNanoseconds() ) );
-    }
-
-    /**
      * Divides this time by a provided divisor. Returns new instance.
      *
      * @param divisor number for the time to be divided by
@@ -138,6 +127,40 @@ public class Time {
             return false;
         }
         return true;
+    }
+
+    @Override
+    public boolean isPositive() {
+        return nanoseconds > 0;
+    }
+
+    @Override
+    public boolean isNegative() {
+        return nanoseconds < 0;
+    }
+
+    @Override
+    public Time absolute() {
+        return new Time( timeUnits, timeUnits.fromNano( Math.abs( nanoseconds ) ) );
+    }
+
+    public Time add( Time other ) {
+        return new Time( timeUnits, timeUnits.fromNano( nanoseconds + other.nanoseconds ) );
+    }
+
+    @Override
+    public Time substract( Time other ) {
+        return new Time( timeUnits, timeUnits.fromNano( nanoseconds - other.nanoseconds ) );
+    }
+
+    @Override
+    public Time divide( Time other ) {
+        return new Time( timeUnits, timeUnits.fromNano( nanoseconds / other.nanoseconds ) );
+    }
+
+    @Override
+    public Time multiply( Time other ) {
+        return new Time( timeUnits, timeUnits.fromNano( nanoseconds * other.nanoseconds ) );
     }
 
 }
