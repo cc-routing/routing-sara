@@ -57,6 +57,7 @@ public class SqliteGraphDAO implements GraphDAO {
 //            }
 //            int edgeCount = rs.getInt( "edgeCount" );
             // read turn tables
+            // TODO add turntables to map, a list of nodes as a value (so that the nodes share turntables)
             TIntObjectMap<MatrixContainer> turnTableMap = new TIntObjectHashMap<>();
             rs = database.read( "SELECT * FROM turn_tables" );
             while ( rs.next() ) {
@@ -81,7 +82,7 @@ public class SqliteGraphDAO implements GraphDAO {
             Set<Edge> edgeSet = new HashSet<>();
             rs = database.read( "SELECT * FROM edges e JOIN node_to_edges nte ON e.id = nte.edge_id;" );
             while ( rs.next() ) {
-                Edge edge = new Edge( rs.getLong( "id" ), rs.getBoolean( "oneway" ),
+                Edge edge = new Edge( rs.getLong( "id" ), rs.getInt( "oneway" ) != 0,
                         nodeMap.get( rs.getLong( "source" ) ),
                         nodeMap.get( rs.getLong( "target" ) ),
                         Distance.newInstance( rs.getDouble( "metric_length" ) ) ); // TODO choose metric
