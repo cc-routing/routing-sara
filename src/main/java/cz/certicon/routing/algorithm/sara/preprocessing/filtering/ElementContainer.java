@@ -20,7 +20,7 @@ interface ElementContainer<E> extends Iterable<E> {
 
     void addAll( Iterator<E> elements );
 
-    boolean isContained( E element );
+    boolean contains( E element );
 
     void remove( E element );
 

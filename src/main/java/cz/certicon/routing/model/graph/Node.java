@@ -15,12 +15,13 @@ import java.util.Map;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.experimental.NonFinal;
+import lombok.experimental.Wither;
 
 /**
  *
  * @author Michael Blaha {@literal <michael.blaha@certicon.cz>}
  */
-@EqualsAndHashCode( exclude = { "edges", "edgePositionMap" } )
+@EqualsAndHashCode( exclude = { "turnTable", "locked", "edges", "edgePositionMap" } )
 public class Node {
 
     @Getter
@@ -30,6 +31,7 @@ public class Node {
     private TurnTable turnTable;
     @Getter
     private Coordinate coordinate;
+//    @Wither
     private final ArrayList<Edge> edges;
     private final Map<Edge, Integer> edgePositionMap;
     private boolean locked = false;

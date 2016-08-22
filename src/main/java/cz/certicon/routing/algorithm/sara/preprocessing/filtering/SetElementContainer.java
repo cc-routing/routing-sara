@@ -29,7 +29,7 @@ class SetElementContainer<E> implements ElementContainer<E> {
     }
 
     @Override
-    public boolean isContained( E element ) {
+    public boolean contains( E element ) {
         return elements.contains( element );
     }
 

@@ -9,12 +9,15 @@ import cz.certicon.routing.model.values.Distance;
 import lombok.EqualsAndHashCode;
 import lombok.NonNull;
 import lombok.Value;
+import lombok.experimental.NonFinal;
+import lombok.experimental.Wither;
 
 /**
  *
  * @author Michael Blaha {@literal <michael.blaha@certicon.cz>}
  */
 @Value
+@NonFinal
 @EqualsAndHashCode( exclude = { "source", "target" } )
 public class Edge {
 
@@ -24,13 +27,16 @@ public class Edge {
      * Source
      */
     @NonNull
+    @Wither
     Node source;
     /**
      * Target
      */
     @NonNull
+    @Wither
     Node target;
     @NonNull
+    @Wither
     Distance length;
 
     @Override
