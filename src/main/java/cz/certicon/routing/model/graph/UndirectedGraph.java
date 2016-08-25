@@ -104,4 +104,49 @@ public class UndirectedGraph implements Graph {
 //        return coordinates.get( node );
     }
 
+    @Override
+    public String toString() {
+        StringBuilder sb = new StringBuilder();
+        sb.append( "UndirectedGraph{" ).append( "nodes=[" );
+        for ( Node node : nodes ) {
+            sb.append( node.getId() ).append( "," );
+        }
+        if ( !nodes.isEmpty() ) {
+            sb.replace( sb.length() - 1, sb.length(), "]" );
+        } else {
+            sb.append( "]" );
+        }
+        sb.append( ",edges=[" );
+        for ( Edge edge : edges ) {
+            sb.append( edge.getId() ).append( "," );
+        }
+        if ( !edges.isEmpty() ) {
+            sb.replace( sb.length() - 1, sb.length(), "]" );
+        } else {
+            sb.append( "]" );
+        }
+        sb.append( ",mapping={" );
+        for ( Node node : nodes ) {
+            sb.append( node.getId() ).append( "=>[" );
+            Iterator<Edge> edgeIterator = node.getEdges();
+            while ( edgeIterator.hasNext() ) {
+                Edge e = edgeIterator.next();
+                sb.append( e.getSource().equals( node ) ? "+" : "-" ).append( e.getId() ).append( "," );
+            }
+            if ( node.getEdges().hasNext() ) {
+                sb.replace( sb.length() - 1, sb.length(), "]" );
+            } else {
+                sb.append( "]" );
+            }
+            sb.append( "," );
+        }
+        if ( !nodes.isEmpty() ) {
+            sb.replace( sb.length() - 1, sb.length(), "}" );
+        } else {
+            sb.append( "}" );
+        }
+        sb.append( "}" );
+        return sb.toString();
+    }
+
 }

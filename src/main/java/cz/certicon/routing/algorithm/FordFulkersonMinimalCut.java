@@ -43,8 +43,8 @@ public class FordFulkersonMinimalCut implements MinimalCutAlgorithm {
         // TODO optimize, change to adjacency lists (currently adjacency table - n^2, wasteful for thin graphs
         // map graph to arrays
         System.out.println( "MINIMAL CUT: mapping graph to arrays" );
-        System.out.println( "source = " + sourceNode );
-        System.out.println( "target = " + targetNode );
+        System.out.println( "source = " + sourceNode.getId() );
+        System.out.println( "target = " + targetNode.getId() );
         int nodeCount = graph.getNodesCount();
         int[] predecessors = new int[nodeCount];
         int[] pathFlows = new int[nodeCount];
@@ -121,7 +121,7 @@ public class FordFulkersonMinimalCut implements MinimalCutAlgorithm {
     }
 
     private boolean findImprovementPath( int[] predecessors, int[] pathFlows, int[][] limits, int[][] flows, int source, int target ) {
-        if(source == target){
+        if ( source == target ) {
             return false;
         }
         int nodeCount = predecessors.length;
@@ -133,11 +133,11 @@ public class FordFulkersonMinimalCut implements MinimalCutAlgorithm {
         queue.add( node );
         // while queue is not empty and the target has not been reached
 //        System.out.println( "cycle: " + !queue.isEmpty() + " " + ( node != target ) );
-        System.out.println( "path: " );
+        System.out.print( "path: " );
         while ( !queue.isEmpty() && node != target ) {
             // dequeue node from queue and close it
             node = queue.poll();
-            System.out.println( node + "," );
+            System.out.print( node + "," );
             states[node] = CLOSED;
             for ( int i = 0; i < nodeCount; i++ ) {
                 // for all outgoing fresh nodes, which have yet to fill the flow limit
@@ -163,6 +163,7 @@ public class FordFulkersonMinimalCut implements MinimalCutAlgorithm {
                 }
             }
         }
+        System.out.println( "" );
 //        System.out.println( "PATH FLOWS" );
 //        testPrintArray( pathFlows );
         // return true if the target has been reached

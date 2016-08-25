@@ -42,41 +42,13 @@ public class GraphStreamPresenter implements GraphPresenter {
 
     @Override
     public void displayGraph( cz.certicon.routing.model.graph.Graph graph ) {
-        nodeMap = new HashMap<>();
-        displayGraph = new org.graphstream.graph.implementations.MultiGraph( "graph-id" );
-//        displayGraph.addAttribute( "ui.stylesheet", "edge {"
-//                + "shape: line;"
-//                + "fill-color: " + toCssRgb( Color.yellow ) + ";"
-//                + "arrow-shape: arrow;"
-//                + "arrow-size: 8px, 4px;"
-//                + "}" );
-        Iterator<cz.certicon.routing.model.graph.Node> nodesIterator;
-        nodesIterator = graph.getNodes();
-        while ( nodesIterator.hasNext() ) {
-            cz.certicon.routing.model.graph.Node node = nodesIterator.next();
-//            System.out.println( "adding node #" + node.getId() );
-            Node n = displayGraph.addNode( "" + node.getId() );
-            nodeMap.put( node.getId(), n );
-            if ( displayNodes ) {
-                n.setAttribute( "ui.label", "" + node.getId() );
-            }
-        }
-        Iterator<cz.certicon.routing.model.graph.Edge> edgeIterator = graph.getEdges();
-        while ( edgeIterator.hasNext() ) {
-            cz.certicon.routing.model.graph.Edge edge = edgeIterator.next();
-//            System.out.println( "adding edge #" + edge.getId() );
-            Edge addEdge = displayGraph.addEdge( edge.getId() + "", edge.getSource().getId() + "", edge.getTarget().getId() + "", true );
-        }
-        Viewer viewer = displayGraph.display( true );
-        View view = viewer.getDefaultView();
-
-        ZoomListener zoomListener = new ZoomListener( view.getCamera() );
-        viewer.getDefaultView().addMouseWheelListener( zoomListener );
-        viewer.getDefaultView().addMouseMotionListener( zoomListener );
+        setGraph( graph );
+        display();
     }
 
     public void setGraph( cz.certicon.routing.model.graph.Graph graph ) {
         nodeMap = new HashMap<>();
+        edgeMap = new HashMap<>();
         displayGraph = new org.graphstream.graph.implementations.MultiGraph( "graph-id" );
 //        displayGraph.addAttribute( "ui.stylesheet", "edge {"
 //                //+ "shape: line;"
@@ -100,6 +72,8 @@ public class GraphStreamPresenter implements GraphPresenter {
             cz.certicon.routing.model.graph.Edge edge = edgeIterator.next();
 //            System.out.println( "adding edge #" + edge.getId() );
             Edge addEdge = displayGraph.addEdge( edge.getId() + "", edge.getSource().getId() + "", edge.getTarget().getId() + "", true );
+            addEdge.setAttribute( "ui.label", "" + edge.getLength().getValue() );
+            edgeMap.put( edge.getId(), addEdge );
         }
     }
 
@@ -128,6 +102,13 @@ public class GraphStreamPresenter implements GraphPresenter {
         }
         edgeMap.get( id ).addAttribute( "ui.style", fillColor );
         edgeMap.get( id ).addAttribute( "ui.color", color );
+    }
+
+    public void setEdgeLabel( long id, String label ) {
+        if ( !edgeMap.containsKey( id ) ) {
+            throw new IllegalArgumentException( "Could not find edge: " + id );
+        }
+        edgeMap.get( id ).addAttribute( "ui.label", label );
     }
 
     public void removeEdge( long id ) {

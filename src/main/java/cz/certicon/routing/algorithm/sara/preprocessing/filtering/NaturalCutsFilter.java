@@ -137,7 +137,10 @@ public class NaturalCutsFilter implements Filter {
         Iterator<Node> nodeIterator = graph.getNodes();
         while ( nodeIterator.hasNext() ) {
             Node node = nodeIterator.next();
-            randomNodes.add( node );
+            // TODO remove condition - only for test (remove randomness)
+            if ( node.getId() == 0 ) {
+                randomNodes.add( node );
+            }
             nodeSizeContainer.put( node, NODE_INIT_SIZE );
         }
         Random random = new Random();
@@ -279,6 +282,18 @@ public class NaturalCutsFilter implements Filter {
             }
         }
          */
+
+        GraphStreamPresenter presenter = new GraphStreamPresenter();
+        presenter.displayGraph( graph );
+        for ( Node node : coreNodes ) {
+            presenter.setNodeColor( node.getId(), Color.red );
+        }
+        for ( Node node : treeNodes ) {
+            presenter.setNodeColor( node.getId(), Color.green );
+        }
+        for ( Node node : ringNodes ) {
+            presenter.setNodeColor( node.getId(), Color.blue );
+        }
         System.out.println( "minimal cut" );
         Map<Node, List<Edge>> coreMap = contractNode( graph, coreNodes, coreNodes.any() );
         System.out.println( "core map: " );
@@ -299,82 +314,163 @@ public class NaturalCutsFilter implements Filter {
         System.out.println( "nodes contracted" );
         // build a new graph (temporary)
         UndirectedGraph.UndirectedGraphBuilder builder = UndirectedGraph.builder();
-        Map<Node, Node> visitedNodes = new HashMap<>();
-        Queue<Node> nodeQueue = new LinkedList<>();
-        for ( Node node : coreMap.keySet() ) {
-            nodeQueue.add( node );
-        }
-        for ( Node node : ringMap.keySet() ) {
-            nodeQueue.add( node );
-        }
-        // add all the nodes into builder
-        System.out.println( "adding nodes to builder" );
-        while ( !nodeQueue.isEmpty() ) {
-            Node node = nodeQueue.poll();
-            Iterator<Edge> edges = node.getEdges();
-            Node newNode = new Node( node.getId() );
-            newNode.setCoordinate( node.getCoordinate() );
-            visitedNodes.put( newNode, newNode );
-            builder.node( newNode );
-            while ( edges.hasNext() ) {
-                Edge edge = edges.next();
-                Node target = graph.getOtherNode( edge, node );
-                if ( visitedNodes.containsKey( target ) ) {
-                    Node actualTarget = visitedNodes.get( target );
-                    Edge e = new ContractEdge( edge.getId(), false, newNode, actualTarget, Distance.newInstance( EDGE_INIT_SIZE ), Arrays.asList( edge ) );
-                    actualTarget.addEdge( e );
-                    newNode.addEdge( e );
-                    builder.edge( e );
-                } else if ( treeNodes.contains( target ) ) {
-                    nodeQueue.add( target );
+        // copy tree into new graph
+        Map<Long, Node> nodeMap = new HashMap<>();
+        Map<Long, Edge> edgeMap = new HashMap<>();
+        for ( Node treeNode : treeNodes ) {
+            Node newNode = new Node( treeNode.getId() );
+            nodeMap.put( newNode.getId(), newNode );
+            Iterator<Edge> edgeIterator = treeNode.getEdges();
+            while ( edgeIterator.hasNext() ) {
+                Edge e = edgeIterator.next();
+                Node t = graph.getOtherNode( e, treeNode );
+                if ( nodeMap.containsKey( t.getId() ) ) {
+                    Node newTargetNode = nodeMap.get( t.getId() );
+                    Edge newEdge = new Edge( e.getId(), false, newNode, newTargetNode, Distance.newInstance( EDGE_INIT_SIZE ) );
+                    edgeMap.put( newEdge.getId(), newEdge );
+                    newNode.addEdge( newEdge );
+                    newTargetNode.addEdge( newEdge );
                 }
             }
         }
-        System.out.println( "searching for ids" );
         // find new ids
-        long maxNodeId = 0;
-        Iterator<Node> graphNodes = graph.getNodes();
-        while ( graphNodes.hasNext() ) {
-            maxNodeId = Math.max( maxNodeId, graphNodes.next().getId() );
-        }
         long maxEdgeId = 0;
         Iterator<Edge> graphEdges = graph.getEdges();
         while ( graphEdges.hasNext() ) {
             maxEdgeId = Math.max( maxEdgeId, graphEdges.next().getId() );
         }
-        System.out.println( "adding connections to groups" );
-        // add connection to core node
+        long maxNodeId = 0;
+        Iterator<Node> graphNodes = graph.getNodes();
+        while ( graphNodes.hasNext() ) {
+            maxNodeId = Math.max( maxNodeId, graphNodes.next().getId() );
+        }
+        // add contracted nodes
         Node coreNode = new Node( ++maxNodeId );
-        builder.node( coreNode );
+        nodeMap.put( coreNode.getId(), coreNode );
         for ( Map.Entry<Node, List<Edge>> entry : coreMap.entrySet() ) {
-            Node actualTarget = visitedNodes.get( entry.getKey() );
-            Edge edge = new ContractEdge( ++maxEdgeId, false, coreNode, actualTarget, Distance.newInstance( entry.getValue().size() ), entry.getValue() );
-            actualTarget.addEdge( edge );
-            coreNode.addEdge( edge );
-            builder.edge( edge );
+            if ( nodeMap.containsKey( entry.getKey().getId() ) ) {
+                Node newTargetNode = nodeMap.get( entry.getKey().getId() );
+                Edge edge = new ContractEdge( coreNode.getId() * 100 + newTargetNode.getId(), false, coreNode, newTargetNode, Distance.newInstance( entry.getValue().size() ), entry.getValue() );
+                coreNode.addEdge( edge );
+                newTargetNode.addEdge( edge );
+                edgeMap.put( edge.getId(), edge );
+            }
         }
-        // add connection to ring node
         Node ringNode = new Node( ++maxNodeId );
-        builder.node( ringNode );
+        nodeMap.put( ringNode.getId(), ringNode );
         for ( Map.Entry<Node, List<Edge>> entry : ringMap.entrySet() ) {
-            Node actualTarget = visitedNodes.get( entry.getKey() );
-            Edge edge = new ContractEdge( ++maxEdgeId, false, ringNode, actualTarget, Distance.newInstance( entry.getValue().size() ), entry.getValue() );
-            actualTarget.addEdge( edge );
+            if ( nodeMap.containsKey( entry.getKey().getId() ) ) {
+                Node newTargetNode = nodeMap.get( entry.getKey().getId() );
+                Edge edge = new ContractEdge( ringNode.getId() * 100 + newTargetNode.getId(), false, ringNode, newTargetNode, Distance.newInstance( entry.getValue().size() ), entry.getValue() );
+                ringNode.addEdge( edge );
+                newTargetNode.addEdge( edge );
+                edgeMap.put( edge.getId(), edge );
+            }
+//            else if ( coreNodes.contains( entry.getKey() ) ) {
+//                Node newTargetNode = coreNode;
+//                List<Edge> list = entry.getValue();
+//                List<Edge> otherList = coreMap.get( entry.getKey() );
+//                if ( list.size() > otherList.size() ) {
+//                    list = otherList;
+//                }
+//                Edge edge = new ContractEdge( ringNode.getId() * 100 + newTargetNode.getId(), false, ringNode, newTargetNode, Distance.newInstance( list.size() ), list );
+//                ringNode.addEdge( edge );
+//                newTargetNode.addEdge( edge );
+//                edgeMap.put( edge.getId(), edge );
+//            }
+        }
+        List<Edge> coreToRingEdges = new ArrayList<>();
+        for ( Map.Entry<Node, List<Edge>> entry : coreMap.entrySet() ) {
+            if ( ringNodes.contains( entry.getKey() ) ) {
+                coreToRingEdges.addAll( entry.getValue() );
+            }
+        }
+        List<Edge> ringToCoreEdges = new ArrayList<>();
+        for ( Map.Entry<Node, List<Edge>> entry : ringMap.entrySet() ) {
+            if ( coreNodes.contains( entry.getKey() ) ) {
+                ringToCoreEdges.addAll( entry.getValue() );
+            }
+        }
+        if ( coreToRingEdges.size() <= ringToCoreEdges.size() ) {
+            Edge edge = new ContractEdge( coreNode.getId() * 100 + ringNode.getId(), false, coreNode, ringNode, Distance.newInstance( coreToRingEdges.size() ), coreToRingEdges );
             ringNode.addEdge( edge );
-            builder.edge( edge );
+            coreNode.addEdge( edge );
+            edgeMap.put( edge.getId(), edge );
+        } else {
+            Edge edge = new ContractEdge( ringNode.getId() * 100 + coreNode.getId(), false, ringNode, coreNode, Distance.newInstance( ringToCoreEdges.size() ), ringToCoreEdges );
+            ringNode.addEdge( edge );
+            coreNode.addEdge( edge );
+            edgeMap.put( edge.getId(), edge );
         }
+        for ( Node value : nodeMap.values() ) {
+            builder.node( value );
+        }
+        for ( Edge value : edgeMap.values() ) {
+            builder.edge( value );
+        }
+
+//        Map<Node, Node> visitedNodes = new HashMap<>();
+//        Queue<Node> nodeQueue = new LinkedList<>();
+//        for ( Node node : coreMap.keySet() ) {
+//            nodeQueue.add( node );
+//        }
+//        for ( Node node : ringMap.keySet() ) {
+//            nodeQueue.add( node );
+//        }
+//        // add all the nodes into builder
+//        System.out.println( "adding nodes to builder" );
+//        while ( !nodeQueue.isEmpty() ) {
+//            Node node = nodeQueue.poll();
+//            Iterator<Edge> edges = node.getEdges();
+//            Node newNode = new Node( node.getId() );
+//            newNode.setCoordinate( node.getCoordinate() );
+//            visitedNodes.put( newNode, newNode );
+//            builder.node( newNode );
+//            while ( edges.hasNext() ) {
+//                Edge edge = edges.next();
+//                Node target = graph.getOtherNode( edge, node );
+//                if ( visitedNodes.containsKey( target ) ) {
+//                    Node actualTarget = visitedNodes.get( target );
+//                    Edge e = new ContractEdge( edge.getId(), false, newNode, actualTarget, Distance.newInstance( EDGE_INIT_SIZE ), Arrays.asList( edge ) );
+//                    actualTarget.addEdge( e );
+//                    newNode.addEdge( e );
+//                    builder.edge( e );
+//                } else if ( treeNodes.contains( target ) ) {
+//                    nodeQueue.add( target );
+//                }
+//            }
+//        }
+//        System.out.println( "searching for ids" );
+//        System.out.println( "adding connections to groups" );
+//        // add connection to core node
+//        Node coreNode = new Node( ++maxNodeId );
+//        builder.node( coreNode );
+//        for ( Map.Entry<Node, List<Edge>> entry : coreMap.entrySet() ) {
+//            Node actualTarget = visitedNodes.get( entry.getKey() );
+//            Edge edge = new ContractEdge( ++maxEdgeId, false, coreNode, actualTarget, Distance.newInstance( entry.getValue().size() ), entry.getValue() );
+//            actualTarget.addEdge( edge );
+//            coreNode.addEdge( edge );
+//            builder.edge( edge );
+//        }
+//        // add connection to ring node
+//        Node ringNode = new Node( ++maxNodeId );
+//        builder.node( ringNode );
+//        for ( Map.Entry<Node, List<Edge>> entry : ringMap.entrySet() ) {
+//            Node actualTarget = visitedNodes.get( entry.getKey() );
+//            Edge edge = new ContractEdge( ++maxEdgeId, false, ringNode, actualTarget, Distance.newInstance( entry.getValue().size() ), entry.getValue() );
+//            actualTarget.addEdge( edge );
+//            ringNode.addEdge( edge );
+//            builder.edge( edge );
+//        }
         Graph tmpGraph = builder.build();
-        GraphStreamPresenter presenter = new GraphStreamPresenter();
+        System.out.println( "temporary graph: " + tmpGraph );
+        presenter = new GraphStreamPresenter();
         presenter.displayGraph( tmpGraph );
-        for ( Node node : coreNodes ) {
-            presenter.setNodeColor( node.getId(), Color.red );
-        }
         for ( Node node : treeNodes ) {
             presenter.setNodeColor( node.getId(), Color.green );
         }
-        for ( Node node : ringNodes ) {
-            presenter.setNodeColor( node.getId(), Color.blue );
-        }
+        presenter.setNodeColor( coreNode.getId(), Color.red );
+        presenter.setNodeColor( ringNode.getId(), Color.blue );
         System.out.println( "performing s-t cuts" );
         // build temporary graph
         // perform s-t minimal cut algorithm between them (on the tree)
