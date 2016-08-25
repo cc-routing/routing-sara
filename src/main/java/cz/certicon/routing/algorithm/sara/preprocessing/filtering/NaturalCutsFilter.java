@@ -110,9 +110,11 @@ public class NaturalCutsFilter implements Filter {
 //        }
         // TODO must handle properly empty cutEdges
         // split graph into regions bounded by the cut edges
+        System.out.println( "splitting graph" );
         SplitGraphMessenger splitGraphResult = splitGraph( graph, cutEdges );
         System.out.println( "graph splitted" );
         // build new filtered graph
+        System.out.println( "building filtered graph" );
         FilteredGraph filteredGraph = buildFilteredGraph( splitGraphResult.getFragmentNeighbors(), splitGraphResult.getFragmentSizeMap() );
         System.out.println( "graph built" );
 
@@ -326,7 +328,7 @@ public class NaturalCutsFilter implements Filter {
                 Node t = graph.getOtherNode( e, treeNode );
                 if ( nodeMap.containsKey( t.getId() ) ) {
                     Node newTargetNode = nodeMap.get( t.getId() );
-                    Edge newEdge = new Edge( e.getId(), false, newNode, newTargetNode, Distance.newInstance( EDGE_INIT_SIZE ) );
+                    Edge newEdge = new ContractEdge( e.getId(), false, newNode, newTargetNode, Distance.newInstance( EDGE_INIT_SIZE ), Arrays.asList( e ) );
                     edgeMap.put( newEdge.getId(), newEdge );
                     newNode.addEdge( newEdge );
                     newTargetNode.addEdge( newEdge );
@@ -481,12 +483,14 @@ public class NaturalCutsFilter implements Filter {
         for ( Edge cutEdge : cut.getCutEdges() ) {
             presenter.setEdgeColor( cutEdge.getId(), Color.red );
         }
-        System.out.println( "Press enter to continue..." );
-        Scanner sc = new Scanner( System.in );
-        while ( sc.nextByte() != 10 ) {
-            System.out.println( "Press enter..." );
-        }
         System.out.println( "done" );
+
+        // map minimal cut back to original edges
+        Set<Edge> cutEdges = new HashSet<>();
+        for ( Edge cutEdge : cut.getCutEdges() ) {
+            ContractEdge e = (ContractEdge) cutEdge;
+            cutEdges.addAll( e.getEdges() );
+        }
 //        Set<Edge> cutEdges = new HashSet<>();
 //        for ( Node node : coreNodes ) {
 //            Iterator<Edge> edges = node.getEdges();
@@ -498,7 +502,7 @@ public class NaturalCutsFilter implements Filter {
 //                }
 //            }
 //        }
-        return cut.getCutEdges();
+        return cutEdges;
     }
 
     private SplitGraphMessenger splitGraph( Graph graph, ElementContainer<Edge> cutEdges ) {
@@ -615,6 +619,10 @@ public class NaturalCutsFilter implements Filter {
             List<Edge> newEdges = new ArrayList<>( this.edges );
             newEdges.addAll( edge.edges );
             return new ContractEdge( id, isOneway(), getSource(), getTarget(), getLength().add( edge.getLength() ), newEdges );
+        }
+
+        public List<Edge> getEdges() {
+            return edges;
         }
 
     }
