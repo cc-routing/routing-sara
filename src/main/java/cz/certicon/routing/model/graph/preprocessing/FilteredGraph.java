@@ -13,6 +13,8 @@ import cz.certicon.routing.model.values.Coordinate;
 import cz.certicon.routing.model.values.Distance;
 import gnu.trove.map.TObjectIntMap;
 import java.util.Iterator;
+import java.util.Map;
+import java.util.Set;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.Value;
@@ -26,7 +28,9 @@ public class FilteredGraph implements Graph {
 
     UndirectedGraph graph;
     @Getter( AccessLevel.NONE )
-    TObjectIntMap<Node> nodeSize;
+    Map<Node, Set<Node>> nodeMap;
+    @Getter( AccessLevel.NONE )
+    Map<Edge, Set<Edge>> edgeMap;
 
     @Override
     public int getNodesCount() {
@@ -84,7 +88,19 @@ public class FilteredGraph implements Graph {
     }
 
     public int getNodeSize( Node node ) {
-        return nodeSize.get( node );
+        return nodeMap.get( node ).size();
+    }
+
+    public Set<Node> getOrigNodes( Node node ) {
+        return nodeMap.get( node );
+    }
+
+    public int getEdgeSize( Edge edge ) {
+        return edgeMap.get( edge ).size();
+    }
+
+    public Set<Edge> getOrigEdges( Edge edge ) {
+        return edgeMap.get( edge );
     }
 
     @Override

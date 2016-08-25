@@ -17,6 +17,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Scanner;
 import org.junit.After;
 import org.junit.AfterClass;
 import org.junit.Before;
@@ -29,8 +30,8 @@ import static org.junit.Assert.*;
  * @author Michael Blaha {@literal <michael.blaha@certicon.cz>}
  */
 public class NaturalCutsFilterTest {
-    
-   private final UndirectedGraph graph;
+
+    private final UndirectedGraph graph;
     private final Map<Long, Node> nodeMap;
     private final Map<Long, Edge> edgeMap;
     private final Map<TurnTable, TurnTable> turnTables;
@@ -39,21 +40,21 @@ public class NaturalCutsFilterTest {
         this.nodeMap = new HashMap<>();
         this.edgeMap = new HashMap<>();
         this.turnTables = new HashMap<>();
-        graph = GraphGeneratorUtils.generateGridGraph( nodeMap, edgeMap, turnTables, 5, 5);
+        graph = GraphGeneratorUtils.generateGridGraph( nodeMap, edgeMap, turnTables, 10, 10 );
     }
-    
+
     @BeforeClass
     public static void setUpClass() {
     }
-    
+
     @AfterClass
     public static void tearDownClass() {
     }
-    
+
     @Before
     public void setUp() {
     }
-    
+
     @After
     public void tearDown() {
     }
@@ -64,16 +65,16 @@ public class NaturalCutsFilterTest {
     @Test
     public void testFilter() {
         System.out.println( "filter" );
-        NaturalCutsFilter instance = new NaturalCutsFilter(0.5, 2, 8);
+        NaturalCutsFilter instance = new NaturalCutsFilter( 1, 4, 40 );
         FilteredGraph expResult = null;
         FilteredGraph result = instance.filter( graph );
-        System.out.println( result );
-        assertEquals( expResult, result );
-        // TODO review the generated test code and remove the default call to fail.
-        fail( "The test case is a prototype." );
+        System.out.println( "Comparison: orig{nodes=" + graph.getNodesCount() + ",edges=" + graph.getEdgeCount() + "}, filtered{nodes=" + result.getNodesCount() + ",edges=" + result.getEdgeCount() + "}" );
+
+        System.out.println( "Press enter to continue..." );
+        new Scanner( System.in ).nextLine();
     }
-    
-    private String toString(FilteredGraph graph){
+
+    private String toString( FilteredGraph graph ) {
         StringBuilder sb = new StringBuilder();
         return graph.toString();
     }

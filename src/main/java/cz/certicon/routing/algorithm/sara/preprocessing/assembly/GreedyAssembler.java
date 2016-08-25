@@ -9,15 +9,14 @@ import cz.certicon.routing.model.graph.Graph;
 import cz.certicon.routing.model.graph.preprocessing.FilteredGraph;
 
 /**
- * Builds partitions using time-consuming techniques on reduced graph. Uses
- * greedy algorithm, local search heuristics, evolutionary algorithm and
- * combinations.
  *
  * @author Michael Blaha {@literal <michael.blaha@certicon.cz>}
  */
-public interface Assembler {
+public class GreedyAssembler implements Assembler {
 
-    // return more
-    // - node info
-    Graph assemble( FilteredGraph graph );
+    @Override
+    public Graph assemble( FilteredGraph graph ) {
+        throw new UnsupportedOperationException( "Not supported yet." ); //To change body of generated methods, choose Tools | Templates.
+    }
+
 }

@@ -112,7 +112,8 @@ public class GraphStreamPresenter implements GraphPresenter {
     }
 
     public void removeEdge( long id ) {
-        System.out.println( "removed: " + displayGraph.removeEdge( id + "" ) );
+        Edge removeEdge = displayGraph.removeEdge( id + "" );
+//        System.out.println( "removed: " +removeEdge );
     }
 
 //    private Color nextColor() {
