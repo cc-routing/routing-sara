@@ -52,6 +52,29 @@ import lombok.Value;
 import lombok.experimental.Wither;
 
 /**
+ * Implementation of the {@link Filter} interface. Uses Natural cuts technique
+ * for reducing the graph size and dividing it into separate components
+ *
+ * C = {} //set of cut edges ***************************************************
+ * Repeat O times **************************************************************
+ * *** Q = {x; x e V} //set of vertices to go through **************************
+ * *** Sort Q randomly *********************************************************
+ * *** While Q is not empty ****************************************************
+ * *** v = Q.first *************************************************************
+ * *** T = {x; x e V, x forms BFS tree from root v until s(T) &lt; alpha*U} ****
+ * *** R = {x; x V\T, y e T, {x,y} e E} // ring ********************************
+ * *** J = {x; x T, x was added to T before s(T) &gt;= U/f} // core ***********
+ * *** Temporarily contract J to single vertex s *******************************
+ * *** Temporarily contract R to single vertex t *******************************
+ * *** Find min s-t cut MC //set of cut edges dividing s from t ****************
+ * *** C.uniqueAdd(MC) *********************************************************
+ * *** Remove all vertices J from Q ********************************************
+ * End While *******************************************************************
+ * End Repeat ******************************************************************
+ *
+ * Contract each component from GC=(V,E\C) on the origin graph G ***************
+ * Return G ********************************************************************
+ *
  *
  * @author Michael Blaha {@literal <michael.blaha@certicon.cz>}
  */
