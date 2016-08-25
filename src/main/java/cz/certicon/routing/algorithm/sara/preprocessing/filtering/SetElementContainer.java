@@ -14,7 +14,7 @@ import java.util.Set;
  *
  * @author Michael Blaha {@literal <michael.blaha@certicon.cz>}
  */
-class SetElementContainer<E> implements ElementContainer<E> {
+public class SetElementContainer<E> implements ElementContainer<E> {
 
     private final Set<E> elements = new HashSet<>();
 
@@ -68,5 +68,10 @@ class SetElementContainer<E> implements ElementContainer<E> {
     @Override
     public boolean isEmpty() {
         return elements.isEmpty();
+    }
+
+    @Override
+    public int size() {
+        return elements.size();
     }
 }

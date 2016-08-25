@@ -14,7 +14,9 @@ import cz.certicon.routing.model.graph.Node;
 import cz.certicon.routing.model.graph.UndirectedGraph;
 import cz.certicon.routing.model.graph.preprocessing.FilteredGraph;
 import cz.certicon.routing.model.values.Distance;
+import cz.certicon.routing.utils.ToStringUtils;
 import cz.certicon.routing.utils.collections.CollectionUtils;
+import cz.certicon.routing.view.GraphStreamPresenter;
 import gnu.trove.TIntCollection;
 import gnu.trove.function.TIntFunction;
 import gnu.trove.iterator.TIntIterator;
@@ -29,6 +31,7 @@ import gnu.trove.map.hash.TObjectIntHashMap;
 import gnu.trove.procedure.TIntProcedure;
 import gnu.trove.set.TIntSet;
 import gnu.trove.set.hash.TIntHashSet;
+import java.awt.Color;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -40,8 +43,11 @@ import java.util.List;
 import java.util.Map;
 import java.util.Queue;
 import java.util.Random;
+import java.util.Scanner;
 import java.util.Set;
 import java.util.Stack;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import lombok.Value;
 import lombok.experimental.Wither;
 
@@ -79,15 +85,39 @@ public class NaturalCutsFilter implements Filter {
 
     @Override
     public FilteredGraph filter( Graph graph ) {
+        GraphStreamPresenter presenter = new GraphStreamPresenter();
+        presenter.displayGraph( graph );
         // NOTE: contraction
         // - foreach node
         // -- remove node
         // -- preserve paths (create edges between all the neighbors)
+        System.out.println( "started filtering" );
         ElementContainer<Edge> cutEdges = getCutEdges( graph );
+        System.out.println( "cut edges obtained: " + cutEdges.size() );
+        presenter = new GraphStreamPresenter();
+        presenter.setGraph( graph );
+        for ( Edge cutEdge : cutEdges ) {
+//            presenter.setEdgeColor( cutEdge.getId(), Color.red );
+            presenter.removeEdge( cutEdge.getId() );
+        }
+        presenter.display();
+//        if ( true == true ) {
+//            try {
+//                Thread.sleep( 1000000 );
+//            } catch ( InterruptedException ex ) {
+//                Logger.getLogger( NaturalCutsFilter.class.getName() ).log( Level.SEVERE, null, ex );
+//            }
+//        }
+        // TODO must handle properly empty cutEdges
         // split graph into regions bounded by the cut edges
         SplitGraphMessenger splitGraphResult = splitGraph( graph, cutEdges );
+        System.out.println( "graph splitted" );
         // build new filtered graph
         FilteredGraph filteredGraph = buildFilteredGraph( splitGraphResult.getFragmentNeighbors(), splitGraphResult.getFragmentSizeMap() );
+        System.out.println( "graph built" );
+
+//        presenter = new GraphStreamPresenter();
+//        presenter.displayGraph( graph );
         // nodeSizes // splitGraph.fragmentSizeMap
         return filteredGraph;
     }
@@ -112,13 +142,16 @@ public class NaturalCutsFilter implements Filter {
         }
         Random random = new Random();
         // until there are no nodes left
+        System.out.println( "starting cycle" );
         while ( !randomNodes.isEmpty() ) {
             // pick a node (=center) at random (a node that does not belong to any core)
             Node center = randomNodes.pollRandom( random );
+            System.out.println( "picking: " + center.getId() );
             // create tree T via BFS from center at maximal size of cellRatio * maxCellSize, where size is a sum of tree's nodes' sizes
             nodeQueue.add( center );
             // NOTE: what is node size? 1 at the beginning, then sum of contracted nodes inside this node
-            int sum = nodeSizeContainer.getSize( center );
+            int sum = 0;
+            System.out.println( "creating tree: core size = " + ( cellRatio * maxCellSize / coreRatioInverse ) + ", tree size = " + ( cellRatio * maxCellSize ) );
             while ( !nodeQueue.isEmpty() ) {
                 Node node = nodeQueue.poll();
                 int size = nodeSizeContainer.getSize( node );
@@ -145,8 +178,10 @@ public class NaturalCutsFilter implements Filter {
                     }
                 }
             }
+            System.out.println( "adding minimal cut" );
             // mark edges from minimal cut as "cut edges"
             cutEdges.addAll( minimalCut( graph, treeNodes, coreNodes, ringNodes ) );
+            System.out.println( "minimal cut done" );
             // remove all core nodes from the queue
             for ( Node coreNode : coreNodes ) {
                 randomNodes.remove( coreNode );
@@ -162,6 +197,7 @@ public class NaturalCutsFilter implements Filter {
          * Pseudocontract - selects only border nodes and creates evaluated edges, ignores inner nodes
          * TODO Correct - should contract the usual way and save information about inner edges per each shortcut, also should be able to unpack this shortcut and find the actual cut edge
          */
+        System.out.println( "contracting nodes: " + ToStringUtils.toString( nodeGroup ) );
         Map<Node, List<Edge>> targets = new HashMap<>();
         for ( Node singleNode : nodeGroup ) {
             Iterator<Edge> edges = singleNode.getEdges();
@@ -243,9 +279,24 @@ public class NaturalCutsFilter implements Filter {
             }
         }
          */
+        System.out.println( "minimal cut" );
         Map<Node, List<Edge>> coreMap = contractNode( graph, coreNodes, coreNodes.any() );
+        System.out.println( "core map: " );
+        testPrintContractMap( coreMap );
         // contract ring into a single node t
         Map<Node, List<Edge>> ringMap = contractNode( graph, ringNodes, ringNodes.any() );
+        // remove nodes from outside the area (egdes going outside the ring, not inside)
+        Set<Map.Entry<Node, List<Edge>>> entrySet = ringMap.entrySet();
+        Iterator<Map.Entry<Node, List<Edge>>> entrySetIterator = entrySet.iterator();
+        while ( entrySetIterator.hasNext() ) {
+            Map.Entry<Node, List<Edge>> entry = entrySetIterator.next();
+            if ( !coreNodes.contains( entry.getKey() ) && !treeNodes.contains( entry.getKey() ) ) {
+                entrySetIterator.remove();
+            }
+        }
+        System.out.println( "ring map: " );
+        testPrintContractMap( ringMap );
+        System.out.println( "nodes contracted" );
         // build a new graph (temporary)
         UndirectedGraph.UndirectedGraphBuilder builder = UndirectedGraph.builder();
         Map<Node, Node> visitedNodes = new HashMap<>();
@@ -253,7 +304,11 @@ public class NaturalCutsFilter implements Filter {
         for ( Node node : coreMap.keySet() ) {
             nodeQueue.add( node );
         }
+        for ( Node node : ringMap.keySet() ) {
+            nodeQueue.add( node );
+        }
         // add all the nodes into builder
+        System.out.println( "adding nodes to builder" );
         while ( !nodeQueue.isEmpty() ) {
             Node node = nodeQueue.poll();
             Iterator<Edge> edges = node.getEdges();
@@ -275,6 +330,7 @@ public class NaturalCutsFilter implements Filter {
                 }
             }
         }
+        System.out.println( "searching for ids" );
         // find new ids
         long maxNodeId = 0;
         Iterator<Node> graphNodes = graph.getNodes();
@@ -286,8 +342,10 @@ public class NaturalCutsFilter implements Filter {
         while ( graphEdges.hasNext() ) {
             maxEdgeId = Math.max( maxEdgeId, graphEdges.next().getId() );
         }
+        System.out.println( "adding connections to groups" );
         // add connection to core node
         Node coreNode = new Node( ++maxNodeId );
+        builder.node( coreNode );
         for ( Map.Entry<Node, List<Edge>> entry : coreMap.entrySet() ) {
             Node actualTarget = visitedNodes.get( entry.getKey() );
             Edge edge = new ContractEdge( ++maxEdgeId, false, coreNode, actualTarget, Distance.newInstance( entry.getValue().size() ), entry.getValue() );
@@ -297,6 +355,7 @@ public class NaturalCutsFilter implements Filter {
         }
         // add connection to ring node
         Node ringNode = new Node( ++maxNodeId );
+        builder.node( ringNode );
         for ( Map.Entry<Node, List<Edge>> entry : ringMap.entrySet() ) {
             Node actualTarget = visitedNodes.get( entry.getKey() );
             Edge edge = new ContractEdge( ++maxEdgeId, false, ringNode, actualTarget, Distance.newInstance( entry.getValue().size() ), entry.getValue() );
@@ -304,9 +363,34 @@ public class NaturalCutsFilter implements Filter {
             ringNode.addEdge( edge );
             builder.edge( edge );
         }
+        Graph tmpGraph = builder.build();
+        GraphStreamPresenter presenter = new GraphStreamPresenter();
+        presenter.displayGraph( tmpGraph );
+        for ( Node node : coreNodes ) {
+            presenter.setNodeColor( node.getId(), Color.red );
+        }
+        for ( Node node : treeNodes ) {
+            presenter.setNodeColor( node.getId(), Color.green );
+        }
+        for ( Node node : ringNodes ) {
+            presenter.setNodeColor( node.getId(), Color.blue );
+        }
+        System.out.println( "performing s-t cuts" );
+        // build temporary graph
         // perform s-t minimal cut algorithm between them (on the tree)
         MinimalCutAlgorithm minimalCutAlgorithm = new FordFulkersonMinimalCut();
-        MinimalCut cut = minimalCutAlgorithm.compute( graph, coreNode, ringNode );
+        // TODO graph must contain source and target
+        MinimalCut cut = minimalCutAlgorithm.compute( tmpGraph, coreNode, ringNode );
+        System.out.println( "returning result: " + cut );
+        for ( Edge cutEdge : cut.getCutEdges() ) {
+            presenter.setEdgeColor( cutEdge.getId(), Color.red );
+        }
+        System.out.println( "Press enter to continue..." );
+        Scanner sc = new Scanner( System.in );
+        while ( sc.nextByte() != 10 ) {
+            System.out.println( "Press enter..." );
+        }
+        System.out.println( "done" );
 //        Set<Edge> cutEdges = new HashSet<>();
 //        for ( Node node : coreNodes ) {
 //            Iterator<Edge> edges = node.getEdges();
@@ -437,5 +521,22 @@ public class NaturalCutsFilter implements Filter {
             return new ContractEdge( id, isOneway(), getSource(), getTarget(), getLength().add( edge.getLength() ), newEdges );
         }
 
+    }
+
+    private static void testPrintContractMap( Map<Node, List<Edge>> contractedMap ) {
+        System.out.println( "CONTRACTED MAP" );
+        for ( Map.Entry<Node, List<Edge>> entry : contractedMap.entrySet() ) {
+            System.out.println( entry.getKey().getId() + " => " + toStringEdges( entry.getValue() ) );
+        }
+    }
+
+    private static String toStringEdges( List<Edge> edges ) {
+        StringBuilder sb = new StringBuilder();
+        sb.append( "[" );
+        for ( Edge edge : edges ) {
+            sb.append( edge.getId() ).append( "," );
+        }
+        sb.replace( sb.length() - 1, sb.length(), "]" );
+        return sb.toString();
     }
 }

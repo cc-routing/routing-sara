@@ -42,6 +42,9 @@ public class FordFulkersonMinimalCut implements MinimalCutAlgorithm {
     public MinimalCut compute( Graph graph, Node sourceNode, Node targetNode ) {
         // TODO optimize, change to adjacency lists (currently adjacency table - n^2, wasteful for thin graphs
         // map graph to arrays
+        System.out.println( "MINIMAL CUT: mapping graph to arrays" );
+        System.out.println( "source = " + sourceNode );
+        System.out.println( "target = " + targetNode );
         int nodeCount = graph.getNodesCount();
         int[] predecessors = new int[nodeCount];
         int[] pathFlows = new int[nodeCount];
@@ -73,11 +76,14 @@ public class FordFulkersonMinimalCut implements MinimalCutAlgorithm {
         int maxFlow = 0;
         int source = nodeToIndexMap.get( sourceNode );
         int target = nodeToIndexMap.get( targetNode );
+        System.out.println( "While improvement path exists (" + source + " - > " + target + ")" );
         while ( findImprovementPath( predecessors, pathFlows, limits, flows, source, target ) ) {
             maxFlow += pathFlows[target];
+            System.out.println( "Increase flow" );
             increaseFlow( predecessors, pathFlows, limits, flows, source, target );
         }
 //        testPrintTable( flows );
+        System.out.println( "Searching for reachable nodes" );
         // search for visited - find reachable nodes from source (consider only edges with different values from the original graph)
         boolean[] visited = new boolean[nodeCount];
         Stack<Integer> stack = new Stack<>();
@@ -115,6 +121,9 @@ public class FordFulkersonMinimalCut implements MinimalCutAlgorithm {
     }
 
     private boolean findImprovementPath( int[] predecessors, int[] pathFlows, int[][] limits, int[][] flows, int source, int target ) {
+        if(source == target){
+            return false;
+        }
         int nodeCount = predecessors.length;
         int node = source;
         Queue<Integer> queue = new LinkedList<>();
@@ -124,9 +133,11 @@ public class FordFulkersonMinimalCut implements MinimalCutAlgorithm {
         queue.add( node );
         // while queue is not empty and the target has not been reached
 //        System.out.println( "cycle: " + !queue.isEmpty() + " " + ( node != target ) );
+        System.out.println( "path: " );
         while ( !queue.isEmpty() && node != target ) {
             // dequeue node from queue and close it
             node = queue.poll();
+            System.out.println( node + "," );
             states[node] = CLOSED;
             for ( int i = 0; i < nodeCount; i++ ) {
                 // for all outgoing fresh nodes, which have yet to fill the flow limit

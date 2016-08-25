@@ -12,7 +12,7 @@ import java.util.Iterator;
  *
  * @author Michael Blaha {@literal <michael.blaha@certicon.cz>}
  */
-interface ElementContainer<E> extends Iterable<E> {
+public interface ElementContainer<E> extends Iterable<E> {
 
     void add( E element );
 
@@ -29,4 +29,6 @@ interface ElementContainer<E> extends Iterable<E> {
     boolean isEmpty();
 
     void clear();
+
+    public int size();
 }
