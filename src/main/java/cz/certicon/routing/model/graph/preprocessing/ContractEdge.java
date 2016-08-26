@@ -20,9 +20,9 @@ public class ContractEdge extends Edge {
 
     private final Collection<Edge> edges;
 
-    public ContractEdge( long id, boolean oneway, Node source, Node target, Distance length, Set<Edge> edges ) {
+    public ContractEdge( long id, boolean oneway, Node source, Node target, Distance length, Collection<Edge> edges ) {
         super( id, oneway, source, target, length );
-        this.edges = edges;
+        this.edges = new HashSet<>( edges );
     }
 
     public ContractEdge mergeWith( ContractEdge edge, Node newSource, Node newTarget, long id ) {

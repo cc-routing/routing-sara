@@ -74,17 +74,9 @@ public class NaturalCutsFilterTest {
         FilteredGraph expResult = null;
         FilteredGraph result = instance.filter( graph );
         System.out.println( "Comparison: orig{nodes=" + graph.getNodesCount() + ",edges=" + graph.getEdgeCount() + "}, filtered{nodes=" + result.getNodesCount() + ",edges=" + result.getEdgeCount() + "}" );
-
-        GreedyAssembler assembler = new GreedyAssembler( 0.5, 0.5, cellSize );
-        Graph assembled = assembler.assemble( result );
-        
-        GraphStreamPresenter presenter = new GraphStreamPresenter();
-        presenter.setGraph( assembled );
-        presenter.display();
-        System.out.println( "Comparison: orig{nodes=" + graph.getNodesCount() + ",edges=" + graph.getEdgeCount() + "}, filtered{nodes=" + result.getNodesCount() + ",edges=" + result.getEdgeCount() + "}" );
-
-        System.out.println( "Press enter to continue..." );
-        new Scanner( System.in ).nextLine();
+//
+//        System.out.println( "Press enter to continue..." );
+//        new Scanner( System.in ).nextLine();
     }
 
     private String toString( FilteredGraph graph ) {

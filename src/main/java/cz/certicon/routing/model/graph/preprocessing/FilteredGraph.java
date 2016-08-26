@@ -11,11 +11,8 @@ import cz.certicon.routing.model.graph.Node;
 import cz.certicon.routing.model.graph.UndirectedGraph;
 import cz.certicon.routing.model.values.Coordinate;
 import cz.certicon.routing.model.values.Distance;
-import gnu.trove.map.TObjectIntMap;
 import java.util.Collection;
 import java.util.Iterator;
-import java.util.Map;
-import java.util.Set;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.Value;
@@ -27,6 +24,7 @@ import lombok.Value;
 @Value
 public class FilteredGraph implements Graph {
 
+    @Getter(AccessLevel.NONE)
     UndirectedGraph graph;
 
     /**

@@ -86,22 +86,22 @@ public class ContractNodeTest {
         ContractNode.MaxIdContainer nodeMaxIdContainer = new ContractNode.MaxIdContainer( 9 );
         ContractNode.MaxIdContainer edgeMaxIdContainer = new ContractNode.MaxIdContainer( 9 );
 
-        System.out.println( "nodes:" );
-        System.out.println( nodeA );
-        System.out.println( nodeB );
-        for ( ContractNode neighbor : neighbors ) {
-            System.out.println( neighbor );
-        }
-        System.out.println( "edges" );
-        System.out.println( connectEdge );
-        for ( ContractEdge edge : edges ) {
-            System.out.println( edge );
-        }
+//        System.out.println( "nodes:" );
+//        System.out.println( nodeA );
+//        System.out.println( nodeB );
+//        for ( ContractNode neighbor : neighbors ) {
+//            System.out.println( neighbor );
+//        }
+//        System.out.println( "edges" );
+//        System.out.println( connectEdge );
+//        for ( ContractEdge edge : edges ) {
+//            System.out.println( edge );
+//        }
 
-        String expResult = "ContractNode{edge={edge[1]->node#2,edge[1]->node#3,edge[1]->node#4,edge[1]->node#5,edge[1]->node#6}}"; // edge[1]->4 because it is a set and the sets are all the same
+        String expResult = "ContractNode{edges={edge[1]->node#2,edge[1]->node#3,edge[1]->node#4,edge[1]->node#5,edge[1]->node#6}}"; // edge[1]->4 because it is a set and the sets are all the same
         ContractNode result = nodeA.mergeWith( nodeB, nodeMaxIdContainer, edgeMaxIdContainer );
-        System.out.println( result.toString() );
-        System.out.println( toString( result ) );
+//        System.out.println( result.toString() );
+//        System.out.println( toString( result ) );
         assertEquals( expResult, toString( result ) );
     }
 
@@ -111,12 +111,12 @@ public class ContractNodeTest {
     @Test
     public void testGetNodes() {
         System.out.println( "getNodes" );
-        ContractNode instance = null;
-        Collection<Node> expResult = null;
+        Set<Node> origNodes = new HashSet<>( Arrays.asList( new Node( -1 ), new Node( -2 ), new Node( -3 ) ) );
+        ContractNode instance = new ContractNode( 0, origNodes );
+        Collection<Node> expResult = new HashSet<>(origNodes);
+        origNodes.clear();
         Collection<Node> result = instance.getNodes();
         assertEquals( expResult, result );
-        // TODO review the generated test code and remove the default call to fail.
-        fail( "The test case is a prototype." );
     }
 
     private String toString( final Node node ) {

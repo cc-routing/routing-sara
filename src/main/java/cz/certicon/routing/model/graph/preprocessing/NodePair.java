@@ -5,8 +5,8 @@
  */
 package cz.certicon.routing.model.graph.preprocessing;
 
-import cz.certicon.routing.model.graph.preprocessing.ContractNode;
 import java.util.Objects;
+import lombok.NonNull;
 import lombok.ToString;
 
 /**
@@ -20,7 +20,7 @@ public class NodePair {
     public final ContractNode nodeB;
     public final ContractEdge connectingEdge;
 
-    public NodePair( ContractNode nodeA, ContractNode nodeB, ContractEdge connectingEdge ) {
+    public NodePair( @NonNull ContractNode nodeA, @NonNull ContractNode nodeB, @NonNull ContractEdge connectingEdge ) {
         this.nodeA = nodeA;
         this.nodeB = nodeB;
         this.connectingEdge = connectingEdge;
