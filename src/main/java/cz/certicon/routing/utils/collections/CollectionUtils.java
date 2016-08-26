@@ -6,8 +6,11 @@
 package cz.certicon.routing.utils.collections;
 
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 /**
  * Utility class for frequent operations with collections.
@@ -38,6 +41,27 @@ public class CollectionUtils {
     }
 
     /**
+     * Returns set from a map referenced by the given key. If the set is not
+     * present under the given key, a new list is created, inserted into the map
+     * and returned. In other words, it ensures retrieval of a set for the given
+     * key.
+     *
+     * @param <Key> key type of the map
+     * @param <Value> value type of the set (which acts as a value in the map)
+     * @param map key-value map, where value is of type {@link Set}
+     * @param node key
+     * @return non-null {@link Set} for the given key
+     */
+    public static <Key, Value> Set<Value> getSet( Map<Key, Set<Value>> map, Key node ) {
+        Set<Value> set = map.get( node );
+        if ( set == null ) {
+            set = new HashSet<>();
+            map.put( node, set );
+        }
+        return set;
+    }
+
+    /**
      * Converts {@link List} of Integers into an int array
      *
      * @param list list to be converted
@@ -49,5 +73,27 @@ public class CollectionUtils {
             array[i] = list.get( i );
         }
         return array;
+    }
+
+    /**
+     * Converts parameters into a set
+     *
+     * @param <T> set element type
+     * @param values elements
+     * @return set containing the given elements
+     */
+    public static <T> Set<T> asSet( T... values ) {
+        return new HashSet<>( Arrays.asList( values ) );
+    }
+
+    /**
+     * Converts parameters into a list
+     *
+     * @param <T> list element type
+     * @param values elements
+     * @return list containing the given elements
+     */
+    public static <T> List<T> asList( T... values ) {
+        return Arrays.asList( values );
     }
 }

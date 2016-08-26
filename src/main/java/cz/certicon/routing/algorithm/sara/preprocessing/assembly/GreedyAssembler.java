@@ -27,7 +27,7 @@ public class GreedyAssembler implements Assembler {
 
     @Override
     public Graph assemble( FilteredGraph graph ) {
-        Map<Node, Map<Node, Edge>> nodeEdgeMap = new HashMap<>();
+        Map<NodePair, Edge> nodeEdgeMap = new HashMap<>();
         Map<Node, Set<NodePair>> nodePairMap = new HashMap<>();
         // P = {{x,y}; x,y  V, {x,y} e E, s(x)+s(y) < U} // all pairs of adjacent vertices with combined size lower than U  
         // Sort P according to (minimizing): score({x,y}) = r * (w(x,y)/sqrt(s(x))+w(x,y)/sqrt(s(y))), where r is with probability a picked randomly from [0,b] and with probability 1-a picked randomly from [b,1]
@@ -38,19 +38,17 @@ public class GreedyAssembler implements Assembler {
         while ( nodes.hasNext() ) {
             Node node = nodes.next();
             visited.add( node );
-            Map<Node, Edge> nodeToEdgeMap = new HashMap<>();
-            nodeEdgeMap.put( node, nodeToEdgeMap );
             Set<NodePair> nodePairSet = new HashSet<>();
             nodePairMap.put( node, nodePairSet );
             Iterator<Edge> edges = graph.getEdges( node );
             while ( edges.hasNext() ) {
                 Edge edge = edges.next();
                 Node target = graph.getOtherNode( edge, node );
-                nodeToEdgeMap.put( target, edge );
                 if ( !visited.contains( target ) ) {
                     NodePair nodePair = new NodePair( node, target );
+                    nodeEdgeMap.put( nodePair, edge );
                     nodePairSet.add( nodePair );
-                    queue.add( nodePair, score( graph, node, target, r, nodeEdgeMap ) );
+                    queue.add( nodePair, score( graph, nodePair, nodeEdgeMap, r ) );
                 }
             }
         }
@@ -59,8 +57,8 @@ public class GreedyAssembler implements Assembler {
             //    pair = P.pop
             NodePair pair = queue.extractMin();
             //    Contract pair
+            
             //    Update score value (with the new r for each iteration) for the adjacent edges (pairs) of the contracted pair (edge) and if the new size s is higher or equal to U, remove pair from P
-
         }
         //End While
         //Return partitions, i.e. in which partition each vertex belongs
@@ -71,11 +69,11 @@ public class GreedyAssembler implements Assembler {
         return 1.0;
     }
 
-    private double score( FilteredGraph graph, Node source, Node target, double ratio, Map<Node, Map<Node, Edge>> nodeEdgeMap ) {
-        Edge edge = nodeEdgeMap.get( source ).get( target );
+    private double score( FilteredGraph graph, NodePair nodePair, Map<NodePair, Edge> nodeEdgeMap, double ratio ) {
+        Edge edge = nodeEdgeMap.get( nodePair );
         double edgeWeight = graph.getEdgeSize( edge );
-        double sourceWeight = graph.getNodeSize( source );
-        double targetWeight = graph.getNodeSize( target );
+        double sourceWeight = graph.getNodeSize( nodePair.nodeA );
+        double targetWeight = graph.getNodeSize( nodePair.nodeB );
         return ratio * ( ( edgeWeight / Math.sqrt( sourceWeight ) ) + ( edgeWeight / Math.sqrt( targetWeight ) ) );
     }
 
