@@ -14,6 +14,7 @@ import java.util.List;
 import java.util.Map;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
+import lombok.NonNull;
 import lombok.experimental.NonFinal;
 import lombok.experimental.Wither;
 
@@ -42,7 +43,7 @@ public class Node {
         this.edges = new ArrayList<>();
     }
 
-    public Node addEdge( Edge edge ) {
+    public Node addEdge( @NonNull Edge edge ) {
         checkLock();
         if ( !edgePositionMap.containsKey( edge ) ) {
 //            System.out.println( "adding edge: " + edge.getId() + " to " + toString( edges ) );
@@ -53,7 +54,17 @@ public class Node {
         return this;
     }
 
-    public Node addEdge( Edge edge, int position ) {
+    public Node removeEdge( @NonNull Edge edge ) {
+        checkLock();
+        if ( !edgePositionMap.containsKey( edge ) ) {
+            throw new IllegalArgumentException( "Cennot remove edge (does not exist): " + edge );
+        }
+        edges.remove( (int) edgePositionMap.get( edge ) );
+        edgePositionMap.remove( edge );
+        return this;
+    }
+
+    public Node addEdge( @NonNull Edge edge, int position ) {
         checkLock();
         if ( !edgePositionMap.containsKey( edge ) ) {
 //            System.out.println( "adding edge: " + edge.getId() + ", [" + position + "] to " + toString( edges ) );

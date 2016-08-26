@@ -631,14 +631,14 @@ public class NaturalCutsFilter implements Filter {
     }
 
     private FilteredGraph buildFilteredGraph( List<Set<Node>> fragmentOrigNodes, List<Map<Integer, Set<Edge>>> origEdgesMapList ) {
-        Map<Node, Set<Node>> origNodes = new HashMap<>();
-        Map<Edge, Set<Edge>> origEdges = new HashMap<>();
+//        Map<Node, Set<Node>> origNodes = new HashMap<>();
+//        Map<Edge, Set<Edge>> origEdges = new HashMap<>();
         List<Node> nodes = new ArrayList<>();
         List<Edge> edges = new ArrayList<>();
         int nodeCounter = 0;
         for ( Set<Node> fragmentOrigNode : fragmentOrigNodes ) {
             Node node = new ContractNode( nodeCounter++, fragmentOrigNode );
-            origNodes.put( node, fragmentOrigNode );
+//            origNodes.put( node, fragmentOrigNode );
             nodes.add( node );
         }
         int fragmentCounter = 0;
@@ -656,16 +656,16 @@ public class NaturalCutsFilter implements Filter {
                     Edge edge = new ContractEdge( edgeCounter++, false, source, target, Distance.newInstance( entry.getValue().size() ), entry.getValue() );
                     source.addEdge( edge );
                     target.addEdge( edge );
-                    origEdges.put( edge, new HashSet<>( entry.getValue() ) );
+//                    origEdges.put( edge, new HashSet<>( entry.getValue() ) );
                     edges.add( edge );
                 }
             }
             fragmentCounter++;
         }
-        for ( Node node : nodes ) {
-            node.lock();
-        }
-        return new FilteredGraph( UndirectedGraph.builder().nodes( nodes ).edges( edges ).build(), origNodes, origEdges );
+//        for ( Node node : nodes ) {
+//            node.lock();
+//        }
+        return new FilteredGraph( UndirectedGraph.builder().nodes( nodes ).edges( edges ).build() );
 
 //        List<Node> nodes = new ArrayList<>();
 //        TObjectIntMap<Node> nodeSizeMap = new TObjectIntHashMap<>();

@@ -12,6 +12,7 @@ import cz.certicon.routing.model.graph.UndirectedGraph;
 import cz.certicon.routing.model.values.Coordinate;
 import cz.certicon.routing.model.values.Distance;
 import gnu.trove.map.TObjectIntMap;
+import java.util.Collection;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.Set;
@@ -27,10 +28,16 @@ import lombok.Value;
 public class FilteredGraph implements Graph {
 
     UndirectedGraph graph;
-    @Getter( AccessLevel.NONE )
-    Map<Node, Set<Node>> nodeMap;
-    @Getter( AccessLevel.NONE )
-    Map<Edge, Set<Edge>> edgeMap;
+
+    /**
+     * Constructor
+     *
+     * @param graph an instance of {@link UndirectedGraph}, MUST contain only
+     * instances of {@link ContractEdge}, resp. {@link ContractNode} and also nodes must NOT be locked.
+     */
+    public FilteredGraph( UndirectedGraph graph ) {
+        this.graph = graph;
+    }
 
     @Override
     public int getNodesCount() {
@@ -88,19 +95,19 @@ public class FilteredGraph implements Graph {
     }
 
     public int getNodeSize( Node node ) {
-        return nodeMap.get( node ).size();
+        return getOrigNodes( node ).size();
     }
 
-    public Set<Node> getOrigNodes( Node node ) {
-        return nodeMap.get( node );
+    public Collection<Node> getOrigNodes( Node node ) {
+        return ( (ContractNode) node ).getNodes();
     }
 
     public int getEdgeSize( Edge edge ) {
-        return edgeMap.get( edge ).size();
+        return getOrigEdges( edge ).size();
     }
 
-    public Set<Edge> getOrigEdges( Edge edge ) {
-        return edgeMap.get( edge );
+    public Collection<Edge> getOrigEdges( Edge edge ) {
+        return ( (ContractEdge) edge ).getEdges();
     }
 
     @Override

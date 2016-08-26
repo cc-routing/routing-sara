@@ -79,7 +79,7 @@ public class UndirectedGraph implements Graph {
 
     @Override
     public Node getOtherNode( Edge edge, Node node ) {
-        return edge.getTarget().equals( node ) ? edge.getSource() : edge.getTarget();
+        return edge.getOtherNode( node );
     }
 
     @Override

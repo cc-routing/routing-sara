@@ -39,6 +39,15 @@ public class Edge {
     @Wither
     Distance length;
 
+    public Node getOtherNode( Node node ) {
+        if ( node.equals( source ) ) {
+            return target;
+        } else if ( node.equals( target ) ) {
+            return source;
+        }
+        throw new IllegalArgumentException( "Edge does not contain given node: edge = " + this + ", node = " + node );
+    }
+
     @Override
     public String toString() {
         return "Edge{id=" + id + ", oneway=" + oneway + ", length=" + length + ", source=Node{id=" + source.getId() + "}, target=Node{id=" + target.getId() + "}}";

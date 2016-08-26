@@ -17,7 +17,7 @@ import java.util.Set;
  * @author Michael Blaha {@literal <michael.blaha@certicon.cz>}
  */
 public class ContractEdge extends Edge {
-    
+
     private final Collection<Edge> edges;
 
     public ContractEdge( long id, boolean oneway, Node source, Node target, Distance length, Set<Edge> edges ) {
@@ -25,14 +25,17 @@ public class ContractEdge extends Edge {
         this.edges = edges;
     }
 
-    public ContractEdge mergeWith( ContractEdge edge, long id ) {
+    public ContractEdge mergeWith( ContractEdge edge, Node newSource, Node newTarget, long id ) {
+//        if ( ( !getSource().equals( edge.getSource() ) || !getTarget().equals( edge.getTarget() ) ) && ( !getSource().equals( edge.getTarget() ) || !getTarget().equals( edge.getSource() ) ) ) {
+//            throw new IllegalArgumentException( "Cannot merge edges: this = " + this + ", other = " + edge );
+//        }
         Set<Edge> newEdges = new HashSet<>( this.edges );
         newEdges.addAll( edge.edges );
-        return new ContractEdge( id, isOneway(), getSource(), getTarget(), getLength().add( edge.getLength() ), newEdges );
+        return new ContractEdge( id, false, newSource, newTarget, getLength().add( edge.getLength() ), newEdges );
     }
 
     public Collection<Edge> getEdges() {
         return edges;
     }
-    
+
 }
