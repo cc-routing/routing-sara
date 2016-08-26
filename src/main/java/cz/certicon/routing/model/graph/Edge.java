@@ -5,7 +5,9 @@
  */
 package cz.certicon.routing.model.graph;
 
+import cz.certicon.routing.model.Identifiable;
 import cz.certicon.routing.model.values.Distance;
+import java.util.Comparator;
 import lombok.EqualsAndHashCode;
 import lombok.NonNull;
 import lombok.Value;
@@ -19,7 +21,7 @@ import lombok.experimental.Wither;
 @Value
 @NonFinal
 @EqualsAndHashCode( exclude = { "source", "target" } )
-public class Edge {
+public class Edge implements Identifiable {
 
     long id;
     boolean oneway;
@@ -45,11 +47,20 @@ public class Edge {
         } else if ( node.equals( target ) ) {
             return source;
         }
-        throw new IllegalArgumentException( "Edge does not contain given node: edge = " + this + ", node = " + node );
+        throw new IllegalArgumentException( "Edge does not contain given node: edge = " + this + ", node = " + node.getId() );
     }
 
     @Override
     public String toString() {
         return "Edge{id=" + id + ", oneway=" + oneway + ", length=" + length + ", source=Node{id=" + source.getId() + "}, target=Node{id=" + target.getId() + "}}";
+    }
+
+    public static Comparator<Edge> getIdComparator() {
+        return new Comparator<Edge>() {
+            @Override
+            public int compare( Edge o1, Edge o2 ) {
+                return Long.compare( o1.getId(), o2.getId() );
+            }
+        };
     }
 }

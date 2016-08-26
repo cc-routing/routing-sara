@@ -5,9 +5,11 @@
  */
 package cz.certicon.routing.model.graph;
 
+import cz.certicon.routing.model.Identifiable;
 import cz.certicon.routing.model.values.Coordinate;
 import cz.certicon.routing.utils.collections.ImmutableIterator;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
@@ -16,14 +18,13 @@ import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.NonNull;
 import lombok.experimental.NonFinal;
-import lombok.experimental.Wither;
 
 /**
  *
  * @author Michael Blaha {@literal <michael.blaha@certicon.cz>}
  */
 @EqualsAndHashCode( exclude = { "turnTable", "locked", "edges", "edgePositionMap" } )
-public class Node {
+public class Node implements Identifiable {
 
     @Getter
     private final long id;
@@ -36,6 +37,7 @@ public class Node {
     private final ArrayList<Edge> edges;
     private final Map<Edge, Integer> edgePositionMap;
     private boolean locked = false;
+    private boolean invalid = false;
 
     public Node( long id ) {
         this.id = id;
@@ -59,8 +61,9 @@ public class Node {
         if ( !edgePositionMap.containsKey( edge ) ) {
             throw new IllegalArgumentException( "Cennot remove edge (does not exist): " + edge );
         }
-        edges.remove( (int) edgePositionMap.get( edge ) );
+        edges.remove( edge );
         edgePositionMap.remove( edge );
+        invalid = true;
         return this;
     }
 
@@ -78,6 +81,16 @@ public class Node {
         return this;
     }
 
+    private void validatePositions() {
+        if ( invalid ) {
+            edgePositionMap.clear();
+            for ( int i = 0; i < edges.size(); i++ ) {
+                edgePositionMap.put( edges.get( i ), i );
+            }
+            invalid = false;
+        }
+    }
+
     public Node setTurnTable( TurnTable turnTable ) {
         checkLock();
         this.turnTable = turnTable;
@@ -91,6 +104,7 @@ public class Node {
     }
 
     public int getEdgePosition( Edge edge ) {
+        validatePositions();
         if ( !edgePositionMap.containsKey( edge ) ) {
             StringBuilder sb = new StringBuilder();
             for ( Map.Entry<Edge, Integer> e : edgePositionMap.entrySet() ) {
@@ -138,23 +152,35 @@ public class Node {
             sb.append( edge.getId() ).append( "," );
         }
         if ( sb.length() > 1 ) {
-            sb.replace( sb.length() - 1, sb.length(), "}\n\t" );
+            sb.replace( sb.length() - 1, sb.length(), "}" );
         } else {
             sb.append( "}" );
         }
         String edgesString = sb.toString();
         sb = new StringBuilder();
+        for ( Edge edge : edges ) {
+            long neighborId = edge.getOtherNode( this ).getId();
+            sb.append( neighborId ).append( "," );
+        }
+        if ( sb.length() > 1 ) {
+            sb.replace( sb.length() - 1, sb.length(), "}" );
+        } else {
+            sb.append( "}" );
+        }
+        String neighborsString = sb.toString();
+        sb = new StringBuilder();
         sb.append( "{" );
+        validatePositions();
         for ( Map.Entry<Edge, Integer> entry : edgePositionMap.entrySet() ) {
             sb.append( entry.getKey().getId() ).append( "=>" ).append( entry.getValue() ).append( "," );
         }
         if ( sb.length() > 1 ) {
-            sb.replace( sb.length() - 1, sb.length(), "}\n\t" );
+            sb.replace( sb.length() - 1, sb.length(), "}" );
         } else {
             sb.append( "}" );
         }
         String edgesMapString = sb.toString();
-        return "Node{id=" + id + ", locked=" + locked + ", coordinate = " + coordinate + ", edges=" + edgesString + ", turnTable=" + turnTable + ", edgePositionMap=" + edgesMapString + "}";
+        return "Node{id=" + id + ", locked=" + locked + ", coordinate = " + coordinate + ", edges=" + edgesString + ", neighbors=" + neighborsString + ", turnTable=" + turnTable + ", edgePositionMap=" + edgesMapString + "}";
     }
 
     private abstract class FilteringEdgeIterator implements Iterator<Edge> {
@@ -251,5 +277,14 @@ public class Node {
         }
         sb.replace( sb.length() - 1, sb.length(), "]" );
         return sb.toString();
+    }
+
+    public static Comparator<Node> getIdComparator() {
+        return new Comparator<Node>() {
+            @Override
+            public int compare( Node o1, Node o2 ) {
+                return Long.compare( o1.getId(), o2.getId() );
+            }
+        };
     }
 }

@@ -49,14 +49,13 @@ public class GreedyAssembler implements Assembler {
 
     @Override
     public Graph assemble( FilteredGraph graph ) {
+        System.out.println( "Assembling..." );
         long maxNodeId = -1;
         long maxEdgeId = -1;
-        Map<NodePair, Edge> nodeEdgeMap = new HashMap<>();
         Map<Node, Set<NodePair>> nodePairMap = new HashMap<>();
         // P = {{x,y}; x,y  V, {x,y} e E, s(x)+s(y) < U} // all pairs of adjacent vertices with combined size lower than U  
         // Sort P according to (minimizing): score({x,y}) = r * (w(x,y)/sqrt(s(x))+w(x,y)/sqrt(s(y))), where r is with probability a picked randomly from [0,b] and with probability 1-a picked randomly from [b,1]
         double ratio = generateR();
-        Set<Node> visited = new HashSet<>();
         PriorityQueue<NodePair> queue = new FibonacciHeap<>();
         Set<ContractNode> nodes = new HashSet<>();
         Iterator<Node> nodeIterator = graph.getNodes();
@@ -64,56 +63,73 @@ public class GreedyAssembler implements Assembler {
             ContractNode node = (ContractNode) nodeIterator.next();
             nodes.add( node );
             maxNodeId = Math.max( maxNodeId, node.getId() );
-            visited.add( node );
             Set<NodePair> nodePairSet = new HashSet<>();
             nodePairMap.put( node, nodePairSet );
+            System.out.println( "adding node: " + node + ", map -> " + nodePairMap.get( node ) );
             Iterator<Edge> edgeIterator = graph.getEdges( node );
             while ( edgeIterator.hasNext() ) {
-                Edge edge = edgeIterator.next();
+                ContractEdge edge = (ContractEdge) edgeIterator.next();
                 maxEdgeId = Math.max( maxEdgeId, edge.getId() );
                 ContractNode target = (ContractNode) graph.getOtherNode( edge, node );
-                if ( !visited.contains( target ) ) {
-                    NodePair nodePair = new NodePair( node, target );
-                    nodeEdgeMap.put( nodePair, edge );
+                NodePair nodePair = new NodePair( node, target, edge );
+                if ( !queue.contains( nodePair ) ) {
                     nodePairSet.add( nodePair );
-                    queue.add( nodePair, score( graph, nodePair, nodeEdgeMap, ratio ) );
+                    queue.add( nodePair, score( graph, nodePair, ratio ) );
                 }
             }
         }
         ContractNode.MaxIdContainer maxNodeIdContainer = new ContractNode.MaxIdContainer( maxNodeId );
         ContractNode.MaxIdContainer maxEdgeIdContainer = new ContractNode.MaxIdContainer( maxEdgeId );
         // While P is not empty
-        while ( queue.isEmpty() ) {
-            // pair = P.pop
+        while ( !queue.isEmpty() ) {
+            // pair = P.pop 
             NodePair pair = queue.extractMin();
-            nodeEdgeMap.remove( pair );
+            System.out.println( "popping: " + pair.nodeA.getId() + ", " + pair.nodeB.getId() );
+            System.out.println( "popping detailed: " + pair );
             // Contract pair
             ContractNode source = pair.nodeA;
             nodes.remove( source );
             ContractNode target = pair.nodeB;
             nodes.remove( target );
-            ContractNode contractedNode = source.mergeWith( target, maxNodeIdContainer, maxEdgeIdContainer, nodeEdgeMap );
+            // node contains edges which do not belong to it - CHECK
+            ContractNode contractedNode = source.mergeWith( target, maxNodeIdContainer, maxEdgeIdContainer );
             nodes.add( contractedNode );
 
             // Update score value (with the new r for each iteration) for the adjacent edges (pairs) of the contracted pair (edge) and if the new size s is higher or equal to U, remove pair from P
-            for ( NodePair nodePair : nodePairMap.get( source ) ) {
-                queue.remove( nodePair );
-                if ( nodePair.nodeA.getNodes().size() + nodePair.nodeB.getNodes().size() < maxCellSize ) {
-                    ratio = generateR();
-                    ContractNode other = nodePair.other( source );
-                    NodePair newPair = new NodePair( contractedNode, other );
-                    double newScore = score( graph, newPair, nodeEdgeMap, ratio );
-                    queue.add( newPair, newScore );
+            ratio = generateR();
+            System.out.println( "map for: " + source + " -> " + nodePairMap.get( source ) );
+            Iterator<Edge> edgeIterator = source.getEdges();
+            while ( edgeIterator.hasNext() ) {
+                ContractEdge edge = (ContractEdge) edgeIterator.next();
+                ContractNode neighbor = (ContractNode) edge.getOtherNode( source );
+                NodePair nodePair = new NodePair( source, neighbor, edge );
+                if ( !nodePair.equals( pair ) ) {
+                    if ( !queue.contains( nodePair ) ) {
+                        throw new IllegalStateException( "Queue does not contain pair: " + nodePair );
+                    }
+                    queue.remove( nodePair );
                 }
             }
-            for ( NodePair nodePair : nodePairMap.get( target ) ) {
-                queue.remove( nodePair );
+            edgeIterator = target.getEdges();
+            while ( edgeIterator.hasNext() ) {
+                ContractEdge edge = (ContractEdge) edgeIterator.next();
+                ContractNode neighbor = (ContractNode) edge.getOtherNode( target );
+                NodePair nodePair = new NodePair( target, neighbor, edge );
+                if ( !nodePair.equals( pair ) ) {
+                    if ( !queue.contains( nodePair ) ) {
+                        throw new IllegalStateException( "Queue does not contain pair: " + nodePair );
+                    }
+                    queue.remove( nodePair );
+                }
+            }
+            edgeIterator = contractedNode.getEdges();
+            while ( edgeIterator.hasNext() ) {
+                ContractEdge edge = (ContractEdge) edgeIterator.next();
+                ContractNode neighbor = (ContractNode) edge.getOtherNode( contractedNode );
+                NodePair nodePair = new NodePair( contractedNode, neighbor, edge );
                 if ( nodePair.nodeA.getNodes().size() + nodePair.nodeB.getNodes().size() < maxCellSize ) {
-                    ratio = generateR();
-                    ContractNode other = nodePair.other( target );
-                    NodePair newPair = new NodePair( contractedNode, other );
-                    double newScore = score( graph, newPair, nodeEdgeMap, ratio );
-                    queue.add( newPair, newScore );
+                    double newScore = score( graph, nodePair, ratio );
+                    queue.add( nodePair, newScore );
                 }
             }
         }
@@ -132,6 +148,9 @@ public class GreedyAssembler implements Assembler {
     }
 
     private double generateR() {
+        if ( true ) {
+            return 1.0;
+        }
         double lowerBound;
         double upperBound;
         if ( rand.nextDouble() < lowIntervalProbability ) {
@@ -145,8 +164,9 @@ public class GreedyAssembler implements Assembler {
         return rand.nextDouble() * interval + lowerBound;
     }
 
-    private double score( FilteredGraph graph, NodePair nodePair, Map<NodePair, Edge> nodeEdgeMap, double ratio ) {
-        Edge edge = nodeEdgeMap.get( nodePair );
+    private double score( FilteredGraph graph, NodePair nodePair, double ratio ) {
+        ContractEdge edge = nodePair.connectingEdge;
+        System.out.println( "score@edge = " + edge );
         double edgeWeight = graph.getEdgeSize( edge );
         double sourceWeight = graph.getNodeSize( nodePair.nodeA );
         double targetWeight = graph.getNodeSize( nodePair.nodeB );

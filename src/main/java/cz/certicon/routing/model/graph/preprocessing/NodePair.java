@@ -7,19 +7,26 @@ package cz.certicon.routing.model.graph.preprocessing;
 
 import cz.certicon.routing.model.graph.preprocessing.ContractNode;
 import java.util.Objects;
+import lombok.ToString;
 
 /**
  *
  * @author Michael Blaha {@literal <michael.blaha@certicon.cz>}
  */
+@ToString
 public class NodePair {
-    
+
     public final ContractNode nodeA;
     public final ContractNode nodeB;
+    public final ContractEdge connectingEdge;
 
-    public NodePair( ContractNode nodeA, ContractNode nodeB ) {
+    public NodePair( ContractNode nodeA, ContractNode nodeB, ContractEdge connectingEdge ) {
         this.nodeA = nodeA;
         this.nodeB = nodeB;
+        this.connectingEdge = connectingEdge;
+        if ( ( connectingEdge.getSource().equals( nodeA ) && !connectingEdge.getTarget().equals( nodeB ) ) || ( connectingEdge.getSource().equals( nodeB ) && !connectingEdge.getTarget().equals( nodeA ) ) ) {
+            throw new IllegalArgumentException( "Edge does not match the nodes: edge = " + connectingEdge + ", nodeA = " + nodeA + ", nodeB = " + nodeB );
+        }
     }
 
     public ContractNode other( ContractNode node ) {
@@ -59,5 +66,5 @@ public class NodePair {
         }
         return false;
     }
-    
+
 }
