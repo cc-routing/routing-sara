@@ -590,6 +590,7 @@ public class NaturalCutsFilter implements Filter {
                     }
                 }
             }
+//            System.out.println( fragment + "->[" + fragmentOrigNodes.get( fragment ) + "]" );
             sizeMap.add( sum );
 //            System.out.println( "size = " + sum );
             fragment++;

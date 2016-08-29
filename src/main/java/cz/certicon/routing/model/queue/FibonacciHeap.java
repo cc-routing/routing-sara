@@ -35,7 +35,7 @@ public class FibonacciHeap<T> implements PriorityQueue<T> {
 
     @Override
     public void add( T element, double value ) {
-//        System.out.println( "Adding " + node + " with value " + value );
+//        System.out.println( "PQ_ADDING: " + element + " with value " + value );
         FibonacciHeapNode<T> n = new FibonacciHeapNode<>( element );
         nodeMap.put( element, n );
         fibonacciHeap.insert( n, value );
@@ -80,7 +80,9 @@ public class FibonacciHeap<T> implements PriorityQueue<T> {
 
     @Override
     public boolean contains( T element ) {
-        return nodeMap.containsKey( element );
+        boolean result = nodeMap.containsKey( element );
+//        System.out.println( "PQ_CONTAINS[" + result + "]: " + element );
+        return result;
     }
 
     @Override

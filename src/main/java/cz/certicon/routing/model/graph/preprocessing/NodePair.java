@@ -13,7 +13,6 @@ import lombok.ToString;
  *
  * @author Michael Blaha {@literal <michael.blaha@certicon.cz>}
  */
-@ToString
 public class NodePair {
 
     public final ContractNode nodeA;
@@ -42,12 +41,13 @@ public class NodePair {
     @Override
     public int hashCode() {
         int hash = 3;
-        hash = 37 * hash + Objects.hashCode( this.nodeA ) * Objects.hashCode( this.nodeB );
+        hash = (int) ( 37 * hash + nodeA.getId() * nodeB.getId() );
         return hash;
     }
 
     @Override
     public boolean equals( Object obj ) {
+//        System.out.println( "NODEPAIR EQUALS: " + this + " vs " + obj );
         if ( this == obj ) {
             return true;
         }
@@ -65,6 +65,11 @@ public class NodePair {
             return nodeB.getId() == other.nodeA.getId();
         }
         return false;
+    }
+
+    @Override
+    public String toString() {
+        return "NodePair{" + "nodeA=" + nodeA + ", nodeB=" + nodeB + ", connectingEdge=" + connectingEdge + '}';
     }
 
 }

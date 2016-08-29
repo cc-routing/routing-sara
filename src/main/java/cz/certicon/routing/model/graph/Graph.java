@@ -14,7 +14,7 @@ import java.util.Iterator;
  *
  * @author Michael Blaha {@literal <michael.blaha@certicon.cz>}
  */
-public interface Graph {
+public interface Graph extends Cloneable {
 
     /**
      * Returns amount of nodes in the graph
@@ -112,4 +112,11 @@ public interface Graph {
      * @return coordinate
      */
     Coordinate getNodeCoordinate( Node node );
+
+//    /**
+//     * Creates deep copy of this graph
+//     *
+//     * @return deep copy
+//     */
+//    Graph copy();
 }

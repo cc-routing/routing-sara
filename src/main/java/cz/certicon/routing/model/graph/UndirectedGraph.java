@@ -104,6 +104,11 @@ public class UndirectedGraph implements Graph {
 //        return coordinates.get( node );
     }
 
+//    @Override
+//    public Graph copy() {
+//        throw new UnsupportedOperationException( "Not supported yet." ); //To change body of generated methods, choose Tools | Templates.
+//    }
+
     @Override
     public String toString() {
         StringBuilder sb = new StringBuilder();
@@ -148,5 +153,4 @@ public class UndirectedGraph implements Graph {
         sb.append( "}" );
         return sb.toString();
     }
-
 }

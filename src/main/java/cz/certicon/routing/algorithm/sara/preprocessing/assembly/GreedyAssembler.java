@@ -49,7 +49,7 @@ public class GreedyAssembler implements Assembler {
 
     @Override
     public Graph assemble( FilteredGraph graph ) {
-        System.out.println( "Assembling..." );
+//        System.out.println( "Assembling..." );
         // find max ids
         long maxNodeId = -1;
         long maxEdgeId = -1;
@@ -58,6 +58,7 @@ public class GreedyAssembler implements Assembler {
         while ( nodeIterator.hasNext() ) {
             ContractNode node = (ContractNode) nodeIterator.next();
             maxNodeId = Math.max( maxNodeId, node.getId() );
+            nodes.add( node );
         }
         Iterator<Edge> edgeIterator = graph.getEdges();
         while ( edgeIterator.hasNext() ) {
@@ -72,8 +73,8 @@ public class GreedyAssembler implements Assembler {
         while ( !queue.isEmpty() ) {
             // pair = P.pop 
             NodePair pair = queue.extractMin();
-            System.out.println( "popping: " + pair.nodeA.getId() + ", " + pair.nodeB.getId() );
-            System.out.println( "popping detailed: " + pair );
+//            System.out.println( "popping: " + pair.nodeA.getId() + ", " + pair.nodeB.getId() );
+//            System.out.println( "popping detailed: " + pair );
             // Contract pair
             ContractNode source = pair.nodeA;
             nodes.remove( source );
@@ -106,6 +107,7 @@ public class GreedyAssembler implements Assembler {
     }
 
     PriorityQueue<NodePair> initQueue( FilteredGraph graph ) {
+//        System.out.println( "INIT QUEUE" );
         double ratio = generateR();
         PriorityQueue<NodePair> queue = new FibonacciHeap<>();
         Iterator<Node> nodeIterator = graph.getNodes();
@@ -117,6 +119,7 @@ public class GreedyAssembler implements Assembler {
                 ContractNode target = (ContractNode) graph.getOtherNode( edge, node );
                 NodePair nodePair = new NodePair( node, target, edge );
                 if ( !queue.contains( nodePair ) ) {
+//                    System.out.println( "ADDING: " + nodePair );
                     queue.add( nodePair, score( graph, nodePair, ratio ) );
                 }
             }
@@ -125,22 +128,29 @@ public class GreedyAssembler implements Assembler {
     }
 
     PriorityQueue<NodePair> clearPairs( PriorityQueue<NodePair> queue, NodePair origPair, ContractNode origNode ) {
+//        System.out.println( "REMOVING FOR: " + origNode );
         Iterator<Edge> edgeIterator = origNode.getEdges();
         while ( edgeIterator.hasNext() ) {
             ContractEdge edge = (ContractEdge) edgeIterator.next();
             ContractNode neighbor = (ContractNode) edge.getOtherNode( origNode );
             NodePair nodePair = new NodePair( origNode, neighbor, edge );
-            if ( !nodePair.equals( origPair ) ) {
-                if ( !queue.contains( nodePair ) ) {
-                    throw new IllegalStateException( "Queue does not contain pair: " + nodePair );
-                }
-                queue.remove( nodePair );
+            if ( queue.contains( nodePair ) ) {
+                queue.remove( nodePair ); // the pair does not have to be contained - it might have higher size than limit (see addPairs condition)
+//                System.out.println( "REMOVING: " + nodePair );
+            } else {
+//                System.out.println( "DOES NOT REMOVE: " + nodePair );
             }
+//            if ( !nodePair.equals( origPair ) ) { // WRONG ASSUMPTION, see 
+//                if ( !queue.contains( nodePair ) ) {
+//                    throw new IllegalStateException( "Queue does not contain pair: " + nodePair );
+//                }
+//            }
         }
         return queue;
     }
 
     PriorityQueue<NodePair> addPairs( PriorityQueue<NodePair> queue, FilteredGraph graph, ContractNode contractedNode ) {
+//        System.out.println( "ADDING FOR: " + contractedNode );
         double ratio = generateR();
         Iterator<Edge> edgeIterator = contractedNode.getEdges();
         while ( edgeIterator.hasNext() ) {
@@ -149,6 +159,7 @@ public class GreedyAssembler implements Assembler {
             NodePair nodePair = new NodePair( contractedNode, neighbor, edge );
             if ( nodePair.nodeA.getNodes().size() + nodePair.nodeB.getNodes().size() < maxCellSize ) {
                 double newScore = score( graph, nodePair, ratio );
+//                System.out.println( "ADDING: " + nodePair );
                 queue.add( nodePair, newScore );
             }
         }

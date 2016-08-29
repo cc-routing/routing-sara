@@ -21,7 +21,7 @@ import lombok.experimental.Wither;
 @Value
 @NonFinal
 @EqualsAndHashCode( exclude = { "source", "target" } )
-public class Edge implements Identifiable {
+public class Edge implements Identifiable, Cloneable {
 
     long id;
     boolean oneway;

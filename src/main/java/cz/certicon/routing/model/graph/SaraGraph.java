@@ -7,6 +7,7 @@ package cz.certicon.routing.model.graph;
 
 import cz.certicon.routing.model.values.Coordinate;
 import cz.certicon.routing.model.values.Distance;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 import lombok.AccessLevel;
@@ -90,4 +91,16 @@ public class SaraGraph implements Graph {
     public Coordinate getNodeCoordinate( Node node ) {
         return graph.getNodeCoordinate( node );
     }
+
+//    @Override
+//    public Graph copy() {
+//        Graph graphCopy = graph.copy();
+//        Map<Node, NodeInfo> nodeInfoMapCopy = new HashMap<>();
+//        Iterator<Node> nodes = graphCopy.getNodes();
+//        while ( nodes.hasNext() ) {
+//            Node node = nodes.next();
+//            nodeInfoMapCopy.put( node, nodeInfoMap.get( node ) );
+//        }
+//        return new SaraGraph( (UndirectedGraph) graphCopy, nodeInfoMapCopy );
+//    }
 }

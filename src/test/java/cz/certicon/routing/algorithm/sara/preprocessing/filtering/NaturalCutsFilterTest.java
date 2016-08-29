@@ -12,6 +12,7 @@ import cz.certicon.routing.model.graph.Graph;
 import cz.certicon.routing.model.graph.Node;
 import cz.certicon.routing.model.graph.TurnTable;
 import cz.certicon.routing.model.graph.UndirectedGraph;
+import cz.certicon.routing.model.graph.preprocessing.ContractNode;
 import cz.certicon.routing.model.graph.preprocessing.FilteredGraph;
 import cz.certicon.routing.model.values.Distance;
 import cz.certicon.routing.utils.GraphGeneratorUtils;
@@ -19,9 +20,12 @@ import cz.certicon.routing.view.GraphStreamPresenter;
 import java.awt.Color;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Scanner;
+import java.util.Set;
 import org.junit.After;
 import org.junit.AfterClass;
 import org.junit.Before;
@@ -69,8 +73,33 @@ public class NaturalCutsFilterTest {
     @Test
     public void testFilter() {
         System.out.println( "filter" );
+        NaturalCutsFilter instance = new NaturalCutsFilter( 1, 4, 10 );
+
+        Graph originalGraph = GraphGeneratorUtils.generateGridGraph( nodeMap, edgeMap, turnTables, 5, 5 );
+        Set<Node> origNodes = new HashSet<>();
+        Iterator<Node> nodes = originalGraph.getNodes();
+        while ( nodes.hasNext() ) {
+            origNodes.add( nodes.next() );
+        }
+//        System.out.println( "orig graph: " + originalGraph );
+        Graph g = GraphGeneratorUtils.generateGridGraph( nodeMap, edgeMap, turnTables, 5, 5 );
+        Graph filtered = instance.filter( g );
+//        System.out.println( "filtered graph: " + filtered );
+        nodes = filtered.getNodes();
+        while ( nodes.hasNext() ) {
+            ContractNode node = (ContractNode) nodes.next();
+            for ( Node n : node.getNodes() ) {
+//                System.out.println( "Graph does " + ( ( origNodes.contains( n ) ) ? "" : "NOT " ) + "contain node: node = " + n + ", graph = " + filtered );
+                assertTrue( origNodes.contains( n ) );
+                origNodes.remove( n );
+            }
+        }
+        if ( !origNodes.isEmpty() ) {
+//            System.out.println( "Orignodes conain more nodes[" + origNodes.size() + "]: " + origNodes );
+        }
+        assertTrue( origNodes.isEmpty() );
+
         int cellSize = 40;
-        NaturalCutsFilter instance = new NaturalCutsFilter( 1, 4, cellSize );
         FilteredGraph expResult = null;
         FilteredGraph result = instance.filter( graph );
         System.out.println( "Comparison: orig{nodes=" + graph.getNodesCount() + ",edges=" + graph.getEdgeCount() + "}, filtered{nodes=" + result.getNodesCount() + ",edges=" + result.getEdgeCount() + "}" );

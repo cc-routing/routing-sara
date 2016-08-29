@@ -8,6 +8,7 @@ package cz.certicon.routing.model.graph;
 import cz.certicon.routing.model.values.Coordinate;
 import cz.certicon.routing.model.values.Distance;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 import lombok.AccessLevel;
@@ -92,4 +93,16 @@ public class PartitionGraph implements Graph {
         }
         return partitionMap.get( node );
     }
+
+//    @Override
+//    public Graph copy() {
+//        Graph graphCopy = graph.copy();
+//        Map<Node, Partition> nodeInfoMapCopy = new HashMap<>();
+//        Iterator<Node> nodes = graphCopy.getNodes();
+//        while ( nodes.hasNext() ) {
+//            Node node = nodes.next();
+//            nodeInfoMapCopy.put( node, partitionMap.get( node ) );
+//        }
+//        return new PartitionGraph( (UndirectedGraph) graphCopy, nodeInfoMapCopy );
+//    }
 }

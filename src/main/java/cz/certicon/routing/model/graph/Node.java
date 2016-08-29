@@ -23,8 +23,7 @@ import lombok.experimental.NonFinal;
  *
  * @author Michael Blaha {@literal <michael.blaha@certicon.cz>}
  */
-@EqualsAndHashCode( exclude = { "turnTable", "locked", "edges", "edgePositionMap" } )
-public class Node implements Identifiable {
+public class Node implements Identifiable, Cloneable {
 
     @Getter
     private final long id;
@@ -59,7 +58,7 @@ public class Node implements Identifiable {
     public Node removeEdge( @NonNull Edge edge ) {
         checkLock();
         if ( !edgePositionMap.containsKey( edge ) ) {
-            throw new IllegalArgumentException( "Cennot remove edge (does not exist): " + edge );
+            throw new IllegalArgumentException( "Cennot remove edge (does not exist): " + edge + " from node: " + this );
         }
         edges.remove( edge );
         edgePositionMap.remove( edge );
@@ -143,6 +142,31 @@ public class Node implements Identifiable {
 
     public synchronized void lock() {
         this.locked = true;
+    }
+
+    @Override
+    public int hashCode() {
+        int hash = 7;
+        hash = 23 * hash + (int) ( this.id ^ ( this.id >>> 32 ) );
+        return hash;
+    }
+
+    @Override
+    public boolean equals( Object obj ) {
+        if ( this == obj ) {
+            return true;
+        }
+        if ( obj == null ) {
+            return false;
+        }
+        if ( getClass() != obj.getClass() ) {
+            return false;
+        }
+        final Node other = (Node) obj;
+        if ( this.id != other.id ) {
+            return false;
+        }
+        return true;
     }
 
     @Override
