@@ -184,12 +184,13 @@ public class GreedyAssembler implements Assembler {
     }
 
     private double score( FilteredGraph graph, NodePair nodePair, double ratio ) {
+        // TODO return Double.MAX_VALUE - result in order to extract maximal values?
         ContractEdge edge = nodePair.connectingEdge;
 //        System.out.println( "score@edge = " + edge );
         double edgeWeight = graph.getEdgeSize( edge );
         double sourceWeight = graph.getNodeSize( nodePair.nodeA );
         double targetWeight = graph.getNodeSize( nodePair.nodeB );
-        return ratio * ( ( edgeWeight / Math.sqrt( sourceWeight ) ) + ( edgeWeight / Math.sqrt( targetWeight ) ) );
+        return /*Double.MAX_VALUE - */ratio * ( ( edgeWeight / Math.sqrt( sourceWeight ) ) + ( edgeWeight / Math.sqrt( targetWeight ) ) );
     }
 
 }
