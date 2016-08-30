@@ -13,6 +13,10 @@ import java.util.LinkedList;
 import java.util.List;
 import static java.lang.Math.*;
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Comparator;
+import java.util.Iterator;
+import java.util.logging.Logger;
 
 /**
  * Utilities for coordinates
@@ -36,13 +40,14 @@ public class CoordinateUtils {
     /**
      * Calculates the geographical midpoint of the given coordinates.
      *
-     * @param coordinates list of coordinates to be accounted into the
+     * @param iterator iterator of coordinates to be accounted into the
      * calculation
      * @return geographical midpoint
      */
-    public static Coordinate calculateGeographicMidpoint( List<Coordinate> coordinates ) {
+    public static <T> Coordinate calculateGeographicMidpoint( Iterator<Coordinate> iterator ) {
         List<CartesianCoords> ccoords = new LinkedList<>();
-        for ( Coordinate coordinate : coordinates ) {
+        while ( iterator.hasNext() ) {
+            Coordinate coordinate = iterator.next();
             double lat = toRadians( coordinate.getLatitude() );
             double lon = toRadians( coordinate.getLongitude() );
             ccoords.add( new CartesianCoords(
@@ -68,6 +73,17 @@ public class CoordinateUtils {
         double hyp = sqrt( mid.getX() * mid.getX() + mid.getY() * mid.getY() );
         double lat = atan2( mid.getZ(), hyp );
         return new Coordinate( toDegrees( lat ), toDegrees( lon ) );
+    }
+
+    /**
+     * Calculates the geographical midpoint of the given coordinates.
+     *
+     * @param coordinates list of coordinates to be accounted into the
+     * calculation
+     * @return geographical midpoint
+     */
+    public static Coordinate calculateGeographicMidpoint( List<Coordinate> coordinates ) {
+        return calculateGeographicMidpoint( coordinates.iterator() );
     }
 
     /**
@@ -186,8 +202,66 @@ public class CoordinateUtils {
      * @return true if the coordinates are equal with the given precision, false
      * otherwise
      */
-    public boolean equals( Coordinate a, Coordinate b, double precision ) {
+    public static boolean equals( Coordinate a, Coordinate b, double precision ) {
         return ( DoubleComparator.isEqualTo( a.getLatitude(), b.getLatitude(), precision )
                 && DoubleComparator.isEqualTo( a.getLongitude(), b.getLongitude(), precision ) );
     }
+
+    public static List<Coordinate> sortClockwise( Collection<Coordinate> coords ) {
+        return sortClockwise( coords.iterator() );
+    }
+
+    public static List<Coordinate> sortClockwise( Iterator<Coordinate> iterator ) {
+        List<Coordinate> coordinateList = new ArrayList<>();
+        while ( iterator.hasNext() ) {
+            coordinateList.add( iterator.next() );
+        }
+        Coordinate center = calculateGeographicMidpoint( coordinateList );
+        coordinateList.sort( new ClockwiseComparator( center ) );
+        return coordinateList;
+    }
+
+    private static class ClockwiseComparator implements Comparator<Coordinate> {
+
+        private final Coordinate center;
+
+        public ClockwiseComparator( Coordinate center ) {
+            this.center = center;
+        }
+
+        @Override
+        public int compare( Coordinate a, Coordinate b ) {
+            if ( CoordinateUtils.equals( a, b, COORDINATE_PRECISION ) ) {
+                return 0;
+            }
+            if ( a.getLongitude() - center.getLongitude() >= 0 && b.getLongitude() - center.getLongitude() < 0 ) {
+                return -1;
+            }
+            if ( a.getLongitude() - center.getLongitude() < 0 && b.getLongitude() - center.getLongitude() >= 0 ) {
+                return 1;
+            }
+            if ( a.getLongitude() - center.getLongitude() == 0 && b.getLongitude() - center.getLongitude() == 0 ) {
+                if ( a.getLatitude() - center.getLatitude() >= 0 || b.getLatitude() - center.getLatitude() >= 0 ) {
+                    return a.getLatitude() > b.getLatitude() ? -1 : 1;
+                }
+                return b.getLatitude() > a.getLatitude() ? -1 : 1;
+            }
+
+            // compute the cross product of vectors (center -> a) x (center -> b)
+            double det = ( a.getLongitude() - center.getLongitude() ) * ( b.getLatitude() - center.getLatitude() ) - ( b.getLongitude() - center.getLongitude() ) * ( a.getLatitude() - center.getLatitude() );
+            if ( det < 0 ) {
+                return -1;
+            }
+            if ( det > 0 ) {
+                return 1;
+            }
+
+            // points a and b are on the same line from the center
+            // check which point is closer to the center
+            double d1 = ( a.getLongitude() - center.getLongitude() ) * ( a.getLongitude() - center.getLongitude() ) + ( a.getLatitude() - center.getLatitude() ) * ( a.getLatitude() - center.getLatitude() );
+            double d2 = ( b.getLongitude() - center.getLongitude() ) * ( b.getLongitude() - center.getLongitude() ) + ( b.getLatitude() - center.getLatitude() ) * ( b.getLatitude() - center.getLatitude() );
+            return d1 > d2 ? -1 : 1;
+        }
+    }
+
 }

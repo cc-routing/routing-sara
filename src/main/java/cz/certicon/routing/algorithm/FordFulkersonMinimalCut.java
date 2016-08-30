@@ -151,7 +151,7 @@ public class FordFulkersonMinimalCut implements MinimalCutAlgorithm {
                     pathFlows[i] = ( pathFlows[node] < limits[node][i] - flows[node][i] ) ? pathFlows[node] : limits[node][i] - flows[node][i];
                     queue.add( i );
                 }
-                // for all incoming fresh nodes, whhich have already been somehow filled
+                // for all incoming fresh nodes, which have already been somehow filled
                 if ( limits[i][node] != 0 && states[i] == FRESH && 0 < flows[i][node] ) {
 //                    System.out.println( "OPENING: " + i );
                     // open them, set predecessor to negative of this (opposite direction)

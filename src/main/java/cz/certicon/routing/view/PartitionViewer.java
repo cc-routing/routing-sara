@@ -7,7 +7,8 @@ package cz.certicon.routing.view;
 
 import cz.certicon.routing.model.graph.Edge;
 import cz.certicon.routing.model.graph.Graph;
-import java.util.List;
+import cz.certicon.routing.model.graph.Partition;
+import java.util.Collection;
 
 /**
  *
@@ -15,7 +16,9 @@ import java.util.List;
  */
 public interface PartitionViewer {
 
-    public void addPartition( Graph graph, List<Edge> cutEdges );
+    public void addPartition( Graph graph, Collection<Edge> cutEdges );
+
+    public void addPartition( Graph graph, Partition partition );
 
     public void display();
 }

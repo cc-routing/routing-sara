@@ -6,6 +6,7 @@
 package cz.certicon.routing.model.graph;
 
 import cz.certicon.routing.model.Identifiable;
+import java.util.Collection;
 import lombok.Value;
 
 /**
@@ -16,4 +17,6 @@ import lombok.Value;
 public class Partition implements Identifiable {
 
     long id;
+
+    Collection<Node> nodes;
 }

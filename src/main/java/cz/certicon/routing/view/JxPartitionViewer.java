@@ -7,10 +7,13 @@ package cz.certicon.routing.view;
 
 import cz.certicon.routing.model.graph.Edge;
 import cz.certicon.routing.model.graph.Graph;
+import cz.certicon.routing.model.graph.Node;
+import cz.certicon.routing.model.graph.Partition;
 import cz.certicon.routing.model.values.Coordinate;
 import cz.certicon.routing.utils.CoordinateUtils;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.List;
 
 /**
@@ -20,13 +23,17 @@ import java.util.List;
 public class JxPartitionViewer extends AbstractJxMapViewer implements PartitionViewer {
 
     @Override
-    public void addPartition( Graph graph, List<Edge> cutEdges ) {
+    public void addPartition( Graph graph, Collection<Edge> cutEdges ) {
         List<Coordinate> coordinates = new ArrayList<>();
+        Edge first = null;
         for ( Edge cutEdge : cutEdges ) {
             coordinates.add( edgeMidpoint( graph, cutEdge ) );
+            if ( first == null ) {
+                first = cutEdge;
+            }
         }
-        if ( coordinates.size() > 0 ) { // create circle - add first edge as last
-            coordinates.add( edgeMidpoint( graph, cutEdges.get( 0 ) ) );
+        if ( first != null ) { // create circle - add first edge as last
+            coordinates.add( edgeMidpoint( graph, first ) );
         }
         addPolygon( toGeoPosition( coordinates ) );
     }
@@ -36,6 +43,16 @@ public class JxPartitionViewer extends AbstractJxMapViewer implements PartitionV
         Coordinate target = graph.getNodeCoordinate( edge.getTarget() );
         Coordinate midpoint = CoordinateUtils.calculateGeographicMidpoint( Arrays.asList( source, target ) );
         return midpoint;
+    }
+
+    @Override
+    public void addPartition( Graph graph, Partition partition ) {
+        List<Coordinate> coords = new ArrayList<>();
+        for ( Node node : partition.getNodes() ) {
+            assert node.getCoordinate() != null;
+            coords.add( node.getCoordinate() );
+        }
+        addPolygon( toGeoPosition( CoordinateUtils.sortClockwise( coords ) ) );
     }
 
 }
