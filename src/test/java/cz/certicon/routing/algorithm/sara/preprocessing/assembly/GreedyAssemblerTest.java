@@ -9,6 +9,8 @@ import cz.certicon.routing.algorithm.sara.preprocessing.filtering.NaturalCutsFil
 import cz.certicon.routing.model.graph.Edge;
 import cz.certicon.routing.model.graph.Graph;
 import cz.certicon.routing.model.graph.Node;
+import cz.certicon.routing.model.graph.Partition;
+import cz.certicon.routing.model.graph.PartitionGraph;
 import cz.certicon.routing.model.graph.TurnTable;
 import cz.certicon.routing.model.graph.UndirectedGraph;
 import cz.certicon.routing.model.graph.preprocessing.ContractEdge;
@@ -17,6 +19,7 @@ import cz.certicon.routing.model.graph.preprocessing.FilteredGraph;
 import cz.certicon.routing.model.graph.preprocessing.NodePair;
 import cz.certicon.routing.model.queue.PriorityQueue;
 import cz.certicon.routing.utils.ColorUtils;
+import cz.certicon.routing.utils.DisplayUtils;
 import cz.certicon.routing.utils.GraphGeneratorUtils;
 import cz.certicon.routing.view.GraphStreamPresenter;
 import java.awt.Color;
@@ -91,51 +94,67 @@ public class GreedyAssemblerTest {
         System.out.println( "orig graph: " + originalGraph );
         createNewGraph();
         GreedyAssembler assembler = new GreedyAssembler( 0.5, 0.5, CELL_SIZE );
-        Graph assembled = assembler.assemble( graph );
-        nodes = assembled.getNodes();
-        while ( nodes.hasNext() ) {
-            ContractNode node = (ContractNode) nodes.next();
-            for ( Node n : node.getNodes() ) {
-                if ( !origNodes.contains( n ) ) {
-                    System.out.println( "Graph does not contain node: node = " + n + ", graph = " + assembled );
-                }
-                assertTrue( origNodes.contains( n ) );
-                origNodes.remove( n );
-            }
+        PartitionGraph assembled = assembler.assemble( originalGraph, graph );
+        for ( Node origNode : origNodes ) {
+            assertNotNull( assembled.getPartition( origNode ) );
         }
-        if ( !origNodes.isEmpty() ) {
-            System.out.println( "Orignodes conain more nodes[" + origNodes.size() + "]: " + origNodes );
-        }
-        assertTrue( origNodes.isEmpty() );
+        
+        DisplayUtils.displayAll( assembled );
+        
+//        nodes = assembled.getNodes();
+//        while ( nodes.hasNext() ) {
+//            ContractNode node = (ContractNode) nodes.next();
+//            for ( Node n : node.getNodes() ) {
+//                if ( !origNodes.contains( n ) ) {
+//                    System.out.println( "Graph does not contain node: node = " + n + ", graph = " + assembled );
+//                }
+//                assertTrue( origNodes.contains( n ) );
+//                origNodes.remove( n );
+//            }
+//        }
+//        if ( !origNodes.isEmpty() ) {
+//            System.out.println( "Orignodes conain more nodes[" + origNodes.size() + "]: " + origNodes );
+//        }
+//        assertTrue( origNodes.isEmpty() );
 //        System.out.println( assembled );
 
-        Map<ContractNode, Color> colorMap = new HashMap<>();
-        ColorUtils.ColorSupplier colorSupplier = ColorUtils.createColorSupplier( assembled.getNodesCount() );
-        GraphStreamPresenter presenter = new GraphStreamPresenter();
-        presenter.setGraph( assembled );
-        nodes = assembled.getNodes();
-        while ( nodes.hasNext() ) {
-            ContractNode node = (ContractNode) nodes.next();
-            Color c = colorSupplier.nextColor();
-            colorMap.put( node, c );
-            presenter.setNodeColor( node.getId(), c );
-        }
-        presenter.display();
+//        Map<ContractNode, Color> colorMap = new HashMap<>();
+//        ColorUtils.ColorSupplier colorSupplier = ColorUtils.createColorSupplier( assembled.getPartitionCount());
+//        GraphStreamPresenter presenter = new GraphStreamPresenter();
+//        presenter.setGraph( assembled );
+//        Iterator<Partition> partitions = assembled.getPartitions();
+//        while(partitions.hasNext()){
+//            Partition partition = partitions.next();
+//            Color c = colorSupplier.nextColor();
+//            nodes = partition.getNodes();
+//            while(nodes.hasNext()){
+//                Node node = nodes.next();
+//                presenter.setNodeColor( node.getId(), c);
+//            }
+//        }
+//        nodes = assembled.getNodes();
+//        while ( nodes.hasNext() ) {
+//            ContractNode node = (ContractNode) nodes.next();
+//            Color c = colorSupplier.nextColor();
+//            colorMap.put( node, c );
+//            presenter.setNodeColor( node.getId(), c );
+//        }
+//        presenter.display();
         System.out.println( "Comparison: orig{nodes=" + graph.getNodesCount() + ",edges=" + graph.getEdgeCount() + "}, filtered{nodes=" + assembled.getNodesCount() + ",edges=" + assembled.getEdgeCount() + "}" );
 
         System.out.println( assembled );
 
-        createNewGraph();
-        presenter.setGraph( originalGraph );
-        nodes = assembled.getNodes();
-        while ( nodes.hasNext() ) {
-            ContractNode node = (ContractNode) nodes.next();
-            Color c = colorMap.get( node );
-            for ( Node n : node.getNodes() ) {
-                presenter.setNodeColor( n.getId(), c );
-            }
-        }
-        presenter.display();
+//        createNewGraph();
+//        presenter.setGraph( originalGraph );
+//        nodes = assembled.getNodes();
+//        while ( nodes.hasNext() ) {
+//            ContractNode node = (ContractNode) nodes.next();
+//            Color c = colorMap.get( node );
+//            for ( Node n : node.getNodes() ) {
+//                presenter.setNodeColor( n.getId(), c );
+//            }
+//        }
+//        presenter.display();
 
         System.out.println( "Press enter to continue..." );
         new Scanner( System.in ).nextLine();

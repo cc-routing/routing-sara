@@ -9,12 +9,16 @@ import cz.certicon.routing.model.graph.preprocessing.NodePair;
 import cz.certicon.routing.model.graph.Edge;
 import cz.certicon.routing.model.graph.Graph;
 import cz.certicon.routing.model.graph.Node;
+import cz.certicon.routing.model.graph.Partition;
+import cz.certicon.routing.model.graph.PartitionGraph;
 import cz.certicon.routing.model.graph.UndirectedGraph;
 import cz.certicon.routing.model.graph.preprocessing.ContractEdge;
 import cz.certicon.routing.model.graph.preprocessing.ContractNode;
 import cz.certicon.routing.model.graph.preprocessing.FilteredGraph;
 import cz.certicon.routing.model.queue.FibonacciHeap;
 import cz.certicon.routing.model.queue.PriorityQueue;
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -48,7 +52,7 @@ public class GreedyAssembler implements Assembler {
     }
 
     @Override
-    public Graph assemble( FilteredGraph graph ) {
+    public PartitionGraph assemble( Graph originalGraph, FilteredGraph graph ) {
 //        System.out.println( "Assembling..." );
         // find max ids
         long maxNodeId = -1;
@@ -94,16 +98,29 @@ public class GreedyAssembler implements Assembler {
         //End While
         //Return partitions, i.e. in which partition each vertex belongs
         // - add all edges to builder
-        UndirectedGraph.UndirectedGraphBuilder builder = UndirectedGraph.builder();
-        Set<ContractEdge> edges = new HashSet<>();
+//        UndirectedGraph.UndirectedGraphBuilder builder = UndirectedGraph.builder();
+//        Set<ContractEdge> edges = new HashSet<>();
+//        for ( ContractNode node : nodes ) {
+//            edgeIterator = node.getEdges();
+//            while ( edgeIterator.hasNext() ) {
+//                edges.add( (ContractEdge) edgeIterator.next() );
+//            }
+//        }
+//        builder.nodes( nodes ).edges( edges );
+
+        Map<Node, Partition> partitionMap = new HashMap<>();
+        Map<Partition, Collection<Node>> nodeMap = new HashMap<>();
+        long partitionId = 0;
         for ( ContractNode node : nodes ) {
-            edgeIterator = node.getEdges();
-            while ( edgeIterator.hasNext() ) {
-                edges.add( (ContractEdge) edgeIterator.next() );
+            Partition partition = new Partition( partitionId, node.getNodes() );
+            for ( Node n : node.getNodes() ) {
+                partitionMap.put( n, partition );
             }
+            nodeMap.put( partition, node.getNodes() );
+            partitionId++;
         }
-        builder.nodes( nodes ).edges( edges );
-        return new FilteredGraph( builder.build() );
+
+        return new PartitionGraph( originalGraph, partitionMap, nodeMap );
     }
 
     PriorityQueue<NodePair> initQueue( FilteredGraph graph ) {
@@ -190,7 +207,7 @@ public class GreedyAssembler implements Assembler {
         double edgeWeight = graph.getEdgeSize( edge );
         double sourceWeight = graph.getNodeSize( nodePair.nodeA );
         double targetWeight = graph.getNodeSize( nodePair.nodeB );
-        return /*Double.MAX_VALUE - */ratio * ( ( edgeWeight / Math.sqrt( sourceWeight ) ) + ( edgeWeight / Math.sqrt( targetWeight ) ) );
+        return /*Double.MAX_VALUE - */ ratio * ( ( edgeWeight / Math.sqrt( sourceWeight ) ) + ( edgeWeight / Math.sqrt( targetWeight ) ) );
     }
 
 }

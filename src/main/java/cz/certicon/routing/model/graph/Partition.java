@@ -6,7 +6,12 @@
 package cz.certicon.routing.model.graph;
 
 import cz.certicon.routing.model.Identifiable;
+import cz.certicon.routing.utils.collections.ImmutableIterator;
 import java.util.Collection;
+import java.util.Iterator;
+import lombok.AccessLevel;
+import lombok.EqualsAndHashCode;
+import lombok.Getter;
 import lombok.Value;
 
 /**
@@ -14,9 +19,16 @@ import lombok.Value;
  * @author Michael Blaha {@literal <michael.blaha@certicon.cz>}
  */
 @Value
+@EqualsAndHashCode( exclude = "nodes" )
 public class Partition implements Identifiable {
 
     long id;
 
+    @Getter( AccessLevel.NONE )
     Collection<Node> nodes;
+
+    public Iterator<Node> getNodes() {
+        return new ImmutableIterator<>( nodes.iterator() );
+    }
+
 }

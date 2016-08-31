@@ -6,6 +6,7 @@
 package cz.certicon.routing.algorithm.sara.preprocessing.assembly;
 
 import cz.certicon.routing.model.graph.Graph;
+import cz.certicon.routing.model.graph.PartitionGraph;
 import cz.certicon.routing.model.graph.preprocessing.FilteredGraph;
 
 /**
@@ -19,5 +20,5 @@ public interface Assembler {
 
     // return more
     // - node info
-    Graph assemble( FilteredGraph graph );
+    PartitionGraph assemble( Graph originalGraph, FilteredGraph graph );
 }

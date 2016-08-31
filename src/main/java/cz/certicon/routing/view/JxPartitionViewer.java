@@ -14,6 +14,7 @@ import cz.certicon.routing.utils.CoordinateUtils;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.Iterator;
 import java.util.List;
 
 /**
@@ -48,7 +49,9 @@ public class JxPartitionViewer extends AbstractJxMapViewer implements PartitionV
     @Override
     public void addPartition( Graph graph, Partition partition ) {
         List<Coordinate> coords = new ArrayList<>();
-        for ( Node node : partition.getNodes() ) {
+        Iterator<Node> nodes = partition.getNodes();
+        while(nodes.hasNext()){
+            Node node = nodes.next();
             assert node.getCoordinate() != null;
             coords.add( node.getCoordinate() );
         }
