@@ -365,7 +365,7 @@ public class NaturalCutsFilter implements Filter {
                 Node t = graph.getOtherNode( e, treeNode );
                 if ( nodeMap.containsKey( t.getId() ) ) {
                     Node newTargetNode = nodeMap.get( t.getId() );
-                    Edge newEdge = new ContractEdge( e.getId(), false, newNode, newTargetNode, Distance.newInstance( EDGE_INIT_SIZE ), CollectionUtils.asSet( e ) );
+                    Edge newEdge = new ContractEdge( e.getId(), false, newNode, newTargetNode, Distance.newInstance( getEdgeInitSize( e ) ), CollectionUtils.asSet( e ) );
                     edgeMap.put( newEdge.getId(), newEdge );
                     newNode.addEdge( newEdge );
                     newTargetNode.addEdge( newEdge );
@@ -692,6 +692,14 @@ public class NaturalCutsFilter implements Filter {
 //            nodes.get( i ).lock();
 //        }
 //        return new FilteredGraph( UndirectedGraph.builder().nodes( nodes ).edges( edges ).build(), nodeSizeMap );
+    }
+
+    private int getEdgeInitSize( Edge edge ) {
+        if ( edge.isOneway() ) {
+            return EDGE_INIT_SIZE;
+        } else {
+            return 2 * EDGE_INIT_SIZE;
+        }
     }
 
     @Value
