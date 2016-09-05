@@ -7,7 +7,7 @@ package cz.certicon.routing.model.graph;
 
 import cz.certicon.routing.model.values.Coordinate;
 import cz.certicon.routing.model.values.Distance;
-import java.util.Iterator;
+import cz.certicon.routing.utils.collections.Iterator;
 
 /**
  * Definition of graph

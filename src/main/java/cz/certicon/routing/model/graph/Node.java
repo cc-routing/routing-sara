@@ -8,10 +8,10 @@ package cz.certicon.routing.model.graph;
 import cz.certicon.routing.model.Identifiable;
 import cz.certicon.routing.model.values.Coordinate;
 import cz.certicon.routing.utils.collections.ImmutableIterator;
+import cz.certicon.routing.utils.collections.Iterator;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import lombok.EqualsAndHashCode;
@@ -260,6 +260,11 @@ public class Node implements Identifiable, Cloneable {
             } else {
                 throw new IllegalStateException( "No more egdes: call hasNext before asking for next edge!" );
             }
+        }
+
+        @Override
+        public java.util.Iterator<Edge> iterator() {
+            return this;
         }
 
         abstract boolean isValid( Node node, Edge edge );

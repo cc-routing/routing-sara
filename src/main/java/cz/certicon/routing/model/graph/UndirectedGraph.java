@@ -8,7 +8,7 @@ package cz.certicon.routing.model.graph;
 import cz.certicon.routing.model.values.Coordinate;
 import cz.certicon.routing.model.values.Distance;
 import cz.certicon.routing.utils.collections.ImmutableIterator;
-import java.util.Iterator;
+import cz.certicon.routing.utils.collections.Iterator;
 import java.util.List;
 import java.util.Map;
 import lombok.AccessLevel;
@@ -108,7 +108,6 @@ public class UndirectedGraph implements Graph {
 //    public Graph copy() {
 //        throw new UnsupportedOperationException( "Not supported yet." ); //To change body of generated methods, choose Tools | Templates.
 //    }
-
     @Override
     public String toString() {
         StringBuilder sb = new StringBuilder();

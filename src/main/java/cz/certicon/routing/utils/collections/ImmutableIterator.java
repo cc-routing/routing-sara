@@ -5,8 +5,6 @@
  */
 package cz.certicon.routing.utils.collections;
 
-import java.util.Iterator;
-
 /**
  *
  * @author Michael Blaha {@literal <michael.blaha@certicon.cz>}
@@ -14,9 +12,9 @@ import java.util.Iterator;
  */
 public class ImmutableIterator<T> implements Iterator<T> {
 
-    private final Iterator<T> iterator;
+    private final java.util.Iterator<T> iterator;
 
-    public ImmutableIterator( Iterator<T> iterator ) {
+    public ImmutableIterator( java.util.Iterator<T> iterator ) {
         this.iterator = iterator;
     }
 
@@ -28,6 +26,11 @@ public class ImmutableIterator<T> implements Iterator<T> {
     @Override
     public T next() {
         return iterator.next();
+    }
+
+    @Override
+    public java.util.Iterator<T> iterator() {
+        return this;
     }
 
 }

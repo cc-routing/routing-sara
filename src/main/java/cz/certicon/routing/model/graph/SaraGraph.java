@@ -7,8 +7,8 @@ package cz.certicon.routing.model.graph;
 
 import cz.certicon.routing.model.values.Coordinate;
 import cz.certicon.routing.model.values.Distance;
+import cz.certicon.routing.utils.collections.Iterator;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.Map;
 import lombok.AccessLevel;
 import lombok.Getter;
