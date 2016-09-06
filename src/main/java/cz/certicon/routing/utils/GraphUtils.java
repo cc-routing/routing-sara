@@ -54,4 +54,22 @@ public class GraphUtils {
         }
         return result;
     }
+
+    public static Collection<Collection<Node>> getBorderNodes( PartitionGraph graph ) {
+        Collection<Collection<Node>> collections = new ArrayList<>();
+        for ( Partition partition : graph.getPartitions() ) {
+            Collection<Node> borderNodes = new ArrayList<>();
+            for ( Node node : partition.getNodes() ) {
+                for ( Edge edge : graph.getEdges( node ) ) {
+                    Node target = graph.getOtherNode( edge, node );
+                    if ( !partition.equals( graph.getPartition( target ) ) ) {
+                        borderNodes.add( node );
+                        break;
+                    }
+                }
+            }
+            collections.add( borderNodes );
+        }
+        return collections;
+    }
 }

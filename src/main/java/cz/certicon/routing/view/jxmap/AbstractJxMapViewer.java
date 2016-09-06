@@ -3,10 +3,12 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package cz.certicon.routing.view;
+package cz.certicon.routing.view.jxmap;
 
 import cz.certicon.routing.model.values.Coordinate;
+import java.awt.Color;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -43,9 +45,20 @@ public abstract class AbstractJxMapViewer {
         fitGeoPosition.addAll( geoPositions );
         RoutePainter routePainter = new RoutePainter( geoPositions );
         painters.add( routePainter );
-        CompoundPainter<JXMapViewer> painter = new CompoundPainter<>( painters );
-        mapViewer.zoomToBestFit( fitGeoPosition, 0.7 );
-        mapViewer.setOverlayPainter( painter );
+    }
+
+    public void addPolygon( List<GeoPosition> geoPositions, Color color ) {
+        fitGeoPosition.addAll( geoPositions );
+        RoutePainter routePainter = new RoutePainter( geoPositions );
+        routePainter.setColor( color );
+        painters.add( routePainter );
+    }
+
+    public void addCluster( Collection<GeoPosition> geoPositions, Color color ) {
+        fitGeoPosition.addAll( geoPositions );
+        ClusterPainter clusterPainter = new ClusterPainter( geoPositions );
+        clusterPainter.setColor( color );
+        painters.add( clusterPainter );
     }
 
     public void display() {
@@ -57,6 +70,9 @@ public abstract class AbstractJxMapViewer {
         tileFactory = new DefaultTileFactory( info );
         tileFactory.setThreadPoolSize( 8 );
         mapKit.setTileFactory( tileFactory );
+        mapViewer.zoomToBestFit( fitGeoPosition, 0.7 );
+        CompoundPainter<JXMapViewer> painter = new CompoundPainter<>( painters );
+        mapViewer.setOverlayPainter( painter );
         frame.setVisible( true );
     }
 
@@ -66,6 +82,14 @@ public abstract class AbstractJxMapViewer {
     }
 
     public static List<GeoPosition> toGeoPosition( List<Coordinate> coordinates ) {
+        List<GeoPosition> track = new ArrayList<>();
+        for ( Coordinate coordinate : coordinates ) {
+            track.add( new GeoPosition( coordinate.getLatitude(), coordinate.getLongitude() ) );
+        }
+        return track;
+    }
+
+    public static Collection<GeoPosition> toGeoPosition( Collection<Coordinate> coordinates ) {
         List<GeoPosition> track = new ArrayList<>();
         for ( Coordinate coordinate : coordinates ) {
             track.add( new GeoPosition( coordinate.getLatitude(), coordinate.getLongitude() ) );

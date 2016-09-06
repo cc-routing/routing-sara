@@ -7,8 +7,8 @@ package cz.certicon.routing.model.graph;
 
 import cz.certicon.routing.model.Identifiable;
 import cz.certicon.routing.utils.collections.ImmutableIterator;
+import cz.certicon.routing.utils.collections.Iterator;
 import java.util.Collection;
-import java.util.Iterator;
 import lombok.AccessLevel;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
@@ -29,6 +29,10 @@ public class Partition implements Identifiable {
 
     public Iterator<Node> getNodes() {
         return new ImmutableIterator<>( nodes.iterator() );
+    }
+
+    public int getNodesCount() {
+        return nodes.size();
     }
 
 }

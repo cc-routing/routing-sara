@@ -5,12 +5,15 @@
  */
 package cz.certicon.routing.view;
 
+import cz.certicon.routing.view.jxmap.AbstractJxMapViewer;
 import cz.certicon.routing.model.graph.Edge;
 import cz.certicon.routing.model.graph.Graph;
 import cz.certicon.routing.model.graph.Node;
 import cz.certicon.routing.model.graph.Partition;
 import cz.certicon.routing.model.values.Coordinate;
+import cz.certicon.routing.utils.ColorUtils;
 import cz.certicon.routing.utils.CoordinateUtils;
+import java.awt.Color;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -23,20 +26,19 @@ import java.util.List;
  */
 public class JxPartitionViewer extends AbstractJxMapViewer implements PartitionViewer {
 
+    private ColorUtils.ColorSupplier colorSupplier = ColorUtils.createColorSupplier( 20 );
+
     @Override
     public void addPartition( Graph graph, Collection<Edge> cutEdges ) {
-        List<Coordinate> coordinates = new ArrayList<>();
-        Edge first = null;
+        List<Coordinate> coords = new ArrayList<>();
         for ( Edge cutEdge : cutEdges ) {
-            coordinates.add( edgeMidpoint( graph, cutEdge ) );
-            if ( first == null ) {
-                first = cutEdge;
-            }
+            coords.add( edgeMidpoint( graph, cutEdge ) );
         }
-        if ( first != null ) { // create circle - add first edge as last
-            coordinates.add( edgeMidpoint( graph, first ) );
+        List<Coordinate> sorted = CoordinateUtils.sortClockwise( coords );
+        if ( !sorted.isEmpty() ) {
+            sorted.add( sorted.get( 0 ) );
         }
-        addPolygon( toGeoPosition( coordinates ) );
+        addPolygon( toGeoPosition( sorted ) );
     }
 
     private Coordinate edgeMidpoint( Graph graph, Edge edge ) {
@@ -48,14 +50,32 @@ public class JxPartitionViewer extends AbstractJxMapViewer implements PartitionV
 
     @Override
     public void addPartition( Graph graph, Partition partition ) {
+        Color color = colorSupplier.nextColor();
         List<Coordinate> coords = new ArrayList<>();
-        Iterator<Node> nodes = partition.getNodes();
-        while(nodes.hasNext()){
-            Node node = nodes.next();
+        for ( Node node : partition.getNodes() ) {
             assert node.getCoordinate() != null;
             coords.add( node.getCoordinate() );
         }
-        addPolygon( toGeoPosition( CoordinateUtils.sortClockwise( coords ) ) );
+        addCluster( toGeoPosition( coords ), color );
+//        List<Coordinate> sorted = CoordinateUtils.sortClockwise( coords );
+//        if ( !sorted.isEmpty() ) {
+//            sorted.add( sorted.get( 0 ) );
+//        }
+//        addPolygon( toGeoPosition( sorted ), color );
+    }
+
+    @Override
+    public void addPartitionNodes( Graph graph, Collection<Node> borderNodes ) {
+        Color color = colorSupplier.nextColor();
+        List<Coordinate> coords = new ArrayList<>();
+        for ( Node borderNode : borderNodes ) {
+            coords.add( borderNode.getCoordinate() );
+        }
+        List<Coordinate> sorted = CoordinateUtils.sortClockwise( coords );
+        if ( !sorted.isEmpty() ) {
+            sorted.add( sorted.get( 0 ) );
+        }
+        addPolygon( toGeoPosition( sorted ), color );
     }
 
 }

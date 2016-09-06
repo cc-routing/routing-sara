@@ -110,8 +110,8 @@ public class NaturalCutsFilter implements Filter {
 
     @Override
     public FilteredGraph filter( Graph graph ) {
-        GraphStreamPresenter presenter = new GraphStreamPresenter();
-        presenter.displayGraph( graph );
+//        GraphStreamPresenter presenter = new GraphStreamPresenter();
+//        presenter.displayGraph( graph );
         // NOTE: contraction
         // - foreach node
         // -- remove node
@@ -119,12 +119,12 @@ public class NaturalCutsFilter implements Filter {
 //        System.out.println( "started filtering" );
         ElementContainer<Edge> cutEdges = getCutEdges( graph );
 //        System.out.println( "cut edges obtained: " + cutEdges.size() );
-        presenter = new GraphStreamPresenter();
-        presenter.setGraph( graph );
-        for ( Edge cutEdge : cutEdges ) {
-            presenter.setEdgeColor( cutEdge.getId(), Color.red );
-        }
-        presenter.display();
+//        presenter = new GraphStreamPresenter();
+//        presenter.setGraph( graph );
+//        for ( Edge cutEdge : cutEdges ) {
+//            presenter.setEdgeColor( cutEdge.getId(), Color.red );
+//        }
+//        presenter.display();
 //        if ( true == true ) {
 //            try {
 //                Thread.sleep( 1000000 );
@@ -138,12 +138,12 @@ public class NaturalCutsFilter implements Filter {
 
         SplitGraphMessenger splitGraphResult = splitGraph( graph, cutEdges );
 //        System.out.println( "graph splitted" );
-        presenter = new GraphStreamPresenter();
-        presenter.setGraph( graph );
-        for ( Edge cutEdge : cutEdges ) {
-            presenter.removeEdge( cutEdge.getId() );
-        }
-        presenter.display();
+//        presenter = new GraphStreamPresenter();
+//        presenter.setGraph( graph );
+//        for ( Edge cutEdge : cutEdges ) {
+//            presenter.removeEdge( cutEdge.getId() );
+//        }
+//        presenter.display();
 //        System.out.println( "Press enter to continue..." );
 //        new Scanner( System.in ).nextLine();
         // build new filtered graph
@@ -151,8 +151,8 @@ public class NaturalCutsFilter implements Filter {
         FilteredGraph filteredGraph = buildFilteredGraph( splitGraphResult.getFragmentOrigNodes(), splitGraphResult.getOrigEdgesMapList() );
 //        System.out.println( "graph built" );
 
-        presenter = new GraphStreamPresenter();
-        presenter.displayGraph( filteredGraph );
+//        presenter = new GraphStreamPresenter();
+//        presenter.displayGraph( filteredGraph );
 //        presenter = new GraphStreamPresenter();
 //        presenter.displayGraph( graph );
         // nodeSizes // splitGraph.fragmentSizeMap

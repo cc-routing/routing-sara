@@ -184,9 +184,9 @@ public class GreedyAssembler implements Assembler {
     }
 
     private double generateR() {
-        if ( true ) {
-            return 1.0;
-        }
+//        if ( true ) {
+//            return 1.0;
+//        }
         double lowerBound;
         double upperBound;
         if ( rand.nextDouble() < lowIntervalProbability ) {
@@ -207,7 +207,7 @@ public class GreedyAssembler implements Assembler {
         double edgeWeight = graph.getEdgeSize( edge );
         double sourceWeight = graph.getNodeSize( nodePair.nodeA );
         double targetWeight = graph.getNodeSize( nodePair.nodeB );
-        return /*Double.MAX_VALUE - */ ratio * ( ( edgeWeight / Math.sqrt( sourceWeight ) ) + ( edgeWeight / Math.sqrt( targetWeight ) ) );
+        return Double.MAX_VALUE - ratio * ( ( edgeWeight / Math.sqrt( sourceWeight ) ) + ( edgeWeight / Math.sqrt( targetWeight ) ) );
     }
 
 }

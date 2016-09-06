@@ -3,7 +3,7 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package cz.certicon.routing.view;
+package cz.certicon.routing.view.jxmap;
 
 import java.awt.BasicStroke;
 import java.awt.Color;

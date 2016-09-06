@@ -5,16 +5,24 @@
  */
 package cz.certicon.routing.utils;
 
+import cz.certicon.routing.model.Route;
+import cz.certicon.routing.model.graph.Edge;
 import cz.certicon.routing.model.graph.Graph;
 import cz.certicon.routing.model.graph.Node;
 import cz.certicon.routing.model.graph.Partition;
 import cz.certicon.routing.model.graph.PartitionGraph;
 import cz.certicon.routing.model.graph.UndirectedGraph;
 import cz.certicon.routing.model.graph.preprocessing.ContractNode;
+import cz.certicon.routing.model.values.Coordinate;
 import cz.certicon.routing.view.GraphStreamPresenter;
+import cz.certicon.routing.view.JxPartitionViewer;
+import cz.certicon.routing.view.PartitionViewer;
 import java.awt.Color;
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -81,5 +89,38 @@ public class DisplayUtils {
             }
         }
         presenter.display();
+    }
+
+    public static void displayMap( PartitionGraph graph ) {
+        PartitionViewer viewer = new JxPartitionViewer();
+//        System.out.println( "Obtaining cut-edges" );
+//        Collection<Collection<Edge>> cutEdgesCollection = GraphUtils.getCutEdges( graph );
+//        System.out.println( "Done obtaining cut-edges" );
+//        int counter = 0;
+//        for ( Collection<Edge> collection : cutEdgesCollection ) {
+//            viewer.addPartition( graph, collection );
+//            counter += collection.size();
+//            if(counter > 1000){
+//                break;
+//            }
+//        }
+        int counter = 0;
+        for ( Partition partition : graph.getPartitions() ) {
+            viewer.addPartition( graph, partition );
+            counter += 1;
+//            if ( counter > 20 ) {
+//                break;
+//            }
+        }
+//        Collection<Collection<Node>> borderNodesCollection = GraphUtils.getBorderNodes( graph );
+//        int counter = 0;
+//        for ( Collection<Node> collection : borderNodesCollection ) {
+//            viewer.addPartitionNodes( graph, collection );
+//            counter += 1;
+//            if ( counter > 1000 ) {
+//                break;
+//            }
+//        }
+        viewer.display();
     }
 }
