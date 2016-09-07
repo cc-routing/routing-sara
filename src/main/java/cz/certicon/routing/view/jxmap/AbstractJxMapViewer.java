@@ -96,4 +96,8 @@ public abstract class AbstractJxMapViewer {
         }
         return track;
     }
+
+    protected List<Painter<JXMapViewer>> getPainters() {
+        return painters;
+    }
 }

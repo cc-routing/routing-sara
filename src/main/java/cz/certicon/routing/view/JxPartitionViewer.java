@@ -13,12 +13,18 @@ import cz.certicon.routing.model.graph.Partition;
 import cz.certicon.routing.model.values.Coordinate;
 import cz.certicon.routing.utils.ColorUtils;
 import cz.certicon.routing.utils.CoordinateUtils;
+import cz.certicon.routing.view.jxmap.ClusterPainter;
+import cz.certicon.routing.view.jxmap.RoutePainter;
 import java.awt.Color;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import org.jdesktop.swingx.JXMapViewer;
+import org.jdesktop.swingx.painter.Painter;
 
 /**
  *
@@ -78,4 +84,41 @@ public class JxPartitionViewer extends AbstractJxMapViewer implements PartitionV
         addPolygon( toGeoPosition( sorted ), color );
     }
 
+    @Override
+    public void display() {
+        super.display();
+        Thread repaintThread = new Thread(new Repainter(getPainters()));
+        repaintThread.setDaemon( true);
+        repaintThread.start();
+    }
+    
+    
+
+    private static class Repainter implements Runnable {
+
+        private final ColorUtils.ColorSupplier colorSupplier = ColorUtils.createColorSupplier( 20 );
+        private final List<Painter<JXMapViewer>> painters;
+
+        public Repainter( List<Painter<JXMapViewer>> painters ) {
+            this.painters = painters;
+        }
+
+        @Override
+        public void run() {
+            while ( true ) {
+                try {
+                    Thread.sleep( 10000 );
+                    for ( Painter<JXMapViewer> painter : painters ) {
+                        if ( painter instanceof ClusterPainter ) {
+                            ( (ClusterPainter) painter ).setColor( colorSupplier.nextColor() );
+                        } else if ( painter instanceof RoutePainter ) {
+                            ( (RoutePainter) painter ).setColor( colorSupplier.nextColor() );
+                        }
+                    }
+                } catch ( InterruptedException ex ) {
+                }
+            }
+        }
+
+    }
 }
