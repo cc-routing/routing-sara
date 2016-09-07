@@ -6,9 +6,9 @@
 package cz.certicon.routing.algorithm;
 
 import cz.certicon.routing.model.Route;
-import cz.certicon.routing.model.graph.Edge;
+import cz.certicon.routing.model.graph.SimpleEdge;
 import cz.certicon.routing.model.graph.Graph;
-import cz.certicon.routing.model.graph.Node;
+import cz.certicon.routing.model.graph.SimpleNode;
 import cz.certicon.routing.model.graph.TurnTable;
 import cz.certicon.routing.model.graph.UndirectedGraph;
 import cz.certicon.routing.model.values.Distance;
@@ -30,8 +30,8 @@ import static org.junit.Assert.*;
 public class DijkstraAlgorithmTest {
 
     private final UndirectedGraph graph;
-    private final Map<Long, Node> nodeMap;
-    private final Map<Long, Edge> edgeMap;
+    private final Map<Long, SimpleNode> nodeMap;
+    private final Map<Long, SimpleEdge> edgeMap;
     private final Map<TurnTable, TurnTable> turnTables;
 
     public DijkstraAlgorithmTest() {
@@ -42,22 +42,22 @@ public class DijkstraAlgorithmTest {
     }
 
     private UndirectedGraph createGraph() {
-        List<Node> nodes = new ArrayList<>();
-        Node a = createNode( nodes, 0 );
-        Node b = createNode( nodes, 1 );
-        Node c = createNode( nodes, 2 );
-        Node d = createNode( nodes, 3 );
-        Node e = createNode( nodes, 4 );
-        Node f = createNode( nodes, 5 );
-        List<Edge> edges = new ArrayList<>();
-        Edge ab = createEdge( edges, 0, false, a, b, 120 );
-        Edge ac = createEdge( edges, 1, false, a, c, 184 );
-        Edge cd = createEdge( edges, 2, false, c, d, 94 );
-        Edge db = createEdge( edges, 3, true, d, b, 159 );
-        Edge be = createEdge( edges, 4, false, b, e, 36 );
-        Edge df = createEdge( edges, 5, false, d, f, 152 );
-        Edge ef = createEdge( edges, 6, true, e, f, 38 );
-        for ( Node node : nodes ) {
+        List<SimpleNode> nodes = new ArrayList<>();
+        SimpleNode a = createNode( nodes, 0 );
+        SimpleNode b = createNode( nodes, 1 );
+        SimpleNode c = createNode( nodes, 2 );
+        SimpleNode d = createNode( nodes, 3 );
+        SimpleNode e = createNode( nodes, 4 );
+        SimpleNode f = createNode( nodes, 5 );
+        List<SimpleEdge> edges = new ArrayList<>();
+        SimpleEdge ab = createEdge( edges, 0, false, a, b, 120 );
+        SimpleEdge ac = createEdge( edges, 1, false, a, c, 184 );
+        SimpleEdge cd = createEdge( edges, 2, false, c, d, 94 );
+        SimpleEdge db = createEdge( edges, 3, true, d, b, 159 );
+        SimpleEdge be = createEdge( edges, 4, false, b, e, 36 );
+        SimpleEdge df = createEdge( edges, 5, false, d, f, 152 );
+        SimpleEdge ef = createEdge( edges, 6, true, e, f, 38 );
+        for ( SimpleNode node : nodes ) {
             int size = node.getDegree();
             Distance[][] dtt = new Distance[size][size];
             for ( int i = 0; i < dtt.length; i++ ) {
@@ -81,23 +81,23 @@ public class DijkstraAlgorithmTest {
             }
             node.setTurnTable( tt );
         }
-        for ( Node node : nodes ) {
+        for ( SimpleNode node : nodes ) {
             node.lock();
         }
         UndirectedGraph g = UndirectedGraph.builder().nodes( nodes ).edges( edges ).build();
         return g;
     }
 
-    private Node createNode( List<Node> nodes, long id ) {
+    private SimpleNode createNode( List<SimpleNode> nodes, long id ) {
 //        Distance[][] tt = new Distance[]
-        Node node = new Node( id );
+        SimpleNode node = new SimpleNode( id );
         nodes.add( node );
         nodeMap.put( id, node );
         return node;
     }
 
-    private Edge createEdge( List<Edge> edges, long id, boolean oneway, Node source, Node target, double distance ) {
-        Edge edge = new Edge( id, oneway, source, target, Distance.newInstance( distance ) );
+    private SimpleEdge createEdge( List<SimpleEdge> edges, long id, boolean oneway, SimpleNode source, SimpleNode target, double distance ) {
+        SimpleEdge edge = new SimpleEdge( id, oneway, source, target, Distance.newInstance( distance ) );
         edges.add( edge );
         source.addEdge( edge );
         target.addEdge( edge );
@@ -105,8 +105,8 @@ public class DijkstraAlgorithmTest {
         return edge;
     }
 
-    private Edge createEdge( List<Edge> edges, long id, boolean oneway, Node source, Node target, double distance, boolean addToNode ) {
-        Edge edge = new Edge( id, oneway, source, target, Distance.newInstance( distance ) );
+    private SimpleEdge createEdge( List<SimpleEdge> edges, long id, boolean oneway, SimpleNode source, SimpleNode target, double distance, boolean addToNode ) {
+        SimpleEdge edge = new SimpleEdge( id, oneway, source, target, Distance.newInstance( distance ) );
         edges.add( edge );
         if ( addToNode ) {
             source.addEdge( edge );
@@ -138,8 +138,8 @@ public class DijkstraAlgorithmTest {
     @Test
     public void testRoute_3args_1() {
         System.out.println( "route" );
-        Node source = nodeMap.get( 0L );
-        Node destination = nodeMap.get( 3L );
+        SimpleNode source = nodeMap.get( 0L );
+        SimpleNode destination = nodeMap.get( 3L );
         DijkstraAlgorithm instance = new DijkstraAlgorithm();
         Route expResult = Route.builder().addAsLast( edgeMap.get( 0L ) ).addAsLast( edgeMap.get( 4L ) ).addAsLast( edgeMap.get( 6L ) ).addAsLast( edgeMap.get( 5L ) ).build();
         Route result = instance.route( graph, source, destination );
@@ -152,8 +152,8 @@ public class DijkstraAlgorithmTest {
     @Test
     public void testRoute_3args_2() {
         System.out.println( "route" );
-        Edge source = edgeMap.get( 1L );
-        Edge destination = edgeMap.get( 5L );
+        SimpleEdge source = edgeMap.get( 1L );
+        SimpleEdge destination = edgeMap.get( 5L );
         DijkstraAlgorithm instance = new DijkstraAlgorithm();
         Route expResult = Route.builder().addAsLast( edgeMap.get( 1L ) ).addAsLast( edgeMap.get( 0L ) ).addAsLast( edgeMap.get( 4L ) ).addAsLast( edgeMap.get( 6L ) ).addAsLast( edgeMap.get( 5L ) ).build();
         Route result = instance.route( graph, source, destination );
@@ -166,8 +166,8 @@ public class DijkstraAlgorithmTest {
     @Test
     public void testRoute_7args() {
         System.out.println( "route" );
-        Edge source = edgeMap.get( 1L );
-        Edge destination = edgeMap.get( 2L );
+        SimpleEdge source = edgeMap.get( 1L );
+        SimpleEdge destination = edgeMap.get( 2L );
         Distance toSourceStart = Distance.newInstance( 10 );
         Distance toSourceEnd = Distance.newInstance( 10 );
         Distance toDestinationStart = Distance.newInstance( 10 );
@@ -181,7 +181,7 @@ public class DijkstraAlgorithmTest {
     private static String toString( Route route ) {
         StringBuilder sb = new StringBuilder();
         sb.append( "Route{source=" ).append( route.getSource().getId() ).append( ",target=" ).append( route.getTarget().getId() ).append( ",edges=[" );
-        for ( Edge edge : route.getEdges() ) {
+        for ( SimpleEdge edge : route.getEdges() ) {
             sb.append( edge.getId() ).append( "," );
         }
         sb.replace( sb.length() - 1, sb.length(), "]}" );

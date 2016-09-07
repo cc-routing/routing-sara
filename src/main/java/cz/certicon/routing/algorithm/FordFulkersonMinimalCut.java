@@ -8,8 +8,12 @@ package cz.certicon.routing.algorithm;
 import cz.certicon.routing.model.MinimalCut;
 import cz.certicon.routing.model.basic.Pair;
 import cz.certicon.routing.model.graph.Edge;
+import cz.certicon.routing.model.graph.SimpleEdge;
 import cz.certicon.routing.model.graph.Graph;
 import cz.certicon.routing.model.graph.Node;
+import cz.certicon.routing.model.graph.SimpleNode;
+import cz.certicon.routing.model.graph.preprocessing.ContractEdge;
+import cz.certicon.routing.model.graph.preprocessing.ContractNode;
 import cz.certicon.routing.model.values.Distance;
 import gnu.trove.TIntCollection;
 import gnu.trove.iterator.TIntIterator;
@@ -39,7 +43,7 @@ public class FordFulkersonMinimalCut implements MinimalCutAlgorithm {
     private static final char FRESH = 0;
 
     @Override
-    public MinimalCut compute( Graph graph, Node sourceNode, Node targetNode ) {
+    public MinimalCut compute( Graph<ContractNode, ContractEdge> graph, ContractNode sourceNode, ContractNode targetNode ) {
         // TODO optimize, change to adjacency lists (currently adjacency table - n^2, wasteful for thin graphs
         // map graph to arrays
 //        System.out.println( "MINIMAL CUT: mapping graph to arrays" );
@@ -51,23 +55,19 @@ public class FordFulkersonMinimalCut implements MinimalCutAlgorithm {
         int[][] limits = new int[nodeCount][nodeCount];
         int[][] flows = new int[nodeCount][nodeCount];
         TObjectIntMap nodeToIndexMap = new TObjectIntHashMap();
-        Node[] indexToNodeArray = new Node[nodeCount];
-        Iterator<Node> nodeIterator = graph.getNodes();
+        ContractNode[] indexToNodeArray = new ContractNode[nodeCount];
         int nodeCounter = 0;
-        while ( nodeIterator.hasNext() ) {
-            Node n = nodeIterator.next();
+        for ( ContractNode n : graph.getNodes() ) {
             nodeToIndexMap.put( n, nodeCounter );
             indexToNodeArray[nodeCounter] = n;
             nodeCounter++;
         }
-        Iterator<Edge> edgeIterator = graph.getEdges();
-        while ( edgeIterator.hasNext() ) {
-            Edge e = edgeIterator.next();
-            int srcIdx = nodeToIndexMap.get( e.getSource() );
-            int tgtIdx = nodeToIndexMap.get( e.getTarget() );
-            int value = (int) ( Math.round( e.getLength().getValue() ) + 10E-8 );
+        for ( ContractEdge e : graph.getEdges() ) {
+            int srcIdx = nodeToIndexMap.get( e.getSource( graph ) );
+            int tgtIdx = nodeToIndexMap.get( e.getTarget( graph ) );
+            int value = e.getWidth( graph );
             limits[srcIdx][tgtIdx] = value;
-            if ( !e.isOneway() ) {
+            if ( !e.isOneWay( graph ) ) {
                 limits[tgtIdx][srcIdx] = value;
             }
         }
@@ -100,16 +100,14 @@ public class FordFulkersonMinimalCut implements MinimalCutAlgorithm {
 //        System.out.println( "VISITED" );
 //        testPrintArray( visited );
         // for each i,j pair, determine whether it belongs to cut edges (leads from reachagle to unreachable node in the original graph) and find the corresponding edge
-        Set<Edge> cutEdge = new HashSet<>();
+        Set<ContractEdge> cutEdge = new HashSet<>();
         for ( int i = 0; i < nodeCount; i++ ) {
             for ( int j = 0; j < nodeCount; j++ ) {
                 if ( visited[i] && !visited[j] && limits[i][j] != 0 ) {
-                    Node from = indexToNodeArray[i];
-                    Node to = indexToNodeArray[j];
-                    edgeIterator = from.getEdges();
-                    while ( edgeIterator.hasNext() ) {
-                        Edge e = edgeIterator.next();
-                        Node edgeTarget = graph.getOtherNode( e, from );
+                    ContractNode from = indexToNodeArray[i];
+                    ContractNode to = indexToNodeArray[j];
+                    for ( ContractEdge e : from.getEdges( graph ) ) {
+                        ContractNode edgeTarget = graph.getOtherNode( e, from );
                         if ( edgeTarget.equals( to ) ) {
                             cutEdge.add( e );
                         }

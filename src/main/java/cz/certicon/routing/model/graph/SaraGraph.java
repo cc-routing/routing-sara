@@ -23,7 +23,7 @@ public class SaraGraph implements Graph {
 
     private final UndirectedGraph graph;
     @Getter( AccessLevel.NONE )
-    private final Map<Node, NodeInfo> nodeInfoMap;
+    private final Map<SimpleNode, NodeInfo> nodeInfoMap;
 
     @Override
     public int getNodesCount() {
@@ -31,7 +31,7 @@ public class SaraGraph implements Graph {
     }
 
     @Override
-    public Iterator<Node> getNodes() {
+    public Iterator<SimpleNode> getNodes() {
         return graph.getNodes();
     }
 
@@ -41,41 +41,41 @@ public class SaraGraph implements Graph {
     }
 
     @Override
-    public Iterator<Edge> getEdges() {
+    public Iterator<SimpleEdge> getEdges() {
         return graph.getEdges();
     }
 
     @Override
-    public Iterator<Edge> getIncomingEdges( Node node ) {
+    public Iterator<SimpleEdge> getIncomingEdges( SimpleNode node ) {
         return graph.getIncomingEdges( node );
     }
 
     @Override
-    public Iterator<Edge> getOutgoingEdges( Node node ) {
+    public Iterator<SimpleEdge> getOutgoingEdges( SimpleNode node ) {
         return graph.getOutgoingEdges( node );
     }
 
     @Override
-    public Node getSourceNode( Edge edge ) {
+    public SimpleNode getSourceNode( SimpleEdge edge ) {
         return graph.getSourceNode( edge );
     }
 
     @Override
-    public Node getTargetNode( Edge edge ) {
+    public SimpleNode getTargetNode( SimpleEdge edge ) {
         return graph.getTargetNode( edge );
     }
 
     @Override
-    public Node getOtherNode( Edge edge, Node node ) {
+    public SimpleNode getOtherNode( SimpleEdge edge, SimpleNode node ) {
         return graph.getOtherNode( edge, node );
     }
 
     @Override
-    public Distance getTurnCost( Node node, Edge from, Edge to ) {
+    public Distance getTurnCost( SimpleNode node, SimpleEdge from, SimpleEdge to ) {
         return graph.getTurnCost( node, from, to );
     }
 
-    public NodeInfo getNodeInfo( Node node ) {
+    public NodeInfo getNodeInfo( SimpleNode node ) {
         if ( !nodeInfoMap.containsKey( node ) ) {
             throw new IllegalArgumentException( "Unknown node: " + node );
         }
@@ -83,12 +83,12 @@ public class SaraGraph implements Graph {
     }
 
     @Override
-    public Iterator<Edge> getEdges( Node node ) {
+    public Iterator<SimpleEdge> getEdges( SimpleNode node ) {
         return graph.getEdges( node );
     }
 
     @Override
-    public Coordinate getNodeCoordinate( Node node ) {
+    public Coordinate getNodeCoordinate( SimpleNode node ) {
         return graph.getNodeCoordinate( node );
     }
 

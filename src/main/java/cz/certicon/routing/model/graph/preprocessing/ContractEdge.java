@@ -5,9 +5,9 @@
  */
 package cz.certicon.routing.model.graph.preprocessing;
 
+import cz.certicon.routing.model.graph.AbstractEdge;
 import cz.certicon.routing.model.graph.Edge;
-import cz.certicon.routing.model.graph.Node;
-import cz.certicon.routing.model.values.Distance;
+import cz.certicon.routing.model.graph.Graph;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.Set;
@@ -16,26 +16,37 @@ import java.util.Set;
  *
  * @author Michael Blaha {@literal <michael.blaha@certicon.cz>}
  */
-public class ContractEdge extends Edge {
+public class ContractEdge extends AbstractEdge<ContractNode> {
 
     private final Collection<Edge> edges;
+    private int width = -1;
 
-    public ContractEdge( long id, boolean oneway, Node source, Node target, Distance length, Collection<Edge> edges ) {
-        super( id, oneway, source, target, length );
+    public ContractEdge( long id, boolean oneway, ContractNode source, ContractNode target, Collection<Edge> edges ) {
+        super( id, oneway, source, target, -1, -1 );
         this.edges = new HashSet<>( edges );
     }
 
-    public ContractEdge mergeWith( ContractEdge edge, Node newSource, Node newTarget, long id ) {
+    public ContractEdge mergeWith( ContractEdge edge, ContractNode newSource, ContractNode newTarget, long id ) {
 //        if ( ( !getSource().equals( edge.getSource() ) || !getTarget().equals( edge.getTarget() ) ) && ( !getSource().equals( edge.getTarget() ) || !getTarget().equals( edge.getSource() ) ) ) {
 //            throw new IllegalArgumentException( "Cannot merge edges: this = " + this + ", other = " + edge );
 //        }
         Set<Edge> newEdges = new HashSet<>( this.edges );
         newEdges.addAll( edge.edges );
-        return new ContractEdge( id, false, newSource, newTarget, getLength().add( edge.getLength() ), newEdges );
+        return new ContractEdge( id, false, newSource, newTarget, newEdges );
     }
 
     public Collection<Edge> getEdges() {
         return edges;
+    }
+
+    public int getWidth( Graph<ContractNode, ContractEdge> graph ) {
+        if ( width < 0 ) {
+            width = 0;
+            for ( Edge edge : edges ) {
+                width += edge.isOneWay( graph ) ? 1 : 2;
+            }
+        }
+        return width;
     }
 
 }

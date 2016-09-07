@@ -11,6 +11,7 @@ import cz.certicon.routing.utils.collections.ImmutableIterator;
 import cz.certicon.routing.utils.collections.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
@@ -21,21 +22,20 @@ import lombok.Value;
 /**
  *
  * @author Michael Blaha {@literal <michael.blaha@certicon.cz>}
+ * @param <N> node type
+ * @param <E> edge type
  */
-@Value
-@Builder
-public class UndirectedGraph implements Graph {
+public class UndirectedGraph<N extends Node, E extends Edge> implements Graph<N, E> {
 
-    @NonNull
-    @Getter( AccessLevel.NONE )
-    @Singular
-    List<Node> nodes;
-    @NonNull
-    @Getter( AccessLevel.NONE )
-    @Singular
-    List<Edge> edges;
+    private final Set<N> nodes;
+    private final Set<E> edges;
 //    @Getter( AccessLevel.NONE )
 //    Map<Node, Coordinate> coordinates;
+
+    public UndirectedGraph( Set<N> nodes, Set<E> edges ) {
+        this.nodes = nodes;
+        this.edges = edges;
+    }
 
     @Override
     public int getNodesCount() {
@@ -43,7 +43,7 @@ public class UndirectedGraph implements Graph {
     }
 
     @Override
-    public Iterator<Node> getNodes() {
+    public Iterator<N> getNodes() {
         return new ImmutableIterator<>( nodes.iterator() );
     }
 
@@ -53,48 +53,51 @@ public class UndirectedGraph implements Graph {
     }
 
     @Override
-    public Iterator<Edge> getEdges() {
+    public Iterator<E> getEdges() {
         return new ImmutableIterator<>( edges.iterator() );
     }
 
     @Override
-    public Iterator<Edge> getIncomingEdges( Node node ) {
-        return node.getIncomingEdges();
+    public Iterator<E> getIncomingEdges( N node ) {
+        return (Iterator<E>) node.getIncomingEdges( this );
     }
 
     @Override
-    public Iterator<Edge> getOutgoingEdges( Node node ) {
-        return node.getOutgoingEdges();
+    public Iterator<E> getOutgoingEdges( Node node ) {
+        return (Iterator<E>) node.getOutgoingEdges( this );
     }
 
     @Override
-    public Node getSourceNode( Edge edge ) {
-        return edge.getSource();
+    public N getSourceNode( E edge ) {
+        return (N) edge.getSource( this );
     }
 
     @Override
-    public Node getTargetNode( Edge edge ) {
-        return edge.getTarget();
+    public N getTargetNode( E edge ) {
+        return (N) edge.getTarget( this );
     }
 
     @Override
-    public Node getOtherNode( Edge edge, Node node ) {
-        return edge.getOtherNode( node );
+    public N getOtherNode( E edge, N node ) {
+        return (N) edge.getOtherNode( this, node );
     }
 
     @Override
-    public Distance getTurnCost( Node node, Edge from, Edge to ) {
-        return node.getTurnTable().getCost( node.getEdgePosition( from ), node.getEdgePosition( to ) );
+    public Distance getTurnCost( N node, E from, E to ) {
+        return node.getTurnDistance( this, from, to );
     }
 
     @Override
-    public Iterator<Edge> getEdges( Node node ) {
-        return node.getEdges();
+    public Iterator<E> getEdges( N node ) {
+        return (Iterator<E>) node.getEdges( this );
     }
 
     @Override
-    public Coordinate getNodeCoordinate( Node node ) {
-        return node.getCoordinate();
+    public Coordinate getNodeCoordinate( N node ) {
+//        if ( !nodes.contains( node ) ) {
+//            throw new IllegalArgumentException( "Graph does not contain node: " + node );
+//        }
+        return node.getCoordinate( this );
 //        if ( coordinates == null ) {
 //            throw new IllegalStateException( "Coordinates not set" );
 //        }
@@ -112,7 +115,7 @@ public class UndirectedGraph implements Graph {
     public String toString() {
         StringBuilder sb = new StringBuilder();
         sb.append( "UndirectedGraph{" ).append( "nodes=[" );
-        for ( Node node : nodes ) {
+        for ( N node : nodes ) {
             sb.append( node.getId() ).append( "," );
         }
         if ( !nodes.isEmpty() ) {
@@ -121,7 +124,7 @@ public class UndirectedGraph implements Graph {
             sb.append( "]" );
         }
         sb.append( ",edges=[" );
-        for ( Edge edge : edges ) {
+        for ( E edge : edges ) {
             sb.append( edge.getId() ).append( "," );
         }
         if ( !edges.isEmpty() ) {
@@ -130,14 +133,12 @@ public class UndirectedGraph implements Graph {
             sb.append( "]" );
         }
         sb.append( ",mapping={" );
-        for ( Node node : nodes ) {
+        for ( N node : nodes ) {
             sb.append( node.getId() ).append( "=>[" );
-            Iterator<Edge> edgeIterator = node.getEdges();
-            while ( edgeIterator.hasNext() ) {
-                Edge e = edgeIterator.next();
-                sb.append( e.getSource().equals( node ) ? "+" : "-" ).append( e.getId() ).append( "," );
+            for ( E e : getEdges( node ) ) {
+                sb.append( e.getSource( this ).equals( node ) ? "+" : "-" ).append( e.getId() ).append( "," );
             }
-            if ( node.getEdges().hasNext() ) {
+            if ( node.getEdges( this ).hasNext() ) {
                 sb.replace( sb.length() - 1, sb.length(), "]" );
             } else {
                 sb.append( "]" );

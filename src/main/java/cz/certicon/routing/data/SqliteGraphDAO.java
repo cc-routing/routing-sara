@@ -6,9 +6,9 @@
 package cz.certicon.routing.data;
 
 import cz.certicon.routing.data.basic.database.SimpleDatabase;
-import cz.certicon.routing.model.graph.Edge;
+import cz.certicon.routing.model.graph.SimpleEdge;
 import cz.certicon.routing.model.graph.Graph;
-import cz.certicon.routing.model.graph.Node;
+import cz.certicon.routing.model.graph.SimpleNode;
 import cz.certicon.routing.model.graph.TurnTable;
 import cz.certicon.routing.model.graph.UndirectedGraph;
 import cz.certicon.routing.model.values.Distance;
@@ -69,20 +69,20 @@ public class SqliteGraphDAO implements GraphDAO {
                 matrixContainer.matrix[rs.getInt( "row_id" )][rs.getInt( "column_id" )] = Distance.newInstance( rs.getDouble( "value" ) );
             }
             // read nodes
-            TLongObjectMap<Node> nodeMap = new TLongObjectHashMap<>();
+            TLongObjectMap<SimpleNode> nodeMap = new TLongObjectHashMap<>();
             rs = database.read( "SELECT *, ST_AsText(geom) AS point FROM nodes" );
             while ( rs.next() ) {
-                Node node = new Node( rs.getLong( "id" ) );
+                SimpleNode node = new SimpleNode( rs.getLong( "id" ) );
                 TurnTable turnTable = new TurnTable( turnTableMap.get( rs.getInt( "turn_table_id" ) ).matrix );
                 node.setTurnTable( turnTable );
                 node.setCoordinate( GeometryUtils.toCoordinatesFromWktPoint( rs.getString( "point" ) ) );
                 nodeMap.put( node.getId(), node );
             }
             // read edges
-            Set<Edge> edgeSet = new HashSet<>();
+            Set<SimpleEdge> edgeSet = new HashSet<>();
             rs = database.read( "SELECT * FROM edges e JOIN node_to_edges nte ON e.id = nte.edge_id;" );
             while ( rs.next() ) {
-                Edge edge = new Edge( rs.getLong( "id" ), rs.getInt( "oneway" ) != 0,
+                SimpleEdge edge = new SimpleEdge( rs.getLong( "id" ), rs.getInt( "oneway" ) != 0,
                         nodeMap.get( rs.getLong( "source" ) ),
                         nodeMap.get( rs.getLong( "target" ) ),
                         Distance.newInstance( rs.getDouble( "metric_length" ) ) ); // TODO choose metric
@@ -94,7 +94,7 @@ public class SqliteGraphDAO implements GraphDAO {
             // lock nodes and build graph
             UndirectedGraph.UndirectedGraphBuilder graphBuilder = UndirectedGraph.builder();
             for ( Object value : nodeMap.values() ) {
-                Node node = (Node) value;
+                SimpleNode node = (SimpleNode) value;
                 node.lock();
                 graphBuilder.node( node );
             }

@@ -13,17 +13,17 @@ import gnu.trove.map.hash.TObjectIntHashMap;
  *
  * @author Michael Blaha {@literal <michael.blaha@certicon.cz>}
  */
-class MapNodeSizeContainer implements NodeSizeContainer {
+class MapNodeSizeContainer<N extends Node> implements NodeSizeContainer<N> {
 
-    private final TObjectIntMap<Node> map = new TObjectIntHashMap<>();
+    private final TObjectIntMap<N> map = new TObjectIntHashMap<>();
 
     @Override
-    public void put( Node node, int size ) {
+    public void put( N node, int size ) {
         map.put( node, size );
     }
 
     @Override
-    public int getSize( Node node ) {
+    public int getSize( N node ) {
         return map.get( node );
     }
 

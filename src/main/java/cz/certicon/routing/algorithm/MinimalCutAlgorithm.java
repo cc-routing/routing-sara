@@ -7,7 +7,8 @@ package cz.certicon.routing.algorithm;
 
 import cz.certicon.routing.model.MinimalCut;
 import cz.certicon.routing.model.graph.Graph;
-import cz.certicon.routing.model.graph.Node;
+import cz.certicon.routing.model.graph.preprocessing.ContractEdge;
+import cz.certicon.routing.model.graph.preprocessing.ContractNode;
 
 /**
  *
@@ -15,5 +16,5 @@ import cz.certicon.routing.model.graph.Node;
  */
 public interface MinimalCutAlgorithm {
 
-    public MinimalCut compute( Graph graph, Node source, Node target );
+    public MinimalCut compute( Graph<ContractNode, ContractEdge> graph, ContractNode source, ContractNode target );
 }

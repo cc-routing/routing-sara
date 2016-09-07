@@ -7,15 +7,16 @@ package cz.certicon.routing.algorithm.sara.preprocessing.filtering;
 
 import cz.certicon.routing.model.graph.Node;
 
+
 /**
  *
  * @author Michael Blaha {@literal <michael.blaha@certicon.cz>}
  */
-interface NodeSizeContainer {
+interface NodeSizeContainer<N extends Node> {
 
-    void put( Node node, int size );
+    void put( N node, int size );
 
-    int getSize( Node node );
+    int getSize( N node );
     
     void clear();
 }

@@ -6,12 +6,14 @@
 package cz.certicon.routing.algorithm;
 
 import cz.certicon.routing.model.values.Distance;
-import cz.certicon.routing.model.graph.Edge;
+import cz.certicon.routing.model.graph.SimpleEdge;
 import cz.certicon.routing.model.graph.Graph;
-import cz.certicon.routing.model.graph.Node;
+import cz.certicon.routing.model.graph.SimpleNode;
 import cz.certicon.routing.model.queue.PriorityQueue;
 import cz.certicon.routing.model.Route;
 import cz.certicon.routing.model.basic.Pair;
+import cz.certicon.routing.model.graph.Edge;
+import cz.certicon.routing.model.graph.Node;
 import cz.certicon.routing.model.graph.State;
 import cz.certicon.routing.model.queue.FibonacciHeap;
 import java.util.HashMap;
@@ -23,33 +25,35 @@ import java.util.Set;
 /**
  *
  * @author Michael Blaha {@literal <michael.blaha@certicon.cz>}
+ * @param <N> node type
+ * @param <E> edge type
  */
-public class DijkstraAlgorithm implements RoutingAlgorithm {
+public class DijkstraAlgorithm<N extends Node, E extends Edge> implements RoutingAlgorithm<N, E> {
 
     @Override
-    public Route route( Graph graph, Node source, Node destination ) {
-        Map<State, Distance> nodeDistanceMap = new HashMap<>();
-        PriorityQueue<State> pqueue = new FibonacciHeap<>();
+    public Route route( Graph<N, E> graph, N source, N destination ) {
+        Map<State<N, E>, Distance> nodeDistanceMap = new HashMap<>();
+        PriorityQueue<State<N, E>> pqueue = new FibonacciHeap<>();
         Distance upperBound = Distance.newInfinityInstance();
-        putNodeDistance( nodeDistanceMap, pqueue, new State( source, null ), Distance.newInstance( 0 ) );
+        putNodeDistance( nodeDistanceMap, pqueue, new State<N, E>( source, null ), Distance.newInstance( 0 ) );
         return route( graph, nodeDistanceMap, pqueue, upperBound, new NodeEndCondition( destination ), null, null );
     }
 
     @Override
-    public Route route( Graph graph, Edge source, Edge destination ) {
+    public Route route( Graph<N, E> graph, E source, E destination ) {
         return route( graph, source, destination, new Distance( 0 ), new Distance( 0 ), new Distance( 0 ), new Distance( 0 ) );
     }
 
     @Override
-    public Route route( Graph graph, Edge source, Edge destination, Distance toSourceStart, Distance toSourceEnd, Distance toDestinationStart, Distance toDestinationEnd ) {
-        Map<State, Distance> nodeDistanceMap = new HashMap<>();
-        PriorityQueue<State> pqueue = new FibonacciHeap<>();
+    public Route route( Graph<N, E> graph, E source, E destination, Distance toSourceStart, Distance toSourceEnd, Distance toDestinationStart, Distance toDestinationEnd ) {
+        Map<State<N, E>, Distance> nodeDistanceMap = new HashMap<>();
+        PriorityQueue<State<N, E>> pqueue = new FibonacciHeap<>();
         // create upper bound if the edges are equal and mark it
         Distance upperBound = Distance.newInfinityInstance();
-        Edge singleEdgePath = null;
+        E singleEdgePath = null;
         if ( source.equals( destination ) ) {
             Distance substract = toSourceEnd.substract( toDestinationEnd );
-            if ( source.isOneway() ) {
+            if ( source.isOneWay( graph ) ) {
                 // is positive or zero
                 if ( !substract.isNegative() ) {
                     upperBound = substract;
@@ -60,33 +64,33 @@ public class DijkstraAlgorithm implements RoutingAlgorithm {
                 singleEdgePath = source;
             }
         }
-        putNodeDistance( nodeDistanceMap, pqueue, new State( source.getTarget(), source ), toSourceEnd );
-        if ( !source.isOneway() ) {
-            putNodeDistance( nodeDistanceMap, pqueue, new State( source.getSource(), source ), toSourceStart );
+        putNodeDistance( nodeDistanceMap, pqueue, new State( source.getTarget( graph ), source ), toSourceEnd );
+        if ( !source.isOneWay( graph ) ) {
+            putNodeDistance( nodeDistanceMap, pqueue, new State( source.getSource( graph ), source ), toSourceStart );
         }
         return route( graph, nodeDistanceMap, pqueue, upperBound, new EdgeEndCondition( graph, destination, toDestinationStart, toDestinationEnd ), singleEdgePath, destination );
     }
 
-    private Route route( Graph graph, Map<State, Distance> nodeDistanceMap, PriorityQueue<State> pqueue, Distance upperBound, EndCondition endCondition, Edge singleEdgePath, Edge endEdge ) {
+    private Route route( Graph<N, E> graph, Map<State<N, E>, Distance> nodeDistanceMap, PriorityQueue<State<N, E>> pqueue, Distance upperBound, EndCondition<N, E> endCondition, E singleEdgePath, E endEdge ) {
         Map<State, State> predecessorMap = new HashMap<>();
         Set<State> closedStates = new HashSet<>();
         State finalState = null;
 
         while ( !pqueue.isEmpty() ) {
-            State state = pqueue.extractMin();
+            State<N, E> state = pqueue.extractMin();
             Distance distance = nodeDistanceMap.get( state );
             closedStates.add( state );
             Pair<State, Distance> updatePair = endCondition.update( finalState, upperBound, state, distance );
             upperBound = updatePair.b;
             finalState = updatePair.a;
-            Iterator<Edge> edges = graph.getOutgoingEdges( state.getNode() );
+            Iterator<E> edges = graph.getOutgoingEdges( state.getNode() );
             while ( edges.hasNext() ) {
-                Edge edge = edges.next();
-                Node targetNode = graph.getOtherNode( edge, state.getNode() );
+                E edge = edges.next();
+                N targetNode = graph.getOtherNode( edge, state.getNode() );
                 State targetState = new State( targetNode, edge );
                 if ( !closedStates.contains( targetState ) ) {
                     Distance targetDistance = ( nodeDistanceMap.containsKey( targetState ) ) ? nodeDistanceMap.get( targetState ) : Distance.newInfinityInstance();
-                    Distance alternativeDistance = distance.add( edge.getLength() ).add( state.isFirst() ? Distance.newInstance( 0 ) : graph.getTurnCost( state.getNode(), state.getEdge(), edge ) );
+                    Distance alternativeDistance = distance.add( graph.getLength( edge ) ).add( state.isFirst() ? Distance.newInstance( 0 ) : graph.getTurnCost( state.getNode(), state.getEdge(), edge ) );
                     if ( alternativeDistance.isLowerThan( targetDistance ) ) {
                         putNodeDistance( nodeDistanceMap, pqueue, targetState, alternativeDistance );
                         predecessorMap.put( targetState, state );
@@ -95,8 +99,8 @@ public class DijkstraAlgorithm implements RoutingAlgorithm {
             }
         }
         if ( finalState != null ) {
-            Route.RouteBuilder builder = Route.builder();
-            State currentState = finalState;
+            Route.RouteBuilder<N, E> builder = Route.builder( graph );
+            State<N, E> currentState = finalState;
             while ( currentState != null && !currentState.isFirst() ) {
                 builder.addAsFirst( currentState.getEdge() );
                 currentState = predecessorMap.get( currentState );
@@ -106,7 +110,7 @@ public class DijkstraAlgorithm implements RoutingAlgorithm {
             }
             return builder.build();
         } else if ( singleEdgePath != null ) {
-            Route.RouteBuilder builder = Route.builder();
+            Route.RouteBuilder<N, E> builder = Route.builder( graph );
             builder.addAsFirst( singleEdgePath );
             return builder.build();
         } else {
@@ -114,25 +118,25 @@ public class DijkstraAlgorithm implements RoutingAlgorithm {
         }
     }
 
-    private void putNodeDistance( Map<State, Distance> nodeDistanceMap, PriorityQueue<State> pqueue, State node, Distance distance ) {
+    private void putNodeDistance( Map<State<N, E>, Distance> nodeDistanceMap, PriorityQueue<State<N, E>> pqueue, State<N, E> node, Distance distance ) {
         pqueue.decreaseKey( node, distance.getValue() );
         nodeDistanceMap.put( node, distance );
     }
 
-    private interface EndCondition {
+    private interface EndCondition<N extends Node, E extends Edge> {
 
-        public Pair<State, Distance> update( State currentFinalState, Distance currentUpperBound, State currentState, Distance currentDistance );
+        public Pair<State<N, E>, Distance> update( State<N, E> currentFinalState, Distance currentUpperBound, State<N, E> currentState, Distance currentDistance );
 
     }
 
-    private static class EdgeEndCondition implements EndCondition {
+    private static class EdgeEndCondition<N extends Node, E extends Edge> implements EndCondition<N, E> {
 
-        private final Graph graph;
-        private final Edge destination;
+        private final Graph<N, E> graph;
+        private final E destination;
         private final Distance toDestinationStart;
         private final Distance toDestinationEnd;
 
-        public EdgeEndCondition( Graph graph, Edge destination, Distance toDestinationStart, Distance toDestinationEnd ) {
+        public EdgeEndCondition( Graph<N, E> graph, E destination, Distance toDestinationStart, Distance toDestinationEnd ) {
             this.graph = graph;
             this.destination = destination;
             this.toDestinationStart = toDestinationStart;
@@ -140,14 +144,14 @@ public class DijkstraAlgorithm implements RoutingAlgorithm {
         }
 
         @Override
-        public Pair<State, Distance> update( State currentFinalState, Distance currentUpperBound, State currentState, Distance currentDistance ) {
-            if ( currentState.getNode().equals( destination.getSource() ) ) {
+        public Pair<State<N, E>, Distance> update( State<N, E> currentFinalState, Distance currentUpperBound, State<N, E> currentState, Distance currentDistance ) {
+            if ( currentState.getNode().equals( destination.getSource( graph ) ) ) {
                 Distance completeDistance = currentDistance.add( toDestinationStart ).add( graph.getTurnCost( currentState.getNode(), currentState.getEdge(), destination ) );
                 if ( completeDistance.isLowerThan( currentUpperBound ) ) {
                     return new Pair<>( currentState, completeDistance );
                 }
             }
-            if ( !destination.isOneway() && currentState.getNode().equals( destination.getTarget() ) ) {
+            if ( !destination.isOneWay( graph ) && currentState.getNode().equals( destination.getTarget( graph ) ) ) {
                 Distance completeDistance = currentDistance.add( toDestinationEnd ).add( graph.getTurnCost( currentState.getNode(), currentState.getEdge(), destination ) );
                 if ( completeDistance.isLowerThan( currentUpperBound ) ) {
                     return new Pair<>( currentState, completeDistance );
@@ -158,16 +162,16 @@ public class DijkstraAlgorithm implements RoutingAlgorithm {
 
     }
 
-    private static class NodeEndCondition implements EndCondition {
+    private static class NodeEndCondition<N extends Node, E extends Edge> implements EndCondition<N, E> {
 
-        private final Node destination;
+        private final N destination;
 
-        public NodeEndCondition( Node destination ) {
+        public NodeEndCondition( N destination ) {
             this.destination = destination;
         }
 
         @Override
-        public Pair<State, Distance> update( State currentFinalState, Distance currentUpperBound, State currentState, Distance currentDistance ) {
+        public Pair<State<N, E>, Distance> update( State<N, E> currentFinalState, Distance currentUpperBound, State<N, E> currentState, Distance currentDistance ) {
             if ( currentState.getNode().equals( destination ) ) {
                 if ( currentDistance.isLowerThan( currentUpperBound ) ) {
                     return new Pair<>( currentState, currentDistance );

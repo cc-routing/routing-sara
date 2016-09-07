@@ -5,8 +5,12 @@
  */
 package cz.certicon.routing.model.graph.preprocessing;
 
+import cz.certicon.routing.model.graph.AbstractNode;
 import cz.certicon.routing.model.graph.Edge;
+import cz.certicon.routing.model.graph.Graph;
 import cz.certicon.routing.model.graph.Node;
+import cz.certicon.routing.model.graph.SimpleEdge;
+import cz.certicon.routing.model.graph.SimpleNode;
 import cz.certicon.routing.utils.collections.CollectionUtils;
 import java.util.Collection;
 import java.util.HashMap;
@@ -19,7 +23,7 @@ import java.util.Set;
  *
  * @author Michael Blaha {@literal <michael.blaha@certicon.cz>}
  */
-public class ContractNode extends Node {
+public class ContractNode extends AbstractNode<ContractEdge> {
 
     private final Collection<Node> nodes;
 
@@ -28,45 +32,39 @@ public class ContractNode extends Node {
         this.nodes = new HashSet<>( nodes );
     }
 
-    public ContractNode mergeWith( ContractNode node, MaxIdContainer nodeMaxIdContainer, MaxIdContainer edgeMaxIdContainer ) {
+    public ContractNode mergeWith( Graph<ContractNode, ContractEdge> graph, ContractNode node, MaxIdContainer nodeMaxIdContainer, MaxIdContainer edgeMaxIdContainer ) {
         Set<Node> newNodes = new HashSet<>( this.nodes );
         newNodes.addAll( node.nodes );
         ContractNode contractedNode = new ContractNode( nodeMaxIdContainer.next(), newNodes );
-        Map<Node, Set<Edge>> targetMap = new HashMap<>();
+        Map<ContractNode, Set<ContractEdge>> targetMap = new HashMap<>();
 //        System.out.println( "iterator edges for: " + this );
-        Iterator<Edge> thisIterator = getEdges();
-        while ( thisIterator.hasNext() ) {
-            Edge edge = thisIterator.next();
-            Node target = edge.getOtherNode( this );
+        for ( ContractEdge edge : getEdges( graph ) ) {
+            ContractNode target = edge.getOtherNode( graph, this );
             if ( !target.equals( node ) ) {
 //                System.out.println( "edge = " + edge + ", target = " + target );
                 CollectionUtils.getSet( targetMap, target ).add( edge );
             }
         }
-//        System.out.println( "iterator edges for: " + node );
-        Iterator<Edge> otherIterator = node.getEdges();
-        while ( otherIterator.hasNext() ) {
-            Edge edge = otherIterator.next();
-            Node target = edge.getOtherNode( node );
+        for ( ContractEdge edge : node.getEdges( graph ) ) {
+            ContractNode target = edge.getOtherNode( graph, node );
             if ( !target.equals( this ) ) {
 //                System.out.println( "edge = " + edge + ", target = " + target );
                 CollectionUtils.getSet( targetMap, target ).add( edge );
             }
         }
-//        System.out.println( "targetMap = " + targetMap );
-        for ( Map.Entry<Node, Set<Edge>> entry : targetMap.entrySet() ) {
+        for ( Map.Entry<ContractNode, Set<ContractEdge>> entry : targetMap.entrySet() ) {
 //            System.out.println( "target map entry = " + entry );
-            ContractNode target = (ContractNode) entry.getKey();
-            Set<Edge> edges = entry.getValue();
+            ContractNode target = entry.getKey();
+            Set<ContractEdge> edges = entry.getValue();
             ContractEdge prev = null;
             ContractEdge curr = null;
-            for ( Edge edge : edges ) {
+            for ( ContractEdge edge : edges ) {
                 target.removeEdge( edge );
                 curr = (ContractEdge) edge;
                 if ( prev != null ) {
                     curr = prev.mergeWith( curr, contractedNode, target, edgeMaxIdContainer.next() );
                 } else {
-                    curr = new ContractEdge( edgeMaxIdContainer.next(), false, contractedNode, target, curr.getLength(), new HashSet<>( curr.getEdges() ) );
+                    curr = new ContractEdge( edgeMaxIdContainer.next(), false, contractedNode, target, new HashSet<>( curr.getEdges() ) );
                 }
 //                System.out.println( "curr=" + curr );
                 prev = curr;

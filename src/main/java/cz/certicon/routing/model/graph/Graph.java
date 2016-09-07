@@ -13,8 +13,10 @@ import cz.certicon.routing.utils.collections.Iterator;
  * Definition of graph
  *
  * @author Michael Blaha {@literal <michael.blaha@certicon.cz>}
+ * @param <N>
+ * @param <E>
  */
-public interface Graph extends Cloneable {
+public interface Graph<N extends Node, E extends Edge> {
 
     /**
      * Returns amount of nodes in the graph
@@ -28,7 +30,7 @@ public interface Graph extends Cloneable {
      *
      * @return nodes' iterator
      */
-    Iterator<Node> getNodes();
+    Iterator<N> getNodes();
 
     /**
      * Returns amount of edges in the graph
@@ -42,7 +44,7 @@ public interface Graph extends Cloneable {
      *
      * @return edges' iterator
      */
-    Iterator<Edge> getEdges();
+    Iterator<E> getEdges();
 
     /**
      * Returns iterator of edges adjacent to the given node
@@ -50,7 +52,7 @@ public interface Graph extends Cloneable {
      * @param node given node
      * @return iterator of node's edges
      */
-    Iterator<Edge> getEdges( Node node );
+    Iterator<E> getEdges( N node );
 
     /**
      * Returns iterator of edges incoming to the given node
@@ -58,7 +60,7 @@ public interface Graph extends Cloneable {
      * @param node given node
      * @return iterator of incoming edges
      */
-    Iterator<Edge> getIncomingEdges( Node node );
+    Iterator<E> getIncomingEdges( N node );
 
     /**
      * Returns iterator of edges outgoing from the given node
@@ -66,7 +68,7 @@ public interface Graph extends Cloneable {
      * @param node given node
      * @return iterator of outgoing edges
      */
-    Iterator<Edge> getOutgoingEdges( Node node );
+    Iterator<E> getOutgoingEdges( N node );
 
     /**
      * Returns source node of the given edge
@@ -74,7 +76,7 @@ public interface Graph extends Cloneable {
      * @param edge given edge
      * @return source node
      */
-    Node getSourceNode( Edge edge );
+    N getSourceNode( E edge );
 
     /**
      * Returns target node of the given edge
@@ -82,7 +84,7 @@ public interface Graph extends Cloneable {
      * @param edge given edge
      * @return target node
      */
-    Node getTargetNode( Edge edge );
+    N getTargetNode( E edge );
 
     /**
      * Returns other node (node on the opposite side from the given node) of the
@@ -92,7 +94,7 @@ public interface Graph extends Cloneable {
      * @param node given node
      * @return the other node
      */
-    Node getOtherNode( Edge edge, Node node );
+    N getOtherNode( E edge, N node );
 
     /**
      * Returns cost of the turn from edge to edge via the given node
@@ -102,7 +104,7 @@ public interface Graph extends Cloneable {
      * @param to to (turn destination) edge
      * @return cost of the turn
      */
-    Distance getTurnCost( Node node, Edge from, Edge to );
+    Distance getTurnCost( N node, E from, E to );
 
     /**
      * Returns Coordinate (latitude, longitude) of the given node. Might throw
@@ -111,7 +113,9 @@ public interface Graph extends Cloneable {
      * @param node given node
      * @return coordinate
      */
-    Coordinate getNodeCoordinate( Node node );
+    Coordinate getNodeCoordinate( N node );
+    
+    Distance getLength(E edge);
 
 //    /**
 //     * Creates deep copy of this graph

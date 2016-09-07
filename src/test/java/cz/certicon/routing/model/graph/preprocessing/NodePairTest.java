@@ -5,8 +5,8 @@
  */
 package cz.certicon.routing.model.graph.preprocessing;
 
-import cz.certicon.routing.model.graph.Edge;
-import cz.certicon.routing.model.graph.Node;
+import cz.certicon.routing.model.graph.SimpleEdge;
+import cz.certicon.routing.model.graph.SimpleNode;
 import cz.certicon.routing.model.values.Distance;
 import java.util.HashSet;
 import org.junit.After;
@@ -47,9 +47,9 @@ public class NodePairTest {
     @Test
     public void testOther() {
         System.out.println( "other" );
-        ContractNode nodeA = new ContractNode( 0, new HashSet<Node>() );
-        ContractNode nodeB = new ContractNode( 1, new HashSet<Node>() );
-        ContractEdge edge = new ContractEdge( 0, false, nodeB, nodeA, Distance.newInfinityInstance(), new HashSet<Edge>() );
+        ContractNode nodeA = new ContractNode( 0, new HashSet<SimpleNode>() );
+        ContractNode nodeB = new ContractNode( 1, new HashSet<SimpleNode>() );
+        ContractEdge edge = new ContractEdge( 0, false, nodeB, nodeA, Distance.newInfinityInstance(), new HashSet<SimpleEdge>() );
         NodePair instance = new NodePair( nodeA, nodeB, edge );
         assertEquals( nodeA, instance.other( nodeB ) );
         assertEquals( nodeB, instance.other( nodeA ) );
@@ -61,10 +61,10 @@ public class NodePairTest {
     @Test( expected = IllegalArgumentException.class )
     public void testOther_unknown() {
         System.out.println( "other_unknown" );
-        ContractNode nodeA = new ContractNode( 0, new HashSet<Node>() );
-        ContractNode nodeB = new ContractNode( 1, new HashSet<Node>() );
-        ContractNode nodeC = new ContractNode( 2, new HashSet<Node>() );
-        ContractEdge edge = new ContractEdge( 0, false, nodeB, nodeA, Distance.newInfinityInstance(), new HashSet<Edge>() );
+        ContractNode nodeA = new ContractNode( 0, new HashSet<SimpleNode>() );
+        ContractNode nodeB = new ContractNode( 1, new HashSet<SimpleNode>() );
+        ContractNode nodeC = new ContractNode( 2, new HashSet<SimpleNode>() );
+        ContractEdge edge = new ContractEdge( 0, false, nodeB, nodeA, Distance.newInfinityInstance(), new HashSet<SimpleEdge>() );
         NodePair instance = new NodePair( nodeA, nodeB, edge );
         instance.other( nodeC );
     }
@@ -75,9 +75,9 @@ public class NodePairTest {
     @Test
     public void testHashCode() {
         System.out.println( "hashCode" );
-        ContractNode nodeA = new ContractNode( 0, new HashSet<Node>() );
-        ContractNode nodeB = new ContractNode( 1, new HashSet<Node>() );
-        ContractEdge edge = new ContractEdge( 0, false, nodeB, nodeA, Distance.newInfinityInstance(), new HashSet<Edge>() );
+        ContractNode nodeA = new ContractNode( 0, new HashSet<SimpleNode>() );
+        ContractNode nodeB = new ContractNode( 1, new HashSet<SimpleNode>() );
+        ContractEdge edge = new ContractEdge( 0, false, nodeB, nodeA, Distance.newInfinityInstance(), new HashSet<SimpleEdge>() );
         NodePair instanceA = new NodePair( nodeA, nodeB, edge );
         NodePair instanceB = new NodePair( nodeB, nodeA, edge );
         assertTrue( instanceA.hashCode() == instanceB.hashCode() );
@@ -89,9 +89,9 @@ public class NodePairTest {
     @Test
     public void testEquals() {
         System.out.println( "equals" );
-        ContractNode nodeA = new ContractNode( 0, new HashSet<Node>() );
-        ContractNode nodeB = new ContractNode( 1, new HashSet<Node>() );
-        ContractEdge edge = new ContractEdge( 0, false, nodeB, nodeA, Distance.newInfinityInstance(), new HashSet<Edge>() );
+        ContractNode nodeA = new ContractNode( 0, new HashSet<SimpleNode>() );
+        ContractNode nodeB = new ContractNode( 1, new HashSet<SimpleNode>() );
+        ContractEdge edge = new ContractEdge( 0, false, nodeB, nodeA, Distance.newInfinityInstance(), new HashSet<SimpleEdge>() );
         NodePair instanceA = new NodePair( nodeA, nodeB, edge );
         NodePair instanceB = new NodePair( nodeB, nodeA, edge );
         assertTrue( instanceA.equals( instanceB ) );

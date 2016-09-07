@@ -56,10 +56,10 @@ public class GraphStreamPresenter implements GraphPresenter {
 //                + "arrow-shape: arrow;"
 //                + "arrow-size: 8px, 4px;"
 //                + "}" );
-        Iterator<cz.certicon.routing.model.graph.Node> nodesIterator;
+        Iterator<cz.certicon.routing.model.graph.SimpleNode> nodesIterator;
         nodesIterator = graph.getNodes();
         while ( nodesIterator.hasNext() ) {
-            cz.certicon.routing.model.graph.Node node = nodesIterator.next();
+            cz.certicon.routing.model.graph.SimpleNode node = nodesIterator.next();
 //            System.out.println( "adding node #" + node.getId() );
             Node n = displayGraph.addNode( "" + node.getId() );
             nodeMap.put( node.getId(), n );
@@ -67,9 +67,9 @@ public class GraphStreamPresenter implements GraphPresenter {
                 n.setAttribute( "ui.label", "" + node.getId() );
             }
         }
-        Iterator<cz.certicon.routing.model.graph.Edge> edgeIterator = graph.getEdges();
+        Iterator<cz.certicon.routing.model.graph.SimpleEdge> edgeIterator = graph.getEdges();
         while ( edgeIterator.hasNext() ) {
-            cz.certicon.routing.model.graph.Edge edge = edgeIterator.next();
+            cz.certicon.routing.model.graph.SimpleEdge edge = edgeIterator.next();
 //            System.out.println( "adding edge #" + edge.getId() );
             Edge addEdge = displayGraph.addEdge( edge.getId() + "", edge.getSource().getId() + "", edge.getTarget().getId() + "", true );
             addEdge.setAttribute( "ui.label", "" + edge.getLength().getValue() );

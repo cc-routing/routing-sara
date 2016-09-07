@@ -6,8 +6,8 @@
 package cz.certicon.routing.model;
 
 import cz.certicon.routing.model.values.Distance;
-import cz.certicon.routing.model.graph.Node;
-import cz.certicon.routing.model.graph.Edge;
+import cz.certicon.routing.model.graph.SimpleNode;
+import cz.certicon.routing.model.graph.SimpleEdge;
 import java.util.ArrayList;
 import java.util.List;
 import org.junit.After;
@@ -49,15 +49,15 @@ public class RouteTest {
     public void testBuilder() {
         System.out.println( "builder" );
         Route.RouteBuilder builder = Route.builder();
-        Node a = new Node( 0 );
-        Node b = new Node( 1 );
-        Node c = new Node( 2 );
-        Node d = new Node( 3 );
-        Node e = new Node( 4 );
-        Edge ab = new Edge( 0, false, a, b, Distance.newInstance( 0 ) );
-        Edge bc = new Edge( 1, false, c, b, Distance.newInstance( 0 ) );
-        Edge cd = new Edge( 2, false, c, d, Distance.newInstance( 0 ) );
-        Edge de = new Edge( 3, false, e, d, Distance.newInstance( 0 ) );
+        SimpleNode a = new SimpleNode( 0 );
+        SimpleNode b = new SimpleNode( 1 );
+        SimpleNode c = new SimpleNode( 2 );
+        SimpleNode d = new SimpleNode( 3 );
+        SimpleNode e = new SimpleNode( 4 );
+        SimpleEdge ab = new SimpleEdge( 0, false, a, b, Distance.newInstance( 0 ) );
+        SimpleEdge bc = new SimpleEdge( 1, false, c, b, Distance.newInstance( 0 ) );
+        SimpleEdge cd = new SimpleEdge( 2, false, c, d, Distance.newInstance( 0 ) );
+        SimpleEdge de = new SimpleEdge( 3, false, e, d, Distance.newInstance( 0 ) );
 
         Route route = builder.addAsLast( cd ).addAsFirst( bc ).addAsLast( de ).addAsFirst( ab ).build();
         assertEquals( "Route{source=0,target=4,edges=[0,1,2,3]}", toString( route ) );
@@ -70,15 +70,15 @@ public class RouteTest {
     public void testBuilderOneway() {
         System.out.println( "builder_oneway" );
         Route.RouteBuilder builder = Route.builder();
-        Node a = new Node( 0 );
-        Node b = new Node( 1 );
-        Node c = new Node( 2 );
-        Node d = new Node( 3 );
-        Node e = new Node( 4 );
-        Edge ab = new Edge( 0, false, a, b, Distance.newInstance( 0 ) );
-        Edge bc = new Edge( 1, true, c, b, Distance.newInstance( 0 ) );
-        Edge cd = new Edge( 2, false, c, d, Distance.newInstance( 0 ) );
-        Edge de = new Edge( 3, false, e, d, Distance.newInstance( 0 ) );
+        SimpleNode a = new SimpleNode( 0 );
+        SimpleNode b = new SimpleNode( 1 );
+        SimpleNode c = new SimpleNode( 2 );
+        SimpleNode d = new SimpleNode( 3 );
+        SimpleNode e = new SimpleNode( 4 );
+        SimpleEdge ab = new SimpleEdge( 0, false, a, b, Distance.newInstance( 0 ) );
+        SimpleEdge bc = new SimpleEdge( 1, true, c, b, Distance.newInstance( 0 ) );
+        SimpleEdge cd = new SimpleEdge( 2, false, c, d, Distance.newInstance( 0 ) );
+        SimpleEdge de = new SimpleEdge( 3, false, e, d, Distance.newInstance( 0 ) );
 
         Route route = builder.addAsLast( cd ).addAsFirst( bc ).addAsLast( de ).addAsFirst( ab ).build();
 
@@ -88,7 +88,7 @@ public class RouteTest {
     private static String toString( Route route ) {
         StringBuilder sb = new StringBuilder();
         sb.append( "Route{source=" ).append( route.getSource().getId() ).append( ",target=" ).append( route.getTarget().getId() ).append( ",edges=[" );
-        for ( Edge edge : route.getEdges() ) {
+        for ( SimpleEdge edge : route.getEdges() ) {
             sb.append( edge.getId() ).append( "," );
         }
         sb.replace( sb.length() - 1, sb.length(), "]}" );

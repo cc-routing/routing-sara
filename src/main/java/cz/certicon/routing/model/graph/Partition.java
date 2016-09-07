@@ -25,9 +25,9 @@ public class Partition implements Identifiable {
     long id;
 
     @Getter( AccessLevel.NONE )
-    Collection<Node> nodes;
+    Collection<SimpleNode> nodes;
 
-    public Iterator<Node> getNodes() {
+    public Iterator<SimpleNode> getNodes() {
         return new ImmutableIterator<>( nodes.iterator() );
     }
 

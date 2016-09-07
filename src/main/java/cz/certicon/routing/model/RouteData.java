@@ -7,7 +7,7 @@ package cz.certicon.routing.model;
 
 import cz.certicon.routing.model.values.Length;
 import cz.certicon.routing.model.values.Time;
-import cz.certicon.routing.model.graph.Edge;
+import cz.certicon.routing.model.graph.SimpleEdge;
 import cz.certicon.routing.model.values.Coordinate;
 import java.util.List;
 import java.util.Map;
@@ -23,11 +23,11 @@ import lombok.Value;
 public class RouteData {
 
     @Getter( AccessLevel.NONE )
-    Map<Edge, List<Coordinate>> coordinateMap;
+    Map<SimpleEdge, List<Coordinate>> coordinateMap;
     Length length;
     Time time;
 
-    public List<Coordinate> getCoordiantes( Edge edge ) {
+    public List<Coordinate> getCoordiantes( SimpleEdge edge ) {
         return coordinateMap.get( edge );
     }
 }

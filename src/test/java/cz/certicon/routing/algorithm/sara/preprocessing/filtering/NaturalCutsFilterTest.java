@@ -7,9 +7,9 @@ package cz.certicon.routing.algorithm.sara.preprocessing.filtering;
 
 import cz.certicon.routing.algorithm.sara.preprocessing.assembly.Assembler;
 import cz.certicon.routing.algorithm.sara.preprocessing.assembly.GreedyAssembler;
-import cz.certicon.routing.model.graph.Edge;
+import cz.certicon.routing.model.graph.SimpleEdge;
 import cz.certicon.routing.model.graph.Graph;
-import cz.certicon.routing.model.graph.Node;
+import cz.certicon.routing.model.graph.SimpleNode;
 import cz.certicon.routing.model.graph.TurnTable;
 import cz.certicon.routing.model.graph.UndirectedGraph;
 import cz.certicon.routing.model.graph.preprocessing.ContractNode;
@@ -40,8 +40,8 @@ import static org.junit.Assert.*;
 public class NaturalCutsFilterTest {
 
     private final UndirectedGraph graph;
-    private final Map<Long, Node> nodeMap;
-    private final Map<Long, Edge> edgeMap;
+    private final Map<Long, SimpleNode> nodeMap;
+    private final Map<Long, SimpleEdge> edgeMap;
     private final Map<TurnTable, TurnTable> turnTables;
 
     public NaturalCutsFilterTest() {
@@ -76,8 +76,8 @@ public class NaturalCutsFilterTest {
         NaturalCutsFilter instance = new NaturalCutsFilter( 1, 4, 10 );
 
         Graph originalGraph = GraphGeneratorUtils.generateGridGraph( nodeMap, edgeMap, turnTables, 5, 5 );
-        Set<Node> origNodes = new HashSet<>();
-        Iterator<Node> nodes = originalGraph.getNodes();
+        Set<SimpleNode> origNodes = new HashSet<>();
+        Iterator<SimpleNode> nodes = originalGraph.getNodes();
         while ( nodes.hasNext() ) {
             origNodes.add( nodes.next() );
         }
@@ -88,7 +88,7 @@ public class NaturalCutsFilterTest {
         nodes = filtered.getNodes();
         while ( nodes.hasNext() ) {
             ContractNode node = (ContractNode) nodes.next();
-            for ( Node n : node.getNodes() ) {
+            for ( SimpleNode n : node.getNodes() ) {
 //                System.out.println( "Graph does " + ( ( origNodes.contains( n ) ) ? "" : "NOT " ) + "contain node: node = " + n + ", graph = " + filtered );
                 assertTrue( origNodes.contains( n ) );
                 origNodes.remove( n );

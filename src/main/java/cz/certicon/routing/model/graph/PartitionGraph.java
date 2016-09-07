@@ -32,9 +32,9 @@ public class PartitionGraph implements Graph {
     @Getter( AccessLevel.NONE )
     Graph graph;
     @Getter( AccessLevel.NONE )
-    Map<Node, Partition> nodeToPartitionMap;
+    Map<SimpleNode, Partition> nodeToPartitionMap;
     @Getter( AccessLevel.NONE )
-    Map<Partition, Collection<Node>> partitionToNodesMap;
+    Map<Partition, Collection<SimpleNode>> partitionToNodesMap;
 
     @Override
     public int getNodesCount() {
@@ -42,7 +42,7 @@ public class PartitionGraph implements Graph {
     }
 
     @Override
-    public Iterator<Node> getNodes() {
+    public Iterator<SimpleNode> getNodes() {
         return graph.getNodes();
     }
 
@@ -52,58 +52,58 @@ public class PartitionGraph implements Graph {
     }
 
     @Override
-    public Iterator<Edge> getEdges() {
+    public Iterator<SimpleEdge> getEdges() {
         return graph.getEdges();
     }
 
     @Override
-    public Iterator<Edge> getIncomingEdges( Node node ) {
+    public Iterator<SimpleEdge> getIncomingEdges( SimpleNode node ) {
         return graph.getIncomingEdges( node );
     }
 
     @Override
-    public Iterator<Edge> getOutgoingEdges( Node node ) {
+    public Iterator<SimpleEdge> getOutgoingEdges( SimpleNode node ) {
         return graph.getOutgoingEdges( node );
     }
 
     @Override
-    public Node getSourceNode( Edge edge ) {
+    public SimpleNode getSourceNode( SimpleEdge edge ) {
         return graph.getSourceNode( edge );
     }
 
     @Override
-    public Node getTargetNode( Edge edge ) {
+    public SimpleNode getTargetNode( SimpleEdge edge ) {
         return graph.getTargetNode( edge );
     }
 
     @Override
-    public Node getOtherNode( Edge edge, Node node ) {
+    public SimpleNode getOtherNode( SimpleEdge edge, SimpleNode node ) {
         return graph.getOtherNode( edge, node );
     }
 
     @Override
-    public Distance getTurnCost( Node node, Edge from, Edge to ) {
+    public Distance getTurnCost( SimpleNode node, SimpleEdge from, SimpleEdge to ) {
         return graph.getTurnCost( node, from, to );
     }
 
     @Override
-    public Iterator<Edge> getEdges( Node node ) {
+    public Iterator<SimpleEdge> getEdges( SimpleNode node ) {
         return graph.getEdges( node );
     }
 
     @Override
-    public Coordinate getNodeCoordinate( Node node ) {
+    public Coordinate getNodeCoordinate( SimpleNode node ) {
         return graph.getNodeCoordinate( node );
     }
 
-    public Partition getPartition( Node node ) {
+    public Partition getPartition( SimpleNode node ) {
         if ( !nodeToPartitionMap.containsKey( node ) ) {
             throw new IllegalArgumentException( "Unknown node: " + node );
         }
         return nodeToPartitionMap.get( node );
     }
 
-    public Collection<Node> getNodes( Partition partition ) {
+    public Collection<SimpleNode> getNodes( Partition partition ) {
         if ( !partitionToNodesMap.containsKey( partition ) ) {
             throw new IllegalArgumentException( "Unknown partition: " + partition );
         }
@@ -130,20 +130,20 @@ public class PartitionGraph implements Graph {
 //        builder.nodes( nodes ).edges( edges );
 
         long maxEdgeId = Long.MIN_VALUE;
-        Iterator<Edge> edgeIterator = graph.getEdges();
+        Iterator<SimpleEdge> edgeIterator = graph.getEdges();
         while ( edgeIterator.hasNext() ) {
             maxEdgeId = Math.max( maxEdgeId, edgeIterator.next().getId() );
         }
         Map<Long, ContractNode> nodeMap = new HashMap<>();
         Map<NodePair, ContractEdge> edgeMap = new HashMap<>();
-        for ( Map.Entry<Partition, Collection<Node>> entry : partitionToNodesMap.entrySet() ) {
+        for ( Map.Entry<Partition, Collection<SimpleNode>> entry : partitionToNodesMap.entrySet() ) {
             ContractNode node = new ContractNode( entry.getKey().getId(), entry.getValue() );
             builder.node( node );
-            for ( Node n : node.getNodes() ) {
-                Iterator<Edge> edges = n.getEdges();
+            for ( SimpleNode n : node.getNodes() ) {
+                Iterator<SimpleEdge> edges = n.getEdges();
                 while ( edges.hasNext() ) {
-                    Edge e = edges.next();
-                    Node t = e.getOtherNode( n );
+                    SimpleEdge e = edges.next();
+                    SimpleNode t = e.getOtherNode( n );
                     Partition targetPartition = getPartition( t );
                     if ( nodeMap.containsKey( targetPartition.getId() ) ) {
                         ContractNode target = nodeMap.get( targetPartition.getId() );

@@ -6,15 +6,18 @@
 package cz.certicon.routing.model;
 
 import cz.certicon.routing.model.graph.Edge;
+import cz.certicon.routing.model.graph.SimpleEdge;
 import java.util.Collection;
 import lombok.Value;
 
 /**
  *
  * @author Michael Blaha {@literal <michael.blaha@certicon.cz>}
+ * @param <E>
  */
 @Value
-public class MinimalCut {
-    Collection<Edge> cutEdges;
+public class MinimalCut<E extends Edge> {
+
+    Collection<E> cutEdges;
     double cutSize;
 }

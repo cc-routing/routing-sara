@@ -6,9 +6,9 @@
 package cz.certicon.routing.algorithm.sara.preprocessing.assembly;
 
 import cz.certicon.routing.algorithm.sara.preprocessing.filtering.NaturalCutsFilter;
-import cz.certicon.routing.model.graph.Edge;
+import cz.certicon.routing.model.graph.SimpleEdge;
 import cz.certicon.routing.model.graph.Graph;
-import cz.certicon.routing.model.graph.Node;
+import cz.certicon.routing.model.graph.SimpleNode;
 import cz.certicon.routing.model.graph.Partition;
 import cz.certicon.routing.model.graph.PartitionGraph;
 import cz.certicon.routing.model.graph.TurnTable;
@@ -44,8 +44,8 @@ public class GreedyAssemblerTest {
 
     private UndirectedGraph g;
     private FilteredGraph graph;
-    private final Map<Long, Node> nodeMap;
-    private final Map<Long, Edge> edgeMap;
+    private final Map<Long, SimpleNode> nodeMap;
+    private final Map<Long, SimpleEdge> edgeMap;
     private final Map<TurnTable, TurnTable> turnTables;
     private static final int CELL_SIZE = 10;
 
@@ -86,8 +86,8 @@ public class GreedyAssemblerTest {
         System.out.println( "assemble" );
         createNewGraph();
         Graph originalGraph = GraphGeneratorUtils.generateGridGraph( nodeMap, edgeMap, turnTables, 5, 5 );
-        Set<Node> origNodes = new HashSet<>();
-        Iterator<Node> nodes = originalGraph.getNodes();
+        Set<SimpleNode> origNodes = new HashSet<>();
+        Iterator<SimpleNode> nodes = originalGraph.getNodes();
         while ( nodes.hasNext() ) {
             origNodes.add( nodes.next() );
         }
@@ -95,7 +95,7 @@ public class GreedyAssemblerTest {
         createNewGraph();
         GreedyAssembler assembler = new GreedyAssembler( 0.5, 0.5, CELL_SIZE );
         PartitionGraph assembled = assembler.assemble( originalGraph, graph );
-        for ( Node origNode : origNodes ) {
+        for ( SimpleNode origNode : origNodes ) {
             assertNotNull( assembled.getPartition( origNode ) );
         }
         
@@ -169,10 +169,10 @@ public class GreedyAssemblerTest {
         createNewGraph();
         GreedyAssembler instance = new GreedyAssembler( 0.5, 0.5, CELL_SIZE );
         PriorityQueue<NodePair> result = instance.initQueue( graph );
-        Iterator<Node> nodes = graph.getNodes();
+        Iterator<SimpleNode> nodes = graph.getNodes();
         while ( nodes.hasNext() ) {
             ContractNode node = (ContractNode) nodes.next();
-            Iterator<Edge> edges = node.getEdges();
+            Iterator<SimpleEdge> edges = node.getEdges();
             while ( edges.hasNext() ) {
                 ContractEdge edge = (ContractEdge) edges.next();
                 ContractNode target = (ContractNode) edge.getOtherNode( node );
@@ -194,10 +194,10 @@ public class GreedyAssemblerTest {
         NodePair origPair = queue.extractMin();
         ContractNode nodeA = origPair.nodeA;
         ContractNode nodeB = origPair.nodeB;
-        Iterator<Edge> edges;
+        Iterator<SimpleEdge> edges;
 //        System.out.println( "CLEARING PAIRS FOR: " + nodeA );
         PriorityQueue<NodePair> result = instance.clearPairs( queue, origPair, nodeA );
-        Iterator<Node> nodes = graph.getNodes();
+        Iterator<SimpleNode> nodes = graph.getNodes();
         while ( nodes.hasNext() ) {
             ContractNode node = (ContractNode) nodes.next();
             edges = node.getEdges();
@@ -243,8 +243,8 @@ public class GreedyAssemblerTest {
         NodePair origPair = queue.extractMin();
         ContractNode nodeA = origPair.nodeA;
         ContractNode nodeB = origPair.nodeB;
-        Iterator<Edge> edges;
-        Iterator<Node> nodes;
+        Iterator<SimpleEdge> edges;
+        Iterator<SimpleNode> nodes;
         instance.clearPairs( queue, origPair, nodeA );
         instance.clearPairs( queue, origPair, nodeB );
         instance.addPairs( queue, graph, nodeB );

@@ -6,9 +6,9 @@
 package cz.certicon.routing.utils;
 
 import cz.certicon.routing.model.Route;
-import cz.certicon.routing.model.graph.Edge;
+import cz.certicon.routing.model.graph.SimpleEdge;
 import cz.certicon.routing.model.graph.Graph;
-import cz.certicon.routing.model.graph.Node;
+import cz.certicon.routing.model.graph.SimpleNode;
 import cz.certicon.routing.model.graph.Partition;
 import cz.certicon.routing.model.graph.PartitionGraph;
 import cz.certicon.routing.model.graph.UndirectedGraph;
@@ -36,9 +36,9 @@ public class DisplayUtils {
         Graph assembled = graph.toPartitionsOnlyGraph();
         presenter.setGraph( assembled );
         ColorUtils.ColorSupplier colorSupplier = ColorUtils.createColorSupplier( assembled.getNodesCount() );
-        Iterator<Node> nodes = assembled.getNodes();
+        Iterator<SimpleNode> nodes = assembled.getNodes();
         while ( nodes.hasNext() ) {
-            Node node = nodes.next();
+            SimpleNode node = nodes.next();
             Color c = colorSupplier.nextColor();
             presenter.setNodeColor( node.getId(), c );
         }
@@ -53,9 +53,9 @@ public class DisplayUtils {
         while ( partitions.hasNext() ) {
             Partition partition = partitions.next();
             Color c = colorSupplier.nextColor();
-            Iterator<Node> nodes = partition.getNodes();
+            Iterator<SimpleNode> nodes = partition.getNodes();
             while ( nodes.hasNext() ) {
-                Node node = nodes.next();
+                SimpleNode node = nodes.next();
                 presenter.setNodeColor( node.getId(), c );
             }
         }
@@ -68,9 +68,9 @@ public class DisplayUtils {
         Graph assembled = graph.toPartitionsOnlyGraph();
         presenter.setGraph( assembled );
         ColorUtils.ColorSupplier colorSupplier = ColorUtils.createColorSupplier( assembled.getNodesCount() );
-        Iterator<Node> nodes = assembled.getNodes();
+        Iterator<SimpleNode> nodes = assembled.getNodes();
         while ( nodes.hasNext() ) {
-            Node node = nodes.next();
+            SimpleNode node = nodes.next();
             Color c = colorSupplier.nextColor();
             colorMap.put( node.getId(), c );
             presenter.setNodeColor( node.getId(), c );
@@ -84,7 +84,7 @@ public class DisplayUtils {
             Color c = colorMap.get( partition.getId() );
             nodes = partition.getNodes();
             while ( nodes.hasNext() ) {
-                Node node = nodes.next();
+                SimpleNode node = nodes.next();
                 presenter.setNodeColor( node.getId(), c );
             }
         }

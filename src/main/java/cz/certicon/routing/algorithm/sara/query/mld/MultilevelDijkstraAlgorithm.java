@@ -7,9 +7,9 @@ package cz.certicon.routing.algorithm.sara.query.mld;
 
 import cz.certicon.routing.algorithm.RoutingAlgorithm;
 import cz.certicon.routing.model.Route;
-import cz.certicon.routing.model.graph.Edge;
+import cz.certicon.routing.model.graph.SimpleEdge;
 import cz.certicon.routing.model.graph.Graph;
-import cz.certicon.routing.model.graph.Node;
+import cz.certicon.routing.model.graph.SimpleNode;
 import cz.certicon.routing.model.values.Distance;
 
 /**
@@ -19,17 +19,17 @@ import cz.certicon.routing.model.values.Distance;
 public class MultilevelDijkstraAlgorithm implements RoutingAlgorithm {
 
     @Override
-    public Route route( Graph graph, Node source, Node destination ) {
+    public Route route( Graph graph, SimpleNode source, SimpleNode destination ) {
         throw new UnsupportedOperationException( "Not supported yet." ); //To change body of generated methods, choose Tools | Templates.
     }
 
     @Override
-    public Route route( Graph graph, Edge source, Edge destination ) {
+    public Route route( Graph graph, SimpleEdge source, SimpleEdge destination ) {
         throw new UnsupportedOperationException( "Not supported yet." ); //To change body of generated methods, choose Tools | Templates.
     }
 
     @Override
-    public Route route( Graph graph, Edge source, Edge destination, Distance toSourceStart, Distance toSourceEnd, Distance toDestinationStart, Distance toDestinationEnd ) {
+    public Route route( Graph graph, SimpleEdge source, SimpleEdge destination, Distance toSourceStart, Distance toSourceEnd, Distance toDestinationStart, Distance toDestinationEnd ) {
         throw new UnsupportedOperationException( "Not supported yet." ); //To change body of generated methods, choose Tools | Templates.
     }
     

@@ -5,8 +5,8 @@
  */
 package cz.certicon.routing.utils;
 
-import cz.certicon.routing.model.graph.Edge;
-import cz.certicon.routing.model.graph.Node;
+import cz.certicon.routing.model.graph.SimpleEdge;
+import cz.certicon.routing.model.graph.SimpleNode;
 import cz.certicon.routing.model.graph.Partition;
 import cz.certicon.routing.model.graph.PartitionGraph;
 import java.util.ArrayList;
@@ -23,23 +23,23 @@ import java.util.Set;
  */
 public class GraphUtils {
 
-    public static Collection<Collection<Edge>> getCutEdges( PartitionGraph graph ) {
-        Set<Collection<Edge>> result = new HashSet<>();
-        Set<Node> nodeSet = new HashSet<>();
-        Queue<Node> queue = new LinkedList<>();
-        for ( Node node : graph.getNodes() ) {
+    public static Collection<Collection<SimpleEdge>> getCutEdges( PartitionGraph graph ) {
+        Set<Collection<SimpleEdge>> result = new HashSet<>();
+        Set<SimpleNode> nodeSet = new HashSet<>();
+        Queue<SimpleNode> queue = new LinkedList<>();
+        for ( SimpleNode node : graph.getNodes() ) {
             nodeSet.add( node );
         }
         while ( !nodeSet.isEmpty() ) {
-            Node first = nodeSet.iterator().next();
+            SimpleNode first = nodeSet.iterator().next();
             queue.add( first );
             nodeSet.remove( first );
-            List<Edge> cutEdges = new ArrayList<>();
+            List<SimpleEdge> cutEdges = new ArrayList<>();
             while ( !queue.isEmpty() ) {
-                Node node = queue.poll();
+                SimpleNode node = queue.poll();
                 Partition partition = graph.getPartition( node );
-                for ( Edge edge : graph.getEdges( node ) ) {
-                    Node target = graph.getOtherNode( edge, node );
+                for ( SimpleEdge edge : graph.getEdges( node ) ) {
+                    SimpleNode target = graph.getOtherNode( edge, node );
                     if ( partition.equals( graph.getPartition( target ) ) ) {
                         if ( nodeSet.contains( target ) ) {
                             queue.add( target );
@@ -55,13 +55,13 @@ public class GraphUtils {
         return result;
     }
 
-    public static Collection<Collection<Node>> getBorderNodes( PartitionGraph graph ) {
-        Collection<Collection<Node>> collections = new ArrayList<>();
+    public static Collection<Collection<SimpleNode>> getBorderNodes( PartitionGraph graph ) {
+        Collection<Collection<SimpleNode>> collections = new ArrayList<>();
         for ( Partition partition : graph.getPartitions() ) {
-            Collection<Node> borderNodes = new ArrayList<>();
-            for ( Node node : partition.getNodes() ) {
-                for ( Edge edge : graph.getEdges( node ) ) {
-                    Node target = graph.getOtherNode( edge, node );
+            Collection<SimpleNode> borderNodes = new ArrayList<>();
+            for ( SimpleNode node : partition.getNodes() ) {
+                for ( SimpleEdge edge : graph.getEdges( node ) ) {
+                    SimpleNode target = graph.getOtherNode( edge, node );
                     if ( !partition.equals( graph.getPartition( target ) ) ) {
                         borderNodes.add( node );
                         break;

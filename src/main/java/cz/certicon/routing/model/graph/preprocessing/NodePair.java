@@ -5,9 +5,7 @@
  */
 package cz.certicon.routing.model.graph.preprocessing;
 
-import java.util.Objects;
-import lombok.NonNull;
-import lombok.ToString;
+import cz.certicon.routing.model.graph.Graph;
 
 /**
  *
@@ -19,11 +17,11 @@ public class NodePair {
     public final ContractNode nodeB;
     public final ContractEdge connectingEdge;
 
-    public NodePair( @NonNull ContractNode nodeA, @NonNull ContractNode nodeB, @NonNull ContractEdge connectingEdge ) {
+    public NodePair( Graph<ContractNode, ContractEdge> graph, ContractNode nodeA, ContractNode nodeB, ContractEdge connectingEdge ) {
         this.nodeA = nodeA;
         this.nodeB = nodeB;
         this.connectingEdge = connectingEdge;
-        if ( ( connectingEdge.getSource().equals( nodeA ) && !connectingEdge.getTarget().equals( nodeB ) ) || ( connectingEdge.getSource().equals( nodeB ) && !connectingEdge.getTarget().equals( nodeA ) ) ) {
+        if ( ( connectingEdge.getSource( graph ).equals( nodeA ) && !connectingEdge.getTarget( graph ).equals( nodeB ) ) || ( connectingEdge.getSource( graph ).equals( nodeB ) && !connectingEdge.getTarget( graph ).equals( nodeA ) ) ) {
             throw new IllegalArgumentException( "Edge does not match the nodes: edge = " + connectingEdge + ", nodeA = " + nodeA + ", nodeB = " + nodeB );
         }
     }

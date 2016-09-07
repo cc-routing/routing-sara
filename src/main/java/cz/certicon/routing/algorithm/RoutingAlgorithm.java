@@ -6,20 +6,22 @@
 package cz.certicon.routing.algorithm;
 
 import cz.certicon.routing.model.values.Distance;
-import cz.certicon.routing.model.graph.Edge;
 import cz.certicon.routing.model.graph.Graph;
-import cz.certicon.routing.model.graph.Node;
 import cz.certicon.routing.model.Route;
+import cz.certicon.routing.model.graph.Edge;
+import cz.certicon.routing.model.graph.Node;
 
 /**
  *
  * @author Michael Blaha {@literal <michael.blaha@certicon.cz>}
+ * @param <N> node type
+ * @param <E> edge type
  */
-public interface RoutingAlgorithm {
+public interface RoutingAlgorithm<N extends Node, E extends Edge> {
 
-    Route route( Graph graph, Node source, Node destination );
+    Route route( Graph<N,E> graph, N source, N destination );
 
-    Route route( Graph graph, Edge source, Edge destination );
+    Route route( Graph<N,E> graph, E source, E destination );
 
-    Route route( Graph graph, Edge source, Edge destination, Distance toSourceStart, Distance toSourceEnd, Distance toDestinationStart, Distance toDestinationEnd );
+    Route route( Graph<N,E> graph, E source, E destination, Distance toSourceStart, Distance toSourceEnd, Distance toDestinationStart, Distance toDestinationEnd );
 }

@@ -5,7 +5,7 @@
  */
 package cz.certicon.routing.view;
 
-import cz.certicon.routing.model.graph.Edge;
+import cz.certicon.routing.model.graph.SimpleEdge;
 import cz.certicon.routing.model.graph.Graph;
 import java.util.List;
 
@@ -15,7 +15,7 @@ import java.util.List;
  */
 public interface RouteViewer {
     
-    public void addRoute( Graph graph, List<Edge> edges );
+    public void addRoute( Graph graph, List<SimpleEdge> edges );
 
     public void display();
 }

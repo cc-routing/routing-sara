@@ -7,60 +7,21 @@ package cz.certicon.routing.model.graph;
 
 import cz.certicon.routing.model.Identifiable;
 import cz.certicon.routing.model.values.Distance;
-import java.util.Comparator;
-import lombok.EqualsAndHashCode;
-import lombok.NonNull;
-import lombok.Value;
-import lombok.experimental.NonFinal;
-import lombok.experimental.Wither;
 
 /**
  *
- * @author Michael Blaha {@literal <michael.blaha@certicon.cz>}
+ * @author Michael Blaha {@literal <michael.blaha@gmail.com>}
+ * @param <N> node type
  */
-@Value
-@NonFinal
-@EqualsAndHashCode( exclude = { "source", "target" } )
-public class Edge implements Identifiable, Cloneable {
+public interface Edge<N extends Node> extends Identifiable {
 
-    long id;
-    boolean oneway;
-    /**
-     * Source
-     */
-    @NonNull
-    @Wither
-    Node source;
-    /**
-     * Target
-     */
-    @NonNull
-    @Wither
-    Node target;
-    @NonNull
-    @Wither
-    Distance length;
+    public <E extends Edge> N getSource( Graph<N, E> graph );
 
-    public Node getOtherNode( Node node ) {
-        if ( node.equals( source ) ) {
-            return target;
-        } else if ( node.equals( target ) ) {
-            return source;
-        }
-        throw new IllegalArgumentException( "Edge does not contain given node: edge = " + this + ", node = " + node.getId() );
-    }
+    public <E extends Edge> N getTarget( Graph<N, E> graph );
 
-    @Override
-    public String toString() {
-        return "Edge{id=" + id + ", oneway=" + oneway + ", length=" + length + ", source=Node{id=" + source.getId() + "}, target=Node{id=" + target.getId() + "}}";
-    }
+    public <E extends Edge> N getOtherNode( Graph<N, E> graph, N node );
 
-    public static Comparator<Edge> getIdComparator() {
-        return new Comparator<Edge>() {
-            @Override
-            public int compare( Edge o1, Edge o2 ) {
-                return Long.compare( o1.getId(), o2.getId() );
-            }
-        };
-    }
+    public <E extends Edge> Distance getTurnDistance( Graph<N, E> graph, TurnTable turnTable, E targetEdge );
+
+    public <E extends Edge> boolean isOneWay( Graph<N, E> graph );
 }

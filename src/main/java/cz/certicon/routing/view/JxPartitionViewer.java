@@ -6,9 +6,9 @@
 package cz.certicon.routing.view;
 
 import cz.certicon.routing.view.jxmap.AbstractJxMapViewer;
-import cz.certicon.routing.model.graph.Edge;
+import cz.certicon.routing.model.graph.SimpleEdge;
 import cz.certicon.routing.model.graph.Graph;
-import cz.certicon.routing.model.graph.Node;
+import cz.certicon.routing.model.graph.SimpleNode;
 import cz.certicon.routing.model.graph.Partition;
 import cz.certicon.routing.model.values.Coordinate;
 import cz.certicon.routing.utils.ColorUtils;
@@ -35,9 +35,9 @@ public class JxPartitionViewer extends AbstractJxMapViewer implements PartitionV
     private ColorUtils.ColorSupplier colorSupplier = ColorUtils.createColorSupplier( 20 );
 
     @Override
-    public void addPartition( Graph graph, Collection<Edge> cutEdges ) {
+    public void addPartition( Graph graph, Collection<SimpleEdge> cutEdges ) {
         List<Coordinate> coords = new ArrayList<>();
-        for ( Edge cutEdge : cutEdges ) {
+        for ( SimpleEdge cutEdge : cutEdges ) {
             coords.add( edgeMidpoint( graph, cutEdge ) );
         }
         List<Coordinate> sorted = CoordinateUtils.sortClockwise( coords );
@@ -47,7 +47,7 @@ public class JxPartitionViewer extends AbstractJxMapViewer implements PartitionV
         addPolygon( toGeoPosition( sorted ) );
     }
 
-    private Coordinate edgeMidpoint( Graph graph, Edge edge ) {
+    private Coordinate edgeMidpoint( Graph graph, SimpleEdge edge ) {
         Coordinate source = graph.getNodeCoordinate( edge.getSource() );
         Coordinate target = graph.getNodeCoordinate( edge.getTarget() );
         Coordinate midpoint = CoordinateUtils.calculateGeographicMidpoint( Arrays.asList( source, target ) );
@@ -58,7 +58,7 @@ public class JxPartitionViewer extends AbstractJxMapViewer implements PartitionV
     public void addPartition( Graph graph, Partition partition ) {
         Color color = colorSupplier.nextColor();
         List<Coordinate> coords = new ArrayList<>();
-        for ( Node node : partition.getNodes() ) {
+        for ( SimpleNode node : partition.getNodes() ) {
             assert node.getCoordinate() != null;
             coords.add( node.getCoordinate() );
         }
@@ -71,10 +71,10 @@ public class JxPartitionViewer extends AbstractJxMapViewer implements PartitionV
     }
 
     @Override
-    public void addPartitionNodes( Graph graph, Collection<Node> borderNodes ) {
+    public void addPartitionNodes( Graph graph, Collection<SimpleNode> borderNodes ) {
         Color color = colorSupplier.nextColor();
         List<Coordinate> coords = new ArrayList<>();
-        for ( Node borderNode : borderNodes ) {
+        for ( SimpleNode borderNode : borderNodes ) {
             coords.add( borderNode.getCoordinate() );
         }
         List<Coordinate> sorted = CoordinateUtils.sortClockwise( coords );

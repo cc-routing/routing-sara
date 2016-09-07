@@ -6,9 +6,9 @@
 package cz.certicon.routing.algorithm.sara.preprocessing.assembly;
 
 import cz.certicon.routing.model.graph.preprocessing.NodePair;
-import cz.certicon.routing.model.graph.Edge;
+import cz.certicon.routing.model.graph.SimpleEdge;
 import cz.certicon.routing.model.graph.Graph;
-import cz.certicon.routing.model.graph.Node;
+import cz.certicon.routing.model.graph.SimpleNode;
 import cz.certicon.routing.model.graph.Partition;
 import cz.certicon.routing.model.graph.PartitionGraph;
 import cz.certicon.routing.model.graph.UndirectedGraph;
@@ -58,13 +58,13 @@ public class GreedyAssembler implements Assembler {
         long maxNodeId = -1;
         long maxEdgeId = -1;
         Set<ContractNode> nodes = new HashSet<>();
-        Iterator<Node> nodeIterator = graph.getNodes();
+        Iterator<SimpleNode> nodeIterator = graph.getNodes();
         while ( nodeIterator.hasNext() ) {
             ContractNode node = (ContractNode) nodeIterator.next();
             maxNodeId = Math.max( maxNodeId, node.getId() );
             nodes.add( node );
         }
-        Iterator<Edge> edgeIterator = graph.getEdges();
+        Iterator<SimpleEdge> edgeIterator = graph.getEdges();
         while ( edgeIterator.hasNext() ) {
             maxEdgeId = Math.max( maxEdgeId, edgeIterator.next().getId() );
         }
@@ -108,12 +108,12 @@ public class GreedyAssembler implements Assembler {
 //        }
 //        builder.nodes( nodes ).edges( edges );
 
-        Map<Node, Partition> partitionMap = new HashMap<>();
-        Map<Partition, Collection<Node>> nodeMap = new HashMap<>();
+        Map<SimpleNode, Partition> partitionMap = new HashMap<>();
+        Map<Partition, Collection<SimpleNode>> nodeMap = new HashMap<>();
         long partitionId = 0;
         for ( ContractNode node : nodes ) {
             Partition partition = new Partition( partitionId, node.getNodes() );
-            for ( Node n : node.getNodes() ) {
+            for ( SimpleNode n : node.getNodes() ) {
                 partitionMap.put( n, partition );
             }
             nodeMap.put( partition, node.getNodes() );
@@ -127,10 +127,10 @@ public class GreedyAssembler implements Assembler {
 //        System.out.println( "INIT QUEUE" );
         double ratio = generateR();
         PriorityQueue<NodePair> queue = new FibonacciHeap<>();
-        Iterator<Node> nodeIterator = graph.getNodes();
+        Iterator<SimpleNode> nodeIterator = graph.getNodes();
         while ( nodeIterator.hasNext() ) {
             ContractNode node = (ContractNode) nodeIterator.next();
-            Iterator<Edge> edgeIterator = graph.getEdges( node );
+            Iterator<SimpleEdge> edgeIterator = graph.getEdges( node );
             while ( edgeIterator.hasNext() ) {
                 ContractEdge edge = (ContractEdge) edgeIterator.next();
                 ContractNode target = (ContractNode) graph.getOtherNode( edge, node );
@@ -146,7 +146,7 @@ public class GreedyAssembler implements Assembler {
 
     PriorityQueue<NodePair> clearPairs( PriorityQueue<NodePair> queue, NodePair origPair, ContractNode origNode ) {
 //        System.out.println( "REMOVING FOR: " + origNode );
-        Iterator<Edge> edgeIterator = origNode.getEdges();
+        Iterator<SimpleEdge> edgeIterator = origNode.getEdges();
         while ( edgeIterator.hasNext() ) {
             ContractEdge edge = (ContractEdge) edgeIterator.next();
             ContractNode neighbor = (ContractNode) edge.getOtherNode( origNode );
@@ -169,7 +169,7 @@ public class GreedyAssembler implements Assembler {
     PriorityQueue<NodePair> addPairs( PriorityQueue<NodePair> queue, FilteredGraph graph, ContractNode contractedNode ) {
 //        System.out.println( "ADDING FOR: " + contractedNode );
         double ratio = generateR();
-        Iterator<Edge> edgeIterator = contractedNode.getEdges();
+        Iterator<SimpleEdge> edgeIterator = contractedNode.getEdges();
         while ( edgeIterator.hasNext() ) {
             ContractEdge edge = (ContractEdge) edgeIterator.next();
             ContractNode neighbor = (ContractNode) edge.getOtherNode( contractedNode );

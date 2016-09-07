@@ -25,8 +25,8 @@ import static org.junit.Assert.*;
 public class NodeTest {
 
     private final UndirectedGraph graph;
-    private final Map<Long, Node> nodeMap;
-    private final Map<Long, Edge> edgeMap;
+    private final Map<Long, SimpleNode> nodeMap;
+    private final Map<Long, SimpleEdge> edgeMap;
     private final Map<TurnTable, TurnTable> turnTables;
 
     public NodeTest() {
@@ -37,22 +37,22 @@ public class NodeTest {
     }
 
     private UndirectedGraph createGraph() {
-        List<Node> nodes = new ArrayList<>();
-        Node a = createNode( nodes, 0 );
-        Node b = createNode( nodes, 1 );
-        Node c = createNode( nodes, 2 );
-        Node d = createNode( nodes, 3 );
-        Node e = createNode( nodes, 4 );
-        Node f = createNode( nodes, 5 );
-        List<Edge> edges = new ArrayList<>();
-        Edge ab = createEdge( edges, 0, false, a, b, 120 );
-        Edge ac = createEdge( edges, 1, false, a, c, 184 );
-        Edge cd = createEdge( edges, 2, false, c, d, 94 );
-        Edge db = createEdge( edges, 3, true, d, b, 159 );
-        Edge be = createEdge( edges, 4, false, b, e, 36 );
-        Edge df = createEdge( edges, 5, false, d, f, 152 );
-        Edge ef = createEdge( edges, 6, true, e, f, 38 );
-        for ( Node node : nodes ) {
+        List<SimpleNode> nodes = new ArrayList<>();
+        SimpleNode a = createNode( nodes, 0 );
+        SimpleNode b = createNode( nodes, 1 );
+        SimpleNode c = createNode( nodes, 2 );
+        SimpleNode d = createNode( nodes, 3 );
+        SimpleNode e = createNode( nodes, 4 );
+        SimpleNode f = createNode( nodes, 5 );
+        List<SimpleEdge> edges = new ArrayList<>();
+        SimpleEdge ab = createEdge( edges, 0, false, a, b, 120 );
+        SimpleEdge ac = createEdge( edges, 1, false, a, c, 184 );
+        SimpleEdge cd = createEdge( edges, 2, false, c, d, 94 );
+        SimpleEdge db = createEdge( edges, 3, true, d, b, 159 );
+        SimpleEdge be = createEdge( edges, 4, false, b, e, 36 );
+        SimpleEdge df = createEdge( edges, 5, false, d, f, 152 );
+        SimpleEdge ef = createEdge( edges, 6, true, e, f, 38 );
+        for ( SimpleNode node : nodes ) {
             int size = node.getDegree();
             Distance[][] dtt = new Distance[size][size];
             for ( int i = 0; i < dtt.length; i++ ) {
@@ -72,23 +72,23 @@ public class NodeTest {
             }
             node.setTurnTable( tt );
         }
-        for ( Node node : nodes ) {
+        for ( SimpleNode node : nodes ) {
             node.lock();
         }
         UndirectedGraph g = UndirectedGraph.builder().nodes( nodes ).edges( edges ).build();
         return g;
     }
 
-    private Node createNode( List<Node> nodes, long id ) {
+    private SimpleNode createNode( List<SimpleNode> nodes, long id ) {
 //        Distance[][] tt = new Distance[]
-        Node node = new Node( id );
+        SimpleNode node = new SimpleNode( id );
         nodes.add( node );
         nodeMap.put( id, node );
         return node;
     }
 
-    private Edge createEdge( List<Edge> edges, long id, boolean oneway, Node source, Node target, double distance ) {
-        Edge edge = new Edge( id, oneway, source, target, Distance.newInstance( distance ) );
+    private SimpleEdge createEdge( List<SimpleEdge> edges, long id, boolean oneway, SimpleNode source, SimpleNode target, double distance ) {
+        SimpleEdge edge = new SimpleEdge( id, oneway, source, target, Distance.newInstance( distance ) );
         edges.add( edge );
         source.addEdge( edge );
         target.addEdge( edge );
@@ -96,8 +96,8 @@ public class NodeTest {
         return edge;
     }
 
-    private Edge createEdge( List<Edge> edges, long id, boolean oneway, Node source, Node target, double distance, boolean addToNode ) {
-        Edge edge = new Edge( id, oneway, source, target, Distance.newInstance( distance ) );
+    private SimpleEdge createEdge( List<SimpleEdge> edges, long id, boolean oneway, SimpleNode source, SimpleNode target, double distance, boolean addToNode ) {
+        SimpleEdge edge = new SimpleEdge( id, oneway, source, target, Distance.newInstance( distance ) );
         edges.add( edge );
         if ( addToNode ) {
             source.addEdge( edge );
@@ -129,9 +129,9 @@ public class NodeTest {
     @Test
     public void testGetEdgePosition() {
         System.out.println( "getEdgePosition" );
-        Node node = createNode( new ArrayList<Node>(), 0 );
-        Edge a = createEdge( new ArrayList<Edge>(), 0, true, node, node, 0 );
-        Edge b = createEdge( new ArrayList<Edge>(), 1, true, node, node, 0 );
+        SimpleNode node = createNode(new ArrayList<SimpleNode>(), 0 );
+        SimpleEdge a = createEdge(new ArrayList<SimpleEdge>(), 0, true, node, node, 0 );
+        SimpleEdge b = createEdge(new ArrayList<SimpleEdge>(), 1, true, node, node, 0 );
         System.out.println( edgeIteratorToString( node.getIncomingEdges() ) );
         System.out.println( edgeIteratorToString( node.getOutgoingEdges() ) );
         assertEquals( 0, node.getEdgePosition( a ) );
@@ -153,7 +153,7 @@ public class NodeTest {
     }
 
     private void testGetIncomingEdges( long nodeId, String expResult ) {
-        Node node = nodeMap.get( nodeId );
+        SimpleNode node = nodeMap.get( nodeId );
         String result = edgeIteratorToString( node.getIncomingEdges() );
         assertEquals( expResult, result );
     }
@@ -173,7 +173,7 @@ public class NodeTest {
     }
 
     private void testGetOutgoingEdges( long nodeId, String expResult ) {
-        Node node = nodeMap.get( nodeId );
+        SimpleNode node = nodeMap.get( nodeId );
         String result = edgeIteratorToString( node.getOutgoingEdges() );
         assertEquals( expResult, result );
     }
@@ -184,9 +184,9 @@ public class NodeTest {
     @Test
     public void testGetId() {
         System.out.println( "getId" );
-        Node instance = createNode( new ArrayList<Node>(), 0 );
+        SimpleNode instance = createNode(new ArrayList<SimpleNode>(), 0 );
         assertEquals( 0, instance.getId() );
-        assertNotEquals( 0, createNode( new ArrayList<Node>(), 1 ).getId() );
+        assertNotEquals( 0, createNode( new ArrayList<SimpleNode>(), 1 ).getId() );
     }
 
     /**
@@ -195,9 +195,9 @@ public class NodeTest {
     @Test
     public void testAddEdge_Edge() {
         System.out.println( "addEdge" );
-        Node node = createNode( new ArrayList<Node>(), 0 );
-        node.addEdge( createEdge( new ArrayList<Edge>(), 0, true, node, node, 0, false ) );
-        node.addEdge( createEdge( new ArrayList<Edge>(), 1, true, node, node, 0, false ) );
+        SimpleNode node = createNode(new ArrayList<SimpleNode>(), 0 );
+        node.addEdge( createEdge( new ArrayList<SimpleEdge>(), 0, true, node, node, 0, false ) );
+        node.addEdge( createEdge( new ArrayList<SimpleEdge>(), 1, true, node, node, 0, false ) );
         assertEquals( "[0,1]", edgeIteratorToString( node.getOutgoingEdges() ) );
     }
 
@@ -207,10 +207,10 @@ public class NodeTest {
     @Test
     public void testAddEdge_Edge_int() {
         System.out.println( "addEdge_int" );
-        Node node = createNode( new ArrayList<Node>(), 0 );
-        Edge a = createEdge( new ArrayList<Edge>(), 0, true, node, node, 0, false );
-        Edge b = createEdge( new ArrayList<Edge>(), 1, true, node, node, 0, false );
-        Edge c = createEdge( new ArrayList<Edge>(), 2, true, node, node, 0, false );
+        SimpleNode node = createNode(new ArrayList<SimpleNode>(), 0 );
+        SimpleEdge a = createEdge(new ArrayList<SimpleEdge>(), 0, true, node, node, 0, false );
+        SimpleEdge b = createEdge(new ArrayList<SimpleEdge>(), 1, true, node, node, 0, false );
+        SimpleEdge c = createEdge(new ArrayList<SimpleEdge>(), 2, true, node, node, 0, false );
         node.addEdge( a );
         node.addEdge( b, 5 );
         node.addEdge( c );
@@ -241,9 +241,9 @@ public class NodeTest {
     @Test
     public void testGetDegree() {
         System.out.println( "getDegree" );
-        Node node = createNode( new ArrayList<Node>(), 0 );
-        node.addEdge( createEdge( new ArrayList<Edge>(), 0, true, node, node, 0 ) );
-        node.addEdge( createEdge( new ArrayList<Edge>(), 1, true, node, node, 0 ) );
+        SimpleNode node = createNode(new ArrayList<SimpleNode>(), 0 );
+        node.addEdge( createEdge( new ArrayList<SimpleEdge>(), 0, true, node, node, 0 ) );
+        node.addEdge( createEdge( new ArrayList<SimpleEdge>(), 1, true, node, node, 0 ) );
         assertEquals( 2, node.getDegree() );
     }
 
@@ -253,13 +253,13 @@ public class NodeTest {
     @Test( expected = IllegalStateException.class )
     public void testLock() {
         System.out.println( "lock" );
-        Node node = createNode( new ArrayList<Node>(), 0 );
-        node.addEdge( createEdge( new ArrayList<Edge>(), 0, true, node, node, 0 ) );
+        SimpleNode node = createNode(new ArrayList<SimpleNode>(), 0 );
+        node.addEdge( createEdge( new ArrayList<SimpleEdge>(), 0, true, node, node, 0 ) );
         node.lock();
-        node.addEdge( createEdge( new ArrayList<Edge>(), 1, true, node, node, 0 ) );
+        node.addEdge( createEdge( new ArrayList<SimpleEdge>(), 1, true, node, node, 0 ) );
     }
 
-    private static String edgeIteratorToString( Iterator<Edge> iterator ) {
+    private static String edgeIteratorToString( Iterator<SimpleEdge> iterator ) {
         StringBuilder sb = new StringBuilder();
         sb.append( "[" );
         while ( iterator.hasNext() ) {
@@ -269,7 +269,7 @@ public class NodeTest {
         return sb.toString();
     }
 
-    private static String nodeIteratorToString( Iterator<Node> iterator ) {
+    private static String nodeIteratorToString( Iterator<SimpleNode> iterator ) {
         StringBuilder sb = new StringBuilder();
         sb.append( "[" );
         while ( iterator.hasNext() ) {

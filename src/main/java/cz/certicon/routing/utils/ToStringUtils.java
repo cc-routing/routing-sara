@@ -6,7 +6,7 @@
 package cz.certicon.routing.utils;
 
 import cz.certicon.routing.algorithm.sara.preprocessing.filtering.ElementContainer;
-import cz.certicon.routing.model.graph.Node;
+import cz.certicon.routing.model.graph.SimpleNode;
 
 /**
  *
@@ -14,10 +14,10 @@ import cz.certicon.routing.model.graph.Node;
  */
 public class ToStringUtils {
 
-    public static String toString( ElementContainer<Node> nodeContainer ) {
+    public static String toString( ElementContainer<SimpleNode> nodeContainer ) {
         StringBuilder sb = new StringBuilder();
         sb.append( "{" );
-        for ( Node node : nodeContainer ) {
+        for ( SimpleNode node : nodeContainer ) {
             sb.append( node.getId() ).append( "," );
         }
         if ( sb.length() > 1 ) {

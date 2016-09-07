@@ -5,21 +5,14 @@
  */
 package cz.certicon.routing.model.graph;
 
-import lombok.Value;
 
 /**
  *
  * @author Michael Blaha {@literal <michael.blaha@certicon.cz>}
- * @param <N> node type
- * @param <E> edge type
  */
-@Value
-public class State<N extends Node, E extends Edge> {
+public class SimpleEdge extends AbstractEdge<SimpleNode> {
 
-    N node;
-    E edge;
-    
-    public boolean isFirst(){
-        return edge == null;
+    public SimpleEdge( long id, boolean oneway, SimpleNode source, SimpleNode target, int sourceIndex, int targetIndex ) {
+        super( id, oneway, source, target, sourceIndex, targetIndex );
     }
 }
