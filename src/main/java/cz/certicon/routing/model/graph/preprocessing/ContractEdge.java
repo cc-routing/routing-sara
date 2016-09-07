@@ -8,6 +8,8 @@ package cz.certicon.routing.model.graph.preprocessing;
 import cz.certicon.routing.model.graph.AbstractEdge;
 import cz.certicon.routing.model.graph.Edge;
 import cz.certicon.routing.model.graph.Graph;
+import cz.certicon.routing.model.graph.TurnTable;
+import cz.certicon.routing.model.values.Distance;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.Set;
@@ -47,6 +49,11 @@ public class ContractEdge extends AbstractEdge<ContractNode> {
             }
         }
         return width;
+    }
+
+    @Override
+    public <E extends Edge> Distance getTurnDistance( Graph<ContractNode, E> graph, TurnTable turnTable, E targetEdge ) {
+        return Distance.newInstance( 0 );
     }
 
 }
