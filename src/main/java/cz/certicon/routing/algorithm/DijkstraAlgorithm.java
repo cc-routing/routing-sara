@@ -13,6 +13,7 @@ import cz.certicon.routing.model.queue.PriorityQueue;
 import cz.certicon.routing.model.Route;
 import cz.certicon.routing.model.basic.Pair;
 import cz.certicon.routing.model.graph.Edge;
+import cz.certicon.routing.model.graph.Metric;
 import cz.certicon.routing.model.graph.Node;
 import cz.certicon.routing.model.graph.State;
 import cz.certicon.routing.model.queue.FibonacciHeap;
@@ -31,21 +32,21 @@ import java.util.Set;
 public class DijkstraAlgorithm<N extends Node, E extends Edge> implements RoutingAlgorithm<N, E> {
 
     @Override
-    public Route route( Graph<N, E> graph, N source, N destination ) {
+    public Route route( Graph<N, E> graph, Metric metric, N source, N destination ) {
         Map<State<N, E>, Distance> nodeDistanceMap = new HashMap<>();
         PriorityQueue<State<N, E>> pqueue = new FibonacciHeap<>();
         Distance upperBound = Distance.newInfinityInstance();
         putNodeDistance( nodeDistanceMap, pqueue, new State<N, E>( source, null ), Distance.newInstance( 0 ) );
-        return route( graph, nodeDistanceMap, pqueue, upperBound, new NodeEndCondition( destination ), null, null );
+        return route( graph, metric, nodeDistanceMap, pqueue, upperBound, new NodeEndCondition( destination ), null, null );
     }
 
     @Override
-    public Route route( Graph<N, E> graph, E source, E destination ) {
-        return route( graph, source, destination, new Distance( 0 ), new Distance( 0 ), new Distance( 0 ), new Distance( 0 ) );
+    public Route route( Graph<N, E> graph, Metric metric, E source, E destination ) {
+        return route( graph, metric, source, destination, new Distance( 0 ), new Distance( 0 ), new Distance( 0 ), new Distance( 0 ) );
     }
 
     @Override
-    public Route route( Graph<N, E> graph, E source, E destination, Distance toSourceStart, Distance toSourceEnd, Distance toDestinationStart, Distance toDestinationEnd ) {
+    public Route route( Graph<N, E> graph, Metric metric, E source, E destination, Distance toSourceStart, Distance toSourceEnd, Distance toDestinationStart, Distance toDestinationEnd ) {
         Map<State<N, E>, Distance> nodeDistanceMap = new HashMap<>();
         PriorityQueue<State<N, E>> pqueue = new FibonacciHeap<>();
         // create upper bound if the edges are equal and mark it
@@ -68,10 +69,10 @@ public class DijkstraAlgorithm<N extends Node, E extends Edge> implements Routin
         if ( !source.isOneWay( graph ) ) {
             putNodeDistance( nodeDistanceMap, pqueue, new State( source.getSource( graph ), source ), toSourceStart );
         }
-        return route( graph, nodeDistanceMap, pqueue, upperBound, new EdgeEndCondition( graph, destination, toDestinationStart, toDestinationEnd ), singleEdgePath, destination );
+        return route( graph, metric, nodeDistanceMap, pqueue, upperBound, new EdgeEndCondition( graph, destination, toDestinationStart, toDestinationEnd ), singleEdgePath, destination );
     }
 
-    private Route route( Graph<N, E> graph, Map<State<N, E>, Distance> nodeDistanceMap, PriorityQueue<State<N, E>> pqueue, Distance upperBound, EndCondition<N, E> endCondition, E singleEdgePath, E endEdge ) {
+    private Route route( Graph<N, E> graph, Metric metric, Map<State<N, E>, Distance> nodeDistanceMap, PriorityQueue<State<N, E>> pqueue, Distance upperBound, EndCondition<N, E> endCondition, E singleEdgePath, E endEdge ) {
         Map<State, State> predecessorMap = new HashMap<>();
         Set<State> closedStates = new HashSet<>();
         State finalState = null;
@@ -90,7 +91,7 @@ public class DijkstraAlgorithm<N extends Node, E extends Edge> implements Routin
                 State targetState = new State( targetNode, edge );
                 if ( !closedStates.contains( targetState ) ) {
                     Distance targetDistance = ( nodeDistanceMap.containsKey( targetState ) ) ? nodeDistanceMap.get( targetState ) : Distance.newInfinityInstance();
-                    Distance alternativeDistance = distance.add( graph.getLength( edge ) ).add( state.isFirst() ? Distance.newInstance( 0 ) : graph.getTurnCost( state.getNode(), state.getEdge(), edge ) );
+                    Distance alternativeDistance = distance.add( graph.getLength( metric, edge ) ).add( state.isFirst() ? Distance.newInstance( 0 ) : graph.getTurnCost( state.getNode(), state.getEdge(), edge ) );
                     if ( alternativeDistance.isLowerThan( targetDistance ) ) {
                         putNodeDistance( nodeDistanceMap, pqueue, targetState, alternativeDistance );
                         predecessorMap.put( targetState, state );

@@ -115,7 +115,7 @@ public interface Graph<N extends Node, E extends Edge> {
      */
     Coordinate getNodeCoordinate( N node );
     
-    Distance getLength(E edge);
+    Distance getLength(Metric metric, E edge);
 
 //    /**
 //     * Creates deep copy of this graph

@@ -12,6 +12,7 @@ import cz.certicon.routing.model.MinimalCut;
 import cz.certicon.routing.model.graph.Edge;
 import cz.certicon.routing.model.graph.SimpleEdge;
 import cz.certicon.routing.model.graph.Graph;
+import cz.certicon.routing.model.graph.Metric;
 import cz.certicon.routing.model.graph.Node;
 import cz.certicon.routing.model.graph.SimpleNode;
 import cz.certicon.routing.model.graph.UndirectedGraph;
@@ -498,7 +499,7 @@ public class NaturalCutsFilter implements Filter {
 //            ringNode.addEdge( edge );
 //            builder.edge( edge );
 //        }
-        Graph tmpGraph = new UndirectedGraph( new HashSet<>( nodeMap.values() ), new HashSet<>( edgeMap.values() ) );
+        Graph tmpGraph = new UndirectedGraph( new HashSet<>( nodeMap.values() ), new HashSet<>( edgeMap.values() ), null );
 //        System.out.println( "temporary graph: " + tmpGraph );
 //        presenter = new GraphStreamPresenter();
 //        presenter.displayGraph( tmpGraph );
@@ -634,6 +635,9 @@ public class NaturalCutsFilter implements Filter {
         }
         int fragmentCounter = 0;
         int edgeCounter = 0;
+        Map<Metric, Map<Edge, Distance>> metricMap = new HashMap<>();
+        Map<Edge, Distance> distanceMap = new HashMap();
+        metricMap.put( Metric.SIZE, distanceMap );
         for ( Map<Integer, Set<E>> map : origEdgesMapList ) {
 //            System.out.println( "map..." );
             for ( Map.Entry<Integer, Set<E>> entry : map.entrySet() ) {
@@ -645,6 +649,7 @@ public class NaturalCutsFilter implements Filter {
                     ContractNode target = nodes.get( targetFragment );
 //                    System.out.println( "edge: #" + source.getId() + " -> #" + target.getId() );
                     ContractEdge edge = new ContractEdge( edgeCounter++, false, source, target, (Collection<Edge>) entry.getValue() );
+                    distanceMap.put( edge, Distance.newInstance( entry.getValue().size() ) );
                     source.addEdge( edge );
                     target.addEdge( edge );
 //                    origEdges.put( edge, new HashSet<>( entry.getValue() ) );
@@ -656,7 +661,7 @@ public class NaturalCutsFilter implements Filter {
 //        for ( Node node : nodes ) {
 //            node.lock();
 //        }
-        return new FilteredGraph( new HashSet<>( nodes ), new HashSet<>( edges ) );
+        return new FilteredGraph( new HashSet<>( nodes ), new HashSet<>( edges ), metricMap );
 
 //        List<Node> nodes = new ArrayList<>();
 //        TObjectIntMap<Node> nodeSizeMap = new TObjectIntHashMap<>();

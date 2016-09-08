@@ -9,6 +9,7 @@ import cz.certicon.routing.model.values.Distance;
 import cz.certicon.routing.model.graph.Graph;
 import cz.certicon.routing.model.Route;
 import cz.certicon.routing.model.graph.Edge;
+import cz.certicon.routing.model.graph.Metric;
 import cz.certicon.routing.model.graph.Node;
 
 /**
@@ -19,9 +20,9 @@ import cz.certicon.routing.model.graph.Node;
  */
 public interface RoutingAlgorithm<N extends Node, E extends Edge> {
 
-    Route route( Graph<N,E> graph, N source, N destination );
+    Route route( Graph<N, E> graph, Metric metric, N source, N destination );
 
-    Route route( Graph<N,E> graph, E source, E destination );
+    Route route( Graph<N, E> graph, Metric metric, E source, E destination );
 
-    Route route( Graph<N,E> graph, E source, E destination, Distance toSourceStart, Distance toSourceEnd, Distance toDestinationStart, Distance toDestinationEnd );
+    Route route( Graph<N, E> graph, Metric metric, E source, E destination, Distance toSourceStart, Distance toSourceEnd, Distance toDestinationStart, Distance toDestinationEnd );
 }

@@ -9,15 +9,8 @@ import cz.certicon.routing.model.values.Coordinate;
 import cz.certicon.routing.model.values.Distance;
 import cz.certicon.routing.utils.collections.ImmutableIterator;
 import cz.certicon.routing.utils.collections.Iterator;
-import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import lombok.AccessLevel;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NonNull;
-import lombok.Singular;
-import lombok.Value;
 
 /**
  *
@@ -29,12 +22,14 @@ public class UndirectedGraph<N extends Node, E extends Edge> implements Graph<N,
 
     private final Set<N> nodes;
     private final Set<E> edges;
+    private final Map<Metric, Map<Edge, Distance>> metricMap;
 //    @Getter( AccessLevel.NONE )
 //    Map<Node, Coordinate> coordinates;
 
-    public UndirectedGraph( Set<N> nodes, Set<E> edges ) {
+    public UndirectedGraph( Set<N> nodes, Set<E> edges, Map<Metric, Map<Edge, Distance>> metricMap ) {
         this.nodes = nodes;
         this.edges = edges;
+        this.metricMap = metricMap;
     }
 
     @Override
@@ -107,6 +102,18 @@ public class UndirectedGraph<N extends Node, E extends Edge> implements Graph<N,
 //        return coordinates.get( node );
     }
 
+    @Override
+    public Distance getLength( Metric metric, E edge ) {
+        if ( !metricMap.containsKey( metric ) ) {
+            throw new IllegalArgumentException( "Unknown metric: " + metric );
+        }
+        Map<Edge, Distance> distanceMap = metricMap.get( metric );
+        if ( !distanceMap.containsKey( edge ) ) {
+            throw new IllegalArgumentException( "Unknown edge: " + edge );
+        }
+        return distanceMap.get( edge );
+    }
+
 //    @Override
 //    public Graph copy() {
 //        throw new UnsupportedOperationException( "Not supported yet." ); //To change body of generated methods, choose Tools | Templates.
@@ -153,4 +160,5 @@ public class UndirectedGraph<N extends Node, E extends Edge> implements Graph<N,
         sb.append( "}" );
         return sb.toString();
     }
+
 }
