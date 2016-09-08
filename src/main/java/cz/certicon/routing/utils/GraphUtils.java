@@ -5,10 +5,15 @@
  */
 package cz.certicon.routing.utils;
 
+import cz.certicon.routing.model.Identifiable;
+import cz.certicon.routing.model.graph.Node;
 import cz.certicon.routing.model.graph.SimpleEdge;
 import cz.certicon.routing.model.graph.SimpleNode;
 import cz.certicon.routing.model.graph.Partition;
 import cz.certicon.routing.model.graph.PartitionGraph;
+import cz.certicon.routing.model.graph.SaraNode;
+import gnu.trove.map.TLongObjectMap;
+import gnu.trove.map.hash.TLongObjectHashMap;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashSet;
@@ -72,4 +77,16 @@ public class GraphUtils {
         }
         return collections;
     }
+
+    public static <I extends Identifiable> TLongObjectMap<I> toMap( Collection<I> identifiables ) {
+        TLongObjectMap<I> map = new TLongObjectHashMap<>();
+        for ( I identifiable : identifiables ) {
+            map.put( identifiable.getId(), identifiable );
+        }
+        return map;
+    }
+
+//    public static SaraNode toSaraNode(Node node){
+//        return new SaraNode(node.getId(), node);
+//    }
 }

@@ -5,18 +5,28 @@
  */
 package cz.certicon.routing.algorithm.sara.preprocessing.assembly;
 
+import cz.certicon.routing.model.graph.Cell;
+import cz.certicon.routing.model.graph.Edge;
 import cz.certicon.routing.model.graph.preprocessing.NodePair;
 import cz.certicon.routing.model.graph.SimpleEdge;
 import cz.certicon.routing.model.graph.Graph;
+import cz.certicon.routing.model.graph.Metric;
+import cz.certicon.routing.model.graph.Node;
 import cz.certicon.routing.model.graph.SimpleNode;
 import cz.certicon.routing.model.graph.Partition;
 import cz.certicon.routing.model.graph.PartitionGraph;
+import cz.certicon.routing.model.graph.SaraEdge;
+import cz.certicon.routing.model.graph.SaraGraph;
+import cz.certicon.routing.model.graph.SaraNode;
 import cz.certicon.routing.model.graph.UndirectedGraph;
 import cz.certicon.routing.model.graph.preprocessing.ContractEdge;
 import cz.certicon.routing.model.graph.preprocessing.ContractNode;
 import cz.certicon.routing.model.graph.preprocessing.FilteredGraph;
 import cz.certicon.routing.model.queue.FibonacciHeap;
 import cz.certicon.routing.model.queue.PriorityQueue;
+import cz.certicon.routing.model.values.Distance;
+import gnu.trove.map.TLongObjectMap;
+import gnu.trove.map.hash.TLongObjectHashMap;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
@@ -52,21 +62,18 @@ public class GreedyAssembler implements Assembler {
     }
 
     @Override
-    public PartitionGraph assemble( Graph originalGraph, FilteredGraph graph ) {
+    public <N extends Node, E extends Edge> SaraGraph assemble( Graph<N, E> originalGraph, FilteredGraph graph ) {
 //        System.out.println( "Assembling..." );
         // find max ids
         long maxNodeId = -1;
         long maxEdgeId = -1;
         Set<ContractNode> nodes = new HashSet<>();
-        Iterator<SimpleNode> nodeIterator = graph.getNodes();
-        while ( nodeIterator.hasNext() ) {
-            ContractNode node = (ContractNode) nodeIterator.next();
+        for ( ContractNode node : graph.getNodes() ) {
             maxNodeId = Math.max( maxNodeId, node.getId() );
             nodes.add( node );
         }
-        Iterator<SimpleEdge> edgeIterator = graph.getEdges();
-        while ( edgeIterator.hasNext() ) {
-            maxEdgeId = Math.max( maxEdgeId, edgeIterator.next().getId() );
+        for ( ContractEdge edge : graph.getEdges() ) {
+            maxEdgeId = Math.max( maxEdgeId, edge.getId() );
         }
         // P = {{x,y}; x,y  V, {x,y} e E, s(x)+s(y) < U} // all pairs of adjacent vertices with combined size lower than U  
         // Sort P according to (minimizing): score({x,y}) = r * (w(x,y)/sqrt(s(x))+w(x,y)/sqrt(s(y))), where r is with probability a picked randomly from [0,b] and with probability 1-a picked randomly from [b,1]
@@ -84,14 +91,14 @@ public class GreedyAssembler implements Assembler {
             nodes.remove( source );
             ContractNode target = pair.nodeB;
             nodes.remove( target );
-            ContractNode contractedNode = source.mergeWith( target, maxNodeIdContainer, maxEdgeIdContainer );
+            ContractNode contractedNode = source.mergeWith( graph, target, maxNodeIdContainer, maxEdgeIdContainer );
             nodes.add( contractedNode );
 
             // Update score value (with the new r for each iteration) for the adjacent edges (pairs) of the contracted pair (edge) and if the new size s is higher or equal to U, remove pair from P
             // - clear old pairs with source
-            clearPairs( queue, pair, source );
+            clearPairs( queue, graph, pair, source );
             // - clear old pairs with target
-            clearPairs( queue, pair, target );
+            clearPairs( queue, graph, pair, target );
             // - add new pairs with the contracted node
             addPairs( queue, graph, contractedNode );
         }
@@ -108,33 +115,36 @@ public class GreedyAssembler implements Assembler {
 //        }
 //        builder.nodes( nodes ).edges( edges );
 
-        Map<SimpleNode, Partition> partitionMap = new HashMap<>();
-        Map<Partition, Collection<SimpleNode>> nodeMap = new HashMap<>();
-        long partitionId = 0;
+        long cellId = 0;
+        TLongObjectMap<SaraNode> nodeMap = new TLongObjectHashMap<>();
         for ( ContractNode node : nodes ) {
-            Partition partition = new Partition( partitionId, node.getNodes() );
-            for ( SimpleNode n : node.getNodes() ) {
-                partitionMap.put( n, partition );
+            Cell cell = new Cell( cellId++ );
+            for ( Node origNode : node.getNodes() ) {
+                SaraNode saraNode = new SaraNode( origNode.getId(), cell );
+                nodeMap.put( saraNode.getId(), saraNode );
             }
-            nodeMap.put( partition, node.getNodes() );
-            partitionId++;
         }
-
-        return new PartitionGraph( originalGraph, partitionMap, nodeMap );
+        TLongObjectMap<SaraEdge> edgeMap = new TLongObjectHashMap<>();
+        Map<Metric, Map<Edge, Distance>> metricMap = new HashMap<>();
+        for ( E edge : originalGraph.getEdges() ) {
+            SaraEdge saraEdge = new SaraEdge( edge.getId(), edge.isOneWay( originalGraph ),
+                    nodeMap.get( edge.getSource( originalGraph ).getId() ), nodeMap.get( edge.getTarget( originalGraph ).getId() ),
+                    edge.getSourcePosition(), edge.getTargetPosition() );
+            edgeMap.put( saraEdge.getId(), saraEdge);
+            metricMap.get( Metric.LENGTH).put( saraEdge, originalGraph.getLength( Metric.LENGTH, edge));
+            metricMap.get( Metric.TIME).put( saraEdge, originalGraph.getLength( Metric.TIME, edge));
+        }
+        return new SaraGraph( nodeMap, edgeMap, metricMap );
     }
 
     PriorityQueue<NodePair> initQueue( FilteredGraph graph ) {
 //        System.out.println( "INIT QUEUE" );
         double ratio = generateR();
         PriorityQueue<NodePair> queue = new FibonacciHeap<>();
-        Iterator<SimpleNode> nodeIterator = graph.getNodes();
-        while ( nodeIterator.hasNext() ) {
-            ContractNode node = (ContractNode) nodeIterator.next();
-            Iterator<SimpleEdge> edgeIterator = graph.getEdges( node );
-            while ( edgeIterator.hasNext() ) {
-                ContractEdge edge = (ContractEdge) edgeIterator.next();
+        for ( ContractNode node : graph.getNodes() ) {
+            for ( ContractEdge edge : graph.getEdges( node ) ) {
                 ContractNode target = (ContractNode) graph.getOtherNode( edge, node );
-                NodePair nodePair = new NodePair( node, target, edge );
+                NodePair nodePair = new NodePair( graph, node, target, edge );
                 if ( !queue.contains( nodePair ) ) {
 //                    System.out.println( "ADDING: " + nodePair );
                     queue.add( nodePair, score( graph, nodePair, ratio ) );
@@ -144,13 +154,11 @@ public class GreedyAssembler implements Assembler {
         return queue;
     }
 
-    PriorityQueue<NodePair> clearPairs( PriorityQueue<NodePair> queue, NodePair origPair, ContractNode origNode ) {
+    PriorityQueue<NodePair> clearPairs( PriorityQueue<NodePair> queue, FilteredGraph graph, NodePair origPair, ContractNode origNode ) {
 //        System.out.println( "REMOVING FOR: " + origNode );
-        Iterator<SimpleEdge> edgeIterator = origNode.getEdges();
-        while ( edgeIterator.hasNext() ) {
-            ContractEdge edge = (ContractEdge) edgeIterator.next();
-            ContractNode neighbor = (ContractNode) edge.getOtherNode( origNode );
-            NodePair nodePair = new NodePair( origNode, neighbor, edge );
+        for ( ContractEdge edge : graph.getEdges( origNode ) ) {
+            ContractNode neighbor = graph.getOtherNode( edge, origNode );
+            NodePair nodePair = new NodePair( graph, origNode, neighbor, edge );
             if ( queue.contains( nodePair ) ) {
                 queue.remove( nodePair ); // the pair does not have to be contained - it might have higher size than limit (see addPairs condition)
 //                System.out.println( "REMOVING: " + nodePair );
@@ -169,11 +177,9 @@ public class GreedyAssembler implements Assembler {
     PriorityQueue<NodePair> addPairs( PriorityQueue<NodePair> queue, FilteredGraph graph, ContractNode contractedNode ) {
 //        System.out.println( "ADDING FOR: " + contractedNode );
         double ratio = generateR();
-        Iterator<SimpleEdge> edgeIterator = contractedNode.getEdges();
-        while ( edgeIterator.hasNext() ) {
-            ContractEdge edge = (ContractEdge) edgeIterator.next();
-            ContractNode neighbor = (ContractNode) edge.getOtherNode( contractedNode );
-            NodePair nodePair = new NodePair( contractedNode, neighbor, edge );
+        for ( ContractEdge edge : graph.getEdges( contractedNode ) ) {
+            ContractNode neighbor = graph.getOtherNode( edge, contractedNode );
+            NodePair nodePair = new NodePair( graph, contractedNode, neighbor, edge );
             if ( nodePair.nodeA.getNodes().size() + nodePair.nodeB.getNodes().size() < maxCellSize ) {
                 double newScore = score( graph, nodePair, ratio );
 //                System.out.println( "ADDING: " + nodePair );

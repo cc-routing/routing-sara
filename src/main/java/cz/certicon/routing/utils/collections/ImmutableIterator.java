@@ -5,6 +5,8 @@
  */
 package cz.certicon.routing.utils.collections;
 
+import cz.certicon.routing.model.graph.Node;
+
 /**
  *
  * @author Michael Blaha {@literal <michael.blaha@certicon.cz>}
@@ -13,6 +15,10 @@ package cz.certicon.routing.utils.collections;
 public class ImmutableIterator<T> implements Iterator<T> {
 
     private final java.util.Iterator<T> iterator;
+
+    public ImmutableIterator( ArrayIterator<T> iterator ) {
+        this.iterator = iterator;
+    }
 
     public ImmutableIterator( java.util.Iterator<T> iterator ) {
         this.iterator = iterator;

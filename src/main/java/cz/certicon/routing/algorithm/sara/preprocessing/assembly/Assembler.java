@@ -5,8 +5,10 @@
  */
 package cz.certicon.routing.algorithm.sara.preprocessing.assembly;
 
+import cz.certicon.routing.model.graph.Edge;
 import cz.certicon.routing.model.graph.Graph;
-import cz.certicon.routing.model.graph.PartitionGraph;
+import cz.certicon.routing.model.graph.Node;
+import cz.certicon.routing.model.graph.SaraGraph;
 import cz.certicon.routing.model.graph.preprocessing.FilteredGraph;
 
 /**
@@ -18,7 +20,5 @@ import cz.certicon.routing.model.graph.preprocessing.FilteredGraph;
  */
 public interface Assembler {
 
-    // return more
-    // - node info
-    PartitionGraph assemble( Graph originalGraph, FilteredGraph graph );
+    <N extends Node, E extends Edge> SaraGraph assemble( Graph<N, E> originalGraph, FilteredGraph graph );
 }

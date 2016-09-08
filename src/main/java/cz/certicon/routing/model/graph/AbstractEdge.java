@@ -12,7 +12,7 @@ import cz.certicon.routing.model.values.Distance;
  * @author Michael Blaha {@literal <michael.blaha@gmail.com>}
  * @param <N> node type
  */
-public class AbstractEdge<N extends Node> implements Edge<N> {
+public abstract class AbstractEdge<N extends Node> implements Edge<N> {
 
     private final long id;
     private final boolean oneway;
@@ -62,6 +62,16 @@ public class AbstractEdge<N extends Node> implements Edge<N> {
 
     public long getId() {
         return id;
+    }
+
+    @Override
+    public int getSourcePosition() {
+        return sourceIndex;
+    }
+
+    @Override
+    public int getTargetPosition() {
+        return targetIndex;
     }
 
     @Override

@@ -7,10 +7,11 @@ package cz.certicon.routing.model.graph;
 
 import cz.certicon.routing.model.values.Coordinate;
 import cz.certicon.routing.model.values.Distance;
+import cz.certicon.routing.utils.collections.ArrayIterator;
 import cz.certicon.routing.utils.collections.ImmutableIterator;
 import cz.certicon.routing.utils.collections.Iterator;
+import gnu.trove.map.TLongObjectMap;
 import java.util.Map;
-import java.util.Set;
 
 /**
  *
@@ -20,13 +21,13 @@ import java.util.Set;
  */
 public class UndirectedGraph<N extends Node, E extends Edge> implements Graph<N, E> {
 
-    private final Set<N> nodes;
-    private final Set<E> edges;
+    private final TLongObjectMap<N> nodes;
+    private final TLongObjectMap<E> edges;
     private final Map<Metric, Map<Edge, Distance>> metricMap;
 //    @Getter( AccessLevel.NONE )
 //    Map<Node, Coordinate> coordinates;
 
-    public UndirectedGraph( Set<N> nodes, Set<E> edges, Map<Metric, Map<Edge, Distance>> metricMap ) {
+    public UndirectedGraph( TLongObjectMap<N> nodes, TLongObjectMap<E> edges, Map<Metric, Map<Edge, Distance>> metricMap ) {
         this.nodes = nodes;
         this.edges = edges;
         this.metricMap = metricMap;
@@ -39,7 +40,7 @@ public class UndirectedGraph<N extends Node, E extends Edge> implements Graph<N,
 
     @Override
     public Iterator<N> getNodes() {
-        return new ImmutableIterator<>( nodes.iterator() );
+        return new ImmutableIterator<>( new ArrayIterator<>( (N[]) nodes.values() ) );
     }
 
     @Override
@@ -49,7 +50,7 @@ public class UndirectedGraph<N extends Node, E extends Edge> implements Graph<N,
 
     @Override
     public Iterator<E> getEdges() {
-        return new ImmutableIterator<>( edges.iterator() );
+        return new ImmutableIterator<>( new ArrayIterator<>( (E[]) edges.values() ) );
     }
 
     @Override
@@ -122,7 +123,7 @@ public class UndirectedGraph<N extends Node, E extends Edge> implements Graph<N,
     public String toString() {
         StringBuilder sb = new StringBuilder();
         sb.append( "UndirectedGraph{" ).append( "nodes=[" );
-        for ( N node : nodes ) {
+        for ( N node : (N[]) nodes.values() ) {
             sb.append( node.getId() ).append( "," );
         }
         if ( !nodes.isEmpty() ) {
@@ -131,7 +132,7 @@ public class UndirectedGraph<N extends Node, E extends Edge> implements Graph<N,
             sb.append( "]" );
         }
         sb.append( ",edges=[" );
-        for ( E edge : edges ) {
+        for ( E edge : (E[]) edges.values() ) {
             sb.append( edge.getId() ).append( "," );
         }
         if ( !edges.isEmpty() ) {
@@ -140,7 +141,7 @@ public class UndirectedGraph<N extends Node, E extends Edge> implements Graph<N,
             sb.append( "]" );
         }
         sb.append( ",mapping={" );
-        for ( N node : nodes ) {
+        for ( N node : (N[]) nodes.values() ) {
             sb.append( node.getId() ).append( "=>[" );
             for ( E e : getEdges( node ) ) {
                 sb.append( e.getSource( this ).equals( node ) ? "+" : "-" ).append( e.getId() ).append( "," );
@@ -159,6 +160,16 @@ public class UndirectedGraph<N extends Node, E extends Edge> implements Graph<N,
         }
         sb.append( "}" );
         return sb.toString();
+    }
+
+    @Override
+    public N getNodeById( long id ) {
+        throw new UnsupportedOperationException( "Not supported yet." ); //To change body of generated methods, choose Tools | Templates.
+    }
+
+    @Override
+    public E getEdgeById( long id ) {
+        throw new UnsupportedOperationException( "Not supported yet." ); //To change body of generated methods, choose Tools | Templates.
     }
 
 }

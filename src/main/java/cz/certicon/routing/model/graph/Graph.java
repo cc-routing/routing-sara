@@ -70,6 +70,10 @@ public interface Graph<N extends Node, E extends Edge> {
      */
     Iterator<E> getOutgoingEdges( N node );
 
+    N getNodeById( long id );
+
+    E getEdgeById( long id );
+
     /**
      * Returns source node of the given edge
      *
@@ -114,8 +118,8 @@ public interface Graph<N extends Node, E extends Edge> {
      * @return coordinate
      */
     Coordinate getNodeCoordinate( N node );
-    
-    Distance getLength(Metric metric, E edge);
+
+    Distance getLength( Metric metric, E edge );
 
 //    /**
 //     * Creates deep copy of this graph

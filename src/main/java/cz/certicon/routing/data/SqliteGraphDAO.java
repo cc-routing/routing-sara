@@ -85,7 +85,7 @@ public class SqliteGraphDAO implements GraphDAO {
                 nodeMap.put( node.getId(), node );
             }
             // read edges
-            Set<Edge> edgeSet = new HashSet<>();
+            TLongObjectMap<Edge> edgeMap = new TLongObjectHashMap<>();
             Map<Metric, Map<Edge, Distance>> metricMap = new HashMap<>();
             for ( Metric value : Metric.values() ) {
                 metricMap.put( value, new HashMap<Edge, Distance>() );
@@ -103,15 +103,14 @@ public class SqliteGraphDAO implements GraphDAO {
                 double time = length / ( speedFw / 3.6 );
                 metricMap.get( Metric.LENGTH ).put( edge, Distance.newInstance( length ) );
                 metricMap.get( Metric.TIME ).put( edge, Distance.newInstance( time ) );
+                edgeMap.put( edge.getId(), edge );
             }
             // lock nodes and build graph
-            Set<Node> nodeSet = new HashSet<>();
             for ( Object value : nodeMap.values() ) {
                 SimpleNode node = (SimpleNode) value;
                 node.lock();
-                nodeSet.add( node );
             }
-            return new UndirectedGraph<>(nodeSet,edgeSet,metricMap);
+            return new UndirectedGraph<>( nodeMap, edgeMap, metricMap );
         } catch ( SQLException ex ) {
             throw new IOException( ex );
         }

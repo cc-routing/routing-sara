@@ -19,6 +19,7 @@ import cz.certicon.routing.model.graph.UndirectedGraph;
 import cz.certicon.routing.model.graph.preprocessing.ContractNode;
 import cz.certicon.routing.model.graph.preprocessing.FilteredGraph;
 import cz.certicon.routing.model.values.Distance;
+import cz.certicon.routing.utils.GraphUtils;
 import cz.certicon.routing.utils.ToStringUtils;
 import cz.certicon.routing.utils.collections.CollectionUtils;
 import cz.certicon.routing.view.GraphStreamPresenter;
@@ -499,7 +500,7 @@ public class NaturalCutsFilter implements Filter {
 //            ringNode.addEdge( edge );
 //            builder.edge( edge );
 //        }
-        Graph tmpGraph = new UndirectedGraph( new HashSet<>( nodeMap.values() ), new HashSet<>( edgeMap.values() ), null );
+        Graph tmpGraph = new UndirectedGraph( GraphUtils.toMap( nodeMap.values() ), GraphUtils.toMap( edgeMap.values() ), null );
 //        System.out.println( "temporary graph: " + tmpGraph );
 //        presenter = new GraphStreamPresenter();
 //        presenter.displayGraph( tmpGraph );
@@ -661,7 +662,8 @@ public class NaturalCutsFilter implements Filter {
 //        for ( Node node : nodes ) {
 //            node.lock();
 //        }
-        return new FilteredGraph( new HashSet<>( nodes ), new HashSet<>( edges ), metricMap );
+
+        return new FilteredGraph( GraphUtils.toMap( nodes ), GraphUtils.toMap( edges ), metricMap );
 
 //        List<Node> nodes = new ArrayList<>();
 //        TObjectIntMap<Node> nodeSizeMap = new TObjectIntHashMap<>();
