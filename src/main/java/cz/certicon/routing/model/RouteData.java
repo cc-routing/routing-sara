@@ -5,6 +5,7 @@
  */
 package cz.certicon.routing.model;
 
+import cz.certicon.routing.model.graph.Edge;
 import cz.certicon.routing.model.values.Length;
 import cz.certicon.routing.model.values.Time;
 import cz.certicon.routing.model.graph.SimpleEdge;
@@ -18,16 +19,17 @@ import lombok.Value;
 /**
  *
  * @author Michael Blaha {@literal <michael.blaha@certicon.cz>}
+ * @param <E> edge type
  */
 @Value
-public class RouteData {
+public class RouteData<E extends Edge> {
 
     @Getter( AccessLevel.NONE )
-    Map<SimpleEdge, List<Coordinate>> coordinateMap;
+    Map<E, List<Coordinate>> coordinateMap;
     Length length;
     Time time;
 
-    public List<Coordinate> getCoordiantes( SimpleEdge edge ) {
+    public List<Coordinate> getCoordiantes( E edge ) {
         return coordinateMap.get( edge );
     }
 }

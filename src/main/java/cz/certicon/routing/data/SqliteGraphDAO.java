@@ -6,8 +6,12 @@
 package cz.certicon.routing.data;
 
 import cz.certicon.routing.data.basic.database.SimpleDatabase;
+import cz.certicon.routing.model.basic.Pair;
+import cz.certicon.routing.model.graph.Edge;
 import cz.certicon.routing.model.graph.SimpleEdge;
 import cz.certicon.routing.model.graph.Graph;
+import cz.certicon.routing.model.graph.Metric;
+import cz.certicon.routing.model.graph.Node;
 import cz.certicon.routing.model.graph.SimpleNode;
 import cz.certicon.routing.model.graph.TurnTable;
 import cz.certicon.routing.model.graph.UndirectedGraph;
@@ -21,7 +25,9 @@ import gnu.trove.map.hash.TLongObjectHashMap;
 import java.io.IOException;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Map;
 import java.util.Properties;
 import java.util.Set;
 
@@ -79,27 +85,33 @@ public class SqliteGraphDAO implements GraphDAO {
                 nodeMap.put( node.getId(), node );
             }
             // read edges
-            Set<SimpleEdge> edgeSet = new HashSet<>();
-            rs = database.read( "SELECT * FROM edges e JOIN node_to_edges nte ON e.id = nte.edge_id;" );
+            Set<Edge> edgeSet = new HashSet<>();
+            Map<Metric, Map<Edge, Distance>> metricMap = new HashMap<>();
+            for ( Metric value : Metric.values() ) {
+                metricMap.put( value, new HashMap<Edge, Distance>() );
+            }
+            rs = database.read( "SELECT * FROM edges e;" );
             while ( rs.next() ) {
                 SimpleEdge edge = new SimpleEdge( rs.getLong( "id" ), rs.getInt( "oneway" ) != 0,
                         nodeMap.get( rs.getLong( "source" ) ),
                         nodeMap.get( rs.getLong( "target" ) ),
-                        Distance.newInstance( rs.getDouble( "metric_length" ) ) ); // TODO choose metric
-                long posNode = rs.getLong( "node_id" );
-                int position = rs.getInt( "position" );
-                nodeMap.get( posNode ).addEdge( edge, position );
-                edgeSet.add( edge );
+                        rs.getInt( "source_pos" ),
+                        rs.getInt( "target_pos" ) );
+                // length in meters, speed in kmph, CAUTION - convert here
+                double length = rs.getDouble( "metric_length" );
+                double speedFw = rs.getDouble( "metric_speed_forward" );// todo take into consideration direction
+                double time = length / ( speedFw / 3.6 );
+                metricMap.get( Metric.LENGTH ).put( edge, Distance.newInstance( length ) );
+                metricMap.get( Metric.TIME ).put( edge, Distance.newInstance( time ) );
             }
             // lock nodes and build graph
-            UndirectedGraph.UndirectedGraphBuilder graphBuilder = UndirectedGraph.builder();
+            Set<Node> nodeSet = new HashSet<>();
             for ( Object value : nodeMap.values() ) {
                 SimpleNode node = (SimpleNode) value;
                 node.lock();
-                graphBuilder.node( node );
+                nodeSet.add( node );
             }
-            graphBuilder.edges( edgeSet );
-            return graphBuilder.build();
+            return new UndirectedGraph<>(nodeSet,edgeSet,metricMap);
         } catch ( SQLException ex ) {
             throw new IOException( ex );
         }

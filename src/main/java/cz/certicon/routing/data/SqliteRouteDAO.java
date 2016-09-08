@@ -8,6 +8,10 @@ package cz.certicon.routing.data;
 import cz.certicon.routing.data.basic.database.SimpleDatabase;
 import cz.certicon.routing.model.Route;
 import cz.certicon.routing.model.RouteData;
+import cz.certicon.routing.model.graph.Edge;
+import cz.certicon.routing.model.graph.Graph;
+import cz.certicon.routing.model.graph.Metric;
+import cz.certicon.routing.model.graph.Node;
 import cz.certicon.routing.model.values.Length;
 import cz.certicon.routing.model.values.LengthUnits;
 import cz.certicon.routing.model.graph.SimpleEdge;
@@ -34,36 +38,37 @@ public class SqliteRouteDAO implements RouteDataDAO {
     }
 
     @Override
-    public void saveRouteData( Route route, RouteData routeData ) throws IOException {
+    public <N extends Node, E extends Edge> void saveRouteData( Graph<N, E> graph, Route<N, E> route, RouteData<E> routeData ) throws IOException {
         throw new UnsupportedOperationException( "Not supported yet." ); //To change body of generated methods, choose Tools | Templates.
     }
 
     @Override
-    public RouteData loadRouteData( Route route ) throws IOException {
-        Map<SimpleEdge, List<Coordinate>> coordinateMap = new HashMap<>();
+    public <N extends Node, E extends Edge> RouteData<E> loadRouteData( Graph<N, E> graph, Route<N, E> route ) throws IOException {
+        Map<E, List<Coordinate>> coordinateMap = new HashMap<>();
         Length length = new Length( LengthUnits.METERS, 0 );
         Time time = new Time( TimeUnits.SECONDS, 0 );
         ResultSet rs;
-        SimpleNode node = route.getSource();
-        for ( SimpleEdge edge : route.getEdges() ) {
+        N node = route.getSource();
+        for ( E edge : route.getEdges() ) {
             try {
                 rs = database.read( "SELECT ST_AsText(geom) AS geom FROM edges WHERE id = " + edge.getId() + ";" );
                 if ( rs.next() ) {
                     List<Coordinate> coordinates = GeometryUtils.toCoordinatesFromWktLinestring( rs.getString( "geom" ) );
-                    if ( node.equals( edge.getTarget() ) ) {
+                    if ( node.equals( edge.getTarget(graph) ) ) {
                         Collections.reverse( coordinates );
-                        node = edge.getSource();
+                        node = (N) edge.getSource(graph);
                     } else {
-                        node = edge.getTarget();
+                        node = (N) edge.getTarget(graph);
                     }
                     coordinateMap.put( edge, coordinates );
-                    length.add( new Length( LengthUnits.METERS, (long) edge.getLength().getValue() ) );
+                    length.add( new Length( LengthUnits.METERS, (long) graph.getLength( Metric.LENGTH, edge ).getValue()) );
+                    time.add( new Time( TimeUnits.SECONDS, (long) graph.getLength( Metric.TIME, edge ).getValue()) );
                 }
             } catch ( SQLException ex ) {
                 throw new IOException( ex );
             }
         }
-        return new RouteData( coordinateMap, length, time );
+        return new RouteData<>( coordinateMap, length, time );
     }
 
 }

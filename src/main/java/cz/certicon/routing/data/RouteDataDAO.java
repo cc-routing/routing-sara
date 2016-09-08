@@ -7,6 +7,9 @@ package cz.certicon.routing.data;
 
 import cz.certicon.routing.model.Route;
 import cz.certicon.routing.model.RouteData;
+import cz.certicon.routing.model.graph.Edge;
+import cz.certicon.routing.model.graph.Graph;
+import cz.certicon.routing.model.graph.Node;
 import java.io.IOException;
 
 /**
@@ -15,7 +18,7 @@ import java.io.IOException;
  */
 public interface RouteDataDAO {
 
-    void saveRouteData( Route route, RouteData routeData ) throws IOException;
+    <N extends Node, E extends Edge> void saveRouteData( Graph<N, E> graph, Route<N, E> route, RouteData<E> routeData ) throws IOException;
 
-    RouteData loadRouteData( Route route ) throws IOException;
+    <N extends Node, E extends Edge> RouteData<E> loadRouteData( Graph<N, E> graph, Route<N, E> route ) throws IOException;
 }
