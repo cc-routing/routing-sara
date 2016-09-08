@@ -5,11 +5,10 @@
  */
 package cz.certicon.routing.view;
 
+import cz.certicon.routing.model.graph.Edge;
 import cz.certicon.routing.view.jxmap.AbstractJxMapViewer;
-import cz.certicon.routing.model.graph.SimpleEdge;
 import cz.certicon.routing.model.graph.Graph;
-import cz.certicon.routing.model.graph.SimpleNode;
-import cz.certicon.routing.model.graph.Partition;
+import cz.certicon.routing.model.graph.Node;
 import cz.certicon.routing.model.values.Coordinate;
 import cz.certicon.routing.utils.ColorUtils;
 import cz.certicon.routing.utils.CoordinateUtils;
@@ -19,10 +18,7 @@ import java.awt.Color;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
-import java.util.Iterator;
 import java.util.List;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import org.jdesktop.swingx.JXMapViewer;
 import org.jdesktop.swingx.painter.Painter;
 
@@ -35,9 +31,9 @@ public class JxPartitionViewer extends AbstractJxMapViewer implements PartitionV
     private ColorUtils.ColorSupplier colorSupplier = ColorUtils.createColorSupplier( 20 );
 
     @Override
-    public void addPartition( Graph graph, Collection<SimpleEdge> cutEdges ) {
+    public void addCutEdges( Graph graph, Collection<Edge> cutEdges ) {
         List<Coordinate> coords = new ArrayList<>();
-        for ( SimpleEdge cutEdge : cutEdges ) {
+        for ( Edge cutEdge : cutEdges ) {
             coords.add( edgeMidpoint( graph, cutEdge ) );
         }
         List<Coordinate> sorted = CoordinateUtils.sortClockwise( coords );
@@ -47,20 +43,20 @@ public class JxPartitionViewer extends AbstractJxMapViewer implements PartitionV
         addPolygon( toGeoPosition( sorted ) );
     }
 
-    private Coordinate edgeMidpoint( Graph graph, SimpleEdge edge ) {
-        Coordinate source = graph.getNodeCoordinate( edge.getSource() );
-        Coordinate target = graph.getNodeCoordinate( edge.getTarget() );
+    private Coordinate edgeMidpoint( Graph graph, Edge edge ) {
+        Coordinate source = edge.getSource( graph ).getCoordinate( graph );
+        Coordinate target = edge.getTarget( graph ).getCoordinate( graph );
         Coordinate midpoint = CoordinateUtils.calculateGeographicMidpoint( Arrays.asList( source, target ) );
         return midpoint;
     }
 
     @Override
-    public void addPartition( Graph graph, Partition partition ) {
+    public void addNodeCluster( Graph graph, Collection<Node> partition ) {
         Color color = colorSupplier.nextColor();
         List<Coordinate> coords = new ArrayList<>();
-        for ( SimpleNode node : partition.getNodes() ) {
-            assert node.getCoordinate() != null;
-            coords.add( node.getCoordinate() );
+        for ( Node node : partition ) {
+            assert node.getCoordinate( graph ) != null;
+            coords.add( node.getCoordinate( graph ) );
         }
         addCluster( toGeoPosition( coords ), color );
 //        List<Coordinate> sorted = CoordinateUtils.sortClockwise( coords );
@@ -71,11 +67,11 @@ public class JxPartitionViewer extends AbstractJxMapViewer implements PartitionV
     }
 
     @Override
-    public void addPartitionNodes( Graph graph, Collection<SimpleNode> borderNodes ) {
+    public void addBorderNodes( Graph graph, Collection<Node> borderNodes ) {
         Color color = colorSupplier.nextColor();
         List<Coordinate> coords = new ArrayList<>();
-        for ( SimpleNode borderNode : borderNodes ) {
-            coords.add( borderNode.getCoordinate() );
+        for ( Node borderNode : borderNodes ) {
+            coords.add( borderNode.getCoordinate( graph ) );
         }
         List<Coordinate> sorted = CoordinateUtils.sortClockwise( coords );
         if ( !sorted.isEmpty() ) {
@@ -87,12 +83,10 @@ public class JxPartitionViewer extends AbstractJxMapViewer implements PartitionV
     @Override
     public void display() {
         super.display();
-        Thread repaintThread = new Thread(new Repainter(getPainters()));
-        repaintThread.setDaemon( true);
+        Thread repaintThread = new Thread( new Repainter( getPainters() ) );
+        repaintThread.setDaemon( true );
         repaintThread.start();
     }
-    
-    
 
     private static class Repainter implements Runnable {
 

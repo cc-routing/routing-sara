@@ -21,7 +21,6 @@ import java.util.Set;
 public class ContractEdge extends AbstractEdge<ContractNode> {
 
     private final Collection<Edge> edges;
-    private int width = -1;
 
     public ContractEdge( long id, boolean oneway, ContractNode source, ContractNode target, Collection<Edge> edges ) {
         super( id, oneway, source, target, -1, -1 );
@@ -41,12 +40,10 @@ public class ContractEdge extends AbstractEdge<ContractNode> {
         return edges;
     }
 
-    public int getWidth( Graph<ContractNode, ContractEdge> graph ) {
-        if ( width < 0 ) {
-            width = 0;
-            for ( Edge edge : edges ) {
-                width += edge.isOneWay( graph ) ? 1 : 2;
-            }
+    public int calculateWidth( Graph<ContractNode, ContractEdge> graph ) {
+        int width = 0;
+        for ( Edge edge : edges ) {
+            width += edge.isOneWay( graph ) ? 1 : 2;
         }
         return width;
     }

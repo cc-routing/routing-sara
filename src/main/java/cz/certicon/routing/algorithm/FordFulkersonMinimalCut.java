@@ -10,6 +10,7 @@ import cz.certicon.routing.model.basic.Pair;
 import cz.certicon.routing.model.graph.Edge;
 import cz.certicon.routing.model.graph.SimpleEdge;
 import cz.certicon.routing.model.graph.Graph;
+import cz.certicon.routing.model.graph.Metric;
 import cz.certicon.routing.model.graph.Node;
 import cz.certicon.routing.model.graph.SimpleNode;
 import cz.certicon.routing.model.graph.preprocessing.ContractEdge;
@@ -43,7 +44,7 @@ public class FordFulkersonMinimalCut implements MinimalCutAlgorithm {
     private static final char FRESH = 0;
 
     @Override
-    public MinimalCut compute( Graph<ContractNode, ContractEdge> graph, ContractNode sourceNode, ContractNode targetNode ) {
+    public MinimalCut compute( Graph<Node, Edge> graph, Metric metric, Node sourceNode, Node targetNode ) {
         // TODO optimize, change to adjacency lists (currently adjacency table - n^2, wasteful for thin graphs
         // map graph to arrays
 //        System.out.println( "MINIMAL CUT: mapping graph to arrays" );
@@ -55,17 +56,17 @@ public class FordFulkersonMinimalCut implements MinimalCutAlgorithm {
         int[][] limits = new int[nodeCount][nodeCount];
         int[][] flows = new int[nodeCount][nodeCount];
         TObjectIntMap nodeToIndexMap = new TObjectIntHashMap();
-        ContractNode[] indexToNodeArray = new ContractNode[nodeCount];
+        Node[] indexToNodeArray = new Node[nodeCount];
         int nodeCounter = 0;
-        for ( ContractNode n : graph.getNodes() ) {
+        for ( Node n : graph.getNodes() ) {
             nodeToIndexMap.put( n, nodeCounter );
             indexToNodeArray[nodeCounter] = n;
             nodeCounter++;
         }
-        for ( ContractEdge e : graph.getEdges() ) {
+        for ( Edge e : graph.getEdges() ) {
             int srcIdx = nodeToIndexMap.get( e.getSource( graph ) );
             int tgtIdx = nodeToIndexMap.get( e.getTarget( graph ) );
-            int value = e.getWidth( graph );
+            int value = (int) graph.getLength( metric, e ).getValue();
             limits[srcIdx][tgtIdx] = value;
             if ( !e.isOneWay( graph ) ) {
                 limits[tgtIdx][srcIdx] = value;
@@ -100,14 +101,14 @@ public class FordFulkersonMinimalCut implements MinimalCutAlgorithm {
 //        System.out.println( "VISITED" );
 //        testPrintArray( visited );
         // for each i,j pair, determine whether it belongs to cut edges (leads from reachagle to unreachable node in the original graph) and find the corresponding edge
-        Set<ContractEdge> cutEdge = new HashSet<>();
+        Set<Edge> cutEdge = new HashSet<>();
         for ( int i = 0; i < nodeCount; i++ ) {
             for ( int j = 0; j < nodeCount; j++ ) {
                 if ( visited[i] && !visited[j] && limits[i][j] != 0 ) {
-                    ContractNode from = indexToNodeArray[i];
-                    ContractNode to = indexToNodeArray[j];
-                    for ( ContractEdge e : from.getEdges( graph ) ) {
-                        ContractNode edgeTarget = graph.getOtherNode( e, from );
+                    Node from = indexToNodeArray[i];
+                    Node to = indexToNodeArray[j];
+                    for ( Edge e : graph.getEdges( from ) ) {
+                        Node edgeTarget = graph.getOtherNode( e, from );
                         if ( edgeTarget.equals( to ) ) {
                             cutEdge.add( e );
                         }

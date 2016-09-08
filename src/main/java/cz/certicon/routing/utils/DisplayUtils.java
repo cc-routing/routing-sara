@@ -5,24 +5,15 @@
  */
 package cz.certicon.routing.utils;
 
-import cz.certicon.routing.model.Route;
-import cz.certicon.routing.model.graph.SimpleEdge;
 import cz.certicon.routing.model.graph.Graph;
+import cz.certicon.routing.model.graph.SaraGraph;
 import cz.certicon.routing.model.graph.SimpleNode;
-import cz.certicon.routing.model.graph.Partition;
-import cz.certicon.routing.model.graph.PartitionGraph;
-import cz.certicon.routing.model.graph.UndirectedGraph;
-import cz.certicon.routing.model.graph.preprocessing.ContractNode;
-import cz.certicon.routing.model.values.Coordinate;
 import cz.certicon.routing.view.GraphStreamPresenter;
 import cz.certicon.routing.view.JxPartitionViewer;
 import cz.certicon.routing.view.PartitionViewer;
 import java.awt.Color;
-import java.util.ArrayList;
-import java.util.Collection;
 import java.util.HashMap;
 import java.util.Iterator;
-import java.util.List;
 import java.util.Map;
 
 /**
@@ -31,7 +22,7 @@ import java.util.Map;
  */
 public class DisplayUtils {
 
-    public static void displayConnectedPartitions( PartitionGraph graph ) {
+    public static void displayConnectedPartitions( SaraGraph graph ) {
         GraphStreamPresenter presenter = new GraphStreamPresenter();
         Graph assembled = graph.toPartitionsOnlyGraph();
         presenter.setGraph( assembled );
@@ -106,7 +97,7 @@ public class DisplayUtils {
 //        }
         int counter = 0;
         for ( Partition partition : graph.getPartitions() ) {
-            viewer.addPartition( graph, partition );
+            viewer.addCutEdges( graph, partition );
             counter += 1;
 //            if ( counter > 20 ) {
 //                break;

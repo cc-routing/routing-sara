@@ -7,29 +7,30 @@ package cz.certicon.routing.algorithm.sara.query.mld;
 
 import cz.certicon.routing.algorithm.RoutingAlgorithm;
 import cz.certicon.routing.model.Route;
-import cz.certicon.routing.model.graph.SimpleEdge;
 import cz.certicon.routing.model.graph.Graph;
-import cz.certicon.routing.model.graph.SimpleNode;
+import cz.certicon.routing.model.graph.Metric;
+import cz.certicon.routing.model.graph.SaraEdge;
+import cz.certicon.routing.model.graph.SaraNode;
 import cz.certicon.routing.model.values.Distance;
 
 /**
  *
  * @author Michael Blaha {@literal <michael.blaha@certicon.cz>}
  */
-public class MultilevelDijkstraAlgorithm implements RoutingAlgorithm {
+public class MultilevelDijkstraAlgorithm implements RoutingAlgorithm<SaraNode,SaraEdge> {
 
     @Override
-    public Route route( Graph graph, SimpleNode source, SimpleNode destination ) {
+    public Route route( Graph<SaraNode, SaraEdge> graph, Metric metric, SaraNode source, SaraNode destination ) {
         throw new UnsupportedOperationException( "Not supported yet." ); //To change body of generated methods, choose Tools | Templates.
     }
 
     @Override
-    public Route route( Graph graph, SimpleEdge source, SimpleEdge destination ) {
+    public Route route( Graph<SaraNode, SaraEdge> graph, Metric metric, SaraEdge source, SaraEdge destination ) {
         throw new UnsupportedOperationException( "Not supported yet." ); //To change body of generated methods, choose Tools | Templates.
     }
 
     @Override
-    public Route route( Graph graph, SimpleEdge source, SimpleEdge destination, Distance toSourceStart, Distance toSourceEnd, Distance toDestinationStart, Distance toDestinationEnd ) {
+    public Route route( Graph<SaraNode, SaraEdge> graph, Metric metric, SaraEdge source, SaraEdge destination, Distance toSourceStart, Distance toSourceEnd, Distance toDestinationStart, Distance toDestinationEnd ) {
         throw new UnsupportedOperationException( "Not supported yet." ); //To change body of generated methods, choose Tools | Templates.
     }
     

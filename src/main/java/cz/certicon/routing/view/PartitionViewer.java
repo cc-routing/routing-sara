@@ -5,10 +5,9 @@
  */
 package cz.certicon.routing.view;
 
-import cz.certicon.routing.model.graph.SimpleEdge;
+import cz.certicon.routing.model.graph.Edge;
 import cz.certicon.routing.model.graph.Graph;
-import cz.certicon.routing.model.graph.SimpleNode;
-import cz.certicon.routing.model.graph.Partition;
+import cz.certicon.routing.model.graph.Node;
 import java.util.Collection;
 
 /**
@@ -17,11 +16,11 @@ import java.util.Collection;
  */
 public interface PartitionViewer {
 
-    public void addPartition( Graph graph, Collection<SimpleEdge> cutEdges );
+    public void addCutEdges( Graph graph, Collection<Edge> cutEdges );
 
-    public void addPartitionNodes( Graph graph, Collection<SimpleNode> borderNodes );
+    public void addBorderNodes( Graph graph, Collection<Node> borderNodes );
 
-    public void addPartition( Graph graph, Partition partition );
+    public void addNodeCluster( Graph graph, Collection<Node> partition );
 
     public void display();
 }

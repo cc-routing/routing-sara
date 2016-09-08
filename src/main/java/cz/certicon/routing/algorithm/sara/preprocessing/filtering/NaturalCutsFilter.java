@@ -435,6 +435,9 @@ public class NaturalCutsFilter implements Filter {
                 ringToCoreEdges.addAll( entry.getValue() );
             }
         }
+        Map<Metric, Map<Edge, Distance>> metricMap = new HashMap<>();
+        Map<Edge, Distance> distanceMap = new HashMap<>();
+        metricMap.put( Metric.SIZE, distanceMap );
         if ( coreToRingEdges.size() <= ringToCoreEdges.size() ) {
             ContractEdge edge = new ContractEdge( coreNode.getId() * 100 + ringNode.getId(), false, coreNode, ringNode, (Collection<Edge>) coreToRingEdges );
             ringNode.addEdge( edge );
@@ -500,7 +503,10 @@ public class NaturalCutsFilter implements Filter {
 //            ringNode.addEdge( edge );
 //            builder.edge( edge );
 //        }
-        Graph tmpGraph = new UndirectedGraph( GraphUtils.toMap( nodeMap.values() ), GraphUtils.toMap( edgeMap.values() ), null );
+        Graph tmpGraph = new UndirectedGraph( GraphUtils.toMap( nodeMap.values() ), GraphUtils.toMap( edgeMap.values() ), metricMap );
+        for ( ContractEdge value : edgeMap.values() ) {
+            distanceMap.put( value, Distance.newInstance( value.calculateWidth( tmpGraph ) ) );
+        }
 //        System.out.println( "temporary graph: " + tmpGraph );
 //        presenter = new GraphStreamPresenter();
 //        presenter.displayGraph( tmpGraph );
@@ -514,7 +520,7 @@ public class NaturalCutsFilter implements Filter {
         // perform s-t minimal cut algorithm between them (on the tree)
         MinimalCutAlgorithm minimalCutAlgorithm = new FordFulkersonMinimalCut();
         // TODO graph must contain source and target
-        MinimalCut<ContractEdge> cut = minimalCutAlgorithm.compute( tmpGraph, coreNode, ringNode );
+        MinimalCut<ContractEdge> cut = minimalCutAlgorithm.compute( tmpGraph, Metric.SIZE, coreNode, ringNode );
 //        System.out.println( "returning result: " + cut );
 //        for ( Edge cutEdge : cut.getCutEdges() ) {
 //            presenter.setEdgeColor( cutEdge.getId(), Color.red );
