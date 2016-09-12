@@ -39,6 +39,8 @@ public class GraphGeneratorUtils {
         }
         Map<Metric, Map<Edge, Distance>> metricMap = new HashMap<>();
         metricMap.put( Metric.SIZE, new HashMap<Edge, Distance>() );
+        metricMap.put( Metric.LENGTH, new HashMap<Edge, Distance>() );
+        metricMap.put( Metric.TIME, new HashMap<Edge, Distance>() );
         int multiplier = GRID_MAX_SIZE;
         while ( rows < multiplier / 10 && columns < multiplier / 10 ) {
             multiplier /= 10;
@@ -96,9 +98,9 @@ public class GraphGeneratorUtils {
 
     public static Graph createGraph( Map<Long, Node> nodeMap, Map<Long, Edge> edgeMap, Map<TurnTable, TurnTable> turnTables ) {
         Map<Metric, Map<Edge, Distance>> metricMap = new HashMap<>();
-        metricMap.put( Metric.SIZE, new HashMap<Edge, Distance>() );
-        metricMap.put( Metric.LENGTH, new HashMap<Edge, Distance>() );
-        metricMap.put( Metric.TIME, new HashMap<Edge, Distance>() );
+        for ( Metric value : Metric.values() ) {
+            metricMap.put( value, new HashMap<Edge, Distance>() );
+        }
         List<Node> nodes = new ArrayList<>();
         SimpleNode a = createNode( nodeMap, nodes, 0 );
         SimpleNode b = createNode( nodeMap, nodes, 1 );
@@ -151,17 +153,24 @@ public class GraphGeneratorUtils {
             nodeMap.put( node.getId(), new ContractNode( node.getId(), Arrays.asList( node ) ) );
         }
         Map<Metric, Map<Edge, Distance>> metricMap = new HashMap<>();
-        Map<Edge, Distance> distanceMap = new HashMap<>();
-        metricMap.put( Metric.LENGTH, distanceMap );
+        for ( Metric value : Metric.values() ) {
+            metricMap.put( value, new HashMap<Edge, Distance>() );
+        }
         TLongObjectMap<ContractEdge> edgeMap = new TLongObjectHashMap<>();
         for ( Edge edge : graph.getEdges() ) {
             ContractEdge newEdge = new ContractEdge( edge.getId(), edge.isOneWay( graph ),
                     nodeMap.get( edge.getSource( graph ).getId() ), nodeMap.get( edge.getTarget( graph ).getId() ),
                     Arrays.asList( edge ) );
             edgeMap.put( edge.getId(), newEdge );
-            distanceMap.put( newEdge, graph.getLength( Metric.LENGTH, edge ) );
+            for ( Map.Entry<Metric, Map<Edge, Distance>> entry : metricMap.entrySet() ) {
+                entry.getValue().put( newEdge, graph.getLength( entry.getKey(), edge ) );
+            }
         }
-        return new UndirectedGraph<>( nodeMap, edgeMap, metricMap );
+        UndirectedGraph<ContractNode, ContractEdge> undirectedGraph = new UndirectedGraph<>( nodeMap, edgeMap, metricMap );
+        for ( ContractEdge edge : undirectedGraph.getEdges() ) {
+            undirectedGraph.setLength( Metric.SIZE, edge, Distance.newInstance( edge.calculateWidth( undirectedGraph ) ) );
+        }
+        return undirectedGraph;
     }
 
     private static SimpleNode createNode( Map<Long, Node> nodeMap, List<Node> nodes, long id ) {
@@ -178,7 +187,9 @@ public class GraphGeneratorUtils {
         source.addEdge( edge );
         target.addEdge( edge );
         edgeMap.put( id, edge );
-        metricMap.get( Metric.LENGTH ).put( edge, Distance.newInstance( distance ) );
+        for ( Map<Edge, Distance> value : metricMap.values() ) {
+            value.put( edge, Distance.newInstance( distance ) );
+        }
         return edge;
     }
 
@@ -190,7 +201,9 @@ public class GraphGeneratorUtils {
             target.addEdge( edge );
         }
         edgeMap.put( id, edge );
-        metricMap.get( Metric.LENGTH ).put( edge, Distance.newInstance( distance ) );
+        for ( Map<Edge, Distance> value : metricMap.values() ) {
+            value.put( edge, Distance.newInstance( distance ) );
+        }
         return edge;
     }
 }

@@ -121,6 +121,8 @@ public interface Graph<N extends Node, E extends Edge> {
 
     Distance getLength( Metric metric, E edge );
 
+    void setLength( Metric metric, E edge, Distance distnace );
+
 //    /**
 //     * Creates deep copy of this graph
 //     *

@@ -51,8 +51,8 @@ public abstract class AbstractEdge<N extends Node> implements Edge<N> {
     }
 
     @Override
-    public <E extends Edge> Distance getTurnDistance( Graph<N, E> graph, TurnTable turnTable, E targetEdge ) {
-        return turnTable.getCost( targetIndex, ( (AbstractEdge<N>) targetEdge ).sourceIndex );
+    public <E extends Edge> Distance getTurnDistance( Graph<N, E> graph, N node, TurnTable turnTable, E targetEdge ) {
+        return turnTable.getCost( getIndex( graph, node, this ), getIndex( graph, node, targetEdge ) );
     }
 
     @Override
@@ -102,6 +102,18 @@ public abstract class AbstractEdge<N extends Node> implements Edge<N> {
             return false;
         }
         return true;
+    }
+
+    private <E extends Edge> int getIndex( Graph<N, E> graph, Node node, Edge edge ) {
+        int idx;
+        if ( edge.getSource( graph ).equals( node ) ) {
+            idx = ( (AbstractEdge) edge ).sourceIndex;
+        } else if ( edge.getTarget( graph ).equals( node ) ) {
+            idx = ( (AbstractEdge) edge ).targetIndex;
+        } else {
+            throw new IllegalArgumentException( "Edge does not contain given node: edge = " + this + ", node = " + node.getId() );
+        }
+        return idx;
     }
 
 }

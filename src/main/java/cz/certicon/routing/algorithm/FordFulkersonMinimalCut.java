@@ -47,7 +47,7 @@ public class FordFulkersonMinimalCut implements MinimalCutAlgorithm {
     public MinimalCut compute( Graph<Node, Edge> graph, Metric metric, Node sourceNode, Node targetNode ) {
         // TODO optimize, change to adjacency lists (currently adjacency table - n^2, wasteful for thin graphs
         // map graph to arrays
-//        System.out.println( "MINIMAL CUT: mapping graph to arrays" );
+        System.out.println( "MINIMAL CUT: mapping graph to arrays" );
 //        System.out.println( "source = " + sourceNode.getId() );
 //        System.out.println( "target = " + targetNode.getId() );
         int nodeCount = graph.getNodesCount();
@@ -63,10 +63,12 @@ public class FordFulkersonMinimalCut implements MinimalCutAlgorithm {
             indexToNodeArray[nodeCounter] = n;
             nodeCounter++;
         }
+        Distance maxDistance = Distance.newInstance( Integer.MAX_VALUE );
         for ( Edge e : graph.getEdges() ) {
             int srcIdx = nodeToIndexMap.get( e.getSource( graph ) );
             int tgtIdx = nodeToIndexMap.get( e.getTarget( graph ) );
-            int value = (int) graph.getLength( metric, e ).getValue();
+            int value = graph.getLength( metric, e ).isGreaterOrEqualTo( maxDistance ) ? Integer.MAX_VALUE : (int) Math.round( graph.getLength( metric, e ).getValue() + 10E-8 );
+            System.out.println( "edge#" + e + ": value = " + value );
             limits[srcIdx][tgtIdx] = value;
             if ( !e.isOneWay( graph ) ) {
                 limits[tgtIdx][srcIdx] = value;
@@ -77,14 +79,14 @@ public class FordFulkersonMinimalCut implements MinimalCutAlgorithm {
         int maxFlow = 0;
         int source = nodeToIndexMap.get( sourceNode );
         int target = nodeToIndexMap.get( targetNode );
-//        System.out.println( "While improvement path exists (" + source + " - > " + target + ")" );
+        System.out.println( "While improvement path exists (" + source + " - > " + target + ")" );
         while ( findImprovementPath( predecessors, pathFlows, limits, flows, source, target ) ) {
             maxFlow += pathFlows[target];
-//            System.out.println( "Increase flow" );
+            System.out.println( "Increase flow: " + maxFlow );
             increaseFlow( predecessors, pathFlows, limits, flows, source, target );
         }
 //        testPrintTable( flows );
-//        System.out.println( "Searching for reachable nodes" );
+        System.out.println( "Searching for reachable nodes" );
         // search for visited - find reachable nodes from source (consider only edges with different values from the original graph)
         boolean[] visited = new boolean[nodeCount];
         Stack<Integer> stack = new Stack<>();
@@ -98,7 +100,7 @@ public class FordFulkersonMinimalCut implements MinimalCutAlgorithm {
                 }
             }
         }
-//        System.out.println( "VISITED" );
+        System.out.println( "VISITED" );
 //        testPrintArray( visited );
         // for each i,j pair, determine whether it belongs to cut edges (leads from reachagle to unreachable node in the original graph) and find the corresponding edge
         Set<Edge> cutEdge = new HashSet<>();

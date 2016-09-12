@@ -253,7 +253,7 @@ public class UndirectedGraphTest {
             for ( Edge incoming : graph.getIncomingEdges( node ) ) {
                 for ( Edge outgoing : graph.getOutgoingEdges( node ) ) {
                     System.out.println( "turn cost at node: " + node.getId() + " from: " + incoming.getId() + " to: " + outgoing.getId() );
-                    if ( incoming.equals( outgoing ) ) {
+                    if ( incoming.equals( outgoing ) || ( node.getId() == 2 && incoming.getId() == 1 && outgoing.getId() == 2 ) /*see GraphGeneratorUtils.java:132*/ ) {
                         assertEquals( Distance.newInfinityInstance(), graph.getTurnCost( node, incoming, outgoing ) );
                     } else {
                         assertEquals( Distance.newInstance( 0 ), graph.getTurnCost( node, incoming, outgoing ) );

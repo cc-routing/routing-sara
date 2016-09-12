@@ -126,6 +126,15 @@ public class UndirectedGraph<N extends Node, E extends Edge> implements Graph<N,
         return distanceMap.get( edge );
     }
 
+    @Override
+    public void setLength( Metric metric, E edge, Distance distnace ) {
+        if ( !metricMap.containsKey( metric ) ) {
+            throw new IllegalArgumentException( "Unknown metric: " + metric );
+        }
+        Map<Edge, Distance> distanceMap = metricMap.get( metric );
+        distanceMap.put( edge, distnace );
+    }
+
 //    @Override
 //    public Graph copy() {
 //        throw new UnsupportedOperationException( "Not supported yet." ); //To change body of generated methods, choose Tools | Templates.

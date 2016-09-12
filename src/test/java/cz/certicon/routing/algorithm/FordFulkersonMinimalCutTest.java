@@ -83,17 +83,17 @@ public class FordFulkersonMinimalCutTest {
     }
 
     public String toString( MinimalCut minimalCut ) {
-        List<SimpleEdge> sortedEdges = new ArrayList<>( minimalCut.getCutEdges() );
-        Collections.sort( sortedEdges, new Comparator<SimpleEdge>() {
+        List<Edge> sortedEdges = new ArrayList<>( minimalCut.getCutEdges() );
+        Collections.sort( sortedEdges, new Comparator<Edge>() {
             @Override
-            public int compare( SimpleEdge o1, SimpleEdge o2 ) {
+            public int compare( Edge o1, Edge o2 ) {
                 return Long.compare( o1.getId(), o2.getId() );
             }
         } );
 
         StringBuilder sb = new StringBuilder();
         sb.append( "MinimalCut{cut=" ).append( minimalCut.getCutSize() ).append( ",edges=[" );
-        for ( SimpleEdge edge : sortedEdges ) {
+        for ( Edge edge : sortedEdges ) {
             sb.append( edge.getId() ).append( "," );
         }
         sb.replace( sb.length() - 1, sb.length(), "]}" );

@@ -36,7 +36,7 @@ public abstract class AbstractNode<E extends Edge> implements Node<E> {
 
     @Override
     public <N extends Node> Distance getTurnDistance( Graph<N, E> graph, E source, E target ) {
-        return source.getTurnDistance( graph, turnTable, target );
+        return source.getTurnDistance( graph, this, turnTable, target );
     }
 
     @Override

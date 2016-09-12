@@ -21,7 +21,7 @@ public interface Edge<N extends Node> extends Identifiable {
 
     public <E extends Edge> N getOtherNode( Graph<N, E> graph, N node );
 
-    public <E extends Edge> Distance getTurnDistance( Graph<N, E> graph, TurnTable turnTable, E targetEdge );
+    public <E extends Edge> Distance getTurnDistance( Graph<N, E> graph, N node, TurnTable turnTable, E targetEdge );
 
     public <E extends Edge> boolean isOneWay( Graph<N, E> graph );
     

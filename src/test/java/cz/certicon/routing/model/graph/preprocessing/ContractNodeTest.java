@@ -7,6 +7,7 @@ package cz.certicon.routing.model.graph.preprocessing;
 
 import cz.certicon.routing.model.graph.Edge;
 import cz.certicon.routing.model.graph.Graph;
+import cz.certicon.routing.model.graph.Metric;
 import cz.certicon.routing.model.graph.Node;
 import cz.certicon.routing.model.graph.SimpleEdge;
 import cz.certicon.routing.model.graph.SimpleNode;
@@ -18,6 +19,8 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.EnumMap;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
@@ -75,12 +78,17 @@ public class ContractNodeTest {
         for ( int i = 0; i < neighbors.length; i++ ) {
             neighbors[i] = new ContractNode( 2 + i, origNodes );
         }
+        Map<Metric, Map<Edge, Distance>> metricMap = new EnumMap<>( Metric.class );
+        for ( Metric value : Metric.values() ) {
+            metricMap.put( value, new HashMap<Edge, Distance>() );
+        }
         for ( int i = 0; i < 3; i++ ) {
             ContractNode neighbor = neighbors[i];
             ContractEdge edge = new ContractEdge( i + 1, false, nodeA, neighbor, origEdges );
             nodeA.addEdge( edge );
             neighbor.addEdge( edge );
             edges.add( edge );
+            metricMap.get( Metric.SIZE ).put( edge, Distance.newInstance( 1 ) );
         }
         for ( int i = 2; i < 5; i++ ) {
             ContractNode neighbor = neighbors[i];
@@ -88,11 +96,12 @@ public class ContractNodeTest {
             nodeB.addEdge( edge );
             neighbor.addEdge( edge );
             edges.add( edge );
+            metricMap.get( Metric.SIZE ).put( edge, Distance.newInstance( 1 ) );
         }
         ContractNode.MaxIdContainer nodeMaxIdContainer = new ContractNode.MaxIdContainer( 9 );
         ContractNode.MaxIdContainer edgeMaxIdContainer = new ContractNode.MaxIdContainer( 9 );
 
-        Graph<ContractNode, ContractEdge> graph = new UndirectedGraph<>( GraphUtils.toMap( Arrays.asList( nodeA, nodeB ) ), GraphUtils.toMap( edges ), null );
+        Graph<ContractNode, ContractEdge> graph = new UndirectedGraph<>( GraphUtils.toMap( Arrays.asList( nodeA, nodeB ) ), GraphUtils.toMap( edges ), metricMap );
 
 //        System.out.println( "nodes:" );
 //        System.out.println( nodeA );
@@ -135,7 +144,7 @@ public class ContractNodeTest {
         }
         Collections.sort( edges, new EdgeComparator<>( graph, node ) );
         for ( ContractEdge edge : edges ) {
-            sb.append( "edge[" ).append( edge.getEdges().size() ).append( "]->node#" ).append( graph.getOtherNode(edge, node ).getId() ).append( "," );
+            sb.append( "edge[" ).append( edge.getEdges().size() ).append( "]->node#" ).append( graph.getOtherNode( edge, node ).getId() ).append( "," );
         }
         if ( !edges.isEmpty() ) {
             sb.replace( sb.length() - 1, sb.length(), "" );

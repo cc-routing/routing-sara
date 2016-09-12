@@ -62,7 +62,7 @@ public class ContractNode extends AbstractNode<ContractEdge> {
                 target.removeEdge( edge );
                 curr = (ContractEdge) edge;
                 if ( prev != null ) {
-                    curr = prev.mergeWith( curr, contractedNode, target, edgeMaxIdContainer.next() );
+                    curr = prev.mergeWith( graph, curr, contractedNode, target, edgeMaxIdContainer.next() );
                 } else {
                     curr = new ContractEdge( edgeMaxIdContainer.next(), false, contractedNode, target, new HashSet<>( curr.getEdges() ) );
                 }

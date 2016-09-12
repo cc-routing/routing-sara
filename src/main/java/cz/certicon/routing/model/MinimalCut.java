@@ -6,7 +6,6 @@
 package cz.certicon.routing.model;
 
 import cz.certicon.routing.model.graph.Edge;
-import cz.certicon.routing.model.graph.SimpleEdge;
 import java.util.Collection;
 import lombok.Value;
 
