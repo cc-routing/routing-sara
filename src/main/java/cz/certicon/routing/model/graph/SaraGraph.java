@@ -19,6 +19,10 @@ public class SaraGraph extends UndirectedGraph<SaraNode, SaraEdge> {
     public SaraGraph( TLongObjectMap<SaraNode> nodes, TLongObjectMap<SaraEdge> edges, Map<Metric, Map<Edge, Distance>> metricMap ) {
         super( nodes, edges, metricMap );
     }
+    
+    public Cell getParent(SaraNode node){
+        return node.getParent( this );
+    }
 
 //    @Override
 //    public Graph copy() {

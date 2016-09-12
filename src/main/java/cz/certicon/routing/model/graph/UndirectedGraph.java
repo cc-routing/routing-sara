@@ -175,12 +175,12 @@ public class UndirectedGraph<N extends Node, E extends Edge> implements Graph<N,
 
     @Override
     public N getNodeById( long id ) {
-        throw new UnsupportedOperationException( "Not supported yet." ); //To change body of generated methods, choose Tools | Templates.
+        return nodes.get( id );
     }
 
     @Override
     public E getEdgeById( long id ) {
-        throw new UnsupportedOperationException( "Not supported yet." ); //To change body of generated methods, choose Tools | Templates.
+        return edges.get( id );
     }
 
 }
