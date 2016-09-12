@@ -96,4 +96,12 @@ public class CollectionUtils {
     public static <T> List<T> asList( T... values ) {
         return Arrays.asList( values );
     }
+
+    public static <T> List<T> asList( Iterable<T> iterable ) {
+        List<T> list = new ArrayList<>();
+        for ( T t : iterable ) {
+            list.add( t );
+        }
+        return list;
+    }
 }

@@ -32,7 +32,7 @@ public class ContractEdge extends AbstractEdge<ContractNode> {
 //            throw new IllegalArgumentException( "Cannot merge edges: this = " + this + ", other = " + edge );
 //        }
         Set<Edge> newEdges = new HashSet<>( this.edges );
-        newEdges.addAll( edge.edges );
+        newEdges.addAll( edge.edges );// TODO update metric
         return new ContractEdge( id, false, newSource, newTarget, newEdges );
     }
 

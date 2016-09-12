@@ -8,6 +8,7 @@ package cz.certicon.routing.model.graph;
 import cz.certicon.routing.model.values.Coordinate;
 import cz.certicon.routing.model.values.Distance;
 import cz.certicon.routing.utils.collections.ArrayIterator;
+import cz.certicon.routing.utils.collections.ClassCastArrayIterator;
 import cz.certicon.routing.utils.collections.ImmutableIterator;
 import cz.certicon.routing.utils.collections.Iterator;
 import gnu.trove.map.TLongObjectMap;
@@ -40,7 +41,12 @@ public class UndirectedGraph<N extends Node, E extends Edge> implements Graph<N,
 
     @Override
     public Iterator<N> getNodes() {
-        return new ImmutableIterator<>( new ArrayIterator<>( (N[]) nodes.values() ) );
+        return new ImmutableIterator<>( new ClassCastArrayIterator<>( nodes.values(), new ClassCastArrayIterator.ClassCaster<N>() {
+            @Override
+            public N cast( Object o ) {
+                return (N) o;
+            }
+        } ) );
     }
 
     @Override
@@ -50,7 +56,12 @@ public class UndirectedGraph<N extends Node, E extends Edge> implements Graph<N,
 
     @Override
     public Iterator<E> getEdges() {
-        return new ImmutableIterator<>( new ArrayIterator<>( (E[]) edges.values() ) );
+        return new ImmutableIterator<>( new ClassCastArrayIterator<>( edges.values(), new ClassCastArrayIterator.ClassCaster<E>() {
+            @Override
+            public E cast( Object o ) {
+                return (E) o;
+            }
+        } ) );
     }
 
     @Override
@@ -123,7 +134,7 @@ public class UndirectedGraph<N extends Node, E extends Edge> implements Graph<N,
     public String toString() {
         StringBuilder sb = new StringBuilder();
         sb.append( "UndirectedGraph{" ).append( "nodes=[" );
-        for ( N node : (N[]) nodes.values() ) {
+        for ( N node : getNodes() ) {
             sb.append( node.getId() ).append( "," );
         }
         if ( !nodes.isEmpty() ) {
@@ -132,7 +143,7 @@ public class UndirectedGraph<N extends Node, E extends Edge> implements Graph<N,
             sb.append( "]" );
         }
         sb.append( ",edges=[" );
-        for ( E edge : (E[]) edges.values() ) {
+        for ( E edge : getEdges() ) {
             sb.append( edge.getId() ).append( "," );
         }
         if ( !edges.isEmpty() ) {
@@ -141,7 +152,7 @@ public class UndirectedGraph<N extends Node, E extends Edge> implements Graph<N,
             sb.append( "]" );
         }
         sb.append( ",mapping={" );
-        for ( N node : (N[]) nodes.values() ) {
+        for ( N node : getNodes() ) {
             sb.append( node.getId() ).append( "=>[" );
             for ( E e : getEdges( node ) ) {
                 sb.append( e.getSource( this ).equals( node ) ? "+" : "-" ).append( e.getId() ).append( "," );

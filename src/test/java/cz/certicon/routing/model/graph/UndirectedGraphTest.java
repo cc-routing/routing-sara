@@ -5,10 +5,14 @@
  */
 package cz.certicon.routing.model.graph;
 
+import cz.certicon.routing.model.Identifiable;
 import cz.certicon.routing.model.values.Distance;
+import cz.certicon.routing.utils.GraphGeneratorUtils;
+import cz.certicon.routing.utils.collections.CollectionUtils;
+import cz.certicon.routing.utils.collections.Iterator;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import org.junit.After;
@@ -24,16 +28,16 @@ import static org.junit.Assert.*;
  */
 public class UndirectedGraphTest {
 
-    private final UndirectedGraph graph;
-    private final Map<Long, SimpleNode> nodeMap;
-    private final Map<Long, SimpleEdge> edgeMap;
+    private final Graph<Node, Edge> graph;
+    private final Map<Long, Node> nodeMap;
+    private final Map<Long, Edge> edgeMap;
     private final Map<TurnTable, TurnTable> turnTables;
 
     public UndirectedGraphTest() {
         this.nodeMap = new HashMap<>();
         this.edgeMap = new HashMap<>();
         this.turnTables = new HashMap<>();
-        graph = createGraph();
+        this.graph = GraphGeneratorUtils.createGraph( nodeMap, edgeMap, turnTables );
     }
 
     @BeforeClass
@@ -52,84 +56,13 @@ public class UndirectedGraphTest {
     public void tearDown() {
     }
 
-    private UndirectedGraph createGraph() {
-        List<SimpleNode> nodes = new ArrayList<>();
-        SimpleNode a = createNode( nodes, 0 );
-        SimpleNode b = createNode( nodes, 1 );
-        SimpleNode c = createNode( nodes, 2 );
-        SimpleNode d = createNode( nodes, 3 );
-        SimpleNode e = createNode( nodes, 4 );
-        SimpleNode f = createNode( nodes, 5 );
-        List<SimpleEdge> edges = new ArrayList<>();
-        SimpleEdge ab = createEdge( edges, 0, false, a, b, 120 );
-        SimpleEdge ac = createEdge( edges, 1, false, a, c, 184 );
-        SimpleEdge cd = createEdge( edges, 2, false, c, d, 94 );
-        SimpleEdge db = createEdge( edges, 3, true, d, b, 159 );
-        SimpleEdge be = createEdge( edges, 4, false, b, e, 36 );
-        SimpleEdge df = createEdge( edges, 5, false, d, f, 152 );
-        SimpleEdge ef = createEdge( edges, 6, true, e, f, 38 );
-        for ( SimpleNode node : nodes ) {
-            int size = node.getDegree();
-            Distance[][] dtt = new Distance[size][size];
-            for ( int i = 0; i < dtt.length; i++ ) {
-                for ( int j = 0; j < dtt[i].length; j++ ) {
-                    if ( i != j ) {
-                        dtt[i][j] = Distance.newInstance( 0 );
-                    } else {
-                        dtt[i][j] = Distance.newInfinityInstance();
-                    }
-                }
-            }
-            TurnTable tt = new TurnTable( dtt );
-            if ( !turnTables.containsKey( tt ) ) {
-                turnTables.put( tt, tt );
-            } else {
-                tt = turnTables.get( tt );
-            }
-            node.setTurnTable( tt );
-        }
-        for ( SimpleNode node : nodes ) {
-            node.lock();
-        }
-        UndirectedGraph g = UndirectedGraph.builder().nodes( nodes ).edges( edges ).build();
-        return g;
-    }
-
-    private SimpleNode createNode( List<SimpleNode> nodes, long id ) {
-//        Distance[][] tt = new Distance[]
-        SimpleNode node = new SimpleNode( id );
-        nodes.add( node );
-        nodeMap.put( id, node );
-        return node;
-    }
-
-    private SimpleEdge createEdge( List<SimpleEdge> edges, long id, boolean oneway, SimpleNode source, SimpleNode target, double distance ) {
-        SimpleEdge edge = new SimpleEdge( id, oneway, source, target, Distance.newInstance( distance ) );
-        edges.add( edge );
-        source.addEdge( edge );
-        target.addEdge( edge );
-        edgeMap.put( id, edge );
-        return edge;
-    }
-
-    private SimpleEdge createEdge( List<SimpleEdge> edges, long id, boolean oneway, SimpleNode source, SimpleNode target, double distance, boolean addToNode ) {
-        SimpleEdge edge = new SimpleEdge( id, oneway, source, target, Distance.newInstance( distance ) );
-        edges.add( edge );
-        if ( addToNode ) {
-            source.addEdge( edge );
-            target.addEdge( edge );
-        }
-        edgeMap.put( id, edge );
-        return edge;
-    }
-
     /**
      * Test of getNodesCount method, of class UndirectedGraph.
      */
     @Test
     public void testGetNodesCount() {
         System.out.println( "getNodesCount" );
-        UndirectedGraph instance = graph;
+        Graph instance = graph;
         int expResult = 6;
         int result = instance.getNodesCount();
         assertEquals( expResult, result );
@@ -141,7 +74,7 @@ public class UndirectedGraphTest {
     @Test
     public void testGetNodes() {
         System.out.println( "getNodes" );
-        UndirectedGraph instance = graph;
+        Graph instance = graph;
         String expResult = "[0,1,2,3,4,5]";
         String result = nodeIteratorToString( instance.getNodes() );
         assertEquals( expResult, result );
@@ -153,7 +86,7 @@ public class UndirectedGraphTest {
     @Test
     public void testGetEdgeCount() {
         System.out.println( "getEdgeCount" );
-        UndirectedGraph instance = graph;
+        Graph instance = graph;
         int expResult = 7;
         int result = instance.getEdgeCount();
         assertEquals( expResult, result );
@@ -165,7 +98,7 @@ public class UndirectedGraphTest {
     @Test
     public void testGetEdges() {
         System.out.println( "getEdges" );
-        UndirectedGraph instance = graph;
+        Graph instance = graph;
         String expResult = "[0,1,2,3,4,5,6]";
         String result = edgeIteratorToString( instance.getEdges() );
         assertEquals( expResult, result );
@@ -186,7 +119,7 @@ public class UndirectedGraphTest {
     }
 
     private void testGetIncomingEdges( long nodeId, String expResult ) {
-        SimpleNode node = nodeMap.get( nodeId );
+        Node node = nodeMap.get( nodeId );
         String result = edgeIteratorToString( graph.getIncomingEdges( node ) );
         assertEquals( expResult, result );
     }
@@ -206,7 +139,7 @@ public class UndirectedGraphTest {
     }
 
     private void testGetOutgoingEdges( long nodeId, String expResult ) {
-        SimpleNode node = nodeMap.get( nodeId );
+        Node node = nodeMap.get( nodeId );
         String result = edgeIteratorToString( graph.getOutgoingEdges( node ) );
         assertEquals( expResult, result );
     }
@@ -227,9 +160,9 @@ public class UndirectedGraphTest {
     }
 
     private void testGetSourceNodeCompare( long edgeId, long nodeId ) {
-        SimpleEdge edge = edgeMap.get( edgeId );
-        SimpleNode expResult = nodeMap.get( nodeId );
-        SimpleNode result = graph.getSourceNode( edge );
+        Edge edge = edgeMap.get( edgeId );
+        Node expResult = nodeMap.get( nodeId );
+        Node result = graph.getSourceNode( edge );
         assertEquals( expResult, result );
     }
 
@@ -249,9 +182,9 @@ public class UndirectedGraphTest {
     }
 
     private void testGetTargetNodeCompare( long edgeId, long nodeId ) {
-        SimpleEdge edge = edgeMap.get( edgeId );
-        SimpleNode expResult = nodeMap.get( nodeId );
-        SimpleNode result = graph.getTargetNode( edge );
+        Edge edge = edgeMap.get( edgeId );
+        Node expResult = nodeMap.get( nodeId );
+        Node result = graph.getTargetNode( edge );
         assertEquals( expResult, result );
     }
 
@@ -272,34 +205,38 @@ public class UndirectedGraphTest {
 
     private void testGetOtherNodeCompare( long edgeId, long nodeId, long otherNodeId ) {
         {
-            SimpleEdge edge = edgeMap.get( edgeId );
-            SimpleNode expResult = nodeMap.get( otherNodeId );
-            SimpleNode result = graph.getOtherNode( edge, nodeMap.get( nodeId ) );
+            Edge edge = edgeMap.get( edgeId );
+            Node expResult = nodeMap.get( otherNodeId );
+            Node result = graph.getOtherNode( edge, nodeMap.get( nodeId ) );
             assertEquals( expResult, result );
         }
         {
-            SimpleEdge edge = edgeMap.get( edgeId );
-            SimpleNode expResult = nodeMap.get( nodeId );
-            SimpleNode result = graph.getOtherNode( edge, nodeMap.get( otherNodeId ) );
+            Edge edge = edgeMap.get( edgeId );
+            Node expResult = nodeMap.get( nodeId );
+            Node result = graph.getOtherNode( edge, nodeMap.get( otherNodeId ) );
             assertEquals( expResult, result );
         }
     }
 
-    private static String edgeIteratorToString( Iterator<SimpleEdge> iterator ) {
+    private static String edgeIteratorToString( Iterator<Edge> iterator ) {
+        List<Edge> list = CollectionUtils.asList( iterator );
+        Collections.sort( list, Identifiable.Comparators.createIdComparator() );
         StringBuilder sb = new StringBuilder();
         sb.append( "[" );
-        while ( iterator.hasNext() ) {
-            sb.append( iterator.next().getId() ).append( "," );
+        for ( Edge edge : list ) {
+            sb.append( edge.getId() ).append( "," );
         }
         sb.replace( sb.length() - 1, sb.length(), "]" );
         return sb.toString();
     }
 
-    private static String nodeIteratorToString( Iterator<SimpleNode> iterator ) {
+    private static String nodeIteratorToString( Iterator<Node> iterator ) {
+        List<Node> list = CollectionUtils.asList( iterator );
+        Collections.sort( list, Identifiable.Comparators.createIdComparator() );
         StringBuilder sb = new StringBuilder();
         sb.append( "[" );
-        while ( iterator.hasNext() ) {
-            sb.append( iterator.next().getId() ).append( "," );
+        for ( Node node : list ) {
+            sb.append( node.getId() ).append( "," );
         }
         sb.replace( sb.length() - 1, sb.length(), "]" );
         return sb.toString();
@@ -311,15 +248,11 @@ public class UndirectedGraphTest {
     @Test
     public void testGetTurnCost() {
         System.out.println( "getTurnCost" );
-        Iterator<SimpleNode> nodes = graph.getNodes();
-        while ( nodes.hasNext() ) {
-            SimpleNode node = nodes.next();
-            Iterator<SimpleEdge> incomingEdges = node.getIncomingEdges();
-            while ( incomingEdges.hasNext() ) {
-                SimpleEdge incoming = incomingEdges.next();
-                Iterator<SimpleEdge> outgoingEdges = node.getOutgoingEdges();
-                while ( outgoingEdges.hasNext() ) {
-                    SimpleEdge outgoing = outgoingEdges.next();
+        System.out.println( graph.toString() );
+        for ( Node node : graph.getNodes() ) {
+            for ( Edge incoming : graph.getIncomingEdges( node ) ) {
+                for ( Edge outgoing : graph.getOutgoingEdges( node ) ) {
+                    System.out.println( "turn cost at node: " + node.getId() + " from: " + incoming.getId() + " to: " + outgoing.getId() );
                     if ( incoming.equals( outgoing ) ) {
                         assertEquals( Distance.newInfinityInstance(), graph.getTurnCost( node, incoming, outgoing ) );
                     } else {

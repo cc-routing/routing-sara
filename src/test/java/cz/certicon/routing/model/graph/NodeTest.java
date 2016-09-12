@@ -6,6 +6,7 @@
 package cz.certicon.routing.model.graph;
 
 import cz.certicon.routing.model.values.Distance;
+import cz.certicon.routing.utils.GraphGeneratorUtils;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -24,87 +25,16 @@ import static org.junit.Assert.*;
  */
 public class NodeTest {
 
-    private final UndirectedGraph graph;
-    private final Map<Long, SimpleNode> nodeMap;
-    private final Map<Long, SimpleEdge> edgeMap;
+    private final Graph<Node, Edge> graph;
+    private final Map<Long, Node> nodeMap;
+    private final Map<Long, Edge> edgeMap;
     private final Map<TurnTable, TurnTable> turnTables;
 
     public NodeTest() {
         this.nodeMap = new HashMap<>();
         this.edgeMap = new HashMap<>();
         this.turnTables = new HashMap<>();
-        graph = createGraph();
-    }
-
-    private UndirectedGraph createGraph() {
-        List<SimpleNode> nodes = new ArrayList<>();
-        SimpleNode a = createNode( nodes, 0 );
-        SimpleNode b = createNode( nodes, 1 );
-        SimpleNode c = createNode( nodes, 2 );
-        SimpleNode d = createNode( nodes, 3 );
-        SimpleNode e = createNode( nodes, 4 );
-        SimpleNode f = createNode( nodes, 5 );
-        List<SimpleEdge> edges = new ArrayList<>();
-        SimpleEdge ab = createEdge( edges, 0, false, a, b, 120 );
-        SimpleEdge ac = createEdge( edges, 1, false, a, c, 184 );
-        SimpleEdge cd = createEdge( edges, 2, false, c, d, 94 );
-        SimpleEdge db = createEdge( edges, 3, true, d, b, 159 );
-        SimpleEdge be = createEdge( edges, 4, false, b, e, 36 );
-        SimpleEdge df = createEdge( edges, 5, false, d, f, 152 );
-        SimpleEdge ef = createEdge( edges, 6, true, e, f, 38 );
-        for ( SimpleNode node : nodes ) {
-            int size = node.getDegree();
-            Distance[][] dtt = new Distance[size][size];
-            for ( int i = 0; i < dtt.length; i++ ) {
-                for ( int j = 0; j < dtt[i].length; j++ ) {
-                    if ( i != j ) {
-                        dtt[i][j] = Distance.newInstance( 0 );
-                    } else {
-                        dtt[i][j] = Distance.newInfinityInstance();
-                    }
-                }
-            }
-            TurnTable tt = new TurnTable( dtt );
-            if ( !turnTables.containsKey( tt ) ) {
-                turnTables.put( tt, tt );
-            } else {
-                tt = turnTables.get( tt );
-            }
-            node.setTurnTable( tt );
-        }
-        for ( SimpleNode node : nodes ) {
-            node.lock();
-        }
-        UndirectedGraph g = UndirectedGraph.builder().nodes( nodes ).edges( edges ).build();
-        return g;
-    }
-
-    private SimpleNode createNode( List<SimpleNode> nodes, long id ) {
-//        Distance[][] tt = new Distance[]
-        SimpleNode node = new SimpleNode( id );
-        nodes.add( node );
-        nodeMap.put( id, node );
-        return node;
-    }
-
-    private SimpleEdge createEdge( List<SimpleEdge> edges, long id, boolean oneway, SimpleNode source, SimpleNode target, double distance ) {
-        SimpleEdge edge = new SimpleEdge( id, oneway, source, target, Distance.newInstance( distance ) );
-        edges.add( edge );
-        source.addEdge( edge );
-        target.addEdge( edge );
-        edgeMap.put( id, edge );
-        return edge;
-    }
-
-    private SimpleEdge createEdge( List<SimpleEdge> edges, long id, boolean oneway, SimpleNode source, SimpleNode target, double distance, boolean addToNode ) {
-        SimpleEdge edge = new SimpleEdge( id, oneway, source, target, Distance.newInstance( distance ) );
-        edges.add( edge );
-        if ( addToNode ) {
-            source.addEdge( edge );
-            target.addEdge( edge );
-        }
-        edgeMap.put( id, edge );
-        return edge;
+        this.graph = GraphGeneratorUtils.createGraph( nodeMap, edgeMap, turnTables );
     }
 
     @BeforeClass
@@ -124,21 +54,6 @@ public class NodeTest {
     }
 
     /**
-     * Test of getEdgePosition method, of class Node.
-     */
-    @Test
-    public void testGetEdgePosition() {
-        System.out.println( "getEdgePosition" );
-        SimpleNode node = createNode(new ArrayList<SimpleNode>(), 0 );
-        SimpleEdge a = createEdge(new ArrayList<SimpleEdge>(), 0, true, node, node, 0 );
-        SimpleEdge b = createEdge(new ArrayList<SimpleEdge>(), 1, true, node, node, 0 );
-        System.out.println( edgeIteratorToString( node.getIncomingEdges() ) );
-        System.out.println( edgeIteratorToString( node.getOutgoingEdges() ) );
-        assertEquals( 0, node.getEdgePosition( a ) );
-        assertEquals( 1, node.getEdgePosition( b ) );
-    }
-
-    /**
      * Test of getIncomingEdges method, of class UndirectedGraph.
      */
     @Test
@@ -153,8 +68,8 @@ public class NodeTest {
     }
 
     private void testGetIncomingEdges( long nodeId, String expResult ) {
-        SimpleNode node = nodeMap.get( nodeId );
-        String result = edgeIteratorToString( node.getIncomingEdges() );
+        Node node = nodeMap.get( nodeId );
+        String result = edgeIteratorToString( graph.getIncomingEdges( node ) );
         assertEquals( expResult, result );
     }
 
@@ -173,52 +88,52 @@ public class NodeTest {
     }
 
     private void testGetOutgoingEdges( long nodeId, String expResult ) {
-        SimpleNode node = nodeMap.get( nodeId );
-        String result = edgeIteratorToString( node.getOutgoingEdges() );
+        Node node = nodeMap.get( nodeId );
+        String result = edgeIteratorToString( graph.getOutgoingEdges(node) );
         assertEquals( expResult, result );
     }
 
     /**
      * Test of getId method, of class Node.
      */
-    @Test
-    public void testGetId() {
-        System.out.println( "getId" );
-        SimpleNode instance = createNode(new ArrayList<SimpleNode>(), 0 );
-        assertEquals( 0, instance.getId() );
-        assertNotEquals( 0, createNode( new ArrayList<SimpleNode>(), 1 ).getId() );
-    }
+//    @Test
+//    public void testGetId() {
+//        System.out.println( "getId" );
+//        SimpleNode instance = createNode( new ArrayList<SimpleNode>(), 0 );
+//        assertEquals( 0, instance.getId() );
+//        assertNotEquals( 0, createNode( new ArrayList<SimpleNode>(), 1 ).getId() );
+//    }
 
     /**
      * Test of addEdge method, of class Node.
      */
-    @Test
-    public void testAddEdge_Edge() {
-        System.out.println( "addEdge" );
-        SimpleNode node = createNode(new ArrayList<SimpleNode>(), 0 );
-        node.addEdge( createEdge( new ArrayList<SimpleEdge>(), 0, true, node, node, 0, false ) );
-        node.addEdge( createEdge( new ArrayList<SimpleEdge>(), 1, true, node, node, 0, false ) );
-        assertEquals( "[0,1]", edgeIteratorToString( node.getOutgoingEdges() ) );
-    }
+//    @Test
+//    public void testAddEdge_Edge() {
+//        System.out.println( "addEdge" );
+//        Node node = createNode( new ArrayList<SimpleNode>(), 0 );
+//        node.addEdge( createEdge( new ArrayList<SimpleEdge>(), 0, true, node, node, 0, false ) );
+//        node.addEdge( createEdge( new ArrayList<SimpleEdge>(), 1, true, node, node, 0, false ) );
+//        assertEquals( "[0,1]", edgeIteratorToString( node.getOutgoingEdges() ) );
+//    }
 
     /**
      * Test of addEdge method, of class Node.
      */
-    @Test
-    public void testAddEdge_Edge_int() {
-        System.out.println( "addEdge_int" );
-        SimpleNode node = createNode(new ArrayList<SimpleNode>(), 0 );
-        SimpleEdge a = createEdge(new ArrayList<SimpleEdge>(), 0, true, node, node, 0, false );
-        SimpleEdge b = createEdge(new ArrayList<SimpleEdge>(), 1, true, node, node, 0, false );
-        SimpleEdge c = createEdge(new ArrayList<SimpleEdge>(), 2, true, node, node, 0, false );
-        node.addEdge( a );
-        node.addEdge( b, 5 );
-        node.addEdge( c );
-        assertEquals( "[0,1,2]", edgeIteratorToString( node.getOutgoingEdges() ) ); // iterator skips invalid
-        assertEquals( 0, node.getEdgePosition( a ) );
-        assertEquals( 5, node.getEdgePosition( b ) );
-        assertEquals( 6, node.getEdgePosition( c ) );
-    }
+//    @Test
+//    public void testAddEdge_Edge_int() {
+//        System.out.println( "addEdge_int" );
+//        SimpleNode node = createNode( new ArrayList<SimpleNode>(), 0 );
+//        SimpleEdge a = createEdge( new ArrayList<SimpleEdge>(), 0, true, node, node, 0, false );
+//        SimpleEdge b = createEdge( new ArrayList<SimpleEdge>(), 1, true, node, node, 0, false );
+//        SimpleEdge c = createEdge( new ArrayList<SimpleEdge>(), 2, true, node, node, 0, false );
+//        node.addEdge( a );
+//        node.addEdge( b, 5 );
+//        node.addEdge( c );
+//        assertEquals( "[0,1,2]", edgeIteratorToString( node.getOutgoingEdges() ) ); // iterator skips invalid
+//        assertEquals( 0, node.getEdgePosition( a ) );
+//        assertEquals( 5, node.getEdgePosition( b ) );
+//        assertEquals( 6, node.getEdgePosition( c ) );
+//    }
 
     /**
      * Test of setTurnTable method, of class Node.
@@ -238,28 +153,28 @@ public class NodeTest {
     /**
      * Test of getDegree method, of class Node.
      */
-    @Test
-    public void testGetDegree() {
-        System.out.println( "getDegree" );
-        SimpleNode node = createNode(new ArrayList<SimpleNode>(), 0 );
-        node.addEdge( createEdge( new ArrayList<SimpleEdge>(), 0, true, node, node, 0 ) );
-        node.addEdge( createEdge( new ArrayList<SimpleEdge>(), 1, true, node, node, 0 ) );
-        assertEquals( 2, node.getDegree() );
-    }
+//    @Test
+//    public void testGetDegree() {
+//        System.out.println( "getDegree" );
+//        SimpleNode node = createNode( new ArrayList<SimpleNode>(), 0 );
+//        node.addEdge( createEdge( new ArrayList<SimpleEdge>(), 0, true, node, node, 0 ) );
+//        node.addEdge( createEdge( new ArrayList<SimpleEdge>(), 1, true, node, node, 0 ) );
+//        assertEquals( 2, node.getDegree() );
+//    }
 
     /**
      * Test of lock method, of class Node.
      */
-    @Test( expected = IllegalStateException.class )
-    public void testLock() {
-        System.out.println( "lock" );
-        SimpleNode node = createNode(new ArrayList<SimpleNode>(), 0 );
-        node.addEdge( createEdge( new ArrayList<SimpleEdge>(), 0, true, node, node, 0 ) );
-        node.lock();
-        node.addEdge( createEdge( new ArrayList<SimpleEdge>(), 1, true, node, node, 0 ) );
-    }
+//    @Test( expected = IllegalStateException.class )
+//    public void testLock() {
+//        System.out.println( "lock" );
+//        SimpleNode node = createNode( new ArrayList<SimpleNode>(), 0 );
+//        node.addEdge( createEdge( new ArrayList<SimpleEdge>(), 0, true, node, node, 0 ) );
+//        node.lock();
+//        node.addEdge( createEdge( new ArrayList<SimpleEdge>(), 1, true, node, node, 0 ) );
+//    }
 
-    private static String edgeIteratorToString( Iterator<SimpleEdge> iterator ) {
+    private static String edgeIteratorToString( Iterator<Edge> iterator ) {
         StringBuilder sb = new StringBuilder();
         sb.append( "[" );
         while ( iterator.hasNext() ) {

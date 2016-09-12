@@ -5,10 +5,16 @@
  */
 package cz.certicon.routing.model;
 
+import cz.certicon.routing.model.graph.Edge;
+import cz.certicon.routing.model.graph.Graph;
+import cz.certicon.routing.model.graph.Node;
 import cz.certicon.routing.model.values.Distance;
 import cz.certicon.routing.model.graph.SimpleNode;
 import cz.certicon.routing.model.graph.SimpleEdge;
+import cz.certicon.routing.model.graph.UndirectedGraph;
+import cz.certicon.routing.utils.GraphUtils;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import org.junit.After;
 import org.junit.AfterClass;
@@ -48,18 +54,20 @@ public class RouteTest {
     @Test
     public void testBuilder() {
         System.out.println( "builder" );
-        Route.RouteBuilder builder = Route.builder();
         SimpleNode a = new SimpleNode( 0 );
         SimpleNode b = new SimpleNode( 1 );
         SimpleNode c = new SimpleNode( 2 );
         SimpleNode d = new SimpleNode( 3 );
         SimpleNode e = new SimpleNode( 4 );
-        SimpleEdge ab = new SimpleEdge( 0, false, a, b, Distance.newInstance( 0 ) );
-        SimpleEdge bc = new SimpleEdge( 1, false, c, b, Distance.newInstance( 0 ) );
-        SimpleEdge cd = new SimpleEdge( 2, false, c, d, Distance.newInstance( 0 ) );
-        SimpleEdge de = new SimpleEdge( 3, false, e, d, Distance.newInstance( 0 ) );
+        SimpleEdge ab = new SimpleEdge( 0, false, a, b, 0, 1 );
+        SimpleEdge bc = new SimpleEdge( 1, false, c, b, 0, 1 );
+        SimpleEdge cd = new SimpleEdge( 2, false, c, d, 0, 1 );
+        SimpleEdge de = new SimpleEdge( 3, false, e, d, 0, 1 );
+        UndirectedGraph<SimpleNode, SimpleEdge> graph = new UndirectedGraph<>( GraphUtils.toMap( Arrays.asList( a, b, c, d, e ) ), GraphUtils.toMap( Arrays.asList( ab, bc, cd, de ) ), null );
 
-        Route route = builder.addAsLast( cd ).addAsFirst( bc ).addAsLast( de ).addAsFirst( ab ).build();
+        Route.RouteBuilder builder = Route.builder( graph );
+
+        Route<SimpleNode, SimpleEdge> route = builder.addAsLast( cd ).addAsFirst( bc ).addAsLast( de ).addAsFirst( ab ).build();
         assertEquals( "Route{source=0,target=4,edges=[0,1,2,3]}", toString( route ) );
     }
 
@@ -69,26 +77,28 @@ public class RouteTest {
     @Test( expected = IllegalArgumentException.class )
     public void testBuilderOneway() {
         System.out.println( "builder_oneway" );
-        Route.RouteBuilder builder = Route.builder();
         SimpleNode a = new SimpleNode( 0 );
         SimpleNode b = new SimpleNode( 1 );
         SimpleNode c = new SimpleNode( 2 );
         SimpleNode d = new SimpleNode( 3 );
         SimpleNode e = new SimpleNode( 4 );
-        SimpleEdge ab = new SimpleEdge( 0, false, a, b, Distance.newInstance( 0 ) );
-        SimpleEdge bc = new SimpleEdge( 1, true, c, b, Distance.newInstance( 0 ) );
-        SimpleEdge cd = new SimpleEdge( 2, false, c, d, Distance.newInstance( 0 ) );
-        SimpleEdge de = new SimpleEdge( 3, false, e, d, Distance.newInstance( 0 ) );
+        SimpleEdge ab = new SimpleEdge( 0, false, a, b, 0, 1 );
+        SimpleEdge bc = new SimpleEdge( 1, true, c, b, 0, 1 );
+        SimpleEdge cd = new SimpleEdge( 2, false, c, d, 0, 1 );
+        SimpleEdge de = new SimpleEdge( 3, false, e, d, 0, 1 );
+        UndirectedGraph<SimpleNode, SimpleEdge> graph = new UndirectedGraph<>( GraphUtils.toMap( Arrays.asList( a, b, c, d, e ) ), GraphUtils.toMap( Arrays.asList( ab, bc, cd, de ) ), null );
+
+        Route.RouteBuilder builder = Route.builder( graph );
 
         Route route = builder.addAsLast( cd ).addAsFirst( bc ).addAsLast( de ).addAsFirst( ab ).build();
 
 //        assertEquals( route.toString(), "Route(edges=[Edge(id=0, oneway=false, source=Node(id=0), target=Node(id=1), length=Distance(value=0.0)), Edge(id=1, oneway=false, source=Node(id=2), target=Node(id=1), length=Distance(value=0.0)), Edge(id=2, oneway=false, source=Node(id=2), target=Node(id=3), length=Distance(value=0.0)), Edge(id=3, oneway=false, source=Node(id=4), target=Node(id=3), length=Distance(value=0.0))], source=Node(id=0), target=Node(id=4))" );
     }
 
-    private static String toString( Route route ) {
+    private static <N extends Node, E extends Edge> String toString( Route<N, E> route ) {
         StringBuilder sb = new StringBuilder();
         sb.append( "Route{source=" ).append( route.getSource().getId() ).append( ",target=" ).append( route.getTarget().getId() ).append( ",edges=[" );
-        for ( SimpleEdge edge : route.getEdges() ) {
+        for ( E edge : route.getEdges() ) {
             sb.append( edge.getId() ).append( "," );
         }
         sb.replace( sb.length() - 1, sb.length(), "]}" );

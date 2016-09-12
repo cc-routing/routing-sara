@@ -5,12 +5,18 @@
  */
 package cz.certicon.routing.model.graph.preprocessing;
 
+import cz.certicon.routing.model.graph.Edge;
+import cz.certicon.routing.model.graph.Graph;
+import cz.certicon.routing.model.graph.Node;
 import cz.certicon.routing.model.graph.SimpleEdge;
 import cz.certicon.routing.model.graph.SimpleNode;
+import cz.certicon.routing.model.graph.UndirectedGraph;
 import cz.certicon.routing.model.values.Distance;
+import cz.certicon.routing.utils.GraphUtils;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -56,13 +62,13 @@ public class ContractNodeTest {
     public void testMergeWith() {
         System.out.println( "mergeWith" );
         List<ContractEdge> edges = new ArrayList<>();
-        Set<SimpleNode> origNodesA = new HashSet<>( Arrays.asList(new SimpleNode( -1 ), new SimpleNode( -2 ), new SimpleNode( -3 ) ) );
-        Set<SimpleNode> origNodesB = new HashSet<>( Arrays.asList(new SimpleNode( -4 ), new SimpleNode( -5 ) ) );
-        Set<SimpleNode> origNodes = new HashSet<>( Arrays.asList(new SimpleNode( -6 ) ) );
+        Set<Node> origNodesA = new HashSet<Node>( Arrays.asList( new SimpleNode( -1 ), new SimpleNode( -2 ), new SimpleNode( -3 ) ) );
+        Set<Node> origNodesB = new HashSet<Node>( Arrays.asList( new SimpleNode( -4 ), new SimpleNode( -5 ) ) );
+        Set<Node> origNodes = new HashSet<Node>( Arrays.asList( new SimpleNode( -6 ) ) );
         ContractNode nodeA = new ContractNode( 0, origNodesA );
         ContractNode nodeB = new ContractNode( 1, origNodesB );
-        Set<SimpleEdge> origEdges = new HashSet<>( Arrays.asList(new SimpleEdge( -1, false, nodeA, nodeB, Distance.newInstance( 1 ) ) ) );
-        ContractEdge connectEdge = new ContractEdge( 0, false, nodeA, nodeB, Distance.newInstance( 1 ), origEdges );
+        Set<Edge> origEdges = new HashSet<Edge>( Arrays.asList( new SimpleEdge( -1, false, (SimpleNode) origNodesA.iterator().next(), (SimpleNode) origNodesB.iterator().next(), -1, -1 ) ) );
+        ContractEdge connectEdge = new ContractEdge( 0, false, nodeA, nodeB, origEdges );
         nodeA.addEdge( connectEdge );
         nodeB.addEdge( connectEdge );
         ContractNode[] neighbors = new ContractNode[5];
@@ -71,20 +77,22 @@ public class ContractNodeTest {
         }
         for ( int i = 0; i < 3; i++ ) {
             ContractNode neighbor = neighbors[i];
-            ContractEdge edge = new ContractEdge( i + 1, false, nodeA, neighbor, Distance.newInstance( 1 ), origEdges );
+            ContractEdge edge = new ContractEdge( i + 1, false, nodeA, neighbor, origEdges );
             nodeA.addEdge( edge );
             neighbor.addEdge( edge );
             edges.add( edge );
         }
         for ( int i = 2; i < 5; i++ ) {
             ContractNode neighbor = neighbors[i];
-            ContractEdge edge = new ContractEdge( i + 2, false, nodeB, neighbor, Distance.newInstance( 1 ), origEdges );
+            ContractEdge edge = new ContractEdge( i + 2, false, nodeB, neighbor, origEdges );
             nodeB.addEdge( edge );
             neighbor.addEdge( edge );
             edges.add( edge );
         }
         ContractNode.MaxIdContainer nodeMaxIdContainer = new ContractNode.MaxIdContainer( 9 );
         ContractNode.MaxIdContainer edgeMaxIdContainer = new ContractNode.MaxIdContainer( 9 );
+
+        Graph<ContractNode, ContractEdge> graph = new UndirectedGraph<>( GraphUtils.toMap( Arrays.asList( nodeA, nodeB ) ), GraphUtils.toMap( edges ), null );
 
 //        System.out.println( "nodes:" );
 //        System.out.println( nodeA );
@@ -97,12 +105,11 @@ public class ContractNodeTest {
 //        for ( ContractEdge edge : edges ) {
 //            System.out.println( edge );
 //        }
-
         String expResult = "ContractNode{edges={edge[1]->node#2,edge[1]->node#3,edge[1]->node#4,edge[1]->node#5,edge[1]->node#6}}"; // edge[1]->4 because it is a set and the sets are all the same
-        ContractNode result = nodeA.mergeWith( nodeB, nodeMaxIdContainer, edgeMaxIdContainer );
+        ContractNode result = nodeA.mergeWith( graph, nodeB, nodeMaxIdContainer, edgeMaxIdContainer );
 //        System.out.println( result.toString() );
 //        System.out.println( toString( result ) );
-        assertEquals( expResult, toString( result ) );
+        assertEquals( expResult, toString( graph, result ) );
     }
 
     /**
@@ -111,36 +118,46 @@ public class ContractNodeTest {
     @Test
     public void testGetNodes() {
         System.out.println( "getNodes" );
-        Set<SimpleNode> origNodes = new HashSet<>( Arrays.asList(new SimpleNode( -1 ), new SimpleNode( -2 ), new SimpleNode( -3 ) ) );
+        Set<Node> origNodes = new HashSet<Node>( Arrays.asList( new SimpleNode( -1 ), new SimpleNode( -2 ), new SimpleNode( -3 ) ) );
         ContractNode instance = new ContractNode( 0, origNodes );
-        Collection<SimpleNode> expResult = new HashSet<>(origNodes);
+        Collection<Node> expResult = new HashSet<>( origNodes );
         origNodes.clear();
-        Collection<SimpleNode> result = instance.getNodes();
+        Collection<Node> result = instance.getNodes();
         assertEquals( expResult, result );
     }
 
-    private String toString( final SimpleNode node ) {
+    private String toString( final Graph<ContractNode, ContractEdge> graph, final ContractNode node ) {
         StringBuilder sb = new StringBuilder();
         sb.append( node.getClass().getSimpleName() ).append( "{edges={" );
         List<ContractEdge> edges = new ArrayList<>();
-        Iterator<SimpleEdge> edgeIterator = node.getEdges();
-        while ( edgeIterator.hasNext() ) {
-            ContractEdge edge = (ContractEdge) edgeIterator.next();
+        for ( ContractEdge edge : graph.getEdges( node ) ) {
             edges.add( edge );
         }
-        edges.sort(new Comparator<SimpleEdge>() {
-            @Override
-            public int compare( SimpleEdge o1, SimpleEdge o2 ) {
-                return Long.compare( o1.getOtherNode( node ).getId(), o2.getOtherNode( node ).getId() );
-            }
-        } );
+        Collections.sort( edges, new EdgeComparator<>( graph, node ) );
         for ( ContractEdge edge : edges ) {
-            sb.append( "edge[" ).append( edge.getEdges().size() ).append( "]->node#" ).append( edge.getOtherNode( node ).getId() ).append( "," );
+            sb.append( "edge[" ).append( edge.getEdges().size() ).append( "]->node#" ).append( graph.getOtherNode(edge, node ).getId() ).append( "," );
         }
         if ( !edges.isEmpty() ) {
             sb.replace( sb.length() - 1, sb.length(), "" );
         }
         sb.append( "}}" );
         return sb.toString();
+    }
+
+    private static class EdgeComparator<N extends Node, E extends Edge> implements Comparator<E> {
+
+        private final Graph<N, E> graph;
+        private final N node;
+
+        public EdgeComparator( Graph<N, E> graph, N node ) {
+            this.graph = graph;
+            this.node = node;
+        }
+
+        @Override
+        public int compare( E o1, E o2 ) {
+            return Long.compare( graph.getOtherNode( o1, node ).getId(), graph.getOtherNode( o2, node ).getId() );
+        }
+
     }
 }

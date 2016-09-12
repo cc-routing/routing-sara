@@ -19,10 +19,6 @@ public class ArrayIterator<T> implements Iterator<T> {
         this.array = array;
     }
 
-    public ArrayIterator( T[] array, Class<T> type ) {
-        this.array = array;
-    }
-
     @Override
     public boolean hasNext() {
         return position + 1 < array.length;
@@ -37,5 +33,4 @@ public class ArrayIterator<T> implements Iterator<T> {
     public java.util.Iterator<T> iterator() {
         return this;
     }
-
 }
