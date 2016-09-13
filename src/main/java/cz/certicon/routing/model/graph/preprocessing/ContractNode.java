@@ -8,6 +8,7 @@ package cz.certicon.routing.model.graph.preprocessing;
 import cz.certicon.routing.model.graph.AbstractNode;
 import cz.certicon.routing.model.graph.Edge;
 import cz.certicon.routing.model.graph.Graph;
+import cz.certicon.routing.model.graph.Metric;
 import cz.certicon.routing.model.graph.Node;
 import cz.certicon.routing.model.graph.SimpleEdge;
 import cz.certicon.routing.model.graph.SimpleNode;
@@ -60,11 +61,12 @@ public class ContractNode extends AbstractNode<ContractEdge> {
             ContractEdge curr = null;
             for ( ContractEdge edge : edges ) {
                 target.removeEdge( edge );
-                curr = (ContractEdge) edge;
+                curr = edge;
                 if ( prev != null ) {
                     curr = prev.mergeWith( graph, curr, contractedNode, target, edgeMaxIdContainer.next() );
                 } else {
                     curr = new ContractEdge( edgeMaxIdContainer.next(), false, contractedNode, target, new HashSet<>( curr.getEdges() ) );
+                    graph.setLength( Metric.SIZE, curr, graph.getLength( Metric.SIZE, edge ) );
                 }
 //                System.out.println( "curr=" + curr );
                 prev = curr;

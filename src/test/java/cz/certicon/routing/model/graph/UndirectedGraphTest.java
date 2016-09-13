@@ -248,11 +248,11 @@ public class UndirectedGraphTest {
     @Test
     public void testGetTurnCost() {
         System.out.println( "getTurnCost" );
-        System.out.println( graph.toString() );
+//        System.out.println( graph.toString() );
         for ( Node node : graph.getNodes() ) {
             for ( Edge incoming : graph.getIncomingEdges( node ) ) {
                 for ( Edge outgoing : graph.getOutgoingEdges( node ) ) {
-                    System.out.println( "turn cost at node: " + node.getId() + " from: " + incoming.getId() + " to: " + outgoing.getId() );
+//                    System.out.println( "turn cost at node: " + node.getId() + " from: " + incoming.getId() + " to: " + outgoing.getId() );
                     if ( incoming.equals( outgoing ) || ( node.getId() == 2 && incoming.getId() == 1 && outgoing.getId() == 2 ) /*see GraphGeneratorUtils.java:132*/ ) {
                         assertEquals( Distance.newInfinityInstance(), graph.getTurnCost( node, incoming, outgoing ) );
                     } else {

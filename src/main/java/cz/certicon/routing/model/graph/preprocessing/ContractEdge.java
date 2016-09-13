@@ -26,13 +26,14 @@ public class ContractEdge extends AbstractEdge<ContractNode> {
     public ContractEdge( long id, boolean oneway, ContractNode source, ContractNode target, Collection<Edge> edges ) {
         super( id, oneway, source, target, -1, -1 );
         this.edges = new HashSet<>( edges );
+//        System.out.println( "Creating edge: " + this  );
     }
 
     public ContractEdge mergeWith( Graph<ContractNode, ContractEdge> graph, ContractEdge edge, ContractNode newSource, ContractNode newTarget, long id ) {
 //        if ( ( !getSource().equals( edge.getSource() ) || !getTarget().equals( edge.getTarget() ) ) && ( !getSource().equals( edge.getTarget() ) || !getTarget().equals( edge.getSource() ) ) ) {
 //            throw new IllegalArgumentException( "Cannot merge edges: this = " + this + ", other = " + edge );
 //        }
-        System.out.println( "Merging: " + this + " with " + edge );
+//        System.out.println( "Merging: " + this + " with " + edge );
         Set<Edge> newEdges = new HashSet<>( this.edges );
         newEdges.addAll( edge.edges );
         ContractEdge contractEdge = new ContractEdge( id, false, newSource, newTarget, newEdges );

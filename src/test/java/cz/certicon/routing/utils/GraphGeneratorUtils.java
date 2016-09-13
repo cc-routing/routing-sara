@@ -114,8 +114,8 @@ public class GraphGeneratorUtils {
         SimpleEdge cd = createEdge( edgeMap, edges, 2, false, c, d, 1, 0, 94, metricMap );
         SimpleEdge db = createEdge( edgeMap, edges, 3, true, d, b, 1, 1, 159, metricMap );
         SimpleEdge be = createEdge( edgeMap, edges, 4, false, b, e, 2, 0, 36, metricMap );
-        SimpleEdge df = createEdge( edgeMap, edges, 5, false, d, f, 2, 0, 152, metricMap );
-        SimpleEdge ef = createEdge( edgeMap, edges, 6, true, e, f, 1, 1, 38, metricMap );
+        SimpleEdge df = createEdge( edgeMap, edges, 5, false, d, f, 2, 0, 38, metricMap );
+        SimpleEdge ef = createEdge( edgeMap, edges, 6, true, e, f, 1, 1, 152, metricMap );
         UndirectedGraph g = new UndirectedGraph( GraphUtils.toMap( nodes ), GraphUtils.toMap( edges ), metricMap );
         for ( Node node : nodes ) {
             int size = node.getDegree( g );

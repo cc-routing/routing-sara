@@ -110,15 +110,22 @@ public class FordFulkersonMinimalCut implements MinimalCutAlgorithm {
                     Node from = indexToNodeArray[i];
                     Node to = indexToNodeArray[j];
                     for ( Edge e : graph.getEdges( from ) ) {
+//                        System.out.println( "edge: " + e );
                         Node edgeTarget = graph.getOtherNode( e, from );
                         if ( edgeTarget.equals( to ) ) {
+//                            System.out.println( "adding: " + e );
                             cutEdge.add( e );
                         }
                     }
                 }
             }
         }
-        return new MinimalCut( cutEdge, maxFlow );
+        MinimalCut<Edge> result = new MinimalCut( cutEdge, maxFlow );
+//        System.out.println( "RESULT" );
+//        for ( Edge cutEdge1 : result.getCutEdges()) {
+//            System.out.println( cutEdge1 );
+//        }
+        return result;
     }
 
     private boolean findImprovementPath( int[] predecessors, int[] pathFlows, int[][] limits, int[][] flows, int source, int target ) {
@@ -133,40 +140,42 @@ public class FordFulkersonMinimalCut implements MinimalCutAlgorithm {
         predecessors[source] = source;
         queue.add( node );
         // while queue is not empty and the target has not been reached
-//        System.out.println( "cycle: " + !queue.isEmpty() + " " + ( node != target ) );
-//        System.out.print( "path: " );
+        System.out.println( "cycle: " + !queue.isEmpty() + " " + ( node != target ) );
+        System.out.print( "path: " );
         while ( !queue.isEmpty() && node != target ) {
             // dequeue node from queue and close it
             node = queue.poll();
-//            System.out.print( node + "," );
+            System.out.print( node + "," );
             states[node] = CLOSED;
             for ( int i = 0; i < nodeCount; i++ ) {
                 // for all outgoing fresh nodes, which have yet to fill the flow limit
-//                System.out.println( "#" + i + ": " + ( limits[node][i] != 0 ) + " " + ( states[i] == FRESH ) + " " + ( flows[node][i] < limits[node][i] ) );
+                System.out.println( "#" + i + ": " + ( limits[node][i] != 0 ) + " " + ( states[i] == FRESH ) + " " + ( flows[node][i] < limits[node][i] ) );
                 if ( limits[node][i] != 0 && states[i] == FRESH && flows[node][i] < limits[node][i] ) {
-//                    System.out.println( "OPENING: " + i );
+                    System.out.println( "OPENING: " + i );
                     // open them, set predecessor to this
                     states[i] = OPEN;
                     predecessors[i] = node;
                     // set delta to minimum of this delta and the remaining flow capacity to this node
                     pathFlows[i] = ( pathFlows[node] < limits[node][i] - flows[node][i] ) ? pathFlows[node] : limits[node][i] - flows[node][i];
+                    System.out.println( "pathFlows[" + i + "] = ( " + pathFlows[node] + " < " + limits[node][i] + " - " + flows[node][i] + " ) ? " + pathFlows[node] + " : " + ( limits[node][i] - flows[node][i] ) + ";" );
                     queue.add( i );
                 }
                 // for all incoming fresh nodes, which have already been somehow filled
                 if ( limits[i][node] != 0 && states[i] == FRESH && 0 < flows[i][node] ) {
-//                    System.out.println( "OPENING: " + i );
+                    System.out.println( "OPENING: " + i );
                     // open them, set predecessor to negative of this (opposite direction)
                     states[i] = OPEN;
                     predecessors[i] = -node;
                     // set delta to minimum of this delta and flow from it to this node
                     pathFlows[i] = ( pathFlows[node] < flows[i][node] ) ? pathFlows[node] : flows[i][node];
+                    System.out.println( "pathFlows[" + i + "] = ( " + pathFlows[node] + " < " + flows[i][node] + " ) ? " + pathFlows[node] + " : " + ( flows[i][node] ) + ";" );
                     queue.add( i );
                 }
             }
         }
-//        System.out.println( "" );
-//        System.out.println( "PATH FLOWS" );
-//        testPrintArray( pathFlows );
+        System.out.println( "" );
+        System.out.println( "PATH FLOWS" );
+        testPrintArray( pathFlows );
         // return true if the target has been reached
         return node == target;
     }
