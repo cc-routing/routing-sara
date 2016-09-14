@@ -18,6 +18,7 @@ import cz.certicon.routing.model.graph.preprocessing.ContractNode;
 import cz.certicon.routing.model.graph.preprocessing.FilteredGraph;
 import cz.certicon.routing.model.values.Distance;
 import cz.certicon.routing.utils.GraphGeneratorUtils;
+import cz.certicon.routing.utils.RandomUtils;
 import cz.certicon.routing.view.GraphStreamPresenter;
 import java.awt.Color;
 import java.util.ArrayList;
@@ -63,6 +64,7 @@ public class NaturalCutsFilterTest {
 
     @Before
     public void setUp() {
+        RandomUtils.setSeed( 1 );
     }
 
     @After

@@ -20,6 +20,7 @@ import cz.certicon.routing.model.graph.preprocessing.FilteredGraph;
 import cz.certicon.routing.model.queue.FibonacciHeap;
 import cz.certicon.routing.model.queue.PriorityQueue;
 import cz.certicon.routing.model.values.Distance;
+import cz.certicon.routing.utils.RandomUtils;
 import gnu.trove.map.TLongObjectMap;
 import gnu.trove.map.hash.TLongObjectHashMap;
 import java.util.HashMap;
@@ -50,7 +51,7 @@ public class GreedyAssembler implements Assembler {
         this.lowIntervalProbability = lowIntervalProbability;
         this.lowerIntervalLimit = lowerIntervalLimit;
         this.maxCellSize = maxCellSize;
-        this.rand = new Random();
+        this.rand = RandomUtils.createRandom();
     }
 
     @Override
@@ -118,13 +119,16 @@ public class GreedyAssembler implements Assembler {
         }
         TLongObjectMap<SaraEdge> edgeMap = new TLongObjectHashMap<>();
         Map<Metric, Map<Edge, Distance>> metricMap = new HashMap<>();
+        for ( Metric value : Metric.values() ) {
+            metricMap.put( value, new HashMap<Edge, Distance>() );
+        }
         for ( E edge : originalGraph.getEdges() ) {
             SaraEdge saraEdge = new SaraEdge( edge.getId(), edge.isOneWay( originalGraph ),
                     nodeMap.get( edge.getSource( originalGraph ).getId() ), nodeMap.get( edge.getTarget( originalGraph ).getId() ),
                     edge.getSourcePosition(), edge.getTargetPosition() );
-            edgeMap.put( saraEdge.getId(), saraEdge);
-            metricMap.get( Metric.LENGTH).put( saraEdge, originalGraph.getLength( Metric.LENGTH, edge));
-            metricMap.get( Metric.TIME).put( saraEdge, originalGraph.getLength( Metric.TIME, edge));
+            edgeMap.put( saraEdge.getId(), saraEdge );
+            metricMap.get( Metric.LENGTH ).put( saraEdge, originalGraph.getLength( Metric.LENGTH, edge ) );
+            metricMap.get( Metric.TIME ).put( saraEdge, originalGraph.getLength( Metric.TIME, edge ) );
         }
         return new SaraGraph( nodeMap, edgeMap, metricMap );
     }
@@ -182,9 +186,6 @@ public class GreedyAssembler implements Assembler {
     }
 
     private double generateR() {
-//        if ( true ) {
-//            return 1.0;
-//        }
         double lowerBound;
         double upperBound;
         if ( rand.nextDouble() < lowIntervalProbability ) {

@@ -47,7 +47,7 @@ public class FordFulkersonMinimalCut implements MinimalCutAlgorithm {
     public MinimalCut compute( Graph<Node, Edge> graph, Metric metric, Node sourceNode, Node targetNode ) {
         // TODO optimize, change to adjacency lists (currently adjacency table - n^2, wasteful for thin graphs
         // map graph to arrays
-        System.out.println( "MINIMAL CUT: mapping graph to arrays" );
+//        System.out.println( "MINIMAL CUT: mapping graph to arrays: " + graph );
 //        System.out.println( "source = " + sourceNode.getId() );
 //        System.out.println( "target = " + targetNode.getId() );
         int nodeCount = graph.getNodesCount();
@@ -68,7 +68,7 @@ public class FordFulkersonMinimalCut implements MinimalCutAlgorithm {
             int srcIdx = nodeToIndexMap.get( e.getSource( graph ) );
             int tgtIdx = nodeToIndexMap.get( e.getTarget( graph ) );
             int value = graph.getLength( metric, e ).isGreaterOrEqualTo( maxDistance ) ? Integer.MAX_VALUE : (int) Math.round( graph.getLength( metric, e ).getValue() + 10E-8 );
-            System.out.println( "edge#" + e + ": value = " + value );
+//            System.out.println( "edge#" + e + ": value = " + value );
             limits[srcIdx][tgtIdx] = value;
             if ( !e.isOneWay( graph ) ) {
                 limits[tgtIdx][srcIdx] = value;
@@ -79,14 +79,14 @@ public class FordFulkersonMinimalCut implements MinimalCutAlgorithm {
         int maxFlow = 0;
         int source = nodeToIndexMap.get( sourceNode );
         int target = nodeToIndexMap.get( targetNode );
-        System.out.println( "While improvement path exists (" + source + " - > " + target + ")" );
+//        System.out.println( "While improvement path exists (" + source + " - > " + target + ")" );
         while ( findImprovementPath( predecessors, pathFlows, limits, flows, source, target ) ) {
             maxFlow += pathFlows[target];
-            System.out.println( "Increase flow: " + maxFlow );
+//            System.out.println( "Increase flow: " + maxFlow );
             increaseFlow( predecessors, pathFlows, limits, flows, source, target );
         }
 //        testPrintTable( flows );
-        System.out.println( "Searching for reachable nodes" );
+//        System.out.println( "Searching for reachable nodes" );
         // search for visited - find reachable nodes from source (consider only edges with different values from the original graph)
         boolean[] visited = new boolean[nodeCount];
         Stack<Integer> stack = new Stack<>();
@@ -100,7 +100,7 @@ public class FordFulkersonMinimalCut implements MinimalCutAlgorithm {
                 }
             }
         }
-        System.out.println( "VISITED" );
+//        System.out.println( "VISITED" );
 //        testPrintArray( visited );
         // for each i,j pair, determine whether it belongs to cut edges (leads from reachagle to unreachable node in the original graph) and find the corresponding edge
         Set<Edge> cutEdge = new HashSet<>();
@@ -137,50 +137,52 @@ public class FordFulkersonMinimalCut implements MinimalCutAlgorithm {
         Queue<Integer> queue = new LinkedList<>();
         char[] states = new char[nodeCount];
         pathFlows[source] = Integer.MAX_VALUE;
-        predecessors[source] = source;
+        predecessors[source] = source+1;
         queue.add( node );
         // while queue is not empty and the target has not been reached
-        System.out.println( "cycle: " + !queue.isEmpty() + " " + ( node != target ) );
-        System.out.print( "path: " );
+//        System.out.println( "cycle: " + !queue.isEmpty() + " " + ( node != target ) );
+//        System.out.print( "path: " );
         while ( !queue.isEmpty() && node != target ) {
             // dequeue node from queue and close it
             node = queue.poll();
-            System.out.print( node + "," );
+//            System.out.println( "polled: #" + node );
             states[node] = CLOSED;
             for ( int i = 0; i < nodeCount; i++ ) {
                 // for all outgoing fresh nodes, which have yet to fill the flow limit
-                System.out.println( "#" + i + ": " + ( limits[node][i] != 0 ) + " " + ( states[i] == FRESH ) + " " + ( flows[node][i] < limits[node][i] ) );
+//                System.out.println( "#" + i + ": " + ( limits[node][i] != 0 ) + " " + ( states[i] == FRESH ) + " " + ( flows[node][i] < limits[node][i] ) );
                 if ( limits[node][i] != 0 && states[i] == FRESH && flows[node][i] < limits[node][i] ) {
-                    System.out.println( "OPENING: " + i );
+//                    System.out.println( "OPENING+: " + i );
                     // open them, set predecessor to this
                     states[i] = OPEN;
-                    predecessors[i] = node;
+                    predecessors[i] = node+1;
                     // set delta to minimum of this delta and the remaining flow capacity to this node
                     pathFlows[i] = ( pathFlows[node] < limits[node][i] - flows[node][i] ) ? pathFlows[node] : limits[node][i] - flows[node][i];
-                    System.out.println( "pathFlows[" + i + "] = ( " + pathFlows[node] + " < " + limits[node][i] + " - " + flows[node][i] + " ) ? " + pathFlows[node] + " : " + ( limits[node][i] - flows[node][i] ) + ";" );
+//                    System.out.println( "pathFlows[" + i + "] = ( " + pathFlows[node] + " < " + limits[node][i] + " - " + flows[node][i] + " ) ? " + pathFlows[node] + " : " + ( limits[node][i] - flows[node][i] ) + ";" );
                     queue.add( i );
                 }
                 // for all incoming fresh nodes, which have already been somehow filled
+//                System.out.println( "#" + i + ": " + ( limits[i][node] != 0 ) + " " + ( states[i] == FRESH ) + " " + ( 0 < flows[i][node] ) );
                 if ( limits[i][node] != 0 && states[i] == FRESH && 0 < flows[i][node] ) {
-                    System.out.println( "OPENING: " + i );
+//                    System.out.println( "OPENING-: " + i );
                     // open them, set predecessor to negative of this (opposite direction)
                     states[i] = OPEN;
-                    predecessors[i] = -node;
+                    predecessors[i] = -node-1;
                     // set delta to minimum of this delta and flow from it to this node
                     pathFlows[i] = ( pathFlows[node] < flows[i][node] ) ? pathFlows[node] : flows[i][node];
-                    System.out.println( "pathFlows[" + i + "] = ( " + pathFlows[node] + " < " + flows[i][node] + " ) ? " + pathFlows[node] + " : " + ( flows[i][node] ) + ";" );
+//                    System.out.println( "pathFlows[" + i + "] = ( " + pathFlows[node] + " < " + flows[i][node] + " ) ? " + pathFlows[node] + " : " + ( flows[i][node] ) + ";" );
                     queue.add( i );
                 }
             }
         }
-        System.out.println( "" );
-        System.out.println( "PATH FLOWS" );
-        testPrintArray( pathFlows );
+//        System.out.println( "" );
+//        System.out.println( "PATH FLOWS" );
+//        testPrintArray( pathFlows );
         // return true if the target has been reached
         return node == target;
     }
 
     private void increaseFlow( int[] predecessors, int[] pathFlows, int[][] limits, int[][] flows, int source, int target ) {
+//        System.out.println( "INCREASE FLOW" );
         // increase flow along the improvement path
         // travel from target
         int predecessor = target;
@@ -190,14 +192,18 @@ public class FordFulkersonMinimalCut implements MinimalCutAlgorithm {
         while ( node != source ) {
             // set node to previous predecessor
             node = predecessor;
+//            System.out.println( "increasing node: #" + node );
             // set predecessor to node's predecessor (without the sign)
-            predecessor = Math.abs( predecessors[node] );
+            predecessor = Math.abs( predecessors[node] )-1;
             // check the sign, if flow went forward
+//            System.out.println( "if predecessors[" + node + "] > 0" );
             if ( predecessors[node] > 0 ) {
                 // add target's delta to flow in the forward direction
+//                System.out.println( "flows[" + predecessor + "][" + node + "] += " + pathFlow );
                 flows[predecessor][node] += pathFlow;
             } else {
                 // if backward, substract target's delta from flow in backward direction
+//                System.out.println( "flows[" + node + "][" + predecessor + "] -= " + pathFlow );
                 flows[node][predecessor] -= pathFlow;
             }
         }

@@ -20,6 +20,7 @@ import cz.certicon.routing.model.graph.preprocessing.ContractNode;
 import cz.certicon.routing.model.graph.preprocessing.FilteredGraph;
 import cz.certicon.routing.model.values.Distance;
 import cz.certicon.routing.utils.GraphUtils;
+import cz.certicon.routing.utils.RandomUtils;
 import cz.certicon.routing.utils.ToStringUtils;
 import cz.certicon.routing.utils.collections.CollectionUtils;
 import cz.certicon.routing.view.GraphStreamPresenter;
@@ -120,9 +121,9 @@ public class NaturalCutsFilter implements Filter {
         // - foreach node
         // -- remove node
         // -- preserve paths (create edges between all the neighbors)
-        System.out.println( "started filtering" );
+//        System.out.println( "started filtering" );
         ElementContainer<E> cutEdges = getCutEdges( graph );
-        System.out.println( "cut edges obtained: " + cutEdges.size() );
+//        System.out.println( "cut edges obtained: " + cutEdges.size() );
 //        presenter = new GraphStreamPresenter();
 //        presenter.setGraph( graph );
 //        for ( Edge cutEdge : cutEdges ) {
@@ -138,10 +139,10 @@ public class NaturalCutsFilter implements Filter {
 //        }
         // TODO must handle properly empty cutEdges
         // split graph into regions bounded by the cut edges
-        System.out.println( "splitting graph" );
+//        System.out.println( "splitting graph" );
 
         SplitGraphMessenger<N, E> splitGraphResult = splitGraph( graph, cutEdges );
-        System.out.println( "graph splitted" );
+//        System.out.println( "graph splitted" );
 //        presenter = new GraphStreamPresenter();
 //        presenter.setGraph( graph );
 //        for ( Edge cutEdge : cutEdges ) {
@@ -151,9 +152,9 @@ public class NaturalCutsFilter implements Filter {
 //        System.out.println( "Press enter to continue..." );
 //        new Scanner( System.in ).nextLine();
         // build new filtered graph
-        System.out.println( "building filtered graph" );
+//        System.out.println( "building filtered graph" );
         FilteredGraph filteredGraph = buildFilteredGraph( splitGraphResult.getFragmentOrigNodes(), splitGraphResult.getOrigEdgesMapList() );
-        System.out.println( "graph built" );
+//        System.out.println( "graph built" );
 
 //        presenter = new GraphStreamPresenter();
 //        presenter.displayGraph( filteredGraph );
@@ -184,13 +185,13 @@ public class NaturalCutsFilter implements Filter {
 //            }
             nodeSizeContainer.put( node, NODE_INIT_SIZE );
         }
-        Random random = new Random();
+        Random random = RandomUtils.createRandom();
         // until there are no nodes left
-        System.out.println( "starting cycle" );
+//        System.out.println( "starting cycle" );
         while ( !randomNodes.isEmpty() ) {
             // pick a node (=center) at random (a node that does not belong to any core)
             N center = randomNodes.pollRandom( random );
-            System.out.println( "picking: " + center.getId() );
+//            System.out.println( "picking: " + center.getId() );
             // create tree T via BFS from center at maximal size of cellRatio * maxCellSize, where size is a sum of tree's nodes' sizes
             nodeQueue.add( center );
             // NOTE: what is node size? 1 at the beginning, then sum of contracted nodes inside this node
@@ -222,10 +223,10 @@ public class NaturalCutsFilter implements Filter {
                     }
                 }
             }
-            System.out.println( "adding minimal cut" );
+//            System.out.println( "adding minimal cut" );
             // mark edges from minimal cut as "cut edges"
             cutEdges.addAll( (Collection<E>) minimalCut( graph, treeNodes, coreNodes, ringNodes ) );
-            System.out.println( "minimal cut done" );
+//            System.out.println( "minimal cut done" );
             // remove all core nodes from the queue
             for ( N coreNode : coreNodes ) {
                 randomNodes.remove( coreNode );
@@ -337,7 +338,7 @@ public class NaturalCutsFilter implements Filter {
 //        for ( Node node : ringNodes ) {
 //            presenter.setNodeColor( node.getId(), Color.blue );
 //        }
-        System.out.println( "minimal cut" );
+//        System.out.println( "minimal cut" );
         Map<N, Set<E>> coreMap = contractNode( graph, coreNodes, coreNodes.any() );
 //        System.out.println( "core map: " );
 //        testPrintContractMap( coreMap );
@@ -354,7 +355,7 @@ public class NaturalCutsFilter implements Filter {
         }
 //        System.out.println( "ring map: " );
 //        testPrintContractMap( ringMap );
-        System.out.println( "nodes contracted" );
+//        System.out.println( "nodes contracted" );
         // build a new graph (temporary)
         // copy tree into new graph
         Map<Long, ContractNode> nodeMap = new HashMap<>();
@@ -507,7 +508,7 @@ public class NaturalCutsFilter implements Filter {
         for ( ContractEdge value : edgeMap.values() ) {
             distanceMap.put( value, Distance.newInstance( value.calculateWidth( tmpGraph ) ) );
         }
-        System.out.println( "temporary graph: " + tmpGraph );
+//        System.out.println( "temporary graph: " + tmpGraph );
 //        presenter = new GraphStreamPresenter();
 //        presenter.displayGraph( tmpGraph );
 //        for ( Node node : treeNodes ) {
@@ -521,7 +522,7 @@ public class NaturalCutsFilter implements Filter {
         MinimalCutAlgorithm minimalCutAlgorithm = new FordFulkersonMinimalCut();
         // TODO graph must contain source and target
         MinimalCut<ContractEdge> cut = minimalCutAlgorithm.compute( tmpGraph, Metric.SIZE, coreNode, ringNode );
-        System.out.println( "returning result: " + cut );
+//        System.out.println( "returning result: " + cut );
 //        for ( Edge cutEdge : cut.getCutEdges() ) {
 //            presenter.setEdgeColor( cutEdge.getId(), Color.red );
 //        }

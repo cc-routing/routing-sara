@@ -16,6 +16,7 @@ import cz.certicon.routing.model.graph.TurnTable;
 import cz.certicon.routing.model.graph.UndirectedGraph;
 import cz.certicon.routing.model.values.Distance;
 import cz.certicon.routing.utils.GraphGeneratorUtils;
+import cz.certicon.routing.utils.RandomUtils;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -59,6 +60,7 @@ public class DijkstraAlgorithmTest {
 
     @Before
     public void setUp() {
+        RandomUtils.setSeed( 1 );
     }
 
     @After

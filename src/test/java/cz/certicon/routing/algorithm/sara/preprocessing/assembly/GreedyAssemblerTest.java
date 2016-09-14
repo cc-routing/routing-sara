@@ -22,6 +22,7 @@ import cz.certicon.routing.model.queue.PriorityQueue;
 import cz.certicon.routing.utils.ColorUtils;
 import cz.certicon.routing.utils.DisplayUtils;
 import cz.certicon.routing.utils.GraphGeneratorUtils;
+import cz.certicon.routing.utils.RandomUtils;
 import cz.certicon.routing.view.GraphStreamPresenter;
 import java.awt.Color;
 import java.util.HashMap;
@@ -74,6 +75,7 @@ public class GreedyAssemblerTest {
 
     @Before
     public void setUp() {
+        RandomUtils.setSeed( 1 );
     }
 
     @After
@@ -86,9 +88,9 @@ public class GreedyAssemblerTest {
     @Test
     public void testAssemble() {
         System.out.println( "assemble" );
-        if(true){
-            return;
-        }
+//        if(true){
+//            return;
+//        }
         createNewGraph();
         Graph originalGraph = GraphGeneratorUtils.generateGridGraph( nodeMap, edgeMap, turnTables, 5, 5 );
         Set<SimpleNode> origNodes = new HashSet<>();
@@ -159,8 +161,8 @@ public class GreedyAssemblerTest {
 //            }
 //        }
 //        presenter.display();
-        System.out.println( "Press enter to continue..." );
-        new Scanner( System.in ).nextLine();
+//        System.out.println( "Press enter to continue..." );
+//        new Scanner( System.in ).nextLine();
     }
 
     /**
@@ -169,9 +171,9 @@ public class GreedyAssemblerTest {
     @Test
     public void testInitQueue() {
         System.out.println( "initQueue" );
-        if(true){
-            return;
-        }
+//        if(true){
+//            return;
+//        }
         createNewGraph();
         GreedyAssembler instance = new GreedyAssembler( 0.5, 0.5, CELL_SIZE );
         PriorityQueue<NodePair> result = instance.initQueue( graph );
@@ -190,9 +192,9 @@ public class GreedyAssemblerTest {
     @Test
     public void testClearPairs() {
         System.out.println( "clearPairs" );
-        if(true){
-            return;
-        }
+//        if(true){
+//            return;
+//        }
         System.out.println( "CREATE GRAPH" );
         createNewGraph();
         GreedyAssembler instance = new GreedyAssembler( 0.5, 0.5, CELL_SIZE );
@@ -239,9 +241,9 @@ public class GreedyAssemblerTest {
     @Test
     public void testAddPairs() {
         System.out.println( "addPairs" );
-        if(true){
-            return;
-        }
+//        if(true){
+//            return;
+//        }
         createNewGraph();
         GreedyAssembler instance = new GreedyAssembler( 0.5, 0.5, CELL_SIZE );
         PriorityQueue<NodePair> queue = instance.initQueue( graph );
