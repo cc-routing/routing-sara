@@ -92,11 +92,15 @@ public class SqliteGraphDAO implements GraphDAO {
             }
             rs = database.read( "SELECT * FROM edges e;" );
             while ( rs.next() ) {
+                SimpleNode source = nodeMap.get( rs.getLong( "source" ) );
+                SimpleNode target = nodeMap.get( rs.getLong( "target" ) );
                 SimpleEdge edge = new SimpleEdge( rs.getLong( "id" ), rs.getInt( "oneway" ) != 0,
-                        nodeMap.get( rs.getLong( "source" ) ),
-                        nodeMap.get( rs.getLong( "target" ) ),
+                        source,
+                        target,
                         rs.getInt( "source_pos" ),
                         rs.getInt( "target_pos" ) );
+                source.addEdge( edge );
+                target.addEdge( edge );
                 // length in meters, speed in kmph, CAUTION - convert here
                 double length = rs.getDouble( "metric_length" );
                 double speedFw = rs.getDouble( "metric_speed_forward" );// todo take into consideration direction

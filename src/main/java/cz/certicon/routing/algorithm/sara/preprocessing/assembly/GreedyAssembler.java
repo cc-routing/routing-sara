@@ -116,6 +116,7 @@ public class GreedyAssembler implements Assembler {
             Cell cell = new Cell( cellId++ );
             for ( Node origNode : node.getNodes() ) {
                 SaraNode saraNode = new SaraNode( origNode.getId(), cell );
+                saraNode.setCoordinate( origNode.getCoordinate( originalGraph ) );
                 nodeMap.put( saraNode.getId(), saraNode );
             }
         }

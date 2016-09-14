@@ -214,10 +214,9 @@ public class NaturalCutsFilter implements Filter {
 //                    nodeQueue.clear();
                     continue;
                 }
-                Iterator<E> edges = graph.getEdges( node );
-                while ( edges.hasNext() ) {
-                    E edge = edges.next();
+                for ( E edge : graph.getEdges( node ) ) {
                     N target = graph.getOtherNode( edge, node );
+//                        System.out.println( "neighbor = " + edge );
                     if ( !coreNodes.contains( target ) && !ringNodes.contains( target ) ) {
                         nodeQueue.add( target );
                     }
@@ -226,6 +225,7 @@ public class NaturalCutsFilter implements Filter {
 //            System.out.println( "adding minimal cut" );
             // mark edges from minimal cut as "cut edges"
             cutEdges.addAll( (Collection<E>) minimalCut( graph, treeNodes, coreNodes, ringNodes ) );
+//            System.out.println( "core nodes: " + coreNodes.size() );
 //            System.out.println( "minimal cut done" );
             // remove all core nodes from the queue
             for ( N coreNode : coreNodes ) {

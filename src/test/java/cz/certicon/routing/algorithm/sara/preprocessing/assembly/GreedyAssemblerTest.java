@@ -6,11 +6,13 @@
 package cz.certicon.routing.algorithm.sara.preprocessing.assembly;
 
 import cz.certicon.routing.algorithm.sara.preprocessing.filtering.NaturalCutsFilter;
+import cz.certicon.routing.model.graph.Cell;
 import cz.certicon.routing.model.graph.Edge;
 import cz.certicon.routing.model.graph.SimpleEdge;
 import cz.certicon.routing.model.graph.Graph;
 import cz.certicon.routing.model.graph.Node;
 import cz.certicon.routing.model.graph.SaraGraph;
+import cz.certicon.routing.model.graph.SaraNode;
 import cz.certicon.routing.model.graph.SimpleNode;
 import cz.certicon.routing.model.graph.TurnTable;
 import cz.certicon.routing.model.graph.UndirectedGraph;
@@ -23,11 +25,13 @@ import cz.certicon.routing.utils.ColorUtils;
 import cz.certicon.routing.utils.DisplayUtils;
 import cz.certicon.routing.utils.GraphGeneratorUtils;
 import cz.certicon.routing.utils.RandomUtils;
+import cz.certicon.routing.utils.collections.CollectionUtils;
 import cz.certicon.routing.view.GraphStreamPresenter;
 import java.awt.Color;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
 import java.util.Scanner;
 import java.util.Set;
@@ -92,22 +96,31 @@ public class GreedyAssemblerTest {
 //            return;
 //        }
         createNewGraph();
-        Graph originalGraph = GraphGeneratorUtils.generateGridGraph( nodeMap, edgeMap, turnTables, 5, 5 );
-        Set<SimpleNode> origNodes = new HashSet<>();
-        Iterator<SimpleNode> nodes = originalGraph.getNodes();
-        while ( nodes.hasNext() ) {
-            origNodes.add( nodes.next() );
+        Graph<Node,Edge> originalGraph = GraphGeneratorUtils.generateGridGraph( nodeMap, edgeMap, turnTables, 5, 5 );
+        Set<Node> origNodes = new HashSet<>();
+        for ( Node node : originalGraph.getNodes() ) {
+            origNodes.add( node );
         }
-        System.out.println( "orig graph: " + originalGraph );
+//        System.out.println( "orig graph: " + originalGraph );
         createNewGraph();
         GreedyAssembler assembler = new GreedyAssembler( 0.5, 0.5, CELL_SIZE );
         SaraGraph assembled = assembler.assemble( originalGraph, graph );
+
+        Map<Cell, List<Node>> cellMap = new HashMap<>();
+        for ( SaraNode node : assembled.getNodes() ) {
+            Cell parent = node.getParent( assembled );
+            CollectionUtils.getList( cellMap, parent ).add( node );
+        }
+        for ( Map.Entry<Cell, List<Node>> entry : cellMap.entrySet() ) {
+            System.out.println( "cell#" + entry.getKey().getId() + "-nodes: " + entry.getValue().size() );
+            assertNotEquals( 1, entry.getValue().size() );
+        }
+
 //        for ( SimpleNode origNode : origNodes ) {
 //            assertNotNull( assembled.getPartition( origNode ) );
 //        }
 //        
 //        DisplayUtils.displayAll( assembled );
-
 //        nodes = assembled.getNodes();
 //        while ( nodes.hasNext() ) {
 //            ContractNode node = (ContractNode) nodes.next();
@@ -146,10 +159,9 @@ public class GreedyAssemblerTest {
 //            presenter.setNodeColor( node.getId(), c );
 //        }
 //        presenter.display();
-        System.out.println( "Comparison: orig{nodes=" + graph.getNodesCount() + ",edges=" + graph.getEdgeCount() + "}, filtered{nodes=" + assembled.getNodesCount() + ",edges=" + assembled.getEdgeCount() + "}" );
-
-        System.out.println( assembled );
-
+//        System.out.println( "Comparison: orig{nodes=" + graph.getNodesCount() + ",edges=" + graph.getEdgeCount() + "}, filtered{nodes=" + assembled.getNodesCount() + ",edges=" + assembled.getEdgeCount() + "}" );
+//
+//        System.out.println( assembled );
 //        createNewGraph();
 //        presenter.setGraph( originalGraph );
 //        nodes = assembled.getNodes();
@@ -195,20 +207,20 @@ public class GreedyAssemblerTest {
 //        if(true){
 //            return;
 //        }
-        System.out.println( "CREATE GRAPH" );
+//        System.out.println( "CREATE GRAPH" );
         createNewGraph();
         GreedyAssembler instance = new GreedyAssembler( 0.5, 0.5, CELL_SIZE );
-        System.out.println( "INIT QUEUE" );
+//        System.out.println( "INIT QUEUE" );
         PriorityQueue<NodePair> queue = instance.initQueue( graph );
         NodePair origPair = queue.extractMin();
         ContractNode nodeA = origPair.nodeA;
         ContractNode nodeB = origPair.nodeB;
 //        System.out.println( "CLEARING PAIRS FOR: " + nodeA );
-        System.out.println( "FIRST CYCLE" );
+//        System.out.println( "FIRST CYCLE" );
         PriorityQueue<NodePair> result = instance.clearPairs( queue, graph, origPair, nodeA );
         for ( ContractNode node : graph.getNodes() ) {
             for ( ContractEdge edge : graph.getEdges( node ) ) {
-                System.out.println( "node: " + node + ", edge: " + edge );
+//                System.out.println( "node: " + node + ", edge: " + edge );
                 ContractNode target = graph.getOtherNode( edge, node );
                 NodePair pair = new NodePair( graph, node, target, edge );
                 if ( node.equals( nodeA ) || target.equals( nodeA ) ) {
@@ -220,10 +232,10 @@ public class GreedyAssemblerTest {
             }
         }
         result = instance.clearPairs( queue, graph, origPair, nodeB );
-        System.out.println( "SECOND CYCLE" );
+//        System.out.println( "SECOND CYCLE" );
         for ( ContractNode node : graph.getNodes() ) {
             for ( ContractEdge edge : graph.getEdges( node ) ) {
-                System.out.println( "node: " + node + ", edge: " + edge );
+//                System.out.println( "node: " + node + ", edge: " + edge );
                 ContractNode target = graph.getOtherNode( edge, node );
                 NodePair pair = new NodePair( graph, node, target, edge );
                 if ( node.equals( nodeA ) || target.equals( nodeA ) || node.equals( nodeB ) || target.equals( nodeB ) ) {

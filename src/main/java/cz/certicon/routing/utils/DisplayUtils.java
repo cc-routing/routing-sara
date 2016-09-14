@@ -5,15 +5,20 @@
  */
 package cz.certicon.routing.utils;
 
+import cz.certicon.routing.model.graph.Cell;
 import cz.certicon.routing.model.graph.Graph;
+import cz.certicon.routing.model.graph.Node;
 import cz.certicon.routing.model.graph.SaraGraph;
+import cz.certicon.routing.model.graph.SaraNode;
 import cz.certicon.routing.model.graph.SimpleNode;
+import cz.certicon.routing.utils.collections.CollectionUtils;
 import cz.certicon.routing.view.GraphStreamPresenter;
 import cz.certicon.routing.view.JxPartitionViewer;
 import cz.certicon.routing.view.PartitionViewer;
 import java.awt.Color;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -21,6 +26,19 @@ import java.util.Map;
  * @author Michael Blaha {@literal <michael.blaha@gmail.com>}
  */
 public class DisplayUtils {
+
+    public static void display( SaraGraph graph ) {
+        PartitionViewer viewer = new JxPartitionViewer();
+        Map<Cell, List<Node>> cellMap = new HashMap<>();
+        for ( SaraNode node : graph.getNodes() ) {
+            Cell parent = node.getParent( graph );
+            CollectionUtils.getList( cellMap, parent ).add( node );
+        }
+        for ( List<Node> value : cellMap.values() ) {
+            viewer.addNodeCluster( graph, value );
+        }
+        viewer.display();
+    }
 
 //    public static void displayConnectedPartitions( SaraGraph graph ) {
 //        GraphStreamPresenter presenter = new GraphStreamPresenter();
@@ -35,7 +53,6 @@ public class DisplayUtils {
 //        }
 //        presenter.display();
 //    }
-
 //    public static void display( PartitionGraph graph ) {
 //        ColorUtils.ColorSupplier colorSupplier = ColorUtils.createColorSupplier( graph.getPartitionCount() );
 //        GraphStreamPresenter presenter = new GraphStreamPresenter();
@@ -52,7 +69,6 @@ public class DisplayUtils {
 //        }
 //        presenter.display();
 //    }
-
 //    public static void displayAll( PartitionGraph graph ) {
 //        Map<Long, Color> colorMap = new HashMap<>();
 //        GraphStreamPresenter presenter = new GraphStreamPresenter();
@@ -81,7 +97,6 @@ public class DisplayUtils {
 //        }
 //        presenter.display();
 //    }
-
 //    public static void displayMap( PartitionGraph graph ) {
 //        PartitionViewer viewer = new JxPartitionViewer();
 ////        System.out.println( "Obtaining cut-edges" );
