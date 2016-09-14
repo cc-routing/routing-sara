@@ -110,7 +110,7 @@ public class SqliteGraphDAO implements GraphDAO {
                 SimpleNode node = (SimpleNode) value;
                 node.lock();
             }
-            return new UndirectedGraph<>( nodeMap, edgeMap, metricMap );
+            return new UndirectedGraph<>( nodeMap.valueCollection(), edgeMap.valueCollection(), metricMap );
         } catch ( SQLException ex ) {
             throw new IOException( ex );
         }

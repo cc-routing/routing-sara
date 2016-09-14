@@ -23,8 +23,10 @@ import cz.certicon.routing.model.values.Distance;
 import cz.certicon.routing.utils.RandomUtils;
 import gnu.trove.map.TLongObjectMap;
 import gnu.trove.map.hash.TLongObjectHashMap;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
 import java.util.Random;
 import java.util.Set;
@@ -117,7 +119,7 @@ public class GreedyAssembler implements Assembler {
                 nodeMap.put( saraNode.getId(), saraNode );
             }
         }
-        TLongObjectMap<SaraEdge> edgeMap = new TLongObjectHashMap<>();
+        List<SaraEdge> edges = new ArrayList<>();
         Map<Metric, Map<Edge, Distance>> metricMap = new HashMap<>();
         for ( Metric value : Metric.values() ) {
             metricMap.put( value, new HashMap<Edge, Distance>() );
@@ -126,11 +128,11 @@ public class GreedyAssembler implements Assembler {
             SaraEdge saraEdge = new SaraEdge( edge.getId(), edge.isOneWay( originalGraph ),
                     nodeMap.get( edge.getSource( originalGraph ).getId() ), nodeMap.get( edge.getTarget( originalGraph ).getId() ),
                     edge.getSourcePosition(), edge.getTargetPosition() );
-            edgeMap.put( saraEdge.getId(), saraEdge );
+            edges.add( saraEdge );
             metricMap.get( Metric.LENGTH ).put( saraEdge, originalGraph.getLength( Metric.LENGTH, edge ) );
             metricMap.get( Metric.TIME ).put( saraEdge, originalGraph.getLength( Metric.TIME, edge ) );
         }
-        return new SaraGraph( nodeMap, edgeMap, metricMap );
+        return new SaraGraph( nodeMap.valueCollection(), edges, metricMap );
     }
 
     PriorityQueue<NodePair> initQueue( FilteredGraph graph ) {

@@ -7,11 +7,13 @@ package cz.certicon.routing.model.graph;
 
 import cz.certicon.routing.model.values.Coordinate;
 import cz.certicon.routing.model.values.Distance;
+import cz.certicon.routing.utils.GraphUtils;
 import cz.certicon.routing.utils.collections.ArrayIterator;
 import cz.certicon.routing.utils.collections.ClassCastArrayIterator;
 import cz.certicon.routing.utils.collections.ImmutableIterator;
 import cz.certicon.routing.utils.collections.Iterator;
 import gnu.trove.map.TLongObjectMap;
+import java.util.Collection;
 import java.util.Map;
 
 /**
@@ -28,9 +30,9 @@ public class UndirectedGraph<N extends Node, E extends Edge> implements Graph<N,
 //    @Getter( AccessLevel.NONE )
 //    Map<Node, Coordinate> coordinates;
 
-    public UndirectedGraph( TLongObjectMap<N> nodes, TLongObjectMap<E> edges, Map<Metric, Map<Edge, Distance>> metricMap ) {
-        this.nodes = nodes;
-        this.edges = edges;
+    public UndirectedGraph( Collection<N> nodes, Collection<E> edges, Map<Metric, Map<Edge, Distance>> metricMap ) {
+        this.nodes = GraphUtils.toMap( nodes );
+        this.edges = GraphUtils.toMap( edges );
         this.metricMap = metricMap;
     }
 
@@ -41,12 +43,7 @@ public class UndirectedGraph<N extends Node, E extends Edge> implements Graph<N,
 
     @Override
     public Iterator<N> getNodes() {
-        return new ImmutableIterator<>( new ClassCastArrayIterator<>( nodes.values(), new ClassCastArrayIterator.ClassCaster<N>() {
-            @Override
-            public N cast( Object o ) {
-                return (N) o;
-            }
-        } ) );
+        return new ImmutableIterator<>( nodes.valueCollection().iterator() );
     }
 
     @Override
@@ -56,12 +53,7 @@ public class UndirectedGraph<N extends Node, E extends Edge> implements Graph<N,
 
     @Override
     public Iterator<E> getEdges() {
-        return new ImmutableIterator<>( new ClassCastArrayIterator<>( edges.values(), new ClassCastArrayIterator.ClassCaster<E>() {
-            @Override
-            public E cast( Object o ) {
-                return (E) o;
-            }
-        } ) );
+        return new ImmutableIterator<>( edges.valueCollection().iterator() );
     }
 
     @Override

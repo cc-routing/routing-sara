@@ -504,7 +504,7 @@ public class NaturalCutsFilter implements Filter {
 //            ringNode.addEdge( edge );
 //            builder.edge( edge );
 //        }
-        Graph tmpGraph = new UndirectedGraph( GraphUtils.toMap( nodeMap.values() ), GraphUtils.toMap( edgeMap.values() ), metricMap );
+        Graph tmpGraph = new UndirectedGraph( nodeMap.values(), edgeMap.values(), metricMap );
         for ( ContractEdge value : edgeMap.values() ) {
             distanceMap.put( value, Distance.newInstance( value.calculateWidth( tmpGraph ) ) );
         }
@@ -670,7 +670,7 @@ public class NaturalCutsFilter implements Filter {
 //            node.lock();
 //        }
 
-        return new FilteredGraph( GraphUtils.toMap( nodes ), GraphUtils.toMap( edges ), metricMap );
+        return new FilteredGraph( nodes, edges, metricMap );
 
 //        List<Node> nodes = new ArrayList<>();
 //        TObjectIntMap<Node> nodeSizeMap = new TObjectIntHashMap<>();

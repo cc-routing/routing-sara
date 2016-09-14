@@ -10,7 +10,6 @@ import cz.certicon.routing.model.graph.Metric;
 import cz.certicon.routing.model.graph.Node;
 import cz.certicon.routing.model.graph.UndirectedGraph;
 import cz.certicon.routing.model.values.Distance;
-import gnu.trove.map.TLongObjectMap;
 import java.util.Collection;
 import java.util.Map;
 
@@ -20,7 +19,7 @@ import java.util.Map;
  */
 public class FilteredGraph extends UndirectedGraph<ContractNode, ContractEdge> {
 
-    public FilteredGraph( TLongObjectMap<ContractNode> nodes, TLongObjectMap<ContractEdge> edges, Map<Metric, Map<Edge, Distance>> metricMap ) {
+    public FilteredGraph( Collection<ContractNode> nodes, Collection<ContractEdge> edges, Map<Metric, Map<Edge, Distance>> metricMap ) {
         super( nodes, edges, metricMap );
     }
 

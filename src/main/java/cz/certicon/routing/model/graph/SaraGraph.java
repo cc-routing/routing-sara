@@ -6,9 +6,8 @@
 package cz.certicon.routing.model.graph;
 
 import cz.certicon.routing.model.values.Distance;
-import gnu.trove.map.TLongObjectMap;
+import java.util.Collection;
 import java.util.Map;
-import java.util.Set;
 
 /**
  *
@@ -16,11 +15,11 @@ import java.util.Set;
  */
 public class SaraGraph extends UndirectedGraph<SaraNode, SaraEdge> {
 
-    public SaraGraph( TLongObjectMap<SaraNode> nodes, TLongObjectMap<SaraEdge> edges, Map<Metric, Map<Edge, Distance>> metricMap ) {
+    public SaraGraph( Collection<SaraNode> nodes, Collection<SaraEdge> edges, Map<Metric, Map<Edge, Distance>> metricMap ) {
         super( nodes, edges, metricMap );
     }
-    
-    public Cell getParent(SaraNode node){
+
+    public Cell getParent( SaraNode node ) {
         return node.getParent( this );
     }
 

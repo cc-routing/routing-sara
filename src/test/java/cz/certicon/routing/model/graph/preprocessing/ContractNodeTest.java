@@ -101,7 +101,7 @@ public class ContractNodeTest {
         ContractNode.MaxIdContainer nodeMaxIdContainer = new ContractNode.MaxIdContainer( 9 );
         ContractNode.MaxIdContainer edgeMaxIdContainer = new ContractNode.MaxIdContainer( 9 );
 
-        Graph<ContractNode, ContractEdge> graph = new UndirectedGraph<>( GraphUtils.toMap( Arrays.asList( nodeA, nodeB ) ), GraphUtils.toMap( edges ), metricMap );
+        Graph<ContractNode, ContractEdge> graph = new UndirectedGraph<>( Arrays.asList( nodeA, nodeB ), edges, metricMap );
 
 //        System.out.println( "nodes:" );
 //        System.out.println( nodeA );

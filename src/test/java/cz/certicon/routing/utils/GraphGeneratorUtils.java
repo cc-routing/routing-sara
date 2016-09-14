@@ -69,7 +69,7 @@ public class GraphGeneratorUtils {
                 }
             }
         }
-        UndirectedGraph g = new UndirectedGraph( GraphUtils.toMap( nodes ), GraphUtils.toMap( edges ), metricMap );
+        UndirectedGraph g = new UndirectedGraph( nodes, edges, metricMap );
         for ( Node node : nodes ) {
             int size = node.getDegree( g );
             Distance[][] dtt = new Distance[size][size];
@@ -116,7 +116,7 @@ public class GraphGeneratorUtils {
         SimpleEdge be = createEdge( edgeMap, edges, 4, false, b, e, 2, 0, 36, metricMap );
         SimpleEdge df = createEdge( edgeMap, edges, 5, false, d, f, 2, 0, 38, metricMap );
         SimpleEdge ef = createEdge( edgeMap, edges, 6, true, e, f, 1, 1, 152, metricMap );
-        UndirectedGraph g = new UndirectedGraph( GraphUtils.toMap( nodes ), GraphUtils.toMap( edges ), metricMap );
+        UndirectedGraph g = new UndirectedGraph( nodes, edges, metricMap );
         for ( Node node : nodes ) {
             int size = node.getDegree( g );
             Distance[][] dtt = new Distance[size][size];
@@ -166,7 +166,7 @@ public class GraphGeneratorUtils {
                 entry.getValue().put( newEdge, graph.getLength( entry.getKey(), edge ) );
             }
         }
-        UndirectedGraph<ContractNode, ContractEdge> undirectedGraph = new UndirectedGraph<>( nodeMap, edgeMap, metricMap );
+        UndirectedGraph<ContractNode, ContractEdge> undirectedGraph = new UndirectedGraph<>( nodeMap.valueCollection(), edgeMap.valueCollection(), metricMap );
         for ( ContractEdge edge : undirectedGraph.getEdges() ) {
             undirectedGraph.setLength( Metric.SIZE, edge, Distance.newInstance( edge.calculateWidth( undirectedGraph ) ) );
         }

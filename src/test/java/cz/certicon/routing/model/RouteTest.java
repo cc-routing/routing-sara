@@ -63,7 +63,7 @@ public class RouteTest {
         SimpleEdge bc = new SimpleEdge( 1, false, c, b, 0, 1 );
         SimpleEdge cd = new SimpleEdge( 2, false, c, d, 0, 1 );
         SimpleEdge de = new SimpleEdge( 3, false, e, d, 0, 1 );
-        UndirectedGraph<SimpleNode, SimpleEdge> graph = new UndirectedGraph<>( GraphUtils.toMap( Arrays.asList( a, b, c, d, e ) ), GraphUtils.toMap( Arrays.asList( ab, bc, cd, de ) ), null );
+        UndirectedGraph<SimpleNode, SimpleEdge> graph = new UndirectedGraph<>( Arrays.asList( a, b, c, d, e ), Arrays.asList( ab, bc, cd, de ), null );
 
         Route.RouteBuilder builder = Route.builder( graph );
 
@@ -86,7 +86,7 @@ public class RouteTest {
         SimpleEdge bc = new SimpleEdge( 1, true, c, b, 0, 1 );
         SimpleEdge cd = new SimpleEdge( 2, false, c, d, 0, 1 );
         SimpleEdge de = new SimpleEdge( 3, false, e, d, 0, 1 );
-        UndirectedGraph<SimpleNode, SimpleEdge> graph = new UndirectedGraph<>( GraphUtils.toMap( Arrays.asList( a, b, c, d, e ) ), GraphUtils.toMap( Arrays.asList( ab, bc, cd, de ) ), null );
+        UndirectedGraph<SimpleNode, SimpleEdge> graph = new UndirectedGraph<>( Arrays.asList( a, b, c, d, e ), Arrays.asList( ab, bc, cd, de ), null );
 
         Route.RouteBuilder builder = Route.builder( graph );
 

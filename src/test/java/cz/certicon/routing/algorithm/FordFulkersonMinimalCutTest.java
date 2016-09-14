@@ -110,7 +110,7 @@ public class FordFulkersonMinimalCutTest {
             edges[10] = createEdge( 10, 3, 7, 2, nodes, distanceMap );
             edges[11] = createEdge( 11, 4, 6, 2, nodes, distanceMap );
             edges[12] = createEdge( 12, 6, 7, 2, nodes, distanceMap );
-            UndirectedGraph<Node, Edge> g = new UndirectedGraph<>( GraphUtils.toMap( Arrays.asList( nodes ) ), GraphUtils.toMap( Arrays.asList( edges ) ), metricMap );
+            UndirectedGraph<Node, Edge> g = new UndirectedGraph<>( Arrays.asList( nodes ), Arrays.asList( edges ), metricMap );
             MinimalCut<Edge> expected1 = new MinimalCut<>( Arrays.asList( edges[0], edges[6], edges[7] ), 12 );
             MinimalCut<Edge> expected2 = new MinimalCut<>( Arrays.asList( edges[0], edges[2], edges[4], edges[10] ), 12 );
             MinimalCut<Edge> result = instance.compute( g, Metric.SIZE, nodes[0], nodes[1] );
@@ -141,7 +141,7 @@ public class FordFulkersonMinimalCutTest {
             edges[10] = createEdge( 10, 2, 3, 2, nodes, distanceMap );
             edges[11] = createEdge( 11, 2, 4, 2, nodes, distanceMap );
             edges[12] = createEdge( 12, 6, 7, 2, nodes, distanceMap );
-            UndirectedGraph<Node, Edge> g = new UndirectedGraph<>( GraphUtils.toMap( Arrays.asList( nodes ) ), GraphUtils.toMap( Arrays.asList( edges ) ), metricMap );
+            UndirectedGraph<Node, Edge> g = new UndirectedGraph<>( Arrays.asList( nodes ), Arrays.asList( edges ), metricMap );
             MinimalCut<Edge> expected1 = new MinimalCut<>( Arrays.asList( edges[0], edges[5], edges[6], edges[7], edges[4] ), 14 );// 4 or 8+9 or 9+12
             MinimalCut<Edge> expected2 = new MinimalCut<>( Arrays.asList( edges[0], edges[5], edges[6], edges[7], edges[8], edges[9] ), 14 );// 4 or 8+9 or 9+12
             MinimalCut<Edge> expected3 = new MinimalCut<>( Arrays.asList( edges[0], edges[5], edges[6], edges[7], edges[9], edges[12] ), 14 );// 4 or 8+9 or 9+12

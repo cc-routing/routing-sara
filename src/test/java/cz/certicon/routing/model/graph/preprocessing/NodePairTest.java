@@ -56,7 +56,7 @@ public class NodePairTest {
         ContractNode nodeA = new ContractNode( 0, new HashSet<Node>() );
         ContractNode nodeB = new ContractNode( 1, new HashSet<Node>() );
         ContractEdge edge = new ContractEdge( 0, false, nodeB, nodeA, new HashSet<Edge>() );
-        Graph<ContractNode, ContractEdge> graph = new UndirectedGraph<>( GraphUtils.toMap( Arrays.asList( nodeA, nodeB ) ), GraphUtils.toMap( Arrays.asList( edge ) ), null );
+        Graph<ContractNode, ContractEdge> graph = new UndirectedGraph<>( Arrays.asList( nodeA, nodeB ), Arrays.asList( edge ), null );
         NodePair instance = new NodePair( graph, nodeA, nodeB, edge );
         assertEquals( nodeA, instance.other( nodeB ) );
         assertEquals( nodeB, instance.other( nodeA ) );
@@ -72,7 +72,7 @@ public class NodePairTest {
         ContractNode nodeB = new ContractNode( 1, new HashSet<Node>() );
         ContractNode nodeC = new ContractNode( 2, new HashSet<Node>() );
         ContractEdge edge = new ContractEdge( 0, false, nodeB, nodeA, new HashSet<Edge>() );
-        Graph<ContractNode, ContractEdge> graph = new UndirectedGraph<>( GraphUtils.toMap( Arrays.asList( nodeA, nodeB, nodeC ) ), GraphUtils.toMap( Arrays.asList( edge ) ), null );
+        Graph<ContractNode, ContractEdge> graph = new UndirectedGraph<>( Arrays.asList( nodeA, nodeB, nodeC ), Arrays.asList( edge ), null );
         NodePair instance = new NodePair( graph, nodeA, nodeB, edge );
         instance.other( nodeC );
     }
@@ -86,7 +86,7 @@ public class NodePairTest {
         ContractNode nodeA = new ContractNode( 0, new HashSet<Node>() );
         ContractNode nodeB = new ContractNode( 1, new HashSet<Node>() );
         ContractEdge edge = new ContractEdge( 0, false, nodeB, nodeA, new HashSet<Edge>() );
-        Graph<ContractNode, ContractEdge> graph = new UndirectedGraph<>( GraphUtils.toMap( Arrays.asList( nodeA, nodeB ) ), GraphUtils.toMap( Arrays.asList( edge ) ), null );
+        Graph<ContractNode, ContractEdge> graph = new UndirectedGraph<>( Arrays.asList( nodeA, nodeB ), Arrays.asList( edge ), null );
         NodePair instanceA = new NodePair( graph, nodeA, nodeB, edge );
         NodePair instanceB = new NodePair( graph, nodeB, nodeA, edge );
         assertTrue( instanceA.hashCode() == instanceB.hashCode() );
@@ -101,7 +101,7 @@ public class NodePairTest {
         ContractNode nodeA = new ContractNode( 0, new HashSet<Node>() );
         ContractNode nodeB = new ContractNode( 1, new HashSet<Node>() );
         ContractEdge edge = new ContractEdge( 0, false, nodeB, nodeA, new HashSet<Edge>() );
-        Graph<ContractNode, ContractEdge> graph = new UndirectedGraph<>( GraphUtils.toMap( Arrays.asList( nodeA, nodeB ) ), GraphUtils.toMap( Arrays.asList( edge ) ), null );
+        Graph<ContractNode, ContractEdge> graph = new UndirectedGraph<>( Arrays.asList( nodeA, nodeB ), Arrays.asList( edge ), null );
         NodePair instanceA = new NodePair( graph, nodeA, nodeB, edge );
         NodePair instanceB = new NodePair( graph, nodeB, nodeA, edge );
         assertTrue( instanceA.equals( instanceB ) );
