@@ -21,7 +21,7 @@ public class NodePair {
         this.nodeA = nodeA;
         this.nodeB = nodeB;
         this.connectingEdge = connectingEdge;
-        if ( ( connectingEdge.getSource( graph ).equals( nodeA ) && !connectingEdge.getTarget( graph ).equals( nodeB ) ) || ( connectingEdge.getSource( graph ).equals( nodeB ) && !connectingEdge.getTarget( graph ).equals( nodeA ) ) ) {
+        if ( ( connectingEdge.getSource().equals( nodeA ) && !connectingEdge.getTarget().equals( nodeB ) ) || ( connectingEdge.getSource().equals( nodeB ) && !connectingEdge.getTarget().equals( nodeA ) ) ) {
             throw new IllegalArgumentException( "Edge does not match the nodes: edge = " + connectingEdge + ", nodeA = " + nodeA + ", nodeB = " + nodeB );
         }
     }

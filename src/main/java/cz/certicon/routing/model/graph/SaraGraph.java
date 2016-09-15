@@ -5,19 +5,14 @@
  */
 package cz.certicon.routing.model.graph;
 
+import cz.certicon.routing.model.basic.Pair;
 import cz.certicon.routing.model.values.Distance;
-import java.util.Collection;
-import java.util.Map;
 
 /**
  *
  * @author Michael Blaha {@literal <michael.blaha@certicon.cz>}
  */
-public class SaraGraph extends UndirectedGraph<SaraNode, SaraEdge> {
-
-    public SaraGraph( Collection<SaraNode> nodes, Collection<SaraEdge> edges, Map<Metric, Map<Edge, Distance>> metricMap ) {
-        super( nodes, edges, metricMap );
-    }
+public class SaraGraph extends AbstractUndirectedGraph<SaraNode, SaraEdge> {
 
     public Cell getParent( SaraNode node ) {
         return node.getParent();
@@ -34,4 +29,18 @@ public class SaraGraph extends UndirectedGraph<SaraNode, SaraEdge> {
 //        }
 //        return new SaraGraph( (UndirectedGraph) graphCopy, nodeInfoMapCopy );
 //    }
+    public SaraNode createNode( long id, Cell parent ) {
+        SaraNode node = new SaraNode( this, id, parent );
+        addNode( node );
+        return node;
+    }
+
+    public SaraEdge createEdge( long id, boolean oneway, SaraNode source, SaraNode target, int sourceIndex, int targetIndex, Pair<Metric, Distance>... metrics ) {
+        SaraEdge edge = new SaraEdge( this, id, oneway, source, target, sourceIndex, targetIndex );
+        addEdge( edge );
+        for ( Pair<Metric, Distance> metric : metrics ) {
+            setLength( metric.a, edge, metric.b );
+        }
+        return edge;
+    }
 }

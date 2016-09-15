@@ -5,6 +5,7 @@
  */
 package cz.certicon.routing.algorithm.sara.preprocessing.assembly;
 
+import cz.certicon.routing.model.basic.Pair;
 import cz.certicon.routing.model.graph.Cell;
 import cz.certicon.routing.model.graph.Edge;
 import cz.certicon.routing.model.graph.preprocessing.NodePair;
@@ -16,7 +17,7 @@ import cz.certicon.routing.model.graph.SaraGraph;
 import cz.certicon.routing.model.graph.SaraNode;
 import cz.certicon.routing.model.graph.preprocessing.ContractEdge;
 import cz.certicon.routing.model.graph.preprocessing.ContractNode;
-import cz.certicon.routing.model.graph.preprocessing.FilteredGraph;
+import cz.certicon.routing.model.graph.preprocessing.ContractGraph;
 import cz.certicon.routing.model.queue.FibonacciHeap;
 import cz.certicon.routing.model.queue.PriorityQueue;
 import cz.certicon.routing.model.values.Distance;
@@ -57,7 +58,7 @@ public class GreedyAssembler implements Assembler {
     }
 
     @Override
-    public <N extends Node, E extends Edge> SaraGraph assemble( Graph<N, E> originalGraph, FilteredGraph graph ) {
+    public <N extends Node, E extends Edge> SaraGraph assemble( Graph<N, E> originalGraph, ContractGraph graph ) {
 //        System.out.println( "Assembling..." );
         // find max ids
         long maxNodeId = -1;
@@ -86,7 +87,7 @@ public class GreedyAssembler implements Assembler {
             nodes.remove( source );
             ContractNode target = pair.nodeB;
             nodes.remove( target );
-            ContractNode contractedNode = source.mergeWith( graph, target, maxNodeIdContainer, maxEdgeIdContainer );
+            ContractNode contractedNode = source.mergeWith( target, maxNodeIdContainer, maxEdgeIdContainer );
             nodes.add( contractedNode );
 
             // Update score value (with the new r for each iteration) for the adjacent edges (pairs) of the contracted pair (edge) and if the new size s is higher or equal to U, remove pair from P
@@ -110,33 +111,25 @@ public class GreedyAssembler implements Assembler {
 //        }
 //        builder.nodes( nodes ).edges( edges );
 
+        SaraGraph saraGraph = new SaraGraph();
         long cellId = 0;
-        TLongObjectMap<SaraNode> nodeMap = new TLongObjectHashMap<>();
         for ( ContractNode node : nodes ) {
             Cell cell = new Cell( cellId++ );
             for ( Node origNode : node.getNodes() ) {
-                SaraNode saraNode = new SaraNode( origNode.getId(), cell );
-                saraNode.setCoordinate( origNode.getCoordinate( originalGraph ) );
-                nodeMap.put( saraNode.getId(), saraNode );
+                SaraNode saraNode = saraGraph.createNode( origNode.getId(), cell );
+                saraNode.setCoordinate( origNode.getCoordinate() );
             }
         }
-        List<SaraEdge> edges = new ArrayList<>();
-        Map<Metric, Map<Edge, Distance>> metricMap = new HashMap<>();
-        for ( Metric value : Metric.values() ) {
-            metricMap.put( value, new HashMap<Edge, Distance>() );
-        }
         for ( E edge : originalGraph.getEdges() ) {
-            SaraEdge saraEdge = new SaraEdge( edge.getId(), edge.isOneWay( originalGraph ),
-                    nodeMap.get( edge.getSource( originalGraph ).getId() ), nodeMap.get( edge.getTarget( originalGraph ).getId() ),
-                    edge.getSourcePosition(), edge.getTargetPosition() );
-            edges.add( saraEdge );
-            metricMap.get( Metric.LENGTH ).put( saraEdge, originalGraph.getLength( Metric.LENGTH, edge ) );
-            metricMap.get( Metric.TIME ).put( saraEdge, originalGraph.getLength( Metric.TIME, edge ) );
+            SaraEdge saraEdge = saraGraph.createEdge( edge.getId(), edge.isOneWay(),
+                    saraGraph.getNodeById( edge.getSource().getId() ), saraGraph.getNodeById( edge.getTarget().getId() ),
+                    edge.getSourcePosition(), edge.getTargetPosition(),
+                    new Pair<>( Metric.LENGTH, edge.getLength( Metric.LENGTH ) ), new Pair<>( Metric.TIME, edge.getLength( Metric.TIME ) ) );
         }
-        return new SaraGraph( nodeMap.valueCollection(), edges, metricMap );
+        return saraGraph;
     }
 
-    PriorityQueue<NodePair> initQueue( FilteredGraph graph ) {
+    PriorityQueue<NodePair> initQueue( ContractGraph graph ) {
 //        System.out.println( "INIT QUEUE" );
         double ratio = generateR();
         PriorityQueue<NodePair> queue = new FibonacciHeap<>();
@@ -153,7 +146,7 @@ public class GreedyAssembler implements Assembler {
         return queue;
     }
 
-    PriorityQueue<NodePair> clearPairs( PriorityQueue<NodePair> queue, FilteredGraph graph, NodePair origPair, ContractNode origNode ) {
+    PriorityQueue<NodePair> clearPairs( PriorityQueue<NodePair> queue, ContractGraph graph, NodePair origPair, ContractNode origNode ) {
 //        System.out.println( "REMOVING FOR: " + origNode );
         for ( ContractEdge edge : graph.getEdges( origNode ) ) {
             ContractNode neighbor = graph.getOtherNode( edge, origNode );
@@ -173,7 +166,7 @@ public class GreedyAssembler implements Assembler {
         return queue;
     }
 
-    PriorityQueue<NodePair> addPairs( PriorityQueue<NodePair> queue, FilteredGraph graph, ContractNode contractedNode ) {
+    PriorityQueue<NodePair> addPairs( PriorityQueue<NodePair> queue, ContractGraph graph, ContractNode contractedNode ) {
 //        System.out.println( "ADDING FOR: " + contractedNode );
         double ratio = generateR();
         for ( ContractEdge edge : graph.getEdges( contractedNode ) ) {
@@ -202,7 +195,7 @@ public class GreedyAssembler implements Assembler {
         return rand.nextDouble() * interval + lowerBound;
     }
 
-    private double score( FilteredGraph graph, NodePair nodePair, double ratio ) {
+    private double score( ContractGraph graph, NodePair nodePair, double ratio ) {
         // TODO return Double.MAX_VALUE - result in order to extract maximal values?
         ContractEdge edge = nodePair.connectingEdge;
 //        System.out.println( "score@edge = " + edge );

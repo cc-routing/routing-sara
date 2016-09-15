@@ -5,6 +5,7 @@
  */
 package cz.certicon.routing.model.graph.preprocessing;
 
+import cz.certicon.routing.model.basic.Pair;
 import cz.certicon.routing.model.graph.AbstractEdge;
 import cz.certicon.routing.model.graph.Edge;
 import cz.certicon.routing.model.graph.Graph;
@@ -12,7 +13,9 @@ import cz.certicon.routing.model.graph.Metric;
 import cz.certicon.routing.model.graph.TurnTable;
 import cz.certicon.routing.model.values.Distance;
 import java.util.Collection;
+import java.util.EnumMap;
 import java.util.HashSet;
+import java.util.Map;
 import java.util.Set;
 
 /**
@@ -34,10 +37,16 @@ public class ContractEdge extends AbstractEdge<ContractNode, ContractEdge> {
 //            throw new IllegalArgumentException( "Cannot merge edges: this = " + this + ", other = " + edge );
 //        }
 //        System.out.println( "Merging: " + this + " with " + edge );
+//        System.out.println( "E-MERGING: graph = " + graph );
+//        System.out.println( "E-MERGE " + this );
+//        System.out.println( "E-WITH " + edge );
         Set<Edge> newEdges = new HashSet<>( this.edges );
         newEdges.addAll( edge.edges );
-        ContractEdge contractEdge = new ContractEdge( getGraph(), id, false, newSource, newTarget, newEdges );
-        getGraph().setLength( Metric.SIZE, contractEdge, getGraph().getLength( Metric.SIZE, this ).add( getGraph().getLength( Metric.SIZE, edge ) ) );
+        ContractEdge contractEdge = ( (ContractGraph) getGraph() ).createEdge( id, false, newSource, newTarget, newEdges, new Pair<>( Metric.SIZE, getLength( Metric.SIZE ).add( edge.getLength( Metric.SIZE ) ) ) );
+        getGraph().removeEdge( edge );
+        getGraph().removeEdge( this );
+//        System.out.println( "E-MERGED EDGE " + contractEdge );
+//        System.out.println( "E-RESULT: " + graph );
         return contractEdge;
     }
 
@@ -54,7 +63,7 @@ public class ContractEdge extends AbstractEdge<ContractNode, ContractEdge> {
     }
 
     @Override
-    public <E extends Edge> Distance getTurnDistance( ContractNode node, TurnTable turnTable, E targetEdge ) {
+    public Distance getTurnDistance( ContractNode node, TurnTable turnTable, ContractEdge targetEdge ) {
         return Distance.newInstance( 0 );
     }
 

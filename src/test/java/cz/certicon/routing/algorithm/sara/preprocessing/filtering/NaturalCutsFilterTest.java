@@ -15,7 +15,7 @@ import cz.certicon.routing.model.graph.SimpleNode;
 import cz.certicon.routing.model.graph.TurnTable;
 import cz.certicon.routing.model.graph.UndirectedGraph;
 import cz.certicon.routing.model.graph.preprocessing.ContractNode;
-import cz.certicon.routing.model.graph.preprocessing.FilteredGraph;
+import cz.certicon.routing.model.graph.preprocessing.ContractGraph;
 import cz.certicon.routing.model.values.Distance;
 import cz.certicon.routing.utils.GraphGeneratorUtils;
 import cz.certicon.routing.utils.RandomUtils;
@@ -42,7 +42,7 @@ import static org.junit.Assert.*;
  */
 public class NaturalCutsFilterTest {
 
-    private final Graph<Node,Edge> graph;
+    private final UndirectedGraph graph;
     private final Map<Long, Node> nodeMap;
     private final Map<Long, Edge> edgeMap;
     private final Map<TurnTable, TurnTable> turnTables;
@@ -82,14 +82,14 @@ public class NaturalCutsFilterTest {
 //        }
         NaturalCutsFilter instance = new NaturalCutsFilter( 1, 4, 10 );
 
-        Graph<Node, Edge> originalGraph = GraphGeneratorUtils.generateGridGraph( nodeMap, edgeMap, turnTables, 5, 5 );
+        UndirectedGraph originalGraph = GraphGeneratorUtils.generateGridGraph( nodeMap, edgeMap, turnTables, 5, 5 );
         Set<Node> origNodes = new HashSet<>();
         for ( Node node : originalGraph.getNodes() ) {
             origNodes.add( node );
         }
 //        System.out.println( "orig graph: " + originalGraph );
         Graph g = GraphGeneratorUtils.generateGridGraph( nodeMap, edgeMap, turnTables, 5, 5 );
-        FilteredGraph filtered = instance.filter( g );
+        ContractGraph filtered = instance.filter( g );
 //        System.out.println( "filtered graph: " + filtered );
         for ( ContractNode node : filtered.getNodes() ) {
             for ( Node n : node.getNodes() ) {
@@ -104,15 +104,15 @@ public class NaturalCutsFilterTest {
         assertTrue( origNodes.isEmpty() );
 
         int cellSize = 40;
-        FilteredGraph expResult = null;
-        FilteredGraph result = instance.filter( graph );
+        ContractGraph expResult = null;
+        ContractGraph result = instance.filter( graph );
         System.out.println( "Comparison: orig{nodes=" + graph.getNodesCount() + ",edges=" + graph.getEdgeCount() + "}, filtered{nodes=" + result.getNodesCount() + ",edges=" + result.getEdgeCount() + "}" );
 //
 //        System.out.println( "Press enter to continue..." );
 //        new Scanner( System.in ).nextLine();
     }
 
-    private String toString( FilteredGraph graph ) {
+    private String toString( ContractGraph graph ) {
         StringBuilder sb = new StringBuilder();
         return graph.toString();
     }

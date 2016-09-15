@@ -44,12 +44,12 @@ public abstract class AbstractNode<N extends Node, E extends Edge> implements No
 
     @Override
     public Iterator<E> getIncomingEdges() {
-        return new IncomingEdgeIterator<>( graph, (N) this, edges );
+        return new IncomingEdgeIterator<>( this, edges );
     }
 
     @Override
     public Iterator<E> getOutgoingEdges() {
-        return new OutgoingEdgeIterator<>( graph, (N) this, edges );
+        return new OutgoingEdgeIterator<>( this, edges );
     }
 
     @Override
@@ -144,8 +144,8 @@ public abstract class AbstractNode<N extends Node, E extends Edge> implements No
         StringUtils.replaceLast( sb, !edgeList.isEmpty(), "]" );
         return "AbstractNode{" + "id=" + id + ", turnTable=" + turnTable + ", coordinate=" + coordinate + ", edges=" + sb.toString() + '}';
     }
-    
-    protected Graph<N,E> getGraph(){
+
+    protected Graph<N, E> getGraph() {
         return graph;
     }
 }

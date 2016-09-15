@@ -13,7 +13,7 @@ public class SaraNode extends AbstractNode<SaraNode, SaraEdge> {
 
     private final Cell parent;
 
-    public SaraNode( Graph<SaraNode, SaraEdge> graph, long id, Cell parent ) {
+    SaraNode( Graph<SaraNode, SaraEdge> graph, long id, Cell parent ) {
         super( graph, id );
         this.parent = parent;
     }

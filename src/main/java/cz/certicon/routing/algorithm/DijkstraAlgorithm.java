@@ -54,7 +54,7 @@ public class DijkstraAlgorithm<N extends Node, E extends Edge> implements Routin
         E singleEdgePath = null;
         if ( source.equals( destination ) ) {
             Distance substract = toSourceEnd.substract( toDestinationEnd );
-            if ( source.isOneWay( graph ) ) {
+            if ( source.isOneWay() ) {
                 // is positive or zero
                 if ( !substract.isNegative() ) {
                     upperBound = substract;
@@ -65,9 +65,9 @@ public class DijkstraAlgorithm<N extends Node, E extends Edge> implements Routin
                 singleEdgePath = source;
             }
         }
-        putNodeDistance( nodeDistanceMap, pqueue, new State( source.getTarget( graph ), source ), toSourceEnd );
-        if ( !source.isOneWay( graph ) ) {
-            putNodeDistance( nodeDistanceMap, pqueue, new State( source.getSource( graph ), source ), toSourceStart );
+        putNodeDistance( nodeDistanceMap, pqueue, new State( source.getTarget(), source ), toSourceEnd );
+        if ( !source.isOneWay() ) {
+            putNodeDistance( nodeDistanceMap, pqueue, new State( source.getSource(), source ), toSourceStart );
         }
         return route( graph, metric, nodeDistanceMap, pqueue, upperBound, new EdgeEndCondition( graph, destination, toDestinationStart, toDestinationEnd ), singleEdgePath, destination );
     }
@@ -100,7 +100,7 @@ public class DijkstraAlgorithm<N extends Node, E extends Edge> implements Routin
             }
         }
         if ( finalState != null ) {
-            Route.RouteBuilder<N, E> builder = Route.builder( graph );
+            Route.RouteBuilder<N, E> builder = Route.<N, E>builder();
             State<N, E> currentState = finalState;
             while ( currentState != null && !currentState.isFirst() ) {
                 builder.addAsFirst( currentState.getEdge() );
@@ -111,7 +111,7 @@ public class DijkstraAlgorithm<N extends Node, E extends Edge> implements Routin
             }
             return builder.build();
         } else if ( singleEdgePath != null ) {
-            Route.RouteBuilder<N, E> builder = Route.builder( graph );
+            Route.RouteBuilder<N, E> builder = Route.<N, E>builder();
             builder.addAsFirst( singleEdgePath );
             return builder.build();
         } else {
@@ -146,13 +146,13 @@ public class DijkstraAlgorithm<N extends Node, E extends Edge> implements Routin
 
         @Override
         public Pair<State<N, E>, Distance> update( State<N, E> currentFinalState, Distance currentUpperBound, State<N, E> currentState, Distance currentDistance ) {
-            if ( currentState.getNode().equals( destination.getSource( graph ) ) ) {
+            if ( currentState.getNode().equals( destination.getSource() ) ) {
                 Distance completeDistance = currentDistance.add( toDestinationStart ).add( graph.getTurnCost( currentState.getNode(), currentState.getEdge(), destination ) );
                 if ( completeDistance.isLowerThan( currentUpperBound ) ) {
                     return new Pair<>( currentState, completeDistance );
                 }
             }
-            if ( !destination.isOneWay( graph ) && currentState.getNode().equals( destination.getTarget( graph ) ) ) {
+            if ( !destination.isOneWay() && currentState.getNode().equals( destination.getTarget() ) ) {
                 Distance completeDistance = currentDistance.add( toDestinationEnd ).add( graph.getTurnCost( currentState.getNode(), currentState.getEdge(), destination ) );
                 if ( completeDistance.isLowerThan( currentUpperBound ) ) {
                     return new Pair<>( currentState, completeDistance );

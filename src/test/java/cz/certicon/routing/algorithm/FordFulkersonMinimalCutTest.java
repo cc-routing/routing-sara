@@ -6,6 +6,7 @@
 package cz.certicon.routing.algorithm;
 
 import cz.certicon.routing.model.MinimalCut;
+import cz.certicon.routing.model.basic.Pair;
 import cz.certicon.routing.model.graph.Edge;
 import cz.certicon.routing.model.graph.SimpleEdge;
 import cz.certicon.routing.model.graph.Graph;
@@ -89,30 +90,27 @@ public class FordFulkersonMinimalCutTest {
 
         {
             System.out.println( " - test case #2" );
-            Map<Metric, Map<Edge, Distance>> metricMap = new HashMap<>();
-            Map<Edge, Distance> distanceMap = new HashMap<>();
-            metricMap.put( Metric.SIZE, distanceMap );
-            Node[] nodes = new SimpleNode[8];
+            UndirectedGraph g = new UndirectedGraph();
+            SimpleNode[] nodes = new SimpleNode[8];
             for ( int i = 0; i < nodes.length; i++ ) {
-                nodes[i] = new SimpleNode( i );
+                nodes[i] = g.createNode( i );
             }
-            Edge[] edges = new SimpleEdge[13];
-            edges[0] = createEdge( 0, 0, 1, 6, nodes, distanceMap );
-            edges[1] = createEdge( 1, 0, 2, 2, nodes, distanceMap );
-            edges[2] = createEdge( 2, 0, 3, 2, nodes, distanceMap );
-            edges[3] = createEdge( 3, 0, 4, 2, nodes, distanceMap );
-            edges[4] = createEdge( 4, 0, 5, 2, nodes, distanceMap );
-            edges[5] = createEdge( 5, 0, 7, 2, nodes, distanceMap );
-            edges[6] = createEdge( 6, 1, 3, 4, nodes, distanceMap );
-            edges[7] = createEdge( 7, 1, 5, 2, nodes, distanceMap );
-            edges[8] = createEdge( 8, 2, 4, 2, nodes, distanceMap );
-            edges[9] = createEdge( 9, 3, 5, 2, nodes, distanceMap );
-            edges[10] = createEdge( 10, 3, 7, 2, nodes, distanceMap );
-            edges[11] = createEdge( 11, 4, 6, 2, nodes, distanceMap );
-            edges[12] = createEdge( 12, 6, 7, 2, nodes, distanceMap );
-            UndirectedGraph<Node, Edge> g = new UndirectedGraph<>( Arrays.asList( nodes ), Arrays.asList( edges ), metricMap );
-            MinimalCut<Edge> expected1 = new MinimalCut<>( Arrays.asList( edges[0], edges[6], edges[7] ), 12 );
-            MinimalCut<Edge> expected2 = new MinimalCut<>( Arrays.asList( edges[0], edges[2], edges[4], edges[10] ), 12 );
+            SimpleEdge[] edges = new SimpleEdge[13];
+            edges[0] = createEdge( g, 0, 0, 1, 6, nodes );
+            edges[1] = createEdge( g, 1, 0, 2, 2, nodes );
+            edges[2] = createEdge( g, 2, 0, 3, 2, nodes );
+            edges[3] = createEdge( g, 3, 0, 4, 2, nodes );
+            edges[4] = createEdge( g, 4, 0, 5, 2, nodes );
+            edges[5] = createEdge( g, 5, 0, 7, 2, nodes );
+            edges[6] = createEdge( g, 6, 1, 3, 4, nodes );
+            edges[7] = createEdge( g, 7, 1, 5, 2, nodes );
+            edges[8] = createEdge( g, 8, 2, 4, 2, nodes );
+            edges[9] = createEdge( g, 9, 3, 5, 2, nodes );
+            edges[10] = createEdge( g, 10, 3, 7, 2, nodes );
+            edges[11] = createEdge( g, 11, 4, 6, 2, nodes );
+            edges[12] = createEdge( g, 12, 6, 7, 2, nodes );
+            MinimalCut<Edge> expected1 = new MinimalCut<>( Arrays.<Edge>asList( edges[0], edges[6], edges[7] ), 12 );
+            MinimalCut<Edge> expected2 = new MinimalCut<>( Arrays.<Edge>asList( edges[0], edges[2], edges[4], edges[10] ), 12 );
             MinimalCut<Edge> result = instance.compute( g, Metric.SIZE, nodes[0], nodes[1] );
             if ( !toString( result ).equals( toString( expected1 ) ) ) {
                 assertEquals( toString( expected2 ), toString( result ) );
@@ -120,28 +118,25 @@ public class FordFulkersonMinimalCutTest {
         }
         {
             System.out.println( " - test case #3" );
-            Map<Metric, Map<Edge, Distance>> metricMap = new HashMap<>();
-            Map<Edge, Distance> distanceMap = new HashMap<>();
-            metricMap.put( Metric.SIZE, distanceMap );
-            Node[] nodes = new SimpleNode[8];
+            UndirectedGraph g = new UndirectedGraph();
+            SimpleNode[] nodes = new SimpleNode[8];
             for ( int i = 0; i < nodes.length; i++ ) {
-                nodes[i] = new SimpleNode( i );
+                nodes[i] = g.createNode( i );
             }
             Edge[] edges = new SimpleEdge[13];
-            edges[0] = createEdge( 0, 0, 1, 4, nodes, distanceMap );
-            edges[1] = createEdge( 1, 0, 3, 6, nodes, distanceMap );
-            edges[2] = createEdge( 2, 0, 4, 6, nodes, distanceMap );
-            edges[3] = createEdge( 3, 0, 5, 6, nodes, distanceMap );
-            edges[4] = createEdge( 4, 0, 7, 4, nodes, distanceMap );
-            edges[5] = createEdge( 5, 1, 2, 2, nodes, distanceMap );
-            edges[6] = createEdge( 6, 1, 4, 2, nodes, distanceMap );
-            edges[7] = createEdge( 7, 1, 5, 2, nodes, distanceMap );
-            edges[8] = createEdge( 8, 1, 6, 2, nodes, distanceMap );
-            edges[9] = createEdge( 9, 1, 7, 2, nodes, distanceMap );
-            edges[10] = createEdge( 10, 2, 3, 2, nodes, distanceMap );
-            edges[11] = createEdge( 11, 2, 4, 2, nodes, distanceMap );
-            edges[12] = createEdge( 12, 6, 7, 2, nodes, distanceMap );
-            UndirectedGraph<Node, Edge> g = new UndirectedGraph<>( Arrays.asList( nodes ), Arrays.asList( edges ), metricMap );
+            edges[0] = createEdge( g, 0, 0, 1, 4, nodes );
+            edges[1] = createEdge( g, 1, 0, 3, 6, nodes );
+            edges[2] = createEdge( g, 2, 0, 4, 6, nodes );
+            edges[3] = createEdge( g, 3, 0, 5, 6, nodes );
+            edges[4] = createEdge( g, 4, 0, 7, 4, nodes );
+            edges[5] = createEdge( g, 5, 1, 2, 2, nodes );
+            edges[6] = createEdge( g, 6, 1, 4, 2, nodes );
+            edges[7] = createEdge( g, 7, 1, 5, 2, nodes );
+            edges[8] = createEdge( g, 8, 1, 6, 2, nodes );
+            edges[9] = createEdge( g, 9, 1, 7, 2, nodes );
+            edges[10] = createEdge( g, 10, 2, 3, 2, nodes );
+            edges[11] = createEdge( g, 11, 2, 4, 2, nodes );
+            edges[12] = createEdge( g, 12, 6, 7, 2, nodes );
             MinimalCut<Edge> expected1 = new MinimalCut<>( Arrays.asList( edges[0], edges[5], edges[6], edges[7], edges[4] ), 14 );// 4 or 8+9 or 9+12
             MinimalCut<Edge> expected2 = new MinimalCut<>( Arrays.asList( edges[0], edges[5], edges[6], edges[7], edges[8], edges[9] ), 14 );// 4 or 8+9 or 9+12
             MinimalCut<Edge> expected3 = new MinimalCut<>( Arrays.asList( edges[0], edges[5], edges[6], edges[7], edges[9], edges[12] ), 14 );// 4 or 8+9 or 9+12
@@ -154,11 +149,8 @@ public class FordFulkersonMinimalCutTest {
         }
     }
 
-    private SimpleEdge createEdge( int id, int source, int target, int length, Node[] nodes, Map<Edge, Distance> map ) {
-        SimpleEdge edge = new SimpleEdge( id, false, (SimpleNode) nodes[source], (SimpleNode) nodes[target], 0, 0 );
-        map.put( edge, Distance.newInstance( length ) );
-        nodes[source].addEdge( edge );
-        nodes[target].addEdge( edge );
+    private SimpleEdge createEdge( UndirectedGraph g, int id, int source, int target, int length, Node[] nodes ) {
+        SimpleEdge edge = g.createEdge( id, false, (SimpleNode) nodes[source], (SimpleNode) nodes[target], 0, 0, new Pair<>( Metric.SIZE, Distance.newInstance( length ) ) );
         return edge;
     }
 

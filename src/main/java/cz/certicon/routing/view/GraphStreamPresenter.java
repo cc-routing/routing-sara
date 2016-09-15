@@ -72,8 +72,8 @@ public class GraphStreamPresenter implements GraphPresenter {
         while ( edgeIterator.hasNext() ) {
             cz.certicon.routing.model.graph.SimpleEdge edge = edgeIterator.next();
 //            System.out.println( "adding edge #" + edge.getId() );
-            Edge addEdge = displayGraph.addEdge( edge.getId() + "", edge.getSource(graph).getId() + "", edge.getTarget(graph).getId() + "", true );
-            addEdge.setAttribute( "ui.label", "" + graph.getLength( Metric.SIZE, edge ) );
+            Edge addEdge = displayGraph.addEdge( edge.getId() + "", edge.getSource().getId() + "", edge.getTarget().getId() + "", true );
+            addEdge.setAttribute( "ui.label", "" + edge.getLength( Metric.SIZE ) );
             edgeMap.put( edge.getId(), addEdge );
         }
     }

@@ -5,6 +5,7 @@
  */
 package cz.certicon.routing.utils;
 
+import cz.certicon.routing.model.basic.Pair;
 import cz.certicon.routing.model.graph.Edge;
 import cz.certicon.routing.model.graph.Graph;
 import cz.certicon.routing.model.graph.Metric;
@@ -15,6 +16,7 @@ import cz.certicon.routing.model.graph.TurnTable;
 import cz.certicon.routing.model.graph.UndirectedGraph;
 import cz.certicon.routing.model.graph.preprocessing.ContractEdge;
 import cz.certicon.routing.model.graph.preprocessing.ContractNode;
+import cz.certicon.routing.model.graph.preprocessing.ContractGraph;
 import cz.certicon.routing.model.values.Distance;
 import gnu.trove.map.TLongObjectMap;
 import gnu.trove.map.hash.TLongObjectHashMap;
@@ -33,14 +35,11 @@ public class GraphGeneratorUtils {
     private static final int GRID_MAX_SIZE = 100;
     private static final int GRID_EDGE_SIZE = 1;
 
-    public static Graph<Node, Edge> generateGridGraph( Map<Long, Node> nodeMap, Map<Long, Edge> edgeMap, Map<TurnTable, TurnTable> turnTables, int rows, int columns ) {
+    public static UndirectedGraph generateGridGraph( Map<Long, Node> nodeMap, Map<Long, Edge> edgeMap, Map<TurnTable, TurnTable> turnTables, int rows, int columns ) {
         if ( rows > GRID_MAX_SIZE || columns > GRID_MAX_SIZE ) {
             throw new IllegalArgumentException( "It's a quick test! Size over " + GRID_MAX_SIZE + " is just too much: rows = " + rows + ", columns = " + columns );
         }
-        Map<Metric, Map<Edge, Distance>> metricMap = new HashMap<>();
-        metricMap.put( Metric.SIZE, new HashMap<Edge, Distance>() );
-        metricMap.put( Metric.LENGTH, new HashMap<Edge, Distance>() );
-        metricMap.put( Metric.TIME, new HashMap<Edge, Distance>() );
+        UndirectedGraph graph = new UndirectedGraph();
         int multiplier = GRID_MAX_SIZE;
         while ( rows < multiplier / 10 && columns < multiplier / 10 ) {
             multiplier /= 10;
@@ -48,7 +47,7 @@ public class GraphGeneratorUtils {
         List<Node> nodes = new ArrayList<>();
         for ( int i = 0; i < rows; i++ ) {
             for ( int j = 0; j < columns; j++ ) {
-                createNode( nodeMap, nodes, i * multiplier + j );
+                createNode( graph, nodeMap, nodes, i * multiplier + j );
             }
         }
         List<Edge> edges = new ArrayList<>();
@@ -59,19 +58,18 @@ public class GraphGeneratorUtils {
                 if ( i > 0 ) {
                     int sourceIndex = ( 0 < i - 1 ? 1 : 0 ) + ( 0 < j ? 1 : 0 );
                     SimpleNode source = (SimpleNode) nodeMap.get( (long) ( i - 1 ) * multiplier + j );
-                    createEdge( edgeMap, edges, source.getId() * multiplier * multiplier + target.getId(), false, source, target, sourceIndex, targetIndex, GRID_EDGE_SIZE, metricMap );
+                    createEdge( graph, edgeMap, edges, source.getId() * multiplier * multiplier + target.getId(), false, source, target, sourceIndex, targetIndex, GRID_EDGE_SIZE );
                     targetIndex++;
                 }
                 if ( j > 0 ) {
                     int sourceIndex = ( 0 < i ? 1 : 0 ) + ( 0 < j - 1 ? 1 : 0 );
                     SimpleNode source = (SimpleNode) nodeMap.get( (long) i * multiplier + ( j - 1 ) );
-                    createEdge( edgeMap, edges, source.getId() * multiplier * multiplier + target.getId(), false, source, target, sourceIndex, targetIndex, GRID_EDGE_SIZE, metricMap );
+                    createEdge( graph, edgeMap, edges, source.getId() * multiplier * multiplier + target.getId(), false, source, target, sourceIndex, targetIndex, GRID_EDGE_SIZE );
                 }
             }
         }
-        UndirectedGraph g = new UndirectedGraph( nodes, edges, metricMap );
         for ( Node node : nodes ) {
-            int size = node.getDegree( g );
+            int size = node.getDegree();
             Distance[][] dtt = new Distance[size][size];
             for ( int i = 0; i < dtt.length; i++ ) {
                 for ( int j = 0; j < dtt[i].length; j++ ) {
@@ -93,32 +91,28 @@ public class GraphGeneratorUtils {
         for ( Node node : nodes ) {
             node.lock();
         }
-        return g;
+        return graph;
     }
 
     public static Graph createGraph( Map<Long, Node> nodeMap, Map<Long, Edge> edgeMap, Map<TurnTable, TurnTable> turnTables ) {
-        Map<Metric, Map<Edge, Distance>> metricMap = new HashMap<>();
-        for ( Metric value : Metric.values() ) {
-            metricMap.put( value, new HashMap<Edge, Distance>() );
-        }
+        UndirectedGraph g = new UndirectedGraph();
         List<Node> nodes = new ArrayList<>();
-        SimpleNode a = createNode( nodeMap, nodes, 0 );
-        SimpleNode b = createNode( nodeMap, nodes, 1 );
-        SimpleNode c = createNode( nodeMap, nodes, 2 );
-        SimpleNode d = createNode( nodeMap, nodes, 3 );
-        SimpleNode e = createNode( nodeMap, nodes, 4 );
-        SimpleNode f = createNode( nodeMap, nodes, 5 );
+        SimpleNode a = createNode( g, nodeMap, nodes, 0 );
+        SimpleNode b = createNode( g, nodeMap, nodes, 1 );
+        SimpleNode c = createNode( g, nodeMap, nodes, 2 );
+        SimpleNode d = createNode( g, nodeMap, nodes, 3 );
+        SimpleNode e = createNode( g, nodeMap, nodes, 4 );
+        SimpleNode f = createNode( g, nodeMap, nodes, 5 );
         List<Edge> edges = new ArrayList<>();
-        SimpleEdge ab = createEdge( edgeMap, edges, 0, false, a, b, 0, 0, 120, metricMap );
-        SimpleEdge ac = createEdge( edgeMap, edges, 1, false, a, c, 1, 0, 184, metricMap );
-        SimpleEdge cd = createEdge( edgeMap, edges, 2, false, c, d, 1, 0, 94, metricMap );
-        SimpleEdge db = createEdge( edgeMap, edges, 3, true, d, b, 1, 1, 159, metricMap );
-        SimpleEdge be = createEdge( edgeMap, edges, 4, false, b, e, 2, 0, 36, metricMap );
-        SimpleEdge df = createEdge( edgeMap, edges, 5, false, d, f, 2, 0, 38, metricMap );
-        SimpleEdge ef = createEdge( edgeMap, edges, 6, true, e, f, 1, 1, 152, metricMap );
-        UndirectedGraph g = new UndirectedGraph( nodes, edges, metricMap );
+        SimpleEdge ab = createEdge( g, edgeMap, edges, 0, false, a, b, 0, 0, 120 );
+        SimpleEdge ac = createEdge( g, edgeMap, edges, 1, false, a, c, 1, 0, 184 );
+        SimpleEdge cd = createEdge( g, edgeMap, edges, 2, false, c, d, 1, 0, 94 );
+        SimpleEdge db = createEdge( g, edgeMap, edges, 3, true, d, b, 1, 1, 159 );
+        SimpleEdge be = createEdge( g, edgeMap, edges, 4, false, b, e, 2, 0, 36 );
+        SimpleEdge df = createEdge( g, edgeMap, edges, 5, false, d, f, 2, 0, 38 );
+        SimpleEdge ef = createEdge( g, edgeMap, edges, 6, true, e, f, 1, 1, 152 );
         for ( Node node : nodes ) {
-            int size = node.getDegree( g );
+            int size = node.getDegree();
             Distance[][] dtt = new Distance[size][size];
             for ( int i = 0; i < dtt.length; i++ ) {
                 for ( int j = 0; j < dtt[i].length; j++ ) {
@@ -148,62 +142,35 @@ public class GraphGeneratorUtils {
     }
 
     public static Graph<ContractNode, ContractEdge> toContractGraph( Graph<Node, Edge> graph ) {
-        TLongObjectMap<ContractNode> nodeMap = new TLongObjectHashMap<>();
+        ContractGraph g = new ContractGraph();
         for ( Node node : graph.getNodes() ) {
-            nodeMap.put( node.getId(), new ContractNode( node.getId(), Arrays.asList( node ) ) );
+            g.createNode( node.getId(), Arrays.asList( node ) );
         }
-        Map<Metric, Map<Edge, Distance>> metricMap = new HashMap<>();
-        for ( Metric value : Metric.values() ) {
-            metricMap.put( value, new HashMap<Edge, Distance>() );
-        }
-        TLongObjectMap<ContractEdge> edgeMap = new TLongObjectHashMap<>();
         for ( Edge edge : graph.getEdges() ) {
-            ContractEdge newEdge = new ContractEdge( edge.getId(), edge.isOneWay( graph ),
-                    nodeMap.get( edge.getSource( graph ).getId() ), nodeMap.get( edge.getTarget( graph ).getId() ),
-                    Arrays.asList( edge ) );
-            edgeMap.put( edge.getId(), newEdge );
-            for ( Map.Entry<Metric, Map<Edge, Distance>> entry : metricMap.entrySet() ) {
-                entry.getValue().put( newEdge, graph.getLength( entry.getKey(), edge ) );
-            }
+            ContractEdge newEdge = g.createEdge( edge.getId(), edge.isOneWay(),
+                    g.getNodeById( edge.getSource().getId() ), g.getNodeById( edge.getTarget().getId() ),
+                    Arrays.asList( edge ),
+                    new Pair<>( Metric.LENGTH, edge.getLength( Metric.LENGTH ) ), new Pair<>( Metric.TIME, edge.getLength( Metric.TIME ) ), new Pair<>( Metric.SIZE, edge.getLength( Metric.SIZE ) ) );
         }
-        UndirectedGraph<ContractNode, ContractEdge> undirectedGraph = new UndirectedGraph<>( nodeMap.valueCollection(), edgeMap.valueCollection(), metricMap );
-        for ( ContractEdge edge : undirectedGraph.getEdges() ) {
-            undirectedGraph.setLength( Metric.SIZE, edge, Distance.newInstance( edge.calculateWidth( undirectedGraph ) ) );
+        for ( ContractEdge edge : g.getEdges() ) {
+            edge.setLength( Metric.SIZE, Distance.newInstance( edge.calculateWidth() ) );
         }
-        return undirectedGraph;
+        return g;
     }
 
-    private static SimpleNode createNode( Map<Long, Node> nodeMap, List<Node> nodes, long id ) {
+    private static SimpleNode createNode( UndirectedGraph graph, Map<Long, Node> nodeMap, List<Node> nodes, long id ) {
 //        Distance[][] tt = new Distance[]
-        SimpleNode node = new SimpleNode( id );
+        SimpleNode node = graph.createNode( id );
         nodes.add( node );
         nodeMap.put( id, node );
         return node;
     }
 
-    private static SimpleEdge createEdge( Map<Long, Edge> edgeMap, List<Edge> edges, long id, boolean oneway, SimpleNode source, SimpleNode target, int sourcePos, int targetPos, double distance, Map<Metric, Map<Edge, Distance>> metricMap ) {
-        SimpleEdge edge = new SimpleEdge( id, oneway, source, target, sourcePos, targetPos );
+    private static SimpleEdge createEdge( UndirectedGraph graph, Map<Long, Edge> edgeMap, List<Edge> edges, long id, boolean oneway, SimpleNode source, SimpleNode target, int sourcePos, int targetPos, double distance ) {
+        SimpleEdge edge = graph.createEdge( id, oneway, source, target, sourcePos, targetPos,
+                new Pair<>( Metric.LENGTH, Distance.newInstance( distance ) ), new Pair<>( Metric.TIME, Distance.newInstance( distance ) ), new Pair<>( Metric.SIZE, Distance.newInstance( distance ) ) );
         edges.add( edge );
-        source.addEdge( edge );
-        target.addEdge( edge );
         edgeMap.put( id, edge );
-        for ( Map<Edge, Distance> value : metricMap.values() ) {
-            value.put( edge, Distance.newInstance( distance ) );
-        }
-        return edge;
-    }
-
-    private static SimpleEdge createEdge( Map<Long, Edge> edgeMap, List<Edge> edges, long id, boolean oneway, SimpleNode source, SimpleNode target, int sourcePos, int targetPos, double distance, Map<Metric, Map<Edge, Distance>> metricMap, boolean addToNode ) {
-        SimpleEdge edge = new SimpleEdge( id, oneway, source, target, sourcePos, targetPos );
-        edges.add( edge );
-        if ( addToNode ) {
-            source.addEdge( edge );
-            target.addEdge( edge );
-        }
-        edgeMap.put( id, edge );
-        for ( Map<Edge, Distance> value : metricMap.values() ) {
-            value.put( edge, Distance.newInstance( distance ) );
-        }
         return edge;
     }
 }

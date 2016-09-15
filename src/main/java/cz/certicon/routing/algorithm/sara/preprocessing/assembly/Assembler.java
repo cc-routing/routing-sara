@@ -9,7 +9,7 @@ import cz.certicon.routing.model.graph.Edge;
 import cz.certicon.routing.model.graph.Graph;
 import cz.certicon.routing.model.graph.Node;
 import cz.certicon.routing.model.graph.SaraGraph;
-import cz.certicon.routing.model.graph.preprocessing.FilteredGraph;
+import cz.certicon.routing.model.graph.preprocessing.ContractGraph;
 
 /**
  * Builds partitions using time-consuming techniques on reduced graph. Uses
@@ -20,5 +20,5 @@ import cz.certicon.routing.model.graph.preprocessing.FilteredGraph;
  */
 public interface Assembler {
 
-    <N extends Node, E extends Edge> SaraGraph assemble( Graph<N, E> originalGraph, FilteredGraph graph );
+    <N extends Node, E extends Edge> SaraGraph assemble( Graph<N, E> originalGraph, ContractGraph graph );
 }

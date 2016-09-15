@@ -34,7 +34,7 @@ public class JxPartitionViewer extends AbstractJxMapViewer implements PartitionV
     public void addCutEdges( Graph graph, Collection<Edge> cutEdges ) {
         List<Coordinate> coords = new ArrayList<>();
         for ( Edge cutEdge : cutEdges ) {
-            coords.add( edgeMidpoint( graph, cutEdge ) );
+            coords.add( edgeMidpoint( cutEdge ) );
         }
         List<Coordinate> sorted = CoordinateUtils.sortClockwise( coords );
         if ( !sorted.isEmpty() ) {
@@ -43,9 +43,9 @@ public class JxPartitionViewer extends AbstractJxMapViewer implements PartitionV
         addPolygon( toGeoPosition( sorted ) );
     }
 
-    private Coordinate edgeMidpoint( Graph graph, Edge edge ) {
-        Coordinate source = edge.getSource( graph ).getCoordinate( graph );
-        Coordinate target = edge.getTarget( graph ).getCoordinate( graph );
+    private Coordinate edgeMidpoint( Edge edge ) {
+        Coordinate source = edge.getSource().getCoordinate();
+        Coordinate target = edge.getTarget().getCoordinate();
         Coordinate midpoint = CoordinateUtils.calculateGeographicMidpoint( Arrays.asList( source, target ) );
         return midpoint;
     }
@@ -55,8 +55,8 @@ public class JxPartitionViewer extends AbstractJxMapViewer implements PartitionV
         Color color = colorSupplier.nextColor();
         List<Coordinate> coords = new ArrayList<>();
         for ( Node node : partition ) {
-            assert node.getCoordinate( graph ) != null;
-            coords.add( node.getCoordinate( graph ) );
+            assert node.getCoordinate() != null;
+            coords.add( node.getCoordinate() );
         }
         addCluster( toGeoPosition( coords ), color );
 //        List<Coordinate> sorted = CoordinateUtils.sortClockwise( coords );
@@ -71,7 +71,7 @@ public class JxPartitionViewer extends AbstractJxMapViewer implements PartitionV
         Color color = colorSupplier.nextColor();
         List<Coordinate> coords = new ArrayList<>();
         for ( Node borderNode : borderNodes ) {
-            coords.add( borderNode.getCoordinate( graph ) );
+            coords.add( borderNode.getCoordinate() );
         }
         List<Coordinate> sorted = CoordinateUtils.sortClockwise( coords );
         if ( !sorted.isEmpty() ) {

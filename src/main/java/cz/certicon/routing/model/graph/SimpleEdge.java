@@ -11,7 +11,7 @@ package cz.certicon.routing.model.graph;
  */
 public class SimpleEdge extends AbstractEdge<SimpleNode, SimpleEdge> {
 
-    public SimpleEdge( Graph<SimpleNode, SimpleEdge> graph, long id, boolean oneway, SimpleNode source, SimpleNode target, int sourceIndex, int targetIndex ) {
+    SimpleEdge( Graph<SimpleNode, SimpleEdge> graph, long id, boolean oneway, SimpleNode source, SimpleNode target, int sourceIndex, int targetIndex ) {
         super( graph, id, oneway, source, target, sourceIndex, targetIndex );
     }
 

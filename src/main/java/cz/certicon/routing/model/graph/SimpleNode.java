@@ -14,7 +14,7 @@ import java.util.List;
  */
 public class SimpleNode extends AbstractNode<SimpleNode,SimpleEdge> {
 
-    public SimpleNode( Graph<SimpleNode, SimpleEdge> graph, long id ) {
+    SimpleNode( Graph<SimpleNode, SimpleEdge> graph, long id ) {
         super( graph, id );
     }
 

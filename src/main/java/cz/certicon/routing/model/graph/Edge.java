@@ -29,4 +29,8 @@ public interface Edge<N extends Node, E extends Edge> extends Identifiable {
     public int getSourcePosition();
 
     public int getTargetPosition();
+
+    public Distance getLength( Metric metric );
+
+    public void setLength( Metric metric, Distance distance );
 }

@@ -78,6 +78,16 @@ public abstract class AbstractEdge<N extends Node, E extends Edge> implements Ed
     }
 
     @Override
+    public Distance getLength( Metric metric ) {
+        return graph.getLength( metric, (E) this );
+    }
+
+    @Override
+    public void setLength( Metric metric, Distance distance ) {
+        graph.setLength( metric, (E) this, distance );
+    }
+
+    @Override
     public String toString() {
         return "Edge{id=" + id + ", oneway=" + oneway + ", source=Node{id=" + source.getId() + "}, target=Node{id=" + target.getId() + "}}";
     }

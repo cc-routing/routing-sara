@@ -46,7 +46,7 @@ public class DijkstraAlgorithmTest {
         graph = createGraph();
     }
 
-    private Graph<Node,Edge> createGraph() {
+    private Graph<Node, Edge> createGraph() {
         return GraphGeneratorUtils.createGraph( nodeMap, edgeMap, turnTables );
     }
 
@@ -76,7 +76,7 @@ public class DijkstraAlgorithmTest {
         Node source = nodeMap.get( 0L );
         Node destination = nodeMap.get( 3L );
         DijkstraAlgorithm instance = new DijkstraAlgorithm();
-        Route<Node, Edge> expResult = Route.builder( graph ).addAsLast( edgeMap.get( 0L ) ).addAsLast( edgeMap.get( 4L ) ).addAsLast( edgeMap.get( 6L ) ).addAsLast( edgeMap.get( 5L ) ).build();
+        Route<Node, Edge> expResult = Route.builder().addAsLast( edgeMap.get( 0L ) ).addAsLast( edgeMap.get( 4L ) ).addAsLast( edgeMap.get( 6L ) ).addAsLast( edgeMap.get( 5L ) ).build();
         Route<Node, Edge> result = instance.route( graph, Metric.LENGTH, source, destination );
         assertEquals( toString( expResult ), toString( result ) );
     }
@@ -90,7 +90,7 @@ public class DijkstraAlgorithmTest {
         Edge source = edgeMap.get( 1L );
         Edge destination = edgeMap.get( 5L );
         DijkstraAlgorithm instance = new DijkstraAlgorithm();
-        Route<Node, Edge> expResult = Route.builder( graph ).addAsLast( edgeMap.get( 1L ) ).addAsLast( edgeMap.get( 0L ) ).addAsLast( edgeMap.get( 4L ) ).addAsLast( edgeMap.get( 6L ) ).addAsLast( edgeMap.get( 5L ) ).build();
+        Route<Node, Edge> expResult = Route.builder().addAsLast( edgeMap.get( 1L ) ).addAsLast( edgeMap.get( 0L ) ).addAsLast( edgeMap.get( 4L ) ).addAsLast( edgeMap.get( 6L ) ).addAsLast( edgeMap.get( 5L ) ).build();
         Route<Node, Edge> result = instance.route( graph, Metric.LENGTH, source, destination );
         assertEquals( toString( expResult ), toString( result ) );
     }
@@ -108,7 +108,7 @@ public class DijkstraAlgorithmTest {
         Distance toDestinationStart = Distance.newInstance( 10 );
         Distance toDestinationEnd = Distance.newInstance( 10 );
         DijkstraAlgorithm instance = new DijkstraAlgorithm();
-        Route<Node, Edge> expResult = Route.builder( graph ).addAsLast( edgeMap.get( 1L ) ).addAsLast( edgeMap.get( 0L ) ).addAsLast( edgeMap.get( 4L ) ).addAsLast( edgeMap.get( 6L ) ).addAsLast( edgeMap.get( 5L ) ).addAsLast( edgeMap.get( 2L ) ).build();
+        Route<Node, Edge> expResult = Route.builder().addAsLast( edgeMap.get( 1L ) ).addAsLast( edgeMap.get( 0L ) ).addAsLast( edgeMap.get( 4L ) ).addAsLast( edgeMap.get( 6L ) ).addAsLast( edgeMap.get( 5L ) ).addAsLast( edgeMap.get( 2L ) ).build();
         Route<Node, Edge> result = instance.route( graph, Metric.LENGTH, source, destination, toSourceStart, toSourceEnd, toDestinationStart, toDestinationEnd );
         assertEquals( toString( expResult ), toString( result ) );
     }

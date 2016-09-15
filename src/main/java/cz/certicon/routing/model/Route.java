@@ -28,21 +28,19 @@ public class Route<N extends Node, E extends Edge> {
     N source;
     N target;
 
-    public static <N extends Node, E extends Edge> RouteBuilder builder( Graph<N, E> graph ) {
-        return new RouteBuilder<>( graph );
+    public static <N extends Node, E extends Edge> RouteBuilder builder() {
+        return new RouteBuilder<>();
     }
 
     public static class RouteBuilder<N extends Node, E extends Edge> {
 
-        private final Graph<N, E> graph;
         private Node source;
         private Node target;
         private final LinkedList<E> edges = new LinkedList<>();
         private boolean uturn = false;
         private boolean fixedStart = false;
 
-        public RouteBuilder( Graph<N, E> graph ) {
-            this.graph = graph;
+        public RouteBuilder() {
         }
 
         public RouteBuilder setSource( N source ) {
@@ -61,50 +59,50 @@ public class Route<N extends Node, E extends Edge> {
 
         public RouteBuilder addAsLast( E edge ) {
             if ( source == null ) {
-                source = edge.getSource( graph );
-                target = edge.getTarget( graph );
-                if ( edge.isOneWay( graph ) ) {
+                source = edge.getSource();
+                target = edge.getTarget();
+                if ( edge.isOneWay() ) {
                     fixedStart = true;
                 }
             } else if ( fixedStart ) {
-                if ( target.equals( edge.getSource( graph ) ) ) {
-                    target = edge.getTarget( graph );
-                } else if ( target.equals( edge.getTarget( graph ) ) && !edge.isOneWay( graph ) ) {
-                    target = edge.getSource( graph );
+                if ( target.equals( edge.getSource() ) ) {
+                    target = edge.getTarget();
+                } else if ( target.equals( edge.getTarget() ) && !edge.isOneWay() ) {
+                    target = edge.getSource();
                 } else {
                     throw new IllegalArgumentException( "Unable to connect edges: current target = " + target + ", edge = " + edge );
                 }
             } else if ( uturn ) {
-                if ( target.equals( edge.getSource( graph ) ) ) {
+                if ( target.equals( edge.getSource() ) ) {
                     source = target;
-                    target = edge.getTarget( graph );
-                } else if ( target.equals( edge.getTarget( graph ) ) && !edge.isOneWay( graph ) ) {
+                    target = edge.getTarget();
+                } else if ( target.equals( edge.getTarget() ) && !edge.isOneWay() ) {
                     source = target;
-                    target = edge.getSource( graph );
-                } else if ( source.equals( edge.getSource( graph ) ) ) {
-                    target = edge.getTarget( graph );
-                } else if ( source.equals( edge.getTarget( graph ) ) && !edge.isOneWay( graph ) ) {
-                    target = edge.getSource( graph );
+                    target = edge.getSource();
+                } else if ( source.equals( edge.getSource() ) ) {
+                    target = edge.getTarget();
+                } else if ( source.equals( edge.getTarget() ) && !edge.isOneWay() ) {
+                    target = edge.getSource();
                 } else {
                     throw new IllegalArgumentException( "Unable to connect edges: current target = " + target + ", edge = " + edge );
                 }
                 fixedStart = true;
                 uturn = false;
-            } else if ( ( target.equals( edge.getSource( graph ) ) && source.equals( edge.getTarget( graph ) ) ) || ( !edge.isOneWay( graph ) && target.equals( edge.getTarget( graph ) ) && source.equals( edge.getSource( graph ) ) ) ) {
+            } else if ( ( target.equals( edge.getSource() ) && source.equals( edge.getTarget() ) ) || ( !edge.isOneWay() && target.equals( edge.getTarget() ) && source.equals( edge.getSource() ) ) ) {
                 uturn = true;
-            } else if ( target.equals( edge.getSource( graph ) ) ) {
-                target = edge.getTarget( graph );
+            } else if ( target.equals( edge.getSource() ) ) {
+                target = edge.getTarget();
                 fixedStart = true;
-            } else if ( target.equals( edge.getTarget( graph ) ) && !edge.isOneWay( graph ) ) {
-                target = edge.getSource( graph );
+            } else if ( target.equals( edge.getTarget() ) && !edge.isOneWay() ) {
+                target = edge.getSource();
                 fixedStart = true;
-            } else if ( source.equals( edge.getSource( graph ) ) ) {
+            } else if ( source.equals( edge.getSource() ) ) {
                 source = target;
-                target = edge.getTarget( graph );
+                target = edge.getTarget();
                 fixedStart = true;
-            } else if ( source.equals( edge.getTarget( graph ) ) && !edge.isOneWay( graph ) ) {
+            } else if ( source.equals( edge.getTarget() ) && !edge.isOneWay() ) {
                 source = target;
-                target = edge.getSource( graph );
+                target = edge.getSource();
                 fixedStart = true;
             } else {
                 throw new IllegalArgumentException( "Unable to connect edges: current source = " + source + ", edge = " + edge );
@@ -115,50 +113,50 @@ public class Route<N extends Node, E extends Edge> {
 
         public RouteBuilder addAsFirst( E edge ) {
             if ( source == null ) {
-                source = edge.getSource( graph );
-                target = edge.getTarget( graph );
-                if ( edge.isOneWay( graph ) ) {
+                source = edge.getSource();
+                target = edge.getTarget();
+                if ( edge.isOneWay() ) {
                     fixedStart = true;
                 }
             } else if ( fixedStart ) {
-                if ( source.equals( edge.getTarget( graph ) ) ) {
-                    source = edge.getSource( graph );
-                } else if ( source.equals( edge.getSource( graph ) ) && !edge.isOneWay( graph ) ) {
-                    source = edge.getTarget( graph );
+                if ( source.equals( edge.getTarget() ) ) {
+                    source = edge.getSource();
+                } else if ( source.equals( edge.getSource() ) && !edge.isOneWay() ) {
+                    source = edge.getTarget();
                 } else {
                     throw new IllegalArgumentException( "Unable to connect edges: current source = " + source + ", edge = " + edge );
                 }
             } else if ( uturn ) {
-                if ( source.equals( edge.getTarget( graph ) ) ) {
+                if ( source.equals( edge.getTarget() ) ) {
                     target = source;
-                    source = edge.getSource( graph );
-                } else if ( source.equals( edge.getSource( graph ) ) && !edge.isOneWay( graph ) ) {
+                    source = edge.getSource();
+                } else if ( source.equals( edge.getSource() ) && !edge.isOneWay() ) {
                     target = source;
-                    source = edge.getTarget( graph );
-                } else if ( target.equals( edge.getTarget( graph ) ) ) {
-                    source = edge.getSource( graph );
-                } else if ( target.equals( edge.getSource( graph ) ) && !edge.isOneWay( graph ) ) {
-                    source = edge.getTarget( graph );
+                    source = edge.getTarget();
+                } else if ( target.equals( edge.getTarget() ) ) {
+                    source = edge.getSource();
+                } else if ( target.equals( edge.getSource() ) && !edge.isOneWay() ) {
+                    source = edge.getTarget();
                 } else {
                     throw new IllegalArgumentException( "Unable to connect edges: current source = " + source + ", edge = " + edge );
                 }
                 fixedStart = true;
                 uturn = false;
-            } else if ( ( source.equals( edge.getTarget( graph ) ) && target.equals( edge.getSource( graph ) ) ) || ( !edge.isOneWay( graph ) && source.equals( edge.getSource( graph ) ) && target.equals( edge.getTarget( graph ) ) ) ) {
+            } else if ( ( source.equals( edge.getTarget() ) && target.equals( edge.getSource() ) ) || ( !edge.isOneWay() && source.equals( edge.getSource() ) && target.equals( edge.getTarget() ) ) ) {
                 uturn = true;
-            } else if ( source.equals( edge.getTarget( graph ) ) ) {
-                source = edge.getSource( graph );
+            } else if ( source.equals( edge.getTarget() ) ) {
+                source = edge.getSource();
                 fixedStart = true;
-            } else if ( source.equals( edge.getSource( graph ) ) && !edge.isOneWay( graph ) ) {
-                source = edge.getTarget( graph );
+            } else if ( source.equals( edge.getSource() ) && !edge.isOneWay() ) {
+                source = edge.getTarget();
                 fixedStart = true;
-            } else if ( target.equals( edge.getTarget( graph ) ) ) {
+            } else if ( target.equals( edge.getTarget() ) ) {
                 target = source;
-                source = edge.getSource( graph );
+                source = edge.getSource();
                 fixedStart = true;
-            } else if ( target.equals( edge.getSource( graph ) ) && !edge.isOneWay( graph ) ) {
+            } else if ( target.equals( edge.getSource() ) && !edge.isOneWay() ) {
                 target = source;
-                source = edge.getTarget( graph );
+                source = edge.getTarget();
                 fixedStart = true;
             } else {
                 throw new IllegalArgumentException( "Unable to connect edges: current target = " + target + ", edge = " + edge );

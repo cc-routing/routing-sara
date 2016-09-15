@@ -62,6 +62,7 @@ public class SqliteGraphDAO implements GraphDAO {
 //                throw new SQLException( "Could not read edge count" );
 //            }
 //            int edgeCount = rs.getInt( "edgeCount" );
+            UndirectedGraph graph = new UndirectedGraph();
             // read turn tables
             // TODO add turntables to map, a list of nodes as a value (so that the nodes share turntables)
             TIntObjectMap<MatrixContainer> turnTableMap = new TIntObjectHashMap<>();
@@ -75,46 +76,36 @@ public class SqliteGraphDAO implements GraphDAO {
                 matrixContainer.matrix[rs.getInt( "row_id" )][rs.getInt( "column_id" )] = Distance.newInstance( rs.getDouble( "value" ) );
             }
             // read nodes
-            TLongObjectMap<SimpleNode> nodeMap = new TLongObjectHashMap<>();
             rs = database.read( "SELECT *, ST_AsText(geom) AS point FROM nodes" );
             while ( rs.next() ) {
-                SimpleNode node = new SimpleNode( rs.getLong( "id" ) );
+                SimpleNode node = graph.createNode( rs.getLong( "id" ) );
                 TurnTable turnTable = new TurnTable( turnTableMap.get( rs.getInt( "turn_table_id" ) ).matrix );
                 node.setTurnTable( turnTable );
                 node.setCoordinate( GeometryUtils.toCoordinatesFromWktPoint( rs.getString( "point" ) ) );
-                nodeMap.put( node.getId(), node );
             }
             // read edges
-            TLongObjectMap<Edge> edgeMap = new TLongObjectHashMap<>();
             Map<Metric, Map<Edge, Distance>> metricMap = new HashMap<>();
             for ( Metric value : Metric.values() ) {
                 metricMap.put( value, new HashMap<Edge, Distance>() );
             }
             rs = database.read( "SELECT * FROM edges e;" );
             while ( rs.next() ) {
-                SimpleNode source = nodeMap.get( rs.getLong( "source" ) );
-                SimpleNode target = nodeMap.get( rs.getLong( "target" ) );
-                SimpleEdge edge = new SimpleEdge( rs.getLong( "id" ), rs.getInt( "oneway" ) != 0,
-                        source,
-                        target,
-                        rs.getInt( "source_pos" ),
-                        rs.getInt( "target_pos" ) );
-                source.addEdge( edge );
-                target.addEdge( edge );
+                SimpleNode source = graph.getNodeById(rs.getLong( "source" ) );
+                SimpleNode target = graph.getNodeById(rs.getLong( "target" ) );
                 // length in meters, speed in kmph, CAUTION - convert here
                 double length = rs.getDouble( "metric_length" );
                 double speedFw = rs.getDouble( "metric_speed_forward" );// todo take into consideration direction
                 double time = length / ( speedFw / 3.6 );
-                metricMap.get( Metric.LENGTH ).put( edge, Distance.newInstance( length ) );
-                metricMap.get( Metric.TIME ).put( edge, Distance.newInstance( time ) );
-                edgeMap.put( edge.getId(), edge );
+                SimpleEdge edge = graph.createEdge( rs.getLong( "id" ), rs.getInt( "oneway" ) != 0,
+                        source,
+                        target,
+                        rs.getInt( "source_pos" ),
+                        rs.getInt( "target_pos" ),
+                        new Pair<>( Metric.LENGTH, Distance.newInstance( length ) ), new Pair<>( Metric.TIME, Distance.newInstance( time ) ) );
             }
             // lock nodes and build graph
-            for ( Object value : nodeMap.values() ) {
-                SimpleNode node = (SimpleNode) value;
-                node.lock();
-            }
-            return new UndirectedGraph<>( nodeMap.valueCollection(), edgeMap.valueCollection(), metricMap );
+            graph.lock();
+            return graph;
         } catch ( SQLException ex ) {
             throw new IOException( ex );
         }

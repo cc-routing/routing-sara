@@ -64,19 +64,21 @@ public class ContractNodeTest {
     @Test
     public void testMergeWith() {
         System.out.println( "mergeWith" );
+        UndirectedGraph g = new UndirectedGraph();
+        ContractGraph graph = new ContractGraph();
         List<ContractEdge> edges = new ArrayList<>();
-        Set<Node> origNodesA = new HashSet<Node>( Arrays.asList( new SimpleNode( -1 ), new SimpleNode( -2 ), new SimpleNode( -3 ) ) );
-        Set<Node> origNodesB = new HashSet<Node>( Arrays.asList( new SimpleNode( -4 ), new SimpleNode( -5 ) ) );
-        Set<Node> origNodes = new HashSet<Node>( Arrays.asList( new SimpleNode( -6 ) ) );
-        ContractNode nodeA = new ContractNode( 0, origNodesA );
-        ContractNode nodeB = new ContractNode( 1, origNodesB );
-        Set<Edge> origEdges = new HashSet<Edge>( Arrays.asList( new SimpleEdge( -1, false, (SimpleNode) origNodesA.iterator().next(), (SimpleNode) origNodesB.iterator().next(), -1, -1 ) ) );
-        ContractEdge connectEdge = new ContractEdge( 0, false, nodeA, nodeB, origEdges );
+        Set<Node> origNodesA = new HashSet<Node>( Arrays.asList( g.createNode( -1 ), g.createNode( -2 ), g.createNode( -3 ) ) );
+        Set<Node> origNodesB = new HashSet<Node>( Arrays.asList( g.createNode( -4 ), g.createNode( -5 ) ) );
+        Set<Node> origNodes = new HashSet<Node>( Arrays.asList( g.createNode( -6 ) ) );
+        ContractNode nodeA = graph.createNode( 0, origNodesA );
+        ContractNode nodeB = graph.createNode( 1, origNodesB );
+        Set<Edge> origEdges = new HashSet<Edge>( Arrays.asList( g.createEdge( -1, false, (SimpleNode) origNodesA.iterator().next(), (SimpleNode) origNodesB.iterator().next(), -1, -1 ) ) );
+        ContractEdge connectEdge = graph.createEdge( 0, false, nodeA, nodeB, origEdges );
         nodeA.addEdge( connectEdge );
         nodeB.addEdge( connectEdge );
         ContractNode[] neighbors = new ContractNode[5];
         for ( int i = 0; i < neighbors.length; i++ ) {
-            neighbors[i] = new ContractNode( 2 + i, origNodes );
+            neighbors[i] = graph.createNode( 2 + i, origNodes );
         }
         Map<Metric, Map<Edge, Distance>> metricMap = new EnumMap<>( Metric.class );
         for ( Metric value : Metric.values() ) {
@@ -84,7 +86,7 @@ public class ContractNodeTest {
         }
         for ( int i = 0; i < 3; i++ ) {
             ContractNode neighbor = neighbors[i];
-            ContractEdge edge = new ContractEdge( i + 1, false, nodeA, neighbor, origEdges );
+            ContractEdge edge = graph.createEdge( i + 1, false, nodeA, neighbor, origEdges );
             nodeA.addEdge( edge );
             neighbor.addEdge( edge );
             edges.add( edge );
@@ -92,7 +94,7 @@ public class ContractNodeTest {
         }
         for ( int i = 2; i < 5; i++ ) {
             ContractNode neighbor = neighbors[i];
-            ContractEdge edge = new ContractEdge( i + 2, false, nodeB, neighbor, origEdges );
+            ContractEdge edge = graph.createEdge( i + 2, false, nodeB, neighbor, origEdges );
             nodeB.addEdge( edge );
             neighbor.addEdge( edge );
             edges.add( edge );
@@ -100,8 +102,6 @@ public class ContractNodeTest {
         }
         ContractNode.MaxIdContainer nodeMaxIdContainer = new ContractNode.MaxIdContainer( 9 );
         ContractNode.MaxIdContainer edgeMaxIdContainer = new ContractNode.MaxIdContainer( 9 );
-
-        Graph<ContractNode, ContractEdge> graph = new UndirectedGraph<>( Arrays.asList( nodeA, nodeB ), edges, metricMap );
 
 //        System.out.println( "nodes:" );
 //        System.out.println( nodeA );

@@ -6,7 +6,6 @@
 package cz.certicon.routing.model.graph.iterator;
 
 import cz.certicon.routing.model.graph.Edge;
-import cz.certicon.routing.model.graph.Graph;
 import cz.certicon.routing.model.graph.Node;
 import cz.certicon.routing.utils.collections.Iterator;
 import java.util.ArrayList;
@@ -26,18 +25,15 @@ public abstract class FilterEdgeIterator<N extends Node, E extends Edge> impleme
     private int position = -1;
     private int nextPosition = -1;
     private final List<E> edges;
-    private final Graph<N, E> graph;
 
-    public FilterEdgeIterator( Graph<N, E> graph, N node, Collection<E> edges ) {
+    public FilterEdgeIterator( N node, Collection<E> edges ) {
         this.node = node;
-        this.graph = graph;
         this.edges = new ArrayList<>( edges );
         this.last = getLast( this.node, this.edges );
     }
 
-    public FilterEdgeIterator( Graph<N, E> graph, N node, List<E> edges ) {
+    public FilterEdgeIterator( N node, List<E> edges ) {
         this.node = node;
-        this.graph = graph;
         this.edges = edges;
         this.last = getLast( this.node, this.edges );
     }
@@ -46,7 +42,7 @@ public abstract class FilterEdgeIterator<N extends Node, E extends Edge> impleme
         int tmpLast = -1;
         for ( int i = edges.size() - 1; i >= 0; i-- ) {
             E edge = edges.get( i );
-            if ( isValid( graph, node, edge ) ) {
+            if ( isValid( node, edge ) ) {
                 tmpLast = i;
                 break;
             }
@@ -62,7 +58,7 @@ public abstract class FilterEdgeIterator<N extends Node, E extends Edge> impleme
         if ( nextPosition < 0 ) {
             int tmpPosition = position + 1;
             E edge = edges.get( tmpPosition );
-            while ( tmpPosition < edges.size() - 1 && !isValid( graph, node, edge ) ) {
+            while ( tmpPosition < edges.size() - 1 && !isValid( node, edge ) ) {
                 tmpPosition++;
                 edge = edges.get( tmpPosition );
             }
@@ -94,6 +90,6 @@ public abstract class FilterEdgeIterator<N extends Node, E extends Edge> impleme
         return this;
     }
 
-    abstract boolean isValid( Graph<N, E> graph, N node, E edge );
+    abstract boolean isValid( N node, E edge );
 
 }

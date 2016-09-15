@@ -8,7 +8,7 @@ package cz.certicon.routing.algorithm.sara.preprocessing.filtering;
 import cz.certicon.routing.model.graph.Edge;
 import cz.certicon.routing.model.graph.Graph;
 import cz.certicon.routing.model.graph.Node;
-import cz.certicon.routing.model.graph.preprocessing.FilteredGraph;
+import cz.certicon.routing.model.graph.preprocessing.ContractGraph;
 
 /**
  * Reduces graph size while preserving overall structure.
@@ -17,5 +17,5 @@ import cz.certicon.routing.model.graph.preprocessing.FilteredGraph;
  */
 public interface Filter {
 
-    <N extends Node, E extends Edge> FilteredGraph filter( Graph<N, E> graph );
+    <N extends Node, E extends Edge> ContractGraph filter( Graph<N, E> graph );
 }

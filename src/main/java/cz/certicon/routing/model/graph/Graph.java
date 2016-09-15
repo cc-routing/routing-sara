@@ -8,6 +8,7 @@ package cz.certicon.routing.model.graph;
 import cz.certicon.routing.model.values.Coordinate;
 import cz.certicon.routing.model.values.Distance;
 import cz.certicon.routing.utils.collections.Iterator;
+import java.util.Map;
 
 /**
  * Definition of graph
@@ -72,7 +73,11 @@ public interface Graph<N extends Node, E extends Edge> {
 
     N getNodeById( long id );
 
+    boolean containsNode( long id );
+
     E getEdgeById( long id );
+
+    boolean containsEdge( long id );
 
     /**
      * Returns source node of the given edge
@@ -122,6 +127,12 @@ public interface Graph<N extends Node, E extends Edge> {
     Distance getLength( Metric metric, E edge );
 
     void setLength( Metric metric, E edge, Distance distnace );
+
+    void removeNode( N node );
+
+    void removeEdge( E edge );
+
+    public void lock();
 
 //    /**
 //     * Creates deep copy of this graph
