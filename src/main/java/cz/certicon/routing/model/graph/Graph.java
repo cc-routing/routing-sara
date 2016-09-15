@@ -123,6 +123,14 @@ public interface Graph<N extends Node, E extends Edge> {
 
     void setLength( Metric metric, E edge, Distance distnace );
 
+    void addNode( N node );
+
+    void removeNode( N node );
+
+    void addEdge( E edge );
+
+    void removeEdge( E edge );
+
 //    /**
 //     * Creates deep copy of this graph
 //     *

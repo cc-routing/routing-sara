@@ -247,9 +247,7 @@ public class NaturalCutsFilter implements Filter {
 //        System.out.println( "contracting nodes: " + ToStringUtils.toString( nodeGroup ) );
         Map<N, Set<E>> targets = new HashMap<>();
         for ( N singleNode : nodeGroup ) {
-            Iterator<E> edges = singleNode.getEdges( graph );
-            while ( edges.hasNext() ) {
-                E edge = edges.next();
+            for ( E edge : graph.getEdges( singleNode ) ) {
                 N target = graph.getOtherNode( edge, singleNode );
                 if ( !nodeGroup.contains( target ) ) {
                     Set<E> list = CollectionUtils.getSet( targets, target );

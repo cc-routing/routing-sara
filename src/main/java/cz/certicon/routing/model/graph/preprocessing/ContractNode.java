@@ -6,17 +6,13 @@
 package cz.certicon.routing.model.graph.preprocessing;
 
 import cz.certicon.routing.model.graph.AbstractNode;
-import cz.certicon.routing.model.graph.Edge;
 import cz.certicon.routing.model.graph.Graph;
 import cz.certicon.routing.model.graph.Metric;
 import cz.certicon.routing.model.graph.Node;
-import cz.certicon.routing.model.graph.SimpleEdge;
-import cz.certicon.routing.model.graph.SimpleNode;
 import cz.certicon.routing.utils.collections.CollectionUtils;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.Iterator;
 import java.util.Map;
 import java.util.Set;
 
@@ -74,6 +70,8 @@ public class ContractNode extends AbstractNode<ContractEdge> {
             target.addEdge( curr );
             contractedNode.addEdge( curr );
         }
+        graph.removeNode( node );
+        graph.removeNode( this );
         return contractedNode;
     }
 

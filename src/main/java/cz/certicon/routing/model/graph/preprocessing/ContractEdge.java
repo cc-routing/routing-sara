@@ -38,6 +38,8 @@ public class ContractEdge extends AbstractEdge<ContractNode> {
         newEdges.addAll( edge.edges );
         ContractEdge contractEdge = new ContractEdge( id, false, newSource, newTarget, newEdges );
         graph.setLength( Metric.SIZE, contractEdge, graph.getLength( Metric.SIZE, this ).add( graph.getLength( Metric.SIZE, edge ) ) );
+        graph.removeEdge( edge );
+        graph.removeEdge( this);
         return contractEdge;
     }
 

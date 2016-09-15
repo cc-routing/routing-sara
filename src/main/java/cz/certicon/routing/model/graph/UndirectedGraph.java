@@ -8,8 +8,6 @@ package cz.certicon.routing.model.graph;
 import cz.certicon.routing.model.values.Coordinate;
 import cz.certicon.routing.model.values.Distance;
 import cz.certicon.routing.utils.GraphUtils;
-import cz.certicon.routing.utils.collections.ArrayIterator;
-import cz.certicon.routing.utils.collections.ClassCastArrayIterator;
 import cz.certicon.routing.utils.collections.ImmutableIterator;
 import cz.certicon.routing.utils.collections.Iterator;
 import gnu.trove.map.TLongObjectMap;
@@ -182,6 +180,27 @@ public class UndirectedGraph<N extends Node, E extends Edge> implements Graph<N,
     @Override
     public E getEdgeById( long id ) {
         return edges.get( id );
+    }
+
+    @Override
+    public void addNode( N node ) {
+        nodes.put( node.getId(), node );
+    }
+
+    public void removeNode( N node ) {
+        nodes.remove( node.getId() );
+    }
+
+    @Override
+    public void addEdge( E edge ) {
+        edges.put( edge.getId(), edge );
+    }
+
+    public void removeEdge( E edge ) {
+        edges.remove( edge.getId() );
+        for ( Map<Edge, Distance> value : metricMap.values() ) {
+            value.remove( edge );
+        }
     }
 
 }

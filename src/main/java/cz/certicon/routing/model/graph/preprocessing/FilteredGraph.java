@@ -39,4 +39,12 @@ public class FilteredGraph extends UndirectedGraph<ContractNode, ContractEdge> {
         return edge.getEdges();
     }
 
+    public void removeNode( ContractNode node ) {
+        super.removeNode( node );
+    }
+
+    public void removeEdge( ContractEdge edge ) {
+        super.removeEdge( edge );
+    }
+
 }
