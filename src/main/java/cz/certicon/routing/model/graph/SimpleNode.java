@@ -12,10 +12,10 @@ import java.util.List;
  *
  * @author Michael Blaha {@literal <michael.blaha@certicon.cz>}
  */
-public class SimpleNode extends AbstractNode<SimpleEdge> {
+public class SimpleNode extends AbstractNode<SimpleNode,SimpleEdge> {
 
-    public SimpleNode( long id ) {
-        super( id );
+    public SimpleNode( Graph<SimpleNode, SimpleEdge> graph, long id ) {
+        super( graph, id );
     }
 
     private static String toString( List<SimpleEdge> list ) {

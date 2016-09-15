@@ -20,7 +20,7 @@ public class SaraGraph extends UndirectedGraph<SaraNode, SaraEdge> {
     }
 
     public Cell getParent( SaraNode node ) {
-        return node.getParent( this );
+        return node.getParent();
     }
 
 //    @Override

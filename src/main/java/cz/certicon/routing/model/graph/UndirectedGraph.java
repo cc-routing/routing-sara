@@ -58,37 +58,37 @@ public class UndirectedGraph<N extends Node, E extends Edge> implements Graph<N,
 
     @Override
     public Iterator<E> getIncomingEdges( N node ) {
-        return (Iterator<E>) node.getIncomingEdges( this );
+        return (Iterator<E>) node.getIncomingEdges();
     }
 
     @Override
     public Iterator<E> getOutgoingEdges( Node node ) {
-        return (Iterator<E>) node.getOutgoingEdges( this );
+        return (Iterator<E>) node.getOutgoingEdges();
     }
 
     @Override
     public N getSourceNode( E edge ) {
-        return (N) edge.getSource( this );
+        return (N) edge.getSource();
     }
 
     @Override
     public N getTargetNode( E edge ) {
-        return (N) edge.getTarget( this );
+        return (N) edge.getTarget();
     }
 
     @Override
     public N getOtherNode( E edge, N node ) {
-        return (N) edge.getOtherNode( this, node );
+        return (N) edge.getOtherNode( node );
     }
 
     @Override
     public Distance getTurnCost( N node, E from, E to ) {
-        return node.getTurnDistance( this, from, to );
+        return node.getTurnDistance( from, to );
     }
 
     @Override
     public Iterator<E> getEdges( N node ) {
-        return (Iterator<E>) node.getEdges( this );
+        return (Iterator<E>) node.getEdges();
     }
 
     @Override
@@ -96,7 +96,7 @@ public class UndirectedGraph<N extends Node, E extends Edge> implements Graph<N,
 //        if ( !nodes.contains( node ) ) {
 //            throw new IllegalArgumentException( "Graph does not contain node: " + node );
 //        }
-        return node.getCoordinate( this );
+        return node.getCoordinate();
 //        if ( coordinates == null ) {
 //            throw new IllegalStateException( "Coordinates not set" );
 //        }
@@ -156,9 +156,9 @@ public class UndirectedGraph<N extends Node, E extends Edge> implements Graph<N,
         for ( N node : getNodes() ) {
             sb.append( node.getId() ).append( "=>[" );
             for ( E e : getEdges( node ) ) {
-                sb.append( e.getSource( this ).equals( node ) ? "+" : "-" ).append( e.getId() ).append( "," );
+                sb.append( e.getSource().equals( node ) ? "+" : "-" ).append( e.getId() ).append( "," );
             }
-            if ( node.getEdges( this ).hasNext() ) {
+            if ( node.getEdges().hasNext() ) {
                 sb.replace( sb.length() - 1, sb.length(), "]" );
             } else {
                 sb.append( "]" );

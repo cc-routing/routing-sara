@@ -20,47 +20,50 @@ import java.util.List;
 /**
  *
  * @author Michael Blaha {@literal <michael.blaha@gmail.com>}
- * @param <E>
+ * @param <N> node type
+ * @param <E> edge type
  */
-public abstract class AbstractNode<E extends Edge> implements Node<E> {
+public abstract class AbstractNode<N extends Node, E extends Edge> implements Node<N, E> {
 
     private final long id;
     private TurnTable turnTable;
     private Coordinate coordinate;
     private final ArrayList<E> edges = new ArrayList<>();
+    private final Graph<N, E> graph;
     private boolean locked = false;
 
-    public AbstractNode( long id ) {
+    public AbstractNode( Graph<N, E> graph, long id ) {
+        this.graph = graph;
         this.id = id;
     }
 
     @Override
-    public <N extends Node> Distance getTurnDistance( Graph<N, E> graph, E source, E target ) {
-        return source.getTurnDistance( graph, this, turnTable, target );
+    public Distance getTurnDistance( E source, E target ) {
+        return source.getTurnDistance( this, turnTable, target );
     }
 
     @Override
-    public <N extends Node> Iterator<E> getIncomingEdges( Graph<N, E> graph ) {
+    public Iterator<E> getIncomingEdges() {
         return new IncomingEdgeIterator<>( graph, (N) this, edges );
     }
 
     @Override
-    public <N extends Node> Iterator<E> getOutgoingEdges( Graph<N, E> graph ) {
+    public Iterator<E> getOutgoingEdges() {
         return new OutgoingEdgeIterator<>( graph, (N) this, edges );
     }
 
     @Override
-    public <N extends Node> Iterator<E> getEdges( Graph<N, E> graph ) {
+    public Iterator<E> getEdges() {
         return new ImmutableIterator<>( edges.iterator() );
     }
 
     @Override
-    public <N extends Node> Coordinate getCoordinate( Graph<N, E> graph ) {
+    public Coordinate getCoordinate() {
         return coordinate;
     }
 
     @Override
-    public <N extends Node> int getDegree( Graph<N, E> graph ) {
+    public int getDegree() {
         return edges.size();
     }
 
@@ -116,7 +119,7 @@ public abstract class AbstractNode<E extends Edge> implements Node<E> {
         if ( getClass() != obj.getClass() ) {
             return false;
         }
-        final AbstractNode<?> other = (AbstractNode<?>) obj;
+        final AbstractNode<?, ?> other = (AbstractNode<?, ?>) obj;
         if ( this.id != other.id ) {
             return false;
         }
@@ -140,5 +143,9 @@ public abstract class AbstractNode<E extends Edge> implements Node<E> {
         }
         StringUtils.replaceLast( sb, !edgeList.isEmpty(), "]" );
         return "AbstractNode{" + "id=" + id + ", turnTable=" + turnTable + ", coordinate=" + coordinate + ", edges=" + sb.toString() + '}';
+    }
+    
+    protected Graph<N,E> getGraph(){
+        return graph;
     }
 }

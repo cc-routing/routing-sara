@@ -24,30 +24,30 @@ import java.util.Set;
  *
  * @author Michael Blaha {@literal <michael.blaha@certicon.cz>}
  */
-public class ContractNode extends AbstractNode<ContractEdge> {
+public class ContractNode extends AbstractNode<ContractNode, ContractEdge> {
 
     private final Collection<Node> nodes;
 
-    public ContractNode( long id, Collection<Node> nodes ) {
-        super( id );
+    public ContractNode( Graph<ContractNode, ContractEdge> graph, long id, Collection<Node> nodes ) {
+        super( graph, id );
         this.nodes = new HashSet<>( nodes );
     }
 
-    public ContractNode mergeWith( Graph<ContractNode, ContractEdge> graph, ContractNode node, MaxIdContainer nodeMaxIdContainer, MaxIdContainer edgeMaxIdContainer ) {
+    public ContractNode mergeWith( ContractNode node, MaxIdContainer nodeMaxIdContainer, MaxIdContainer edgeMaxIdContainer ) {
         Set<Node> newNodes = new HashSet<>( this.nodes );
         newNodes.addAll( node.nodes );
-        ContractNode contractedNode = new ContractNode( nodeMaxIdContainer.next(), newNodes );
+        ContractNode contractedNode = new ContractNode( getGraph(), nodeMaxIdContainer.next(), newNodes );
         Map<ContractNode, Set<ContractEdge>> targetMap = new HashMap<>();
 //        System.out.println( "iterator edges for: " + this );
-        for ( ContractEdge edge : getEdges( graph ) ) {
-            ContractNode target = edge.getOtherNode( graph, this );
+        for ( ContractEdge edge : getEdges() ) {
+            ContractNode target = edge.getOtherNode( this );
             if ( !target.equals( node ) ) {
 //                System.out.println( "edge = " + edge + ", target = " + target );
                 CollectionUtils.getSet( targetMap, target ).add( edge );
             }
         }
-        for ( ContractEdge edge : node.getEdges( graph ) ) {
-            ContractNode target = edge.getOtherNode( graph, node );
+        for ( ContractEdge edge : node.getEdges() ) {
+            ContractNode target = edge.getOtherNode( node );
             if ( !target.equals( this ) ) {
 //                System.out.println( "edge = " + edge + ", target = " + target );
                 CollectionUtils.getSet( targetMap, target ).add( edge );
@@ -63,10 +63,10 @@ public class ContractNode extends AbstractNode<ContractEdge> {
                 target.removeEdge( edge );
                 curr = edge;
                 if ( prev != null ) {
-                    curr = prev.mergeWith( graph, curr, contractedNode, target, edgeMaxIdContainer.next() );
+                    curr = prev.mergeWith( curr, contractedNode, target, edgeMaxIdContainer.next() );
                 } else {
-                    curr = new ContractEdge( edgeMaxIdContainer.next(), false, contractedNode, target, new HashSet<>( curr.getEdges() ) );
-                    graph.setLength( Metric.SIZE, curr, graph.getLength( Metric.SIZE, edge ) );
+                    curr = new ContractEdge( getGraph(), edgeMaxIdContainer.next(), false, contractedNode, target, new HashSet<>( curr.getEdges() ) );
+                    getGraph().setLength( Metric.SIZE, curr, getGraph().getLength( Metric.SIZE, edge ) );
                 }
 //                System.out.println( "curr=" + curr );
                 prev = curr;

@@ -12,20 +12,21 @@ import cz.certicon.routing.model.values.Distance;
  *
  * @author Michael Blaha {@literal <michael.blaha@gmail.com>}
  * @param <N> node type
+ * @param <E> edge type
  */
-public interface Edge<N extends Node> extends Identifiable {
+public interface Edge<N extends Node, E extends Edge> extends Identifiable {
 
-    public <E extends Edge> N getSource( Graph<N, E> graph );
+    public N getSource();
 
-    public <E extends Edge> N getTarget( Graph<N, E> graph );
+    public N getTarget();
 
-    public <E extends Edge> N getOtherNode( Graph<N, E> graph, N node );
+    public N getOtherNode( N node );
 
-    public <E extends Edge> Distance getTurnDistance( Graph<N, E> graph, N node, TurnTable turnTable, E targetEdge );
+    public Distance getTurnDistance( N node, TurnTable turnTable, E targetEdge );
 
-    public <E extends Edge> boolean isOneWay( Graph<N, E> graph );
-    
+    public boolean isOneWay();
+
     public int getSourcePosition();
-    
+
     public int getTargetPosition();
 }

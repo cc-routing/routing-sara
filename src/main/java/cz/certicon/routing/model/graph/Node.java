@@ -13,21 +13,22 @@ import cz.certicon.routing.utils.collections.Iterator;
 /**
  *
  * @author Michael Blaha {@literal <michael.blaha@gmail.com>}
- * @param <E>
+ * @param <N> node type
+ * @param <E> edge type
  */
-public interface Node<E extends Edge> extends Identifiable {
+public interface Node<N extends Node, E extends Edge> extends Identifiable {
 
-    public <N extends Node> Distance getTurnDistance( Graph<N, E> graph, E source, E target );
+    public Distance getTurnDistance( E source, E target );
 
-    public <N extends Node> Iterator<E> getIncomingEdges( Graph<N, E> graph );
+    public Iterator<E> getIncomingEdges();
 
-    public <N extends Node> Iterator<E> getOutgoingEdges( Graph<N, E> graph );
+    public Iterator<E> getOutgoingEdges();
 
-    public <N extends Node> Iterator<E> getEdges( Graph<N, E> graph );
+    public Iterator<E> getEdges();
 
-    public <N extends Node> Coordinate getCoordinate( Graph<N, E> graph );
+    public Coordinate getCoordinate();
 
-    public <N extends Node> int getDegree( Graph<N, E> graph );
+    public int getDegree();
 
     public void addEdge( E edge );
 

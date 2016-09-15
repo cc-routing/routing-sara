@@ -5,14 +5,14 @@
  */
 package cz.certicon.routing.model.graph;
 
-
 /**
  *
  * @author Michael Blaha {@literal <michael.blaha@certicon.cz>}
  */
-public class SimpleEdge extends AbstractEdge<SimpleNode> {
+public class SimpleEdge extends AbstractEdge<SimpleNode, SimpleEdge> {
 
-    public SimpleEdge( long id, boolean oneway, SimpleNode source, SimpleNode target, int sourceIndex, int targetIndex ) {
-        super( id, oneway, source, target, sourceIndex, targetIndex );
+    public SimpleEdge( Graph<SimpleNode, SimpleEdge> graph, long id, boolean oneway, SimpleNode source, SimpleNode target, int sourceIndex, int targetIndex ) {
+        super( graph, id, oneway, source, target, sourceIndex, targetIndex );
     }
+
 }

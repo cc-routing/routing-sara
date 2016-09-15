@@ -9,16 +9,16 @@ package cz.certicon.routing.model.graph;
  *
  * @author Michael Blaha {@literal <michael.blaha@gmail.com>}
  */
-public class SaraNode extends AbstractNode<SaraEdge> {
+public class SaraNode extends AbstractNode<SaraNode, SaraEdge> {
 
     private final Cell parent;
 
-    public SaraNode( long id, Cell parent ) {
-        super( id );
+    public SaraNode( Graph<SaraNode, SaraEdge> graph, long id, Cell parent ) {
+        super( graph, id );
         this.parent = parent;
     }
 
-    public Cell getParent( Graph<SaraNode, SaraEdge> graph ) {
+    public Cell getParent() {
         return parent;
     }
 

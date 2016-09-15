@@ -11,8 +11,9 @@ import cz.certicon.routing.model.values.Distance;
  *
  * @author Michael Blaha {@literal <michael.blaha@gmail.com>}
  * @param <N> node type
+ * @param <E> edge type
  */
-public abstract class AbstractEdge<N extends Node> implements Edge<N> {
+public abstract class AbstractEdge<N extends Node, E extends Edge> implements Edge<N, E> {
 
     private final long id;
     private final boolean oneway;
@@ -20,8 +21,10 @@ public abstract class AbstractEdge<N extends Node> implements Edge<N> {
     private final N target;
     private final int sourceIndex;
     private final int targetIndex;
+    private final Graph<N, E> graph;
 
-    public AbstractEdge( long id, boolean oneway, N source, N target, int sourceIndex, int targetIndex ) {
+    public AbstractEdge( Graph<N, E> graph, long id, boolean oneway, N source, N target, int sourceIndex, int targetIndex ) {
+        this.graph = graph;
         this.id = id;
         this.oneway = oneway;
         this.source = source;
@@ -31,17 +34,17 @@ public abstract class AbstractEdge<N extends Node> implements Edge<N> {
     }
 
     @Override
-    public <E extends Edge> N getSource( Graph<N, E> graph ) {
+    public N getSource() {
         return source;
     }
 
     @Override
-    public <E extends Edge> N getTarget( Graph<N, E> graph ) {
+    public N getTarget() {
         return target;
     }
 
     @Override
-    public <E extends Edge> N getOtherNode( Graph<N, E> graph, N node ) {
+    public N getOtherNode( N node ) {
         if ( node.equals( source ) ) {
             return target;
         } else if ( node.equals( target ) ) {
@@ -51,12 +54,12 @@ public abstract class AbstractEdge<N extends Node> implements Edge<N> {
     }
 
     @Override
-    public <E extends Edge> Distance getTurnDistance( Graph<N, E> graph, N node, TurnTable turnTable, E targetEdge ) {
-        return turnTable.getCost( getIndex( graph, node, this ), getIndex( graph, node, targetEdge ) );
+    public Distance getTurnDistance( N node, TurnTable turnTable, E targetEdge ) {
+        return turnTable.getCost( getIndex( node, this ), getIndex( node, targetEdge ) );
     }
 
     @Override
-    public <E extends Edge> boolean isOneWay( Graph<N, E> graph ) {
+    public boolean isOneWay() {
         return oneway;
     }
 
@@ -97,18 +100,22 @@ public abstract class AbstractEdge<N extends Node> implements Edge<N> {
         if ( getClass() != obj.getClass() ) {
             return false;
         }
-        final AbstractEdge<?> other = (AbstractEdge<?>) obj;
+        final AbstractEdge<?, ?> other = (AbstractEdge<?, ?>) obj;
         if ( this.id != other.id ) {
             return false;
         }
         return true;
     }
 
-    private <E extends Edge> int getIndex( Graph<N, E> graph, Node node, Edge edge ) {
+    protected Graph<N, E> getGraph() {
+        return graph;
+    }
+
+    private int getIndex( Node node, Edge edge ) {
         int idx;
-        if ( edge.getSource( graph ).equals( node ) ) {
+        if ( edge.getSource().equals( node ) ) {
             idx = ( (AbstractEdge) edge ).sourceIndex;
-        } else if ( edge.getTarget( graph ).equals( node ) ) {
+        } else if ( edge.getTarget().equals( node ) ) {
             idx = ( (AbstractEdge) edge ).targetIndex;
         } else {
             throw new IllegalArgumentException( "Edge does not contain given node: edge = " + this + ", node = " + node.getId() );
