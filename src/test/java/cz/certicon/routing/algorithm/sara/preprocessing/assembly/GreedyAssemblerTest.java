@@ -64,7 +64,6 @@ public class GreedyAssemblerTest {
     private FilteredGraph createNewGraph() {
         g = GraphGeneratorUtils.generateGridGraph( nodeMap, edgeMap, turnTables, 5, 5 );
         NaturalCutsFilter instance = new NaturalCutsFilter( 1, 4, CELL_SIZE );
-        System.out.println( "FILTER" );
         graph = instance.filter( g );
         return graph;
     }
@@ -96,7 +95,7 @@ public class GreedyAssemblerTest {
 //            return;
 //        }
         createNewGraph();
-        Graph<Node,Edge> originalGraph = GraphGeneratorUtils.generateGridGraph( nodeMap, edgeMap, turnTables, 5, 5 );
+        Graph<Node, Edge> originalGraph = GraphGeneratorUtils.generateGridGraph( nodeMap, edgeMap, turnTables, 5, 5 );
         Set<Node> origNodes = new HashSet<>();
         for ( Node node : originalGraph.getNodes() ) {
             origNodes.add( node );
@@ -111,10 +110,12 @@ public class GreedyAssemblerTest {
             Cell parent = node.getParent( assembled );
             CollectionUtils.getList( cellMap, parent ).add( node );
         }
+        int cellSizeCounter = 0;
         for ( Map.Entry<Cell, List<Node>> entry : cellMap.entrySet() ) {
             System.out.println( "cell#" + entry.getKey().getId() + "-nodes: " + entry.getValue().size() );
-            assertNotEquals( 1, entry.getValue().size() );
+            cellSizeCounter += entry.getValue().size();
         }
+        assertNotEquals( 1.0, (double) cellSizeCounter / cellMap.size() );
 
 //        for ( SimpleNode origNode : origNodes ) {
 //            assertNotNull( assembled.getPartition( origNode ) );

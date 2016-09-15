@@ -11,7 +11,9 @@ import cz.certicon.routing.utils.GraphUtils;
 import cz.certicon.routing.utils.collections.ImmutableIterator;
 import cz.certicon.routing.utils.collections.Iterator;
 import gnu.trove.map.TLongObjectMap;
+import java.util.ArrayList;
 import java.util.Collection;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -188,6 +190,13 @@ public class UndirectedGraph<N extends Node, E extends Edge> implements Graph<N,
     }
 
     public void removeNode( N node ) {
+        List<E> removeEdges = new ArrayList<>();
+        for ( E edge : getEdges( node ) ) {
+            removeEdges.add( edge );
+        }
+        for ( E removeEdge : removeEdges ) {
+            removeEdge( removeEdge );
+        }
         nodes.remove( node.getId() );
     }
 
@@ -201,6 +210,8 @@ public class UndirectedGraph<N extends Node, E extends Edge> implements Graph<N,
         for ( Map<Edge, Distance> value : metricMap.values() ) {
             value.remove( edge );
         }
+        edge.getSource( this ).removeEdge( edge );
+        edge.getTarget( this ).removeEdge( edge );
     }
 
 }

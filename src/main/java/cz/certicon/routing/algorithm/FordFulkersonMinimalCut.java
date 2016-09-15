@@ -44,7 +44,7 @@ public class FordFulkersonMinimalCut implements MinimalCutAlgorithm {
     private static final char FRESH = 0;
 
     @Override
-    public MinimalCut compute( Graph<Node, Edge> graph, Metric metric, Node sourceNode, Node targetNode ) {
+    public <N extends Node, E extends Edge> MinimalCut compute( Graph<N, E> graph, Metric metric, N sourceNode, N targetNode ) {
         // TODO optimize, change to adjacency lists (currently adjacency table - n^2, wasteful for thin graphs
         // map graph to arrays
 //        System.out.println( "MINIMAL CUT: mapping graph to arrays: " + graph );
@@ -64,7 +64,7 @@ public class FordFulkersonMinimalCut implements MinimalCutAlgorithm {
             nodeCounter++;
         }
         Distance maxDistance = Distance.newInstance( Integer.MAX_VALUE );
-        for ( Edge e : graph.getEdges() ) {
+        for ( E e : graph.getEdges() ) {
             int srcIdx = nodeToIndexMap.get( e.getSource( graph ) );
             int tgtIdx = nodeToIndexMap.get( e.getTarget( graph ) );
             int value = graph.getLength( metric, e ).isGreaterOrEqualTo( maxDistance ) ? Integer.MAX_VALUE : (int) Math.round( graph.getLength( metric, e ).getValue() + 10E-8 );
@@ -107,9 +107,9 @@ public class FordFulkersonMinimalCut implements MinimalCutAlgorithm {
         for ( int i = 0; i < nodeCount; i++ ) {
             for ( int j = 0; j < nodeCount; j++ ) {
                 if ( visited[i] && !visited[j] && limits[i][j] != 0 ) {
-                    Node from = indexToNodeArray[i];
-                    Node to = indexToNodeArray[j];
-                    for ( Edge e : graph.getEdges( from ) ) {
+                    N from = (N) indexToNodeArray[i];
+                    N to = (N) indexToNodeArray[j];
+                    for ( E e : graph.getEdges( from ) ) {
 //                        System.out.println( "edge: " + e );
                         Node edgeTarget = graph.getOtherNode( e, from );
                         if ( edgeTarget.equals( to ) ) {
@@ -137,7 +137,7 @@ public class FordFulkersonMinimalCut implements MinimalCutAlgorithm {
         Queue<Integer> queue = new LinkedList<>();
         char[] states = new char[nodeCount];
         pathFlows[source] = Integer.MAX_VALUE;
-        predecessors[source] = source+1;
+        predecessors[source] = source + 1;
         queue.add( node );
         // while queue is not empty and the target has not been reached
 //        System.out.println( "cycle: " + !queue.isEmpty() + " " + ( node != target ) );
@@ -154,7 +154,7 @@ public class FordFulkersonMinimalCut implements MinimalCutAlgorithm {
 //                    System.out.println( "OPENING+: " + i );
                     // open them, set predecessor to this
                     states[i] = OPEN;
-                    predecessors[i] = node+1;
+                    predecessors[i] = node + 1;
                     // set delta to minimum of this delta and the remaining flow capacity to this node
                     pathFlows[i] = ( pathFlows[node] < limits[node][i] - flows[node][i] ) ? pathFlows[node] : limits[node][i] - flows[node][i];
 //                    System.out.println( "pathFlows[" + i + "] = ( " + pathFlows[node] + " < " + limits[node][i] + " - " + flows[node][i] + " ) ? " + pathFlows[node] + " : " + ( limits[node][i] - flows[node][i] ) + ";" );
@@ -166,7 +166,7 @@ public class FordFulkersonMinimalCut implements MinimalCutAlgorithm {
 //                    System.out.println( "OPENING-: " + i );
                     // open them, set predecessor to negative of this (opposite direction)
                     states[i] = OPEN;
-                    predecessors[i] = -node-1;
+                    predecessors[i] = -node - 1;
                     // set delta to minimum of this delta and flow from it to this node
                     pathFlows[i] = ( pathFlows[node] < flows[i][node] ) ? pathFlows[node] : flows[i][node];
 //                    System.out.println( "pathFlows[" + i + "] = ( " + pathFlows[node] + " < " + flows[i][node] + " ) ? " + pathFlows[node] + " : " + ( flows[i][node] ) + ";" );
@@ -194,7 +194,7 @@ public class FordFulkersonMinimalCut implements MinimalCutAlgorithm {
             node = predecessor;
 //            System.out.println( "increasing node: #" + node );
             // set predecessor to node's predecessor (without the sign)
-            predecessor = Math.abs( predecessors[node] )-1;
+            predecessor = Math.abs( predecessors[node] ) - 1;
             // check the sign, if flow went forward
 //            System.out.println( "if predecessors[" + node + "] > 0" );
             if ( predecessors[node] > 0 ) {

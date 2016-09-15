@@ -34,12 +34,18 @@ public class ContractEdge extends AbstractEdge<ContractNode> {
 //            throw new IllegalArgumentException( "Cannot merge edges: this = " + this + ", other = " + edge );
 //        }
 //        System.out.println( "Merging: " + this + " with " + edge );
+//        System.out.println( "E-MERGING: graph = " + graph );
+//        System.out.println( "E-MERGE " + this );
+//        System.out.println( "E-WITH " + edge );
         Set<Edge> newEdges = new HashSet<>( this.edges );
         newEdges.addAll( edge.edges );
         ContractEdge contractEdge = new ContractEdge( id, false, newSource, newTarget, newEdges );
         graph.setLength( Metric.SIZE, contractEdge, graph.getLength( Metric.SIZE, this ).add( graph.getLength( Metric.SIZE, edge ) ) );
         graph.removeEdge( edge );
-        graph.removeEdge( this);
+        graph.removeEdge( this );
+        graph.addEdge( contractEdge );
+//        System.out.println( "E-MERGED EDGE " + contractEdge );
+//        System.out.println( "E-RESULT: " + graph );
         return contractEdge;
     }
 

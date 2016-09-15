@@ -30,18 +30,28 @@ public class ContractNode extends AbstractNode<ContractEdge> {
     }
 
     public ContractNode mergeWith( Graph<ContractNode, ContractEdge> graph, ContractNode node, MaxIdContainer nodeMaxIdContainer, MaxIdContainer edgeMaxIdContainer ) {
+
+//        System.out.println( "N-MERGING: graph = " + graph );
+//        System.out.println( "N-MERGE " + this );
+//        System.out.println( "N-WITH " + node );
         Set<Node> newNodes = new HashSet<>( this.nodes );
         newNodes.addAll( node.nodes );
         ContractNode contractedNode = new ContractNode( nodeMaxIdContainer.next(), newNodes );
         Map<ContractNode, Set<ContractEdge>> targetMap = new HashMap<>();
+        boolean connected = false;
 //        System.out.println( "iterator edges for: " + this );
         for ( ContractEdge edge : getEdges( graph ) ) {
             ContractNode target = edge.getOtherNode( graph, this );
             if ( !target.equals( node ) ) {
 //                System.out.println( "edge = " + edge + ", target = " + target );
                 CollectionUtils.getSet( targetMap, target ).add( edge );
+            } else {
+                connected = true;
             }
         }
+//        if ( !connected ) {
+//            throw new IllegalArgumentException( "Nodes are not neighbors! this = " + this + ", other = " + node );
+//        }
         for ( ContractEdge edge : node.getEdges( graph ) ) {
             ContractNode target = edge.getOtherNode( graph, node );
             if ( !target.equals( this ) ) {
@@ -62,6 +72,7 @@ public class ContractNode extends AbstractNode<ContractEdge> {
                     curr = prev.mergeWith( graph, curr, contractedNode, target, edgeMaxIdContainer.next() );
                 } else {
                     curr = new ContractEdge( edgeMaxIdContainer.next(), false, contractedNode, target, new HashSet<>( curr.getEdges() ) );
+                    graph.addEdge( curr );
                     graph.setLength( Metric.SIZE, curr, graph.getLength( Metric.SIZE, edge ) );
                 }
 //                System.out.println( "curr=" + curr );
@@ -72,6 +83,9 @@ public class ContractNode extends AbstractNode<ContractEdge> {
         }
         graph.removeNode( node );
         graph.removeNode( this );
+        graph.addNode( contractedNode );
+//        System.out.println( "N-MERGED NODE " + contractedNode );
+//        System.out.println( "N-RESULT: " + graph );
         return contractedNode;
     }
 
