@@ -76,8 +76,6 @@ public class ContractNode extends AbstractNode<ContractNode, ContractEdge> {
 //                System.out.println( "curr=" + curr );
                 prev = curr;
             }
-            target.addEdge( curr );
-            contractedNode.addEdge( curr );
         }
         getGraph().removeNode( node );
         getGraph().removeNode( this );

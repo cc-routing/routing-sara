@@ -89,7 +89,7 @@ public abstract class AbstractEdge<N extends Node, E extends Edge> implements Ed
 
     @Override
     public String toString() {
-        return "Edge{id=" + id + ", oneway=" + oneway + ", source=Node{id=" + source.getId() + "}, target=Node{id=" + target.getId() + "}}";
+        return getClass().getSimpleName() + "{id=" + id + ", oneway=" + oneway + ", source=Node{id=" + source.getId() + "}, target=Node{id=" + target.getId() + "}}";
     }
 
     @Override

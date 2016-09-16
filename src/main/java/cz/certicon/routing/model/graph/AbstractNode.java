@@ -142,7 +142,7 @@ public abstract class AbstractNode<N extends Node, E extends Edge> implements No
             sb.append( e.getId() ).append( "," );
         }
         StringUtils.replaceLast( sb, !edgeList.isEmpty(), "]" );
-        return "AbstractNode{" + "id=" + id + ", turnTable=" + turnTable + ", coordinate=" + coordinate + ", edges=" + sb.toString() + '}';
+        return getClass().getSimpleName() +"{" + "id=" + id + ", turnTable=" + turnTable + ", coordinate=" + coordinate + ", edges=" + sb.toString() + '}';
     }
 
     protected Graph<N, E> getGraph() {

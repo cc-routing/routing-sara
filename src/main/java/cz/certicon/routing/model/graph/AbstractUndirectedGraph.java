@@ -15,6 +15,7 @@ import gnu.trove.map.hash.TLongObjectHashMap;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.EnumMap;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -125,7 +126,8 @@ public abstract class AbstractUndirectedGraph<N extends Node, E extends Edge> im
     public void setLength( Metric metric, E edge, Distance distnace ) {
         checkLock();
         if ( !metricMap.containsKey( metric ) ) {
-            throw new IllegalArgumentException( "Unknown metric: " + metric );
+            metricMap.put( metric, new HashMap<Edge, Distance>() );
+//            throw new IllegalArgumentException( "Unknown metric: " + metric );
         }
         Map<Edge, Distance> distanceMap = metricMap.get( metric );
         distanceMap.put( edge, distnace );
@@ -202,7 +204,7 @@ public abstract class AbstractUndirectedGraph<N extends Node, E extends Edge> im
     @Override
     public String toString() {
         StringBuilder sb = new StringBuilder();
-        sb.append( "UndirectedGraph{" ).append( "nodes=[" );
+        sb.append( getClass().getSimpleName() ).append( "{" ).append( "nodes=[" );
         for ( N node : getNodes() ) {
             sb.append( node.getId() ).append( "," );
         }

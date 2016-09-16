@@ -54,18 +54,18 @@ public class RouteTest {
     @Test
     public void testBuilder() {
         System.out.println( "builder" );
-        SimpleNode a = new SimpleNode( 0 );
-        SimpleNode b = new SimpleNode( 1 );
-        SimpleNode c = new SimpleNode( 2 );
-        SimpleNode d = new SimpleNode( 3 );
-        SimpleNode e = new SimpleNode( 4 );
-        SimpleEdge ab = new SimpleEdge( 0, false, a, b, 0, 1 );
-        SimpleEdge bc = new SimpleEdge( 1, false, c, b, 0, 1 );
-        SimpleEdge cd = new SimpleEdge( 2, false, c, d, 0, 1 );
-        SimpleEdge de = new SimpleEdge( 3, false, e, d, 0, 1 );
-        UndirectedGraph<SimpleNode, SimpleEdge> graph = new UndirectedGraph<>( Arrays.asList( a, b, c, d, e ), Arrays.asList( ab, bc, cd, de ), null );
+        UndirectedGraph graph = new UndirectedGraph();
+        SimpleNode a = graph.createNode( 0 );
+        SimpleNode b = graph.createNode( 1 );
+        SimpleNode c = graph.createNode( 2 );
+        SimpleNode d = graph.createNode( 3 );
+        SimpleNode e = graph.createNode( 4 );
+        SimpleEdge ab = graph.createEdge( 0, false, a, b, 0, 1 );
+        SimpleEdge bc = graph.createEdge( 1, false, c, b, 0, 1 );
+        SimpleEdge cd = graph.createEdge( 2, false, c, d, 0, 1 );
+        SimpleEdge de = graph.createEdge( 3, false, e, d, 0, 1 );
 
-        Route.RouteBuilder builder = Route.builder( graph );
+        Route.RouteBuilder builder = Route.builder();
 
         Route<SimpleNode, SimpleEdge> route = builder.addAsLast( cd ).addAsFirst( bc ).addAsLast( de ).addAsFirst( ab ).build();
         assertEquals( "Route{source=0,target=4,edges=[0,1,2,3]}", toString( route ) );
@@ -77,18 +77,18 @@ public class RouteTest {
     @Test( expected = IllegalArgumentException.class )
     public void testBuilderOneway() {
         System.out.println( "builder_oneway" );
-        SimpleNode a = new SimpleNode( 0 );
-        SimpleNode b = new SimpleNode( 1 );
-        SimpleNode c = new SimpleNode( 2 );
-        SimpleNode d = new SimpleNode( 3 );
-        SimpleNode e = new SimpleNode( 4 );
-        SimpleEdge ab = new SimpleEdge( 0, false, a, b, 0, 1 );
-        SimpleEdge bc = new SimpleEdge( 1, true, c, b, 0, 1 );
-        SimpleEdge cd = new SimpleEdge( 2, false, c, d, 0, 1 );
-        SimpleEdge de = new SimpleEdge( 3, false, e, d, 0, 1 );
-        UndirectedGraph<SimpleNode, SimpleEdge> graph = new UndirectedGraph<>( Arrays.asList( a, b, c, d, e ), Arrays.asList( ab, bc, cd, de ), null );
+        UndirectedGraph graph = new UndirectedGraph();
+        SimpleNode a = graph.createNode( 0 );
+        SimpleNode b = graph.createNode( 1 );
+        SimpleNode c = graph.createNode( 2 );
+        SimpleNode d = graph.createNode( 3 );
+        SimpleNode e = graph.createNode( 4 );
+        SimpleEdge ab = graph.createEdge( 0, false, a, b, 0, 1 );
+        SimpleEdge bc = graph.createEdge( 1, true, c, b, 0, 1 );
+        SimpleEdge cd = graph.createEdge( 2, false, c, d, 0, 1 );
+        SimpleEdge de = graph.createEdge( 3, false, e, d, 0, 1 );
 
-        Route.RouteBuilder builder = Route.builder( graph );
+        Route.RouteBuilder builder = Route.builder();
 
         Route route = builder.addAsLast( cd ).addAsFirst( bc ).addAsLast( de ).addAsFirst( ab ).build();
 

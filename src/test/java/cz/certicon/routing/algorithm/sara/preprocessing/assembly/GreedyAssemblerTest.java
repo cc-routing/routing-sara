@@ -193,7 +193,7 @@ public class GreedyAssemblerTest {
         for ( ContractNode node : graph.getNodes() ) {
             for ( ContractEdge edge : graph.getEdges( node ) ) {
                 ContractNode target = graph.getOtherNode( edge, node );
-                NodePair pair = new NodePair( graph, node, target, edge );
+                NodePair pair = new NodePair( node, target, edge );
                 assertTrue( result.contains( pair ) );
             }
         }
@@ -223,7 +223,7 @@ public class GreedyAssemblerTest {
             for ( ContractEdge edge : graph.getEdges( node ) ) {
 //                System.out.println( "node: " + node + ", edge: " + edge );
                 ContractNode target = graph.getOtherNode( edge, node );
-                NodePair pair = new NodePair( graph, node, target, edge );
+                NodePair pair = new NodePair( node, target, edge );
                 if ( node.equals( nodeA ) || target.equals( nodeA ) ) {
 //                    System.out.println( "SHOULD NOT CONTAIN: " + pair );
                     assertFalse( result.contains( pair ) );
@@ -238,7 +238,7 @@ public class GreedyAssemblerTest {
             for ( ContractEdge edge : graph.getEdges( node ) ) {
 //                System.out.println( "node: " + node + ", edge: " + edge );
                 ContractNode target = graph.getOtherNode( edge, node );
-                NodePair pair = new NodePair( graph, node, target, edge );
+                NodePair pair = new NodePair( node, target, edge );
                 if ( node.equals( nodeA ) || target.equals( nodeA ) || node.equals( nodeB ) || target.equals( nodeB ) ) {
                     assertFalse( result.contains( pair ) );
                 } else {
@@ -271,7 +271,7 @@ public class GreedyAssemblerTest {
         for ( ContractNode node : graph.getNodes() ) {
             for ( ContractEdge edge : graph.getEdges( node ) ) {
                 ContractNode target = graph.getOtherNode( edge, node );
-                NodePair pair = new NodePair( graph, node, target, edge );
+                NodePair pair = new NodePair( node, target, edge );
                 if ( ( node.equals( nodeA ) || target.equals( nodeA ) ) && !node.equals( nodeB ) && !target.equals( nodeB ) ) {
                     assertFalse( queue.contains( pair ) );
                 } else {

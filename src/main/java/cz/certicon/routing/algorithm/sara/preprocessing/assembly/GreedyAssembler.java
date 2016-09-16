@@ -135,8 +135,8 @@ public class GreedyAssembler implements Assembler {
         PriorityQueue<NodePair> queue = new FibonacciHeap<>();
         for ( ContractNode node : graph.getNodes() ) {
             for ( ContractEdge edge : graph.getEdges( node ) ) {
-                ContractNode target = (ContractNode) graph.getOtherNode( edge, node );
-                NodePair nodePair = new NodePair( graph, node, target, edge );
+                ContractNode target = edge.getOtherNode( node );
+                NodePair nodePair = new NodePair( node, target, edge );
                 if ( !queue.contains( nodePair ) ) {
 //                    System.out.println( "ADDING: " + nodePair );
                     queue.add( nodePair, score( graph, nodePair, ratio ) );
@@ -149,8 +149,8 @@ public class GreedyAssembler implements Assembler {
     PriorityQueue<NodePair> clearPairs( PriorityQueue<NodePair> queue, ContractGraph graph, NodePair origPair, ContractNode origNode ) {
 //        System.out.println( "REMOVING FOR: " + origNode );
         for ( ContractEdge edge : graph.getEdges( origNode ) ) {
-            ContractNode neighbor = graph.getOtherNode( edge, origNode );
-            NodePair nodePair = new NodePair( graph, origNode, neighbor, edge );
+            ContractNode neighbor = edge.getOtherNode( origNode );
+            NodePair nodePair = new NodePair( origNode, neighbor, edge );
             if ( queue.contains( nodePair ) ) {
                 queue.remove( nodePair ); // the pair does not have to be contained - it might have higher size than limit (see addPairs condition)
 //                System.out.println( "REMOVING: " + nodePair );
@@ -170,8 +170,8 @@ public class GreedyAssembler implements Assembler {
 //        System.out.println( "ADDING FOR: " + contractedNode );
         double ratio = generateR();
         for ( ContractEdge edge : graph.getEdges( contractedNode ) ) {
-            ContractNode neighbor = graph.getOtherNode( edge, contractedNode );
-            NodePair nodePair = new NodePair( graph, contractedNode, neighbor, edge );
+            ContractNode neighbor = edge.getOtherNode( contractedNode );
+            NodePair nodePair = new NodePair( contractedNode, neighbor, edge );
             if ( nodePair.nodeA.getNodes().size() + nodePair.nodeB.getNodes().size() < maxCellSize ) {
                 double newScore = score( graph, nodePair, ratio );
 //                System.out.println( "ADDING: " + nodePair );

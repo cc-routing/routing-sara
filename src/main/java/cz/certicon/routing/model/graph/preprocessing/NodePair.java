@@ -5,8 +5,6 @@
  */
 package cz.certicon.routing.model.graph.preprocessing;
 
-import cz.certicon.routing.model.graph.Graph;
-
 /**
  *
  * @author Michael Blaha {@literal <michael.blaha@certicon.cz>}
@@ -17,7 +15,7 @@ public class NodePair {
     public final ContractNode nodeB;
     public final ContractEdge connectingEdge;
 
-    public NodePair( Graph<ContractNode, ContractEdge> graph, ContractNode nodeA, ContractNode nodeB, ContractEdge connectingEdge ) {
+    public NodePair( ContractNode nodeA, ContractNode nodeB, ContractEdge connectingEdge ) {
         this.nodeA = nodeA;
         this.nodeB = nodeB;
         this.connectingEdge = connectingEdge;
