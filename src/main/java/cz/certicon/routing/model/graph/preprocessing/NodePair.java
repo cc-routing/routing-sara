@@ -34,6 +34,18 @@ public class NodePair {
         throw new IllegalArgumentException( "Unknown node: " + node );
     }
 
+    public int getSizeA() {
+        return nodeA.getNodes().size();
+    }
+
+    public int getSizeB() {
+        return nodeB.getNodes().size();
+    }
+
+    public int getSize() {
+        return getSizeA() + getSizeB();
+    }
+
     @Override
     public int hashCode() {
         int hash = 3;

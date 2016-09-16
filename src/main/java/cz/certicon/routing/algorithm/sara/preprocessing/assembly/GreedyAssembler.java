@@ -59,6 +59,7 @@ public class GreedyAssembler implements Assembler {
 
     @Override
     public <N extends Node, E extends Edge> SaraGraph assemble( Graph<N, E> originalGraph, ContractGraph graph ) {
+        System.out.println( "" );
 //        System.out.println( "Assembling..." );
         // find max ids
         long maxNodeId = -1;
@@ -76,6 +77,7 @@ public class GreedyAssembler implements Assembler {
         PriorityQueue<NodePair> queue = initQueue( graph );
         ContractNode.MaxIdContainer maxNodeIdContainer = new ContractNode.MaxIdContainer( maxNodeId );
         ContractNode.MaxIdContainer maxEdgeIdContainer = new ContractNode.MaxIdContainer( maxEdgeId );
+//        System.out.println( "MAX CELL SIZE = " + maxCellSize );
         // While P is not empty
         while ( !queue.isEmpty() ) {
             // pair = P.pop 
@@ -87,16 +89,19 @@ public class GreedyAssembler implements Assembler {
             nodes.remove( source );
             ContractNode target = pair.nodeB;
             nodes.remove( target );
+
+            // clear pairs before contracting - before losing information about connections
+            // - clear old pairs with source
+            clearPairs( queue, pair, source );
+            // - clear old pairs with target
+            clearPairs( queue, pair, target );
+            // now contract pair
             ContractNode contractedNode = source.mergeWith( target, maxNodeIdContainer, maxEdgeIdContainer );
             nodes.add( contractedNode );
 
             // Update score value (with the new r for each iteration) for the adjacent edges (pairs) of the contracted pair (edge) and if the new size s is higher or equal to U, remove pair from P
-            // - clear old pairs with source
-            clearPairs( queue, graph, pair, source );
-            // - clear old pairs with target
-            clearPairs( queue, graph, pair, target );
             // - add new pairs with the contracted node
-            addPairs( queue, graph, contractedNode );
+            addPairs( queue, contractedNode );
         }
         //End While
         //Return partitions, i.e. in which partition each vertex belongs
@@ -134,21 +139,22 @@ public class GreedyAssembler implements Assembler {
         double ratio = generateR();
         PriorityQueue<NodePair> queue = new FibonacciHeap<>();
         for ( ContractNode node : graph.getNodes() ) {
-            for ( ContractEdge edge : graph.getEdges( node ) ) {
+            for ( ContractEdge edge : node.getEdges() ) {
                 ContractNode target = edge.getOtherNode( node );
                 NodePair nodePair = new NodePair( node, target, edge );
-                if ( !queue.contains( nodePair ) ) {
+                if ( !queue.contains( nodePair ) && ( node.getNodes().size() + target.getNodes().size() < maxCellSize ) ) {
 //                    System.out.println( "ADDING: " + nodePair );
-                    queue.add( nodePair, score( graph, nodePair, ratio ) );
+                    queue.add( nodePair, score( nodePair, ratio ) );
+//                    System.out.println( "adding with score[" + score( nodePair, ratio ) + "]: " + nodePair );
                 }
             }
         }
         return queue;
     }
 
-    PriorityQueue<NodePair> clearPairs( PriorityQueue<NodePair> queue, ContractGraph graph, NodePair origPair, ContractNode origNode ) {
+    PriorityQueue<NodePair> clearPairs( PriorityQueue<NodePair> queue, NodePair origPair, ContractNode origNode ) {
 //        System.out.println( "REMOVING FOR: " + origNode );
-        for ( ContractEdge edge : graph.getEdges( origNode ) ) {
+        for ( ContractEdge edge : origNode.getEdges() ) {
             ContractNode neighbor = edge.getOtherNode( origNode );
             NodePair nodePair = new NodePair( origNode, neighbor, edge );
             if ( queue.contains( nodePair ) ) {
@@ -166,15 +172,16 @@ public class GreedyAssembler implements Assembler {
         return queue;
     }
 
-    PriorityQueue<NodePair> addPairs( PriorityQueue<NodePair> queue, ContractGraph graph, ContractNode contractedNode ) {
+    PriorityQueue<NodePair> addPairs( PriorityQueue<NodePair> queue, ContractNode contractedNode ) {
 //        System.out.println( "ADDING FOR: " + contractedNode );
         double ratio = generateR();
-        for ( ContractEdge edge : graph.getEdges( contractedNode ) ) {
+        for ( ContractEdge edge : contractedNode.getEdges() ) {
             ContractNode neighbor = edge.getOtherNode( contractedNode );
             NodePair nodePair = new NodePair( contractedNode, neighbor, edge );
             if ( nodePair.nodeA.getNodes().size() + nodePair.nodeB.getNodes().size() < maxCellSize ) {
-                double newScore = score( graph, nodePair, ratio );
-//                System.out.println( "ADDING: " + nodePair );
+//                System.out.println( "nodeA[" + nodePair.nodeA.getId() + "->" + nodePair.nodeA.getNodes().size() + "] + nodeB[" + nodePair.nodeB.getId() + "->" + nodePair.nodeB.getNodes().size() + "] < " + maxCellSize );
+                double newScore = score( nodePair, ratio );
+//                System.out.println( "adding with score[" + newScore + "]: " + nodePair );
                 queue.add( nodePair, newScore );
             }
         }
@@ -195,13 +202,14 @@ public class GreedyAssembler implements Assembler {
         return rand.nextDouble() * interval + lowerBound;
     }
 
-    private double score( ContractGraph graph, NodePair nodePair, double ratio ) {
+    private double score( NodePair nodePair, double ratio ) {
         // TODO return Double.MAX_VALUE - result in order to extract maximal values?
         ContractEdge edge = nodePair.connectingEdge;
 //        System.out.println( "score@edge = " + edge );
-        double edgeWeight = graph.getEdgeSize( edge );
-        double sourceWeight = graph.getNodeSize( nodePair.nodeA );
-        double targetWeight = graph.getNodeSize( nodePair.nodeB );
+
+        double edgeWeight = edge.getLength( Metric.SIZE ).getValue();
+        double sourceWeight = nodePair.getSizeA();
+        double targetWeight = nodePair.getSizeB();
         return Double.MAX_VALUE - ratio * ( ( edgeWeight / Math.sqrt( sourceWeight ) ) + ( edgeWeight / Math.sqrt( targetWeight ) ) );
     }
 

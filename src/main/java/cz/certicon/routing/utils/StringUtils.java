@@ -5,6 +5,9 @@
  */
 package cz.certicon.routing.utils;
 
+import cz.certicon.routing.model.Identifiable;
+import java.util.Collection;
+
 /**
  *
  * @author Michael Blaha {@literal <michael.blaha@certicon.cz>}
@@ -18,5 +21,28 @@ public class StringUtils {
             sb.append( replacement );
         }
         return sb;
+    }
+
+    public static <I extends Identifiable> String toArray( Collection<I> items ) {
+        StringBuilder sb = new StringBuilder();
+        sb.append( "[" );
+        for ( I item : items ) {
+            sb.append( item.getId() ).append( "," );
+        }
+        return replaceLast( sb, !items.isEmpty(), "]" ).toString();
+    }
+
+    public static <T> String toArray( Collection<T> items, StringExtractor<T> extractor ) {
+        StringBuilder sb = new StringBuilder();
+        sb.append( "[" );
+        for ( T item : items ) {
+            sb.append( extractor.toString( item ) ).append( "," );
+        }
+        return replaceLast( sb, !items.isEmpty(), "]" ).toString();
+    }
+
+    public static interface StringExtractor<T> {
+
+        String toString( T item );
     }
 }

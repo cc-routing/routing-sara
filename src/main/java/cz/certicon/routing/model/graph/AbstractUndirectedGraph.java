@@ -201,6 +201,14 @@ public abstract class AbstractUndirectedGraph<N extends Node, E extends Edge> im
         edges.put( edge.getId(), edge );
     }
 
+    protected Collection<N> getNodeCollection() {
+        return nodes.valueCollection();
+    }
+
+    protected Collection<E> getEdgeCollection() {
+        return edges.valueCollection();
+    }
+
     @Override
     public String toString() {
         StringBuilder sb = new StringBuilder();
@@ -240,8 +248,13 @@ public abstract class AbstractUndirectedGraph<N extends Node, E extends Edge> im
         } else {
             sb.append( "}" );
         }
+        sb.append( additionalToStringData() );
         sb.append( "}" );
         return sb.toString();
+    }
+
+    protected String additionalToStringData() {
+        return "";
     }
 
     private void checkLock() {

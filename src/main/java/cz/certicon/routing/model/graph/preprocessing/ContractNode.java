@@ -10,10 +10,9 @@ import cz.certicon.routing.model.graph.AbstractNode;
 import cz.certicon.routing.model.graph.Graph;
 import cz.certicon.routing.model.graph.Metric;
 import cz.certicon.routing.model.graph.Node;
-import cz.certicon.routing.model.values.Distance;
+import cz.certicon.routing.utils.StringUtils;
 import cz.certicon.routing.utils.collections.CollectionUtils;
 import java.util.Collection;
-import java.util.EnumMap;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
@@ -82,6 +81,11 @@ public class ContractNode extends AbstractNode<ContractNode, ContractEdge> {
 //        System.out.println( "N-MERGED NODE " + contractedNode );
 //        System.out.println( "N-RESULT: " + graph );
         return contractedNode;
+    }
+
+    @Override
+    protected String additionalToStringData() {
+        return super.additionalToStringData() + ", nodes=" + StringUtils.toArray( nodes );
     }
 
     public Collection<Node> getNodes() {

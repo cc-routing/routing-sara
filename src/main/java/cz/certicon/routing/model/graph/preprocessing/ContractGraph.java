@@ -11,6 +11,7 @@ import cz.certicon.routing.model.graph.Edge;
 import cz.certicon.routing.model.graph.Metric;
 import cz.certicon.routing.model.graph.Node;
 import cz.certicon.routing.model.values.Distance;
+import cz.certicon.routing.utils.StringUtils;
 import java.util.Collection;
 
 /**
@@ -48,6 +49,16 @@ public class ContractGraph extends AbstractUndirectedGraph<ContractNode, Contrac
             setLength( metric.a, edge, metric.b );
         }
         return edge;
+    }
+
+    @Override
+    protected String additionalToStringData() {
+        return super.additionalToStringData() + ", node_origs=" + StringUtils.toArray( getNodeCollection(), new StringUtils.StringExtractor<ContractNode>() {
+            @Override
+            public String toString( ContractNode item ) {
+                return item.getId() + "->" + item.getNodes().size();
+            }
+        } );
     }
 
 }

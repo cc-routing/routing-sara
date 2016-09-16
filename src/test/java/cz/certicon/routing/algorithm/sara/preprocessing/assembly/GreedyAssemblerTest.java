@@ -218,7 +218,7 @@ public class GreedyAssemblerTest {
         ContractNode nodeB = origPair.nodeB;
 //        System.out.println( "CLEARING PAIRS FOR: " + nodeA );
 //        System.out.println( "FIRST CYCLE" );
-        PriorityQueue<NodePair> result = instance.clearPairs( queue, graph, origPair, nodeA );
+        PriorityQueue<NodePair> result = instance.clearPairs( queue, origPair, nodeA );
         for ( ContractNode node : graph.getNodes() ) {
             for ( ContractEdge edge : graph.getEdges( node ) ) {
 //                System.out.println( "node: " + node + ", edge: " + edge );
@@ -232,7 +232,7 @@ public class GreedyAssemblerTest {
                 }
             }
         }
-        result = instance.clearPairs( queue, graph, origPair, nodeB );
+        result = instance.clearPairs( queue, origPair, nodeB );
 //        System.out.println( "SECOND CYCLE" );
         for ( ContractNode node : graph.getNodes() ) {
             for ( ContractEdge edge : graph.getEdges( node ) ) {
@@ -263,11 +263,9 @@ public class GreedyAssemblerTest {
         NodePair origPair = queue.extractMin();
         ContractNode nodeA = origPair.nodeA;
         ContractNode nodeB = origPair.nodeB;
-        Iterator<SimpleEdge> edges;
-        Iterator<SimpleNode> nodes;
-        instance.clearPairs( queue, graph, origPair, nodeA );
-        instance.clearPairs( queue, graph, origPair, nodeB );
-        instance.addPairs( queue, graph, nodeB );
+        instance.clearPairs( queue, origPair, nodeA );
+        instance.clearPairs( queue, origPair, nodeB );
+        instance.addPairs( queue, nodeB );
         for ( ContractNode node : graph.getNodes() ) {
             for ( ContractEdge edge : graph.getEdges( node ) ) {
                 ContractNode target = graph.getOtherNode( edge, node );

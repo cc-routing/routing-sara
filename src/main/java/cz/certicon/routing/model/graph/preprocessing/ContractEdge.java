@@ -12,6 +12,7 @@ import cz.certicon.routing.model.graph.Graph;
 import cz.certicon.routing.model.graph.Metric;
 import cz.certicon.routing.model.graph.TurnTable;
 import cz.certicon.routing.model.values.Distance;
+import cz.certicon.routing.utils.StringUtils;
 import java.util.Collection;
 import java.util.EnumMap;
 import java.util.HashSet;
@@ -60,6 +61,11 @@ public class ContractEdge extends AbstractEdge<ContractNode, ContractEdge> {
             width += edge.isOneWay() ? 1 : 2;
         }
         return width;
+    }
+
+    @Override
+    protected String additionalToStringData() {
+        return super.additionalToStringData() + ", edges=" + StringUtils.toArray( edges );
     }
 
     @Override
