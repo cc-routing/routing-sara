@@ -46,6 +46,7 @@ import java.awt.Color;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.EnumSet;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -127,7 +128,7 @@ public class NaturalCutsFilter implements Filter {
         // -- preserve paths (create edges between all the neighbors)
 //        System.out.println( "started filtering" );
         ElementContainer<E> cutEdges = getCutEdges( graph );
-        System.out.println( "cut edges obtained: " + cutEdges.size() );
+//        System.out.println( "cut edges obtained: " + cutEdges.size() );
 //        presenter = new GraphStreamPresenter();
 //        presenter.setGraph( graph );
 //        for ( Edge cutEdge : cutEdges ) {
@@ -308,7 +309,7 @@ public class NaturalCutsFilter implements Filter {
      */
     private <N extends Node, E extends Edge> Collection<Edge> minimalCut( Graph<N, E> graph, ElementContainer<N> treeNodes, ElementContainer<N> coreNodes, ElementContainer<N> ringNodes ) {
         // create a temporary graph
-        ContractGraph tmpGraph = new ContractGraph();
+        ContractGraph tmpGraph = new ContractGraph( EnumSet.of( Metric.SIZE ) );
         fillMap( tmpGraph, treeNodes );
         fillMap( tmpGraph, coreNodes );
         fillMap( tmpGraph, ringNodes );
@@ -453,7 +454,7 @@ public class NaturalCutsFilter implements Filter {
 //        Map<Edge, Set<Edge>> origEdges = new HashMap<>();
         List<ContractNode> nodes = new ArrayList<>();
         List<ContractEdge> edges = new ArrayList<>();
-        ContractGraph graph = new ContractGraph();
+        ContractGraph graph = new ContractGraph( EnumSet.of( Metric.SIZE ) );
         int nodeCounter = 0;
         for ( Set<N> fragmentOrigNode : fragmentOrigNodes ) {
             ContractNode node = graph.createNode( nodeCounter++, (Collection<Node>) fragmentOrigNode );

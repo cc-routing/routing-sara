@@ -7,12 +7,21 @@ package cz.certicon.routing.model.graph;
 
 import cz.certicon.routing.model.basic.Pair;
 import cz.certicon.routing.model.values.Distance;
+import java.util.Set;
 
 /**
  *
  * @author Michael Blaha {@literal <michael.blaha@certicon.cz>}
  */
 public class UndirectedGraph extends AbstractUndirectedGraph<SimpleNode, SimpleEdge> {
+
+    public UndirectedGraph() {
+        super();
+    }
+
+    public UndirectedGraph( Set<Metric> metrics ) {
+        super( metrics );
+    }
 
     public SimpleNode createNode( long id ) {
         SimpleNode node = new SimpleNode( this, id );
@@ -27,6 +36,11 @@ public class UndirectedGraph extends AbstractUndirectedGraph<SimpleNode, SimpleE
             setLength( metric.a, edge, metric.b );
         }
         return edge;
+    }
+
+    @Override
+    protected AbstractUndirectedGraph<SimpleNode, SimpleEdge> newInstance( Set<Metric> metrics ) {
+        return new UndirectedGraph( metrics );
     }
 
 }

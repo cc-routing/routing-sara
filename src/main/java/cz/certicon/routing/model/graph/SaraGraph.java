@@ -7,12 +7,20 @@ package cz.certicon.routing.model.graph;
 
 import cz.certicon.routing.model.basic.Pair;
 import cz.certicon.routing.model.values.Distance;
+import java.util.Set;
 
 /**
  *
  * @author Michael Blaha {@literal <michael.blaha@certicon.cz>}
  */
 public class SaraGraph extends AbstractUndirectedGraph<SaraNode, SaraEdge> {
+
+    public SaraGraph() {
+    }
+
+    public SaraGraph( Set<Metric> metrics ) {
+        super( metrics );
+    }
 
     public Cell getParent( SaraNode node ) {
         return node.getParent();
@@ -42,5 +50,10 @@ public class SaraGraph extends AbstractUndirectedGraph<SaraNode, SaraEdge> {
             setLength( metric.a, edge, metric.b );
         }
         return edge;
+    }
+
+    @Override
+    protected AbstractUndirectedGraph<SaraNode, SaraEdge> newInstance( Set<Metric> metrics ) {
+        return new SaraGraph( metrics );
     }
 }

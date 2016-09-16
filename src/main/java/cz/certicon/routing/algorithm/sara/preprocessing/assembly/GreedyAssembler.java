@@ -25,6 +25,7 @@ import cz.certicon.routing.utils.RandomUtils;
 import gnu.trove.map.TLongObjectMap;
 import gnu.trove.map.hash.TLongObjectHashMap;
 import java.util.ArrayList;
+import java.util.EnumSet;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -58,7 +59,8 @@ public class GreedyAssembler implements Assembler {
     }
 
     @Override
-    public <N extends Node, E extends Edge> SaraGraph assemble( Graph<N, E> originalGraph, ContractGraph graph ) {
+    public <N extends Node, E extends Edge> SaraGraph assemble( Graph<N, E> originalGraph, ContractGraph filteredGraph ) {
+        ContractGraph graph = (ContractGraph) filteredGraph.copy();
 //        System.out.println( "Assembling..." );
         // find max ids
         long maxNodeId = -1;
@@ -115,7 +117,7 @@ public class GreedyAssembler implements Assembler {
 //        }
 //        builder.nodes( nodes ).edges( edges );
 
-        SaraGraph saraGraph = new SaraGraph();
+        SaraGraph saraGraph = new SaraGraph( EnumSet.of( Metric.SIZE, Metric.LENGTH, Metric.TIME ) );
         long cellId = 0;
         for ( ContractNode node : nodes ) {
             Cell cell = new Cell( cellId++ );

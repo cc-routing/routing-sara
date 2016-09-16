@@ -21,6 +21,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.EnumMap;
+import java.util.EnumSet;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -66,7 +67,7 @@ public class ContractNodeTest {
     public void testMergeWith() {
         System.out.println( "mergeWith" );
         UndirectedGraph g = new UndirectedGraph();
-        ContractGraph graph = new ContractGraph();
+        ContractGraph graph = new ContractGraph( EnumSet.of( Metric.SIZE ) );
         Set<Node> origNodesA = new HashSet<Node>( Arrays.asList( g.createNode( -1 ), g.createNode( -2 ), g.createNode( -3 ) ) );
         Set<Node> origNodesB = new HashSet<Node>( Arrays.asList( g.createNode( -4 ), g.createNode( -5 ) ) );
         Set<Node> origNodes = new HashSet<Node>( Arrays.asList( g.createNode( -6 ) ) );
@@ -102,7 +103,7 @@ public class ContractNodeTest {
 //        }
 //        System.out.println( "nodeA=" + nodeA );
 //        System.out.println( "nodeB=" + nodeB );
-System.out.println( graph );
+        System.out.println( graph );
         String expResult = "ContractNode{edges={edge[1]->node#2,edge[1]->node#3,edge[1]->node#4,edge[1]->node#5,edge[1]->node#6}}"; // edge[1]->4 because it is a set and the sets are all the same
         ContractNode result = nodeA.mergeWith( nodeB, nodeMaxIdContainer, edgeMaxIdContainer );
 //        System.out.println( expResult );

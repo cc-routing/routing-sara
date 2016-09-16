@@ -73,4 +73,9 @@ public class ContractEdge extends AbstractEdge<ContractNode, ContractEdge> {
         return Distance.newInstance( 0 );
     }
 
+    @Override
+    protected ContractEdge newInstance( Graph<ContractNode, ContractEdge> newGraph, long id, boolean oneway, ContractNode newSource, ContractNode newTarget, int sourceIndex, int targetIndex ) {
+        return new ContractEdge( newGraph, id, oneway, newSource, newTarget, new HashSet<>( edges ) );
+    }
+
 }

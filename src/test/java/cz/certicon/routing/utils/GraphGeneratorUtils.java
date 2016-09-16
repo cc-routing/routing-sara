@@ -25,6 +25,7 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 /**
  *
@@ -35,11 +36,11 @@ public class GraphGeneratorUtils {
     private static final int GRID_MAX_SIZE = 100;
     private static final int GRID_EDGE_SIZE = 1;
 
-    public static UndirectedGraph generateGridGraph( Map<Long, Node> nodeMap, Map<Long, Edge> edgeMap, Map<TurnTable, TurnTable> turnTables, int rows, int columns ) {
+    public static UndirectedGraph generateGridGraph( Set<Metric> metrics, Map<Long, Node> nodeMap, Map<Long, Edge> edgeMap, Map<TurnTable, TurnTable> turnTables, int rows, int columns ) {
         if ( rows > GRID_MAX_SIZE || columns > GRID_MAX_SIZE ) {
             throw new IllegalArgumentException( "It's a quick test! Size over " + GRID_MAX_SIZE + " is just too much: rows = " + rows + ", columns = " + columns );
         }
-        UndirectedGraph graph = new UndirectedGraph();
+        UndirectedGraph graph = new UndirectedGraph( metrics );
         int multiplier = GRID_MAX_SIZE;
         while ( rows < multiplier / 10 && columns < multiplier / 10 ) {
             multiplier /= 10;
@@ -94,8 +95,8 @@ public class GraphGeneratorUtils {
         return graph;
     }
 
-    public static Graph createGraph( Map<Long, Node> nodeMap, Map<Long, Edge> edgeMap, Map<TurnTable, TurnTable> turnTables ) {
-        UndirectedGraph g = new UndirectedGraph();
+    public static Graph createGraph( Set<Metric> metrics, Map<Long, Node> nodeMap, Map<Long, Edge> edgeMap, Map<TurnTable, TurnTable> turnTables ) {
+        UndirectedGraph g = new UndirectedGraph( metrics );
         List<Node> nodes = new ArrayList<>();
         SimpleNode a = createNode( g, nodeMap, nodes, 0 );
         SimpleNode b = createNode( g, nodeMap, nodes, 1 );
@@ -167,10 +168,13 @@ public class GraphGeneratorUtils {
     }
 
     private static SimpleEdge createEdge( UndirectedGraph graph, Map<Long, Edge> edgeMap, List<Edge> edges, long id, boolean oneway, SimpleNode source, SimpleNode target, int sourcePos, int targetPos, double distance ) {
-        SimpleEdge edge = graph.createEdge( id, oneway, source, target, sourcePos, targetPos,
-                new Pair<>( Metric.LENGTH, Distance.newInstance( distance ) ), new Pair<>( Metric.TIME, Distance.newInstance( distance ) ), new Pair<>( Metric.SIZE, Distance.newInstance( distance ) ) );
+        SimpleEdge edge = graph.createEdge( id, oneway, source, target, sourcePos, targetPos );
         edges.add( edge );
         edgeMap.put( id, edge );
+        Distance dist = Distance.newInstance( distance );
+        for ( Metric metric : graph.getMetrics() ) {
+            edge.setLength( metric, dist );
+        }
         return edge;
     }
 }

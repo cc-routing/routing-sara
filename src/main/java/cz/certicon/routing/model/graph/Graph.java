@@ -9,6 +9,7 @@ import cz.certicon.routing.model.values.Coordinate;
 import cz.certicon.routing.model.values.Distance;
 import cz.certicon.routing.utils.collections.Iterator;
 import java.util.Map;
+import java.util.Set;
 
 /**
  * Definition of graph
@@ -133,11 +134,13 @@ public interface Graph<N extends Node, E extends Edge> {
     void removeEdge( E edge );
 
     public void lock();
+    
+    Set<Metric> getMetrics();
 
-//    /**
-//     * Creates deep copy of this graph
-//     *
-//     * @return deep copy
-//     */
-//    Graph copy();
+    /**
+     * Creates deep copy of this graph
+     *
+     * @return deep copy
+     */
+    Graph<N, E> copy();
 }

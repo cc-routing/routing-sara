@@ -15,4 +15,9 @@ public class SaraEdge extends AbstractEdge<SaraNode, SaraEdge> {
         super( graph, id, oneway, source, target, sourceIndex, targetIndex );
     }
 
+    @Override
+    protected SaraEdge newInstance( Graph<SaraNode, SaraEdge> newGraph, long id, boolean oneway, SaraNode newSource, SaraNode newTarget, int sourceIndex, int targetIndex ) {
+        return new SaraEdge( newGraph, id, oneway, newSource, newTarget, sourceIndex, targetIndex );
+    }
+
 }

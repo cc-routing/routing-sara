@@ -25,6 +25,7 @@ import gnu.trove.map.hash.TLongObjectHashMap;
 import java.io.IOException;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.EnumSet;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
@@ -62,7 +63,7 @@ public class SqliteGraphDAO implements GraphDAO {
 //                throw new SQLException( "Could not read edge count" );
 //            }
 //            int edgeCount = rs.getInt( "edgeCount" );
-            UndirectedGraph graph = new UndirectedGraph();
+            UndirectedGraph graph = new UndirectedGraph( EnumSet.of( Metric.LENGTH, Metric.TIME ) );
             // read turn tables
             // TODO add turntables to map, a list of nodes as a value (so that the nodes share turntables)
             TIntObjectMap<MatrixContainer> turnTableMap = new TIntObjectHashMap<>();
@@ -90,8 +91,8 @@ public class SqliteGraphDAO implements GraphDAO {
             }
             rs = database.read( "SELECT * FROM edges e;" );
             while ( rs.next() ) {
-                SimpleNode source = graph.getNodeById(rs.getLong( "source" ) );
-                SimpleNode target = graph.getNodeById(rs.getLong( "target" ) );
+                SimpleNode source = graph.getNodeById( rs.getLong( "source" ) );
+                SimpleNode target = graph.getNodeById( rs.getLong( "target" ) );
                 // length in meters, speed in kmph, CAUTION - convert here
                 double length = rs.getDouble( "metric_length" );
                 double speedFw = rs.getDouble( "metric_speed_forward" );// todo take into consideration direction

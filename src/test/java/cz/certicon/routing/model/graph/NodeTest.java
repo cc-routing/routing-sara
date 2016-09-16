@@ -8,6 +8,7 @@ package cz.certicon.routing.model.graph;
 import cz.certicon.routing.model.values.Distance;
 import cz.certicon.routing.utils.GraphGeneratorUtils;
 import java.util.ArrayList;
+import java.util.EnumSet;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
@@ -34,7 +35,7 @@ public class NodeTest {
         this.nodeMap = new HashMap<>();
         this.edgeMap = new HashMap<>();
         this.turnTables = new HashMap<>();
-        this.graph = GraphGeneratorUtils.createGraph( nodeMap, edgeMap, turnTables );
+        this.graph = GraphGeneratorUtils.createGraph(EnumSet.of( Metric.LENGTH), nodeMap, edgeMap, turnTables );
     }
 
     @BeforeClass

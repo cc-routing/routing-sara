@@ -102,6 +102,16 @@ public abstract class AbstractNode<N extends Node, E extends Edge> implements No
     }
 
     @Override
+    public N copy( Graph<N, E> newGraph ) {
+        N instance = newInstance( newGraph, id );
+        instance.setCoordinate( coordinate );
+        instance.setTurnTable( turnTable );
+        return instance;
+    }
+
+    abstract protected N newInstance( Graph<N, E> newGraph, long id );
+
+    @Override
     public int hashCode() {
         int hash = 3;
         hash = 89 * hash + (int) ( this.id ^ ( this.id >>> 32 ) );

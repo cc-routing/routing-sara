@@ -12,7 +12,7 @@ import java.util.List;
  *
  * @author Michael Blaha {@literal <michael.blaha@certicon.cz>}
  */
-public class SimpleNode extends AbstractNode<SimpleNode,SimpleEdge> {
+public class SimpleNode extends AbstractNode<SimpleNode, SimpleEdge> {
 
     SimpleNode( Graph<SimpleNode, SimpleEdge> graph, long id ) {
         super( graph, id );
@@ -36,5 +36,10 @@ public class SimpleNode extends AbstractNode<SimpleNode,SimpleEdge> {
                 return Long.compare( o1.getId(), o2.getId() );
             }
         };
+    }
+
+    @Override
+    protected SimpleNode newInstance( Graph<SimpleNode, SimpleEdge> newGraph, long id ) {
+        return new SimpleNode( newGraph, id );
     }
 }

@@ -88,6 +88,16 @@ public abstract class AbstractEdge<N extends Node, E extends Edge> implements Ed
     }
 
     @Override
+    public E copy( Graph<N, E> newGraph, N newSource, N newTarget ) {
+        E newInstance = newInstance( newGraph, id, oneway, newSource, newTarget, sourceIndex, targetIndex );
+        newSource.addEdge( newInstance );
+        newTarget.addEdge( newInstance );
+        return newInstance;
+    }
+
+    abstract protected E newInstance( Graph<N, E> newGraph, long id, boolean oneway, N newSource, N newTarget, int sourceIndex, int targetIndex );
+
+    @Override
     public String toString() {
         return getClass().getSimpleName() + "{id=" + id + ", oneway=" + oneway + ", source=Node{id=" + source.getId() + "}, target=Node{id=" + target.getId() + additionalToStringData() + "}}";
     }

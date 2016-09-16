@@ -18,6 +18,7 @@ import cz.certicon.routing.model.values.Distance;
 import cz.certicon.routing.utils.GraphGeneratorUtils;
 import cz.certicon.routing.utils.RandomUtils;
 import java.util.ArrayList;
+import java.util.EnumSet;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -47,7 +48,7 @@ public class DijkstraAlgorithmTest {
     }
 
     private Graph<Node, Edge> createGraph() {
-        return GraphGeneratorUtils.createGraph( nodeMap, edgeMap, turnTables );
+        return GraphGeneratorUtils.createGraph( EnumSet.of( Metric.LENGTH ), nodeMap, edgeMap, turnTables );
     }
 
     @BeforeClass

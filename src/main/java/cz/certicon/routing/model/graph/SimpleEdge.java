@@ -15,4 +15,9 @@ public class SimpleEdge extends AbstractEdge<SimpleNode, SimpleEdge> {
         super( graph, id, oneway, source, target, sourceIndex, targetIndex );
     }
 
+    @Override
+    protected SimpleEdge newInstance( Graph<SimpleNode, SimpleEdge> newGraph, long id, boolean oneway, SimpleNode newSource, SimpleNode newTarget, int sourceIndex, int targetIndex ) {
+        return new SimpleEdge( newGraph, id, oneway, newSource, newTarget, sourceIndex, targetIndex );
+    }
+
 }

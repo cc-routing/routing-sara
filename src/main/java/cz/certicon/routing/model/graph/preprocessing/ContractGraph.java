@@ -13,12 +13,20 @@ import cz.certicon.routing.model.graph.Node;
 import cz.certicon.routing.model.values.Distance;
 import cz.certicon.routing.utils.StringUtils;
 import java.util.Collection;
+import java.util.Set;
 
 /**
  *
  * @author Michael Blaha {@literal <michael.blaha@certicon.cz>}
  */
 public class ContractGraph extends AbstractUndirectedGraph<ContractNode, ContractEdge> {
+
+    public ContractGraph() {
+    }
+
+    public ContractGraph( Set<Metric> metrics ) {
+        super( metrics );
+    }
 
     public int getNodeSize( ContractNode node ) {
         return getOrigNodes( node ).size();
@@ -59,6 +67,11 @@ public class ContractGraph extends AbstractUndirectedGraph<ContractNode, Contrac
                 return item.getId() + "->" + item.getNodes().size();
             }
         } );
+    }
+
+    @Override
+    protected AbstractUndirectedGraph<ContractNode, ContractEdge> newInstance( Set<Metric> metrics ) {
+        return new ContractGraph( metrics );
     }
 
 }

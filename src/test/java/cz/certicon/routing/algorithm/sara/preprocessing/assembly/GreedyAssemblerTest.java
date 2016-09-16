@@ -10,6 +10,7 @@ import cz.certicon.routing.model.graph.Cell;
 import cz.certicon.routing.model.graph.Edge;
 import cz.certicon.routing.model.graph.SimpleEdge;
 import cz.certicon.routing.model.graph.Graph;
+import cz.certicon.routing.model.graph.Metric;
 import cz.certicon.routing.model.graph.Node;
 import cz.certicon.routing.model.graph.SaraGraph;
 import cz.certicon.routing.model.graph.SaraNode;
@@ -28,6 +29,7 @@ import cz.certicon.routing.utils.RandomUtils;
 import cz.certicon.routing.utils.collections.CollectionUtils;
 import cz.certicon.routing.view.GraphStreamPresenter;
 import java.awt.Color;
+import java.util.EnumSet;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -62,7 +64,7 @@ public class GreedyAssemblerTest {
     }
 
     private ContractGraph createNewGraph() {
-        g = GraphGeneratorUtils.generateGridGraph( nodeMap, edgeMap, turnTables, 5, 5 );
+        g = GraphGeneratorUtils.generateGridGraph( EnumSet.allOf( Metric.class ), nodeMap, edgeMap, turnTables, 5, 5 );
         NaturalCutsFilter instance = new NaturalCutsFilter( 1, 4, CELL_SIZE );
         graph = instance.filter( g );
         return graph;
@@ -95,7 +97,7 @@ public class GreedyAssemblerTest {
 //            return;
 //        }
         createNewGraph();
-        UndirectedGraph originalGraph = GraphGeneratorUtils.generateGridGraph( nodeMap, edgeMap, turnTables, 5, 5 );
+        UndirectedGraph originalGraph = GraphGeneratorUtils.generateGridGraph( EnumSet.allOf( Metric.class ), nodeMap, edgeMap, turnTables, 5, 5 );
         Set<Node> origNodes = new HashSet<>();
         for ( Node node : originalGraph.getNodes() ) {
             origNodes.add( node );

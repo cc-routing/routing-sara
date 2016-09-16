@@ -12,13 +12,16 @@ import cz.certicon.routing.model.graph.Node;
 import cz.certicon.routing.model.values.Coordinate;
 import cz.certicon.routing.utils.ColorUtils;
 import cz.certicon.routing.utils.CoordinateUtils;
+import cz.certicon.routing.utils.RandomUtils;
 import cz.certicon.routing.view.jxmap.ClusterPainter;
 import cz.certicon.routing.view.jxmap.RoutePainter;
 import java.awt.Color;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
+import java.util.Random;
 import org.jdesktop.swingx.JXMapViewer;
 import org.jdesktop.swingx.painter.Painter;
 
@@ -28,7 +31,8 @@ import org.jdesktop.swingx.painter.Painter;
  */
 public class JxPartitionViewer extends AbstractJxMapViewer implements PartitionViewer {
 
-    private ColorUtils.ColorSupplier colorSupplier = ColorUtils.createColorSupplier( 20 );
+    private static final int NUMBER_OF_COLORS = 20;
+    private ColorUtils.ColorSupplier colorSupplier = ColorUtils.createColorSupplier( NUMBER_OF_COLORS );
 
     @Override
     public void addCutEdges( Graph graph, Collection<Edge> cutEdges ) {
@@ -90,7 +94,7 @@ public class JxPartitionViewer extends AbstractJxMapViewer implements PartitionV
 
     private static class Repainter implements Runnable {
 
-        private final ColorUtils.ColorSupplier colorSupplier = ColorUtils.createColorSupplier( 20 );
+        private final ColorUtils.ColorSupplier colorSupplier = ColorUtils.createColorSupplier( NUMBER_OF_COLORS );
         private final List<Painter<JXMapViewer>> painters;
 
         public Repainter( List<Painter<JXMapViewer>> painters ) {
@@ -102,11 +106,16 @@ public class JxPartitionViewer extends AbstractJxMapViewer implements PartitionV
             while ( true ) {
                 try {
                     Thread.sleep( 10000 );
+                    List<Color> colors = new ArrayList<>();
+                    for ( int i = 0; i < NUMBER_OF_COLORS; i++ ) {
+                        colors.add( colorSupplier.nextColor() );
+                    }
+                    Random random = RandomUtils.createRandom();
                     for ( Painter<JXMapViewer> painter : painters ) {
                         if ( painter instanceof ClusterPainter ) {
-                            ( (ClusterPainter) painter ).setColor( colorSupplier.nextColor() );
+                            ( (ClusterPainter) painter ).setColor( colors.get( random.nextInt( NUMBER_OF_COLORS ) ) );
                         } else if ( painter instanceof RoutePainter ) {
-                            ( (RoutePainter) painter ).setColor( colorSupplier.nextColor() );
+                            ( (RoutePainter) painter ).setColor( colors.get( random.nextInt( NUMBER_OF_COLORS ) ) );
                         }
                     }
                 } catch ( InterruptedException ex ) {

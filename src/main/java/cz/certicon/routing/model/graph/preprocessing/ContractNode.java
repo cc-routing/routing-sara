@@ -92,6 +92,11 @@ public class ContractNode extends AbstractNode<ContractNode, ContractEdge> {
         return nodes;
     }
 
+    @Override
+    protected ContractNode newInstance( Graph<ContractNode, ContractEdge> newGraph, long id ) {
+        return new ContractNode( newGraph, id, new HashSet<>( nodes ) );
+    }
+
     public static class MaxIdContainer {
 
         private long maxId;

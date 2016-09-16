@@ -17,6 +17,9 @@ import cz.certicon.routing.model.graph.SaraNode;
 import cz.certicon.routing.model.graph.SimpleEdge;
 import cz.certicon.routing.model.graph.SimpleNode;
 import cz.certicon.routing.model.graph.UndirectedGraph;
+import cz.certicon.routing.model.graph.preprocessing.ContractEdge;
+import cz.certicon.routing.model.graph.preprocessing.ContractGraph;
+import cz.certicon.routing.model.graph.preprocessing.ContractNode;
 import cz.certicon.routing.model.values.Distance;
 import cz.certicon.routing.utils.collections.CollectionUtils;
 import cz.certicon.routing.view.GraphStreamPresenter;
@@ -58,10 +61,6 @@ public class DisplayUtils {
                 SimpleNode node = g.createNode( n.getId() );
             }
         }
-        Map<Metric, Map<Edge, Distance>> metricMap = new HashMap<>();
-        for ( Metric value : Metric.values() ) {
-            metricMap.put( value, new HashMap<Edge, Distance>() );
-        }
         for ( E e : graph.getEdges() ) {
             Node s = e.getSource();
             Node t = e.getTarget();
@@ -85,6 +84,14 @@ public class DisplayUtils {
             }
         }
         presenter.display();
+    }
+
+    public static <N extends Node, E extends Edge> void display( ContractGraph graph ) {
+        PartitionViewer viewer = new JxPartitionViewer();
+        for ( ContractNode node : graph.getNodes() ) {
+            viewer.addNodeCluster( graph, node.getNodes() );
+        }
+        viewer.display();
     }
 
 //    public static void displayConnectedPartitions( SaraGraph graph ) {

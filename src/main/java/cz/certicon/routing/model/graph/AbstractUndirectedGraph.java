@@ -15,9 +15,12 @@ import gnu.trove.map.hash.TLongObjectHashMap;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.EnumMap;
+import java.util.EnumSet;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 /**
  *
@@ -30,6 +33,7 @@ public abstract class AbstractUndirectedGraph<N extends Node, E extends Edge> im
     private final TLongObjectMap<N> nodes;
     private final TLongObjectMap<E> edges;
     private final Map<Metric, Map<Edge, Distance>> metricMap;
+    private final EnumSet<Metric> metrics;
     private boolean locked = false;
 //    @Getter( AccessLevel.NONE )
 //    Map<Node, Coordinate> coordinates;
@@ -38,6 +42,17 @@ public abstract class AbstractUndirectedGraph<N extends Node, E extends Edge> im
         this.nodes = new TLongObjectHashMap<>();
         this.edges = new TLongObjectHashMap<>();
         this.metricMap = new EnumMap<>( Metric.class );
+        this.metrics = EnumSet.noneOf( Metric.class );
+    }
+
+    public AbstractUndirectedGraph( Set<Metric> metrics ) {
+        this.nodes = new TLongObjectHashMap<>();
+        this.edges = new TLongObjectHashMap<>();
+        this.metricMap = new EnumMap<>( Metric.class );
+        this.metrics = EnumSet.copyOf( metrics );
+        for ( Metric metric : metrics ) {
+            metricMap.put( metric, new HashMap<Edge, Distance>() );
+        }
     }
 
     @Override
@@ -126,8 +141,8 @@ public abstract class AbstractUndirectedGraph<N extends Node, E extends Edge> im
     public void setLength( Metric metric, E edge, Distance distnace ) {
         checkLock();
         if ( !metricMap.containsKey( metric ) ) {
-            metricMap.put( metric, new HashMap<Edge, Distance>() );
-//            throw new IllegalArgumentException( "Unknown metric: " + metric );
+//            metricMap.put( metric, new HashMap<Edge, Distance>() );
+            throw new IllegalArgumentException( "Unknown metric: " + metric );
         }
         Map<Edge, Distance> distanceMap = metricMap.get( metric );
         distanceMap.put( edge, distnace );
@@ -188,6 +203,30 @@ public abstract class AbstractUndirectedGraph<N extends Node, E extends Edge> im
         }
         this.locked = true;
     }
+
+    @Override
+    public Set<Metric> getMetrics() {
+        return metrics.clone();
+    }
+
+    @Override
+    public Graph<N, E> copy() {
+        AbstractUndirectedGraph<N, E> instance = newInstance( metrics );
+        for ( N node : getNodes() ) {
+            N newNode = (N) node.copy( instance );
+            instance.nodes.put( newNode.getId(), newNode );
+        }
+        for ( E edge : getEdges() ) {
+            E newEdge = (E) edge.copy( instance, instance.getNodeById( edge.getSource().getId() ), instance.getNodeById( edge.getTarget().getId() ) );
+            instance.edges.put( newEdge.getId(), newEdge );
+            for ( Metric metric : metrics ) {
+                newEdge.setLength( metric, getLength( metric, edge ) );
+            }
+        }
+        return instance;
+    }
+
+    abstract protected AbstractUndirectedGraph<N, E> newInstance( Set<Metric> metrics );
 
     protected void addNode( N node ) {
         checkLock();

@@ -10,6 +10,7 @@ import cz.certicon.routing.algorithm.sara.preprocessing.assembly.GreedyAssembler
 import cz.certicon.routing.model.graph.Edge;
 import cz.certicon.routing.model.graph.SimpleEdge;
 import cz.certicon.routing.model.graph.Graph;
+import cz.certicon.routing.model.graph.Metric;
 import cz.certicon.routing.model.graph.Node;
 import cz.certicon.routing.model.graph.SimpleNode;
 import cz.certicon.routing.model.graph.TurnTable;
@@ -22,6 +23,7 @@ import cz.certicon.routing.utils.RandomUtils;
 import cz.certicon.routing.view.GraphStreamPresenter;
 import java.awt.Color;
 import java.util.ArrayList;
+import java.util.EnumSet;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -51,7 +53,7 @@ public class NaturalCutsFilterTest {
         this.nodeMap = new HashMap<>();
         this.edgeMap = new HashMap<>();
         this.turnTables = new HashMap<>();
-        graph = GraphGeneratorUtils.generateGridGraph( nodeMap, edgeMap, turnTables, 10, 10 );
+        graph = GraphGeneratorUtils.generateGridGraph(  EnumSet.of( Metric.SIZE ),nodeMap, edgeMap, turnTables, 10, 10 );
     }
 
     @BeforeClass
@@ -82,13 +84,13 @@ public class NaturalCutsFilterTest {
 //        }
         NaturalCutsFilter instance = new NaturalCutsFilter( 1, 4, 10 );
 
-        UndirectedGraph originalGraph = GraphGeneratorUtils.generateGridGraph( nodeMap, edgeMap, turnTables, 5, 5 );
+        UndirectedGraph originalGraph = GraphGeneratorUtils.generateGridGraph( EnumSet.of( Metric.SIZE ), nodeMap, edgeMap, turnTables, 5, 5 );
         Set<Node> origNodes = new HashSet<>();
         for ( Node node : originalGraph.getNodes() ) {
             origNodes.add( node );
         }
 //        System.out.println( "orig graph: " + originalGraph );
-        Graph g = GraphGeneratorUtils.generateGridGraph( nodeMap, edgeMap, turnTables, 5, 5 );
+        Graph g = GraphGeneratorUtils.generateGridGraph( EnumSet.of( Metric.SIZE ), nodeMap, edgeMap, turnTables, 5, 5 );
         ContractGraph filtered = instance.filter( g );
 //        System.out.println( "filtered graph: " + filtered );
         for ( ContractNode node : filtered.getNodes() ) {

@@ -22,4 +22,9 @@ public class SaraNode extends AbstractNode<SaraNode, SaraEdge> {
         return parent;
     }
 
+    @Override
+    protected SaraNode newInstance( Graph<SaraNode, SaraEdge> newGraph, long id ) {
+        return new SaraNode( newGraph, id, parent );
+    }
+
 }

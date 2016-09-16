@@ -23,6 +23,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.EnumSet;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -52,7 +53,7 @@ public class FordFulkersonMinimalCutTest {
     }
 
     private Graph<Node, Edge> createGraph() {
-        return GraphGeneratorUtils.createGraph( nodeMap, edgeMap, turnTables );
+        return GraphGeneratorUtils.createGraph( EnumSet.of( Metric.LENGTH, Metric.SIZE ), nodeMap, edgeMap, turnTables );
     }
 
     @BeforeClass
@@ -90,7 +91,7 @@ public class FordFulkersonMinimalCutTest {
 
         {
             System.out.println( " - test case #2" );
-            UndirectedGraph g = new UndirectedGraph();
+            UndirectedGraph g = new UndirectedGraph( EnumSet.of( Metric.LENGTH, Metric.SIZE ) );
             SimpleNode[] nodes = new SimpleNode[8];
             for ( int i = 0; i < nodes.length; i++ ) {
                 nodes[i] = g.createNode( i );
@@ -118,7 +119,7 @@ public class FordFulkersonMinimalCutTest {
         }
         {
             System.out.println( " - test case #3" );
-            UndirectedGraph g = new UndirectedGraph();
+            UndirectedGraph g = new UndirectedGraph( EnumSet.of( Metric.LENGTH, Metric.SIZE ) );
             SimpleNode[] nodes = new SimpleNode[8];
             for ( int i = 0; i < nodes.length; i++ ) {
                 nodes[i] = g.createNode( i );
@@ -150,7 +151,7 @@ public class FordFulkersonMinimalCutTest {
     }
 
     private SimpleEdge createEdge( UndirectedGraph g, int id, int source, int target, int length, Node[] nodes ) {
-        SimpleEdge edge = g.createEdge( id, false, (SimpleNode) nodes[source], (SimpleNode) nodes[target], 0, 0, new Pair<>( Metric.SIZE, Distance.newInstance( length ) ) );
+        SimpleEdge edge = g.createEdge( id, false, (SimpleNode) nodes[source], (SimpleNode) nodes[target], 0, 0, new Pair<>( Metric.LENGTH, Distance.newInstance( length ) ), new Pair<>( Metric.SIZE, Distance.newInstance( length ) ) );
         return edge;
     }
 
