@@ -59,7 +59,6 @@ public class GreedyAssembler implements Assembler {
 
     @Override
     public <N extends Node, E extends Edge> SaraGraph assemble( Graph<N, E> originalGraph, ContractGraph graph ) {
-        System.out.println( "" );
 //        System.out.println( "Assembling..." );
         // find max ids
         long maxNodeId = -1;
