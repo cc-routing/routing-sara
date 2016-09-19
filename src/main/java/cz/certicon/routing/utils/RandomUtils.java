@@ -23,6 +23,7 @@ public class RandomUtils {
     }
 
     public static void setSeed( long seed ) {
+        System.err.println( "WATCH OUT! SEED IS SET! RANDOMNESS IS COMPROMISED!" );
         RandomUtils.seed = seed;
     }
 }

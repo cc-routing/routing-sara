@@ -211,7 +211,7 @@ public class GreedyAssembler implements Assembler {
         double edgeWeight = edge.getLength( Metric.SIZE ).getValue();
         double sourceWeight = nodePair.getSizeA();
         double targetWeight = nodePair.getSizeB();
-        return Double.MAX_VALUE - ratio * ( ( edgeWeight / Math.sqrt( sourceWeight ) ) + ( edgeWeight / Math.sqrt( targetWeight ) ) );
+        return /*Double.MAX_VALUE */- ratio * ( ( edgeWeight / Math.sqrt( sourceWeight ) ) + ( edgeWeight / Math.sqrt( targetWeight ) ) );
     }
 
 }
