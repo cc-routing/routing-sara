@@ -19,7 +19,7 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
-public class DijkstraOneToAllRoutingAlgorithm<N extends Node, E extends Edge> implements OneToAllRoutingAlgorithm<N, E> {
+public class DijkstraOneToAllAlgorithm<N extends Node, E extends Edge> implements OneToAllRoutingAlgorithm<N, E> {
 
     @Override
     public Map<E, Route<N, E>> route( Graph<N, E> graph, Metric metric, E sourceEdge, Direction sourceDirection, Map<E, Direction> targetEdges ) {
