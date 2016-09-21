@@ -6,11 +6,9 @@
 package cz.certicon.routing.algorithm.sara.preprocessing.overlay;
 
 /**
- * Pre-computes data for the boundary edges for each cell (bottom-up) using
- * one-to-all Dijkstra for all the overlay nodes.
+ * Builds Overlay graphs for all levels. Root object of the overlay data.
  *
- * @author Michael Blaha {@literal <michael.blaha@certicon.cz>}
+ * @author Blahoslav Potoček <potocek@merica.cz>
  */
-public class OverlayCreator {
-
+public class OverlayBuilder {
 }
