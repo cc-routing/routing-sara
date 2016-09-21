@@ -83,9 +83,9 @@ public class RouteTest {
         SimpleNode c = graph.createNode( 2 );
         SimpleNode d = graph.createNode( 3 );
         SimpleNode e = graph.createNode( 4 );
-        SimpleEdge ab = graph.createEdge( 0, false, a, b, 0, 1 );
+        SimpleEdge ab = graph.createEdge( 0, false, a, b, 0, 0 );
         SimpleEdge bc = graph.createEdge( 1, true, c, b, 0, 1 );
-        SimpleEdge cd = graph.createEdge( 2, false, c, d, 0, 1 );
+        SimpleEdge cd = graph.createEdge( 2, false, c, d, 1, 0 );
         SimpleEdge de = graph.createEdge( 3, false, e, d, 0, 1 );
 
         Route.RouteBuilder builder = Route.builder();

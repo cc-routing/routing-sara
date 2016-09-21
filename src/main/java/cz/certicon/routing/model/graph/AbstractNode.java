@@ -75,19 +75,56 @@ public abstract class AbstractNode<N extends Node, E extends Edge> implements No
     @Override
     public void addEdge( E edge ) {
         checkLock();
-        edges.add( edge );
+        int index = 0;
+        if ( edge.isSource( this ) ) {
+            index = edge.getSourcePosition();
+        } else if ( edge.isTarget( this ) ) {
+            index = edge.getTargetPosition();
+        } else {
+            throw new IllegalArgumentException( "Edge does not belong to this node: node = " + this + ", edge = " + edge );
+        }
+        while ( edges.size() <= index ) {
+//            System.out.println( "node#" + this.getId() + "-adding null for edge: " + edge + " till index=" + index + ", edges.size = " + edges.size() );
+            edges.add( null );
+        }
+        if ( 0 <= index ) {
+//            System.out.println( "node#" + this.getId() + "-replacing null for edge: " + edge + " at index=" + index + ", edges.size = " + edges.size() );
+            edges.set( index, edge );
+        } else {
+            edges.add( edge );
+        }
     }
 
     @Override
     public void removeEdge( E edge ) {
         checkLock();
-        edges.remove( edge );
+        int index = 0;
+        if ( edge.isSource( this ) ) {
+            index = edge.getSourcePosition();
+        } else if ( edge.isTarget( this ) ) {
+            index = edge.getTargetPosition();
+        } else {
+            throw new IllegalArgumentException( "Edge does not belong to this node: node = " + this + ", edge = " + edge );
+        }
+        if ( 0 <= index ) {
+            if ( !edge.equals( edges.get( index ) ) ) {
+                throw new IllegalStateException( "Edge is not on the right position: " + edge );
+            }
+            edges.remove( index );
+        } else {
+            edges.remove( edge );
+        }
     }
 
     @Override
     public void setTurnTable( TurnTable turnTable ) {
         checkLock();
         this.turnTable = turnTable;
+    }
+
+    @Override
+    public TurnTable getTurnTable() {
+        return this.turnTable;
     }
 
     @Override
@@ -98,6 +135,11 @@ public abstract class AbstractNode<N extends Node, E extends Edge> implements No
 
     @Override
     public void lock() {
+        for ( int i = 0; i < edges.size(); i++ ) {
+            if ( edges.get( i ) == null ) {
+                throw new IllegalStateException( "Unable to lock node{" + getId() + "}: edges not filled: missing edge at index: " + i );
+            }
+        }
         this.locked = true;
     }
 

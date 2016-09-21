@@ -36,9 +36,11 @@ public interface Node<N extends Node, E extends Edge> extends Identifiable {
 
     public void setTurnTable( TurnTable turnTable );
 
+    public TurnTable getTurnTable();
+
     public void setCoordinate( Coordinate coordinate );
 
     public void lock();
-    
-    public N copy(Graph<N,E> newGraph);
+
+    public N copy( Graph<N, E> newGraph );
 }

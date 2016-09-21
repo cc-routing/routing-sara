@@ -12,6 +12,7 @@ import cz.certicon.routing.model.graph.SimpleEdge;
 import cz.certicon.routing.model.graph.Graph;
 import cz.certicon.routing.model.graph.Metric;
 import cz.certicon.routing.model.graph.Node;
+import cz.certicon.routing.model.graph.SaraEdge;
 import cz.certicon.routing.model.graph.SaraGraph;
 import cz.certicon.routing.model.graph.SaraNode;
 import cz.certicon.routing.model.graph.SimpleNode;
@@ -22,6 +23,7 @@ import cz.certicon.routing.model.graph.preprocessing.ContractNode;
 import cz.certicon.routing.model.graph.preprocessing.ContractGraph;
 import cz.certicon.routing.model.graph.preprocessing.NodePair;
 import cz.certicon.routing.model.queue.PriorityQueue;
+import cz.certicon.routing.model.values.Distance;
 import cz.certicon.routing.utils.ColorUtils;
 import cz.certicon.routing.utils.DisplayUtils;
 import cz.certicon.routing.utils.GraphGeneratorUtils;
@@ -118,6 +120,10 @@ public class GreedyAssemblerTest {
             cellSizeCounter += entry.getValue().size();
         }
         assertNotEquals( 1.0, (double) cellSizeCounter / cellMap.size() );
+
+        SaraEdge edge = assembled.getEdgeById( 1L );
+        SaraNode source = edge.getSource();
+        assertEquals( Distance.newInfinityInstance(), source.getTurnDistance( edge, edge ) );
 
 //        for ( SimpleNode origNode : origNodes ) {
 //            assertNotNull( assembled.getPartition( origNode ) );

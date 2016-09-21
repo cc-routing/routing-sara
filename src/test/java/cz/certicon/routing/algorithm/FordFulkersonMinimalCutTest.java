@@ -151,7 +151,7 @@ public class FordFulkersonMinimalCutTest {
     }
 
     private SimpleEdge createEdge( UndirectedGraph g, int id, int source, int target, int length, Node[] nodes ) {
-        SimpleEdge edge = g.createEdge( id, false, (SimpleNode) nodes[source], (SimpleNode) nodes[target], 0, 0, new Pair<>( Metric.LENGTH, Distance.newInstance( length ) ), new Pair<>( Metric.SIZE, Distance.newInstance( length ) ) );
+        SimpleEdge edge = g.createEdge( id, false, (SimpleNode) nodes[source], (SimpleNode) nodes[target], -1, -1, new Pair<>( Metric.LENGTH, Distance.newInstance( length ) ), new Pair<>( Metric.SIZE, Distance.newInstance( length ) ) );
         return edge;
     }
 

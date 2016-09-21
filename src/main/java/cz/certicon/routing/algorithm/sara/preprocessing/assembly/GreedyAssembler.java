@@ -28,6 +28,7 @@ import java.util.ArrayList;
 import java.util.EnumSet;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Random;
@@ -117,13 +118,14 @@ public class GreedyAssembler implements Assembler {
 //        }
 //        builder.nodes( nodes ).edges( edges );
 
-        SaraGraph saraGraph = new SaraGraph( EnumSet.of( Metric.SIZE, Metric.LENGTH, Metric.TIME ) );
+        SaraGraph saraGraph = new SaraGraph( EnumSet.of( Metric.LENGTH, Metric.TIME ) );
         long cellId = 0;
         for ( ContractNode node : nodes ) {
             Cell cell = new Cell( cellId++ );
             for ( Node origNode : node.getNodes() ) {
                 SaraNode saraNode = saraGraph.createNode( origNode.getId(), cell );
                 saraNode.setCoordinate( origNode.getCoordinate() );
+                saraNode.setTurnTable( origNode.getTurnTable() );
             }
         }
         for ( E edge : originalGraph.getEdges() ) {
@@ -211,7 +213,7 @@ public class GreedyAssembler implements Assembler {
         double edgeWeight = edge.getLength( Metric.SIZE ).getValue();
         double sourceWeight = nodePair.getSizeA();
         double targetWeight = nodePair.getSizeB();
-        return /*Double.MAX_VALUE*/ - ratio * ( ( edgeWeight / Math.sqrt( sourceWeight ) ) + ( edgeWeight / Math.sqrt( targetWeight ) ) );
+        return /*Double.MAX_VALUE*/ -ratio * ( ( edgeWeight / Math.sqrt( sourceWeight ) ) + ( edgeWeight / Math.sqrt( targetWeight ) ) );
     }
 
 }

@@ -55,16 +55,23 @@ public class GraphGeneratorUtils {
         for ( int i = 0; i < rows; i++ ) {
             for ( int j = 0; j < columns; j++ ) {
                 SimpleNode target = (SimpleNode) nodeMap.get( (long) i * multiplier + j );
-                int targetIndex = ( i < rows - 1 ? 1 : 0 ) + ( j < columns - 1 ? 1 : 0 );
+//                System.out.println( "target=#" + target.getId() );
+//                int targetIndex = ( i < rows - 1 ? 1 : 0 ) + ( j < columns - 1 ? 1 : 0 );
+                int targetIndex = 0;
                 if ( i > 0 ) {
-                    int sourceIndex = ( 0 < i - 1 ? 1 : 0 ) + ( 0 < j ? 1 : 0 );
+//                    int sourceIndex = ( 0 < i - 1 ? 1 : 0 ) + ( 0 < j ? 1 : 0 );
+                    int sourceIndex = ( 0 < i - 1 ? 1 : 0 ) + ( 0 < j ? 1 : 0 ) + ( j < columns - 1 ? 1 : 0 );
                     SimpleNode source = (SimpleNode) nodeMap.get( (long) ( i - 1 ) * multiplier + j );
+//                    System.out.println( "source(top)=#" + source.getId() );
+//                    System.out.println( "targetIndex = " + targetIndex + ", sourceIndex = " + sourceIndex );
                     createEdge( graph, edgeMap, edges, source.getId() * multiplier * multiplier + target.getId(), false, source, target, sourceIndex, targetIndex, GRID_EDGE_SIZE );
                     targetIndex++;
                 }
                 if ( j > 0 ) {
                     int sourceIndex = ( 0 < i ? 1 : 0 ) + ( 0 < j - 1 ? 1 : 0 );
                     SimpleNode source = (SimpleNode) nodeMap.get( (long) i * multiplier + ( j - 1 ) );
+//                    System.out.println( "source(left)=#" + source.getId() );
+//                    System.out.println( "targetIndex = " + targetIndex + ", sourceIndex = " + sourceIndex );
                     createEdge( graph, edgeMap, edges, source.getId() * multiplier * multiplier + target.getId(), false, source, target, sourceIndex, targetIndex, GRID_EDGE_SIZE );
                 }
             }
