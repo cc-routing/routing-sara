@@ -155,11 +155,11 @@ public class OverlayBuilder {
 
             if (level == 1) {
 
-                exitColumn1 = OverlayColumn.Create(source, target);
+                exitColumn1 = OverlayColumn.Create(edge, source, target);
                 entryColumn1 = exitColumn1.getOther();
 
                 if (twoWay) {
-                    exitColumn2 = OverlayColumn.Create(target, source);
+                    exitColumn2 = OverlayColumn.Create(edge, target, source);
                     entryColumn2 = exitColumn2.getOther();
                 }
             }

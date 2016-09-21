@@ -5,6 +5,7 @@
  */
 package cz.certicon.routing.algorithm.sara.preprocessing.overlay;
 
+import cz.certicon.routing.model.graph.SaraEdge;
 import cz.certicon.routing.model.graph.SaraNode;
 import java.util.ArrayList;
 import lombok.Getter;
@@ -22,6 +23,9 @@ public class OverlayColumn extends ArrayList<OverlayNode> {
      */
     @Getter
     SaraNode node;
+
+    @Getter
+    SaraEdge edge;
 
     /**
      * false: entryPoint, exitPoint direction corresponds to this.edge
@@ -48,8 +52,9 @@ public class OverlayColumn extends ArrayList<OverlayNode> {
      * @param node SaraNode L0
      * @param isEntry column role: true=entry, false=exit;
      */
-    private OverlayColumn(SaraNode node, boolean isEntry) {
+    private OverlayColumn(SaraEdge edge, SaraNode node, boolean isEntry) {
 
+        this.edge = edge;
         this.node = node;
         this.isEntry = isEntry;
         this.add(null);
@@ -64,13 +69,14 @@ public class OverlayColumn extends ArrayList<OverlayNode> {
     /**
      * Creates column
      *
-     * @param entryNode
-     * @param exitNode
+     * @param edge border edge
+     * @param entry entry node
+     * @param exit exit node
      * @return new Exit Column paired with Entry Column
      */
-    public static OverlayColumn Create(SaraNode entryNode, SaraNode exitNode) {
-        OverlayColumn entryColumn = new OverlayColumn(entryNode, true);
-        OverlayColumn exitColumn = new OverlayColumn(exitNode, false);
+    public static OverlayColumn Create(SaraEdge edge, SaraNode entry, SaraNode exit) {
+        OverlayColumn entryColumn = new OverlayColumn(edge, entry, true);
+        OverlayColumn exitColumn = new OverlayColumn(edge, exit, false);
         entryColumn.other = exitColumn;
         exitColumn.other = entryColumn;
         return exitColumn;
