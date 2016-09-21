@@ -123,10 +123,10 @@ public class Partition {
 
                         if (this.level == 1) {
                             // L1 distances are calculated from SaraSubGraphs in cells
-                            SaraNode saraStart = entryNode.column.other.node;
-                            SaraNode saraEnd = exitNode.column.other.node;
+                            SaraNode saraEntry = entryNode.column.other.node;
+                            SaraNode saraExit = exitNode.column.other.node;
 
-                            if (saraStart.getId() == saraEnd.getId()) {
+                            if (saraEntry.getId() == saraExit.getId()) {
                                 // two-way L0 SaraEdge is split in two L1 OverlayEdges
                                 // U-turn in this case is forbidden
                                 forbiddenUTurns++;
@@ -134,7 +134,7 @@ public class Partition {
                             } else {
 
                                 try {
-                                    route = table.graphBuilder.route(saraStart.getId(), saraEnd.getId(), metric);
+                                    route = table.graphBuilder.route(saraEntry.getId(), saraExit.getId(), metric);
                                     distance = this.sumDistance(route, metric, 1, 2);
                                     validRoutes++;
                                 } catch (IllegalStateException ex) {
@@ -145,10 +145,10 @@ public class Partition {
 
                         } else {
                             //L2+ distances are calculated from this.L-1 overlay graph
-                            OverlayNode startCellNode = entryNode.getLowerNode();
-                            OverlayNode endCellNode = exitNode.getLowerNode();
+                            OverlayNode overEntry = entryNode.getLowerNode();
+                            OverlayNode overExit = exitNode.getLowerNode();
                             Partition lower = this.parent.partitions.get(this.level - 1);
-                            route = router.route(lower.overlayGraph, metric, startCellNode, endCellNode);
+                            route = router.route(lower.overlayGraph, metric, overEntry, overExit);
                             distance = this.sumDistance(route, metric, 0, 1);
                         }
 
