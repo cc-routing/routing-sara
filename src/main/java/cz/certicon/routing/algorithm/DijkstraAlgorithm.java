@@ -84,9 +84,7 @@ public class DijkstraAlgorithm<N extends Node, E extends Edge> implements Routin
             Pair<State, Distance> updatePair = endCondition.update( finalState, upperBound, state, distance );
             upperBound = updatePair.b;
             finalState = updatePair.a;
-            Iterator<E> edges = graph.getOutgoingEdges( state.getNode() );
-            while ( edges.hasNext() ) {
-                E edge = edges.next();
+            for ( E edge : graph.getOutgoingEdges( state.getNode() ) ) {
                 N targetNode = graph.getOtherNode( edge, state.getNode() );
                 State targetState = new State( targetNode, edge );
                 if ( !closedStates.contains( targetState ) ) {

@@ -44,6 +44,16 @@ public abstract class AbstractEdge<N extends Node, E extends Edge> implements Ed
     }
 
     @Override
+    public boolean isSource( N node ) {
+        return source.equals( node );
+    }
+
+    @Override
+    public boolean isTarget( N node ) {
+        return target.equals( node );
+    }
+
+    @Override
     public N getOtherNode( N node ) {
         if ( node.equals( source ) ) {
             return target;

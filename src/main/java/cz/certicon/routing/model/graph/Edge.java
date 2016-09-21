@@ -34,5 +34,9 @@ public interface Edge<N extends Node, E extends Edge> extends Identifiable {
 
     public void setLength( Metric metric, Distance distance );
 
+    public boolean isSource( N node );
+
+    public boolean isTarget( N node );
+
     public E copy( Graph<N, E> newGraph, N newSource, N newTarget );
 }
