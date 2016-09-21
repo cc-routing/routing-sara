@@ -105,6 +105,7 @@ public class Partition {
 
         int validRoutes = 0;
         int invalidRoutes = 0;
+        int forbiddenUTurns = 0;
 
         for (Cell cell : this.cells.valueCollection()) {
 
@@ -125,13 +126,21 @@ public class Partition {
                             SaraNode saraStart = entryNode.column.other.node;
                             SaraNode saraEnd = exitNode.column.other.node;
 
-                            try {
-                                route = table.graphBuilder.route(saraStart.getId(), saraEnd.getId(), metric);
-                                distance = this.sumDistance(route, metric, 1, 2);
-                                validRoutes++;
-                            } catch (IllegalStateException ex) {
+                            if (saraStart.getId() == saraEnd.getId()) {
+                                // two-way L0 SaraEdge is split in two L1 OverlayEdges
+                                // U-turn in this case is forbidden
+                                forbiddenUTurns++;
                                 distance = Distance.newInfinityInstance();
-                                invalidRoutes++;
+                            } else {
+
+                                try {
+                                    route = table.graphBuilder.route(saraStart.getId(), saraEnd.getId(), metric);
+                                    distance = this.sumDistance(route, metric, 1, 2);
+                                    validRoutes++;
+                                } catch (IllegalStateException ex) {
+                                    distance = Distance.newInfinityInstance();
+                                    invalidRoutes++;
+                                }
                             }
 
                         } else {
@@ -151,7 +160,8 @@ public class Partition {
         }
 
         double ratio = (100 * invalidRoutes) / (validRoutes + invalidRoutes);
-        String info = String.format("Level=%d, ValidRoutes=%d, InvalidRoutes=%d=%f", this.level, validRoutes, invalidRoutes, ratio);
+        String info = String.format("Level=%d,ForbiddenUTurns=%d,  ValidRoutes=%d, InvalidRoutes=%d=%f",
+                this.level, forbiddenUTurns, validRoutes, invalidRoutes, ratio);
         System.out.println(info + "%");
     }
 
