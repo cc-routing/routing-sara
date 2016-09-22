@@ -194,4 +194,56 @@ public class OverlayBuilder {
         }
     }
 
+    /**
+     * Finds highest level OverlayNode which is not in the same cell with source
+     * and target
+     *
+     * @param node transferNode
+     * @param edge transferEdge
+     * @param source sourceNode
+     * @param target targetNode
+     * @return
+     */
+    public OverlayNode getMaxOverlayNode(SaraNode node, SaraEdge edge, SaraNode source, SaraNode target) {
+
+        BorderNodeMap entryMap = node.getParent().getRouteTable().entryPoints;
+
+        if (!entryMap.containsKey(edge)) {
+            //not a border edge
+            return null;
+        }
+
+        OverlayNode max = null;
+        OverlayNode entry = entryMap.get(edge);
+        OverlayColumn column = entry.column;
+        Cell sourceCell = source.getParent();
+        Cell targetCell = target.getParent();
+
+        while (true) {
+
+            if (entry.isMyCell(sourceCell)) {
+                return max;
+            }
+
+            if (entry.isMyCell(targetCell)) {
+                return max;
+            }
+
+            sourceCell = sourceCell.getParent();
+            if (sourceCell == null) {
+                return max;
+            }
+            targetCell = targetCell.getParent();
+            if (targetCell == null) {
+                return max;
+            }
+
+            if (entry.level() == column.size() - 1) {
+                return max;
+            }
+
+            max = entry;
+            entry = entry.getUpperNode();
+        }
+    }
 }

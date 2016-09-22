@@ -6,6 +6,7 @@
 package cz.certicon.routing.algorithm.sara.preprocessing.overlay;
 
 import cz.certicon.routing.model.graph.AbstractNode;
+import cz.certicon.routing.model.graph.Cell;
 import cz.certicon.routing.model.graph.Graph;
 import cz.certicon.routing.model.graph.SaraEdge;
 import cz.certicon.routing.model.values.Distance;
@@ -64,6 +65,29 @@ public class OverlayNode extends AbstractNode<OverlayNode, OverlayEdge> {
      */
     public int level() {
         return this.borderMap.cellTable.partition.level;
+    }
+
+    /**
+     * @return related Cell
+     */
+    public Cell getCell() {
+        return this.borderMap.cellTable.cell;
+    }
+
+    /**
+     * Checks whether specified cell is equal to this node cell
+     *
+     * @param cell
+     * @return true/false for the same cells partitions, null for different
+     * cells partitions
+     */
+    public Boolean isMyCell(Cell cell) {
+        Cell myCell = this.getCell();
+        if (myCell.getRouteTable().partition == cell.getRouteTable().partition) {
+            return cell.getId() == myCell.getId();
+        } else {
+            return null;
+        }
     }
 
     /**
