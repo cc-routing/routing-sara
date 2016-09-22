@@ -6,6 +6,7 @@
 package cz.certicon.routing.data.basic.database;
 
 import java.io.IOException;
+import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.Properties;
@@ -94,6 +95,17 @@ public class SimpleDatabase {
      */
     public void close() throws IOException {
         database.close();
+    }
+
+    /**
+     * Creates PreparedStatement
+     *
+     * @param sql query
+     * @return prepared statement
+     * @throws SQLException
+     */
+    public PreparedStatement preparedStatement( String sql ) throws SQLException {
+        return database.getConnection().prepareStatement( sql );
     }
 
 }

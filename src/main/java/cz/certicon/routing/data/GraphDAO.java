@@ -6,6 +6,7 @@
 package cz.certicon.routing.data;
 
 import cz.certicon.routing.model.graph.Graph;
+import cz.certicon.routing.model.graph.SaraGraph;
 import java.io.IOException;
 
 /**
@@ -15,6 +16,8 @@ import java.io.IOException;
 public interface GraphDAO {
 
     void saveGraph( Graph graph ) throws IOException;
+
+    void saveGraph( SaraGraph graph ) throws IOException;
 
     Graph loadGraph() throws IOException;
 }

@@ -12,6 +12,8 @@ import cz.certicon.routing.model.graph.SimpleEdge;
 import cz.certicon.routing.model.graph.Graph;
 import cz.certicon.routing.model.graph.Metric;
 import cz.certicon.routing.model.graph.Node;
+import cz.certicon.routing.model.graph.SaraGraph;
+import cz.certicon.routing.model.graph.SaraNode;
 import cz.certicon.routing.model.graph.SimpleNode;
 import cz.certicon.routing.model.graph.TurnTable;
 import cz.certicon.routing.model.graph.UndirectedGraph;
@@ -23,6 +25,7 @@ import gnu.trove.map.TLongObjectMap;
 import gnu.trove.map.hash.TIntObjectHashMap;
 import gnu.trove.map.hash.TLongObjectHashMap;
 import java.io.IOException;
+import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.EnumSet;
@@ -31,12 +34,16 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Properties;
 import java.util.Set;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  *
  * @author Michael Blaha {@literal <michael.blaha@certicon.cz>}
  */
 public class SqliteGraphDAO implements GraphDAO {
+
+    private static final int BATCH_SIZE = 1000;
 
     private final SimpleDatabase database;
 
@@ -47,6 +54,26 @@ public class SqliteGraphDAO implements GraphDAO {
     @Override
     public void saveGraph( Graph graph ) throws IOException {
         throw new UnsupportedOperationException( "Not supported yet." ); //To change body of generated methods, choose Tools | Templates.
+    }
+
+    @Override
+    public void saveGraph( SaraGraph graph ) throws IOException {
+        try {
+            PreparedStatement preparedStatement = database.preparedStatement( "UPDATE nodes SET cell_id = ?" );
+            preparedStatement.executeQuery();
+            int nodeCounter = 0;
+            for ( SaraNode node : graph.getNodes() ) {
+                preparedStatement.setLong( 1, node.getParent().getId() );
+                preparedStatement.addBatch();
+                if ( ++nodeCounter % BATCH_SIZE == 0 ) {
+                    preparedStatement.executeBatch();
+                }
+            }
+            preparedStatement.executeBatch();
+            database.close();
+        } catch ( SQLException ex ) {
+            throw new IOException( ex );
+        }
     }
 
     @Override
