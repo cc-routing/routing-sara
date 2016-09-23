@@ -229,6 +229,8 @@ public class OverlayBuilder {
                 return max;
             }
 
+            max = entry;
+
             sourceCell = sourceCell.getParent();
             if (sourceCell == null) {
                 return max;
@@ -242,7 +244,6 @@ public class OverlayBuilder {
                 return max;
             }
 
-            max = entry;
             entry = entry.getUpperNode();
         }
     }
