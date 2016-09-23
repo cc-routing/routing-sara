@@ -35,7 +35,7 @@ public class JxPartitionViewer extends AbstractJxMapViewer implements PartitionV
     private ColorUtils.ColorSupplier colorSupplier = ColorUtils.createColorSupplier( NUMBER_OF_COLORS );
 
     @Override
-    public void addCutEdges( Graph graph, Collection<Edge> cutEdges ) {
+    public <E extends Edge> void addCutEdges( Collection<E> cutEdges ) {
         List<Coordinate> coords = new ArrayList<>();
         for ( Edge cutEdge : cutEdges ) {
             coords.add( edgeMidpoint( cutEdge ) );
@@ -55,7 +55,7 @@ public class JxPartitionViewer extends AbstractJxMapViewer implements PartitionV
     }
 
     @Override
-    public void addNodeCluster( Graph graph, Collection<Node> partition ) {
+    public <N extends Node> void addNodeCluster( Collection<N> partition ) {
         Color color = colorSupplier.nextColor();
         List<Coordinate> coords = new ArrayList<>();
         for ( Node node : partition ) {
@@ -71,7 +71,7 @@ public class JxPartitionViewer extends AbstractJxMapViewer implements PartitionV
     }
 
     @Override
-    public void addBorderNodes( Graph graph, Collection<Node> borderNodes ) {
+    public <N extends Node> void addBorderNodes( Collection<N> borderNodes ) {
         Color color = colorSupplier.nextColor();
         List<Coordinate> coords = new ArrayList<>();
         for ( Node borderNode : borderNodes ) {

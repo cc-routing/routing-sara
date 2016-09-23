@@ -49,7 +49,7 @@ public class DisplayUtils {
             CollectionUtils.getList( cellMap, parent ).add( node );
         }
         for ( List<Node> value : cellMap.values() ) {
-            viewer.addNodeCluster( graph, value );
+            viewer.addNodeCluster( value );
         }
         viewer.display();
     }
@@ -89,7 +89,7 @@ public class DisplayUtils {
     public static <N extends Node, E extends Edge> void display( ContractGraph graph ) {
         PartitionViewer viewer = new JxPartitionViewer();
         for ( ContractNode node : graph.getNodes() ) {
-            viewer.addNodeCluster( graph, node.getNodes() );
+            viewer.addNodeCluster( node.getNodes() );
         }
         viewer.display();
     }

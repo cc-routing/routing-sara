@@ -10,9 +10,13 @@ import cz.certicon.routing.model.graph.Graph;
 import cz.certicon.routing.model.graph.Node;
 import cz.certicon.routing.model.graph.SimpleNode;
 import cz.certicon.routing.model.graph.SimpleEdge;
+import cz.certicon.routing.utils.collections.ImmutableIterator;
+import cz.certicon.routing.utils.collections.Iterator;
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
+import lombok.AccessLevel;
+import lombok.Getter;
 import lombok.Value;
 
 /**
@@ -24,9 +28,42 @@ import lombok.Value;
 @Value
 public class Route<N extends Node, E extends Edge> {
 
+    @Getter( AccessLevel.NONE )
     List<E> edges;
     N source;
     N target;
+
+    public List<E> getEdgeList() {
+        return new ArrayList<>( edges );
+    }
+
+    public Iterator<E> getEdges() {
+        return new ImmutableIterator<>( edges.iterator() );
+    }
+
+    public Iterator<N> getNodes() {
+        return new Iterator<N>() {
+            private final java.util.Iterator<E> edgeIterator = edges.iterator();
+            private N current = source;
+
+            @Override
+            public boolean hasNext() {
+                return !current.equals( target );
+            }
+
+            @Override
+            public N next() {
+                E next = edgeIterator.next();
+                current = (N) next.getOtherNode( current );
+                return current;
+            }
+
+            @Override
+            public java.util.Iterator<N> iterator() {
+                return this;
+            }
+        };
+    }
 
     public static <N extends Node, E extends Edge> RouteBuilder builder() {
         return new RouteBuilder<>();
