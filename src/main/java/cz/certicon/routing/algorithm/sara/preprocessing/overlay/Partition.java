@@ -182,7 +182,7 @@ public class Partition {
         for (int idx = from; idx < edges.size() - to; idx++) {
             SaraEdge edge = edges.get(idx);
             Distance value = edge.getLength(metric);
-            distance.add(value);
+            distance = distance.add(value);
         }
 
         return distance;
