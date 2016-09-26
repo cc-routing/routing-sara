@@ -14,6 +14,7 @@ import cz.certicon.routing.model.graph.SaraNode;
 import cz.certicon.routing.model.values.Distance;
 import gnu.trove.map.TLongObjectMap;
 import gnu.trove.map.hash.TLongObjectHashMap;
+import java.util.ArrayList;
 import java.util.List;
 import lombok.Getter;
 
@@ -177,7 +178,14 @@ public class Partition {
      * @return
      */
     private Distance sumDistance(Route route, Metric metric, int from, int to) {
-        List<SaraEdge> edges = route.getEdges();
+
+        Iterable<SaraEdge> routeEdges = route.getEdges();
+        List<SaraEdge> edges = new ArrayList<>();
+
+        for (SaraEdge item : routeEdges) {
+            edges.add(item);
+        }
+
         Distance distance = new Distance(0);
         for (int idx = from; idx < edges.size() - to; idx++) {
             SaraEdge edge = edges.get(idx);
