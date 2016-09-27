@@ -10,6 +10,8 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.Properties;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  * An extension to the {@link SimpleDatabase}, which is read-only and returns
@@ -20,6 +22,7 @@ import java.util.Properties;
 public class SimpleDatabase {
 
     private final AbstractDatabase<ResultSet, String, String, String> database;
+    private boolean batch = false;
 
     private SimpleDatabase( AbstractDatabase<ResultSet, String, String, String> database ) {
         this.database = database;
@@ -75,6 +78,7 @@ public class SimpleDatabase {
      * @throws IOException thrown when an SQL or IO exception appears
      */
     public ResultSet read( String sql ) throws IOException {
+        setBatch( false );
         return database.read( sql );
     }
 
@@ -85,6 +89,7 @@ public class SimpleDatabase {
      * @throws IOException thrown when an SQL or IO exception appears
      */
     public void write( String command ) throws IOException {
+        setBatch( false );
         database.write( command, null );
     }
 
@@ -94,6 +99,7 @@ public class SimpleDatabase {
      * @throws IOException thrown when an SQL or IO exception appears
      */
     public void close() throws IOException {
+        setBatch( false );
         database.close();
     }
 
@@ -102,10 +108,30 @@ public class SimpleDatabase {
      *
      * @param sql query
      * @return prepared statement
-     * @throws SQLException
+     * @throws java.io.IOException
      */
-    public PreparedStatement preparedStatement( String sql ) throws SQLException {
-        return database.getConnection().prepareStatement( sql );
+    public PreparedStatement preparedStatement( String sql ) throws IOException {
+        setBatch( true );
+        try {
+            return database.getConnection().prepareStatement( sql );
+        } catch ( SQLException ex ) {
+            throw new IOException( ex );
+        }
+    }
+
+    private void setBatch( boolean on ) throws IOException {
+        try {
+            if ( on && !batch ) {
+                database.getConnection().setAutoCommit( false );
+                batch = true;
+            } else if ( !on && batch ) {
+                database.getConnection().commit();
+                database.getConnection().setAutoCommit( true );
+                batch = false;
+            }
+        } catch ( SQLException ex ) {
+            throw new IOException( ex );
+        }
     }
 
 }

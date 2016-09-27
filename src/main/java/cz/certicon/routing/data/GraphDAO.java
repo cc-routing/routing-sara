@@ -20,4 +20,6 @@ public interface GraphDAO {
     void saveGraph( SaraGraph graph ) throws IOException;
 
     Graph loadGraph() throws IOException;
+
+    SaraGraph loadSaraGraph() throws IOException;
 }

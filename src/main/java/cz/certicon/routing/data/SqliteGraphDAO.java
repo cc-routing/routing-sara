@@ -7,11 +7,13 @@ package cz.certicon.routing.data;
 
 import cz.certicon.routing.data.basic.database.SimpleDatabase;
 import cz.certicon.routing.model.basic.Pair;
+import cz.certicon.routing.model.graph.Cell;
 import cz.certicon.routing.model.graph.Edge;
 import cz.certicon.routing.model.graph.SimpleEdge;
 import cz.certicon.routing.model.graph.Graph;
 import cz.certicon.routing.model.graph.Metric;
 import cz.certicon.routing.model.graph.Node;
+import cz.certicon.routing.model.graph.SaraEdge;
 import cz.certicon.routing.model.graph.SaraGraph;
 import cz.certicon.routing.model.graph.SaraNode;
 import cz.certicon.routing.model.graph.SimpleNode;
@@ -19,6 +21,7 @@ import cz.certicon.routing.model.graph.TurnTable;
 import cz.certicon.routing.model.graph.UndirectedGraph;
 import cz.certicon.routing.model.values.Distance;
 import cz.certicon.routing.utils.CoordinateUtils;
+import cz.certicon.routing.utils.DatabaseUtils;
 import cz.certicon.routing.utils.GeometryUtils;
 import gnu.trove.map.TIntObjectMap;
 import gnu.trove.map.TLongObjectMap;
@@ -43,7 +46,7 @@ import java.util.logging.Logger;
  */
 public class SqliteGraphDAO implements GraphDAO {
 
-    private static final int BATCH_SIZE = 1000;
+    private static final int BATCH_SIZE = 200;
 
     private final SimpleDatabase database;
 
@@ -58,15 +61,21 @@ public class SqliteGraphDAO implements GraphDAO {
 
     @Override
     public void saveGraph( SaraGraph graph ) throws IOException {
+        if ( !DatabaseUtils.columnExists( database, "nodes", "cell_id" ) ) {
+            database.write( "ALTER TABLE nodes ADD cell_id INTEGER DEFAULT(-1)" );
+        }
         try {
-            PreparedStatement preparedStatement = database.preparedStatement( "UPDATE nodes SET cell_id = ?" );
-            preparedStatement.executeQuery();
+            PreparedStatement preparedStatement = database.preparedStatement( "UPDATE nodes SET cell_id = ? WHERE id = ?" );
             int nodeCounter = 0;
             for ( SaraNode node : graph.getNodes() ) {
+//                System.out.println( "Node#" + node.getId() );
                 preparedStatement.setLong( 1, node.getParent().getId() );
+                preparedStatement.setLong( 2, node.getId() );
                 preparedStatement.addBatch();
+//                System.out.println( "Batch added. Nodes count: " + nodeCounter );
                 if ( ++nodeCounter % BATCH_SIZE == 0 ) {
                     preparedStatement.executeBatch();
+//                    System.out.println( "Done saving: #" + nodeCounter  );
                 }
             }
             preparedStatement.executeBatch();
@@ -133,6 +142,70 @@ public class SqliteGraphDAO implements GraphDAO {
             }
             // lock nodes and build graph
             graph.lock();
+            database.close();
+            return graph;
+        } catch ( SQLException ex ) {
+            throw new IOException( ex );
+        }
+    }
+
+    @Override
+    public SaraGraph loadSaraGraph() throws IOException {
+        try {
+            ResultSet rs;
+            SaraGraph graph = new SaraGraph( EnumSet.of( Metric.LENGTH, Metric.TIME ) );
+            // read turn tables
+            // TODO add turntables to map, a list of nodes as a value (so that the nodes share turntables)
+            TIntObjectMap<MatrixContainer> turnTableMap = new TIntObjectHashMap<>();
+            rs = database.read( "SELECT * FROM turn_tables" );
+            while ( rs.next() ) {
+                turnTableMap.put( rs.getInt( "id" ), new MatrixContainer( rs.getInt( "size" ) ) );
+            }
+            rs = database.read( "SELECT * FROM turn_table_values" );
+            while ( rs.next() ) {
+                MatrixContainer matrixContainer = turnTableMap.get( rs.getInt( "turn_table_id" ) );
+                matrixContainer.matrix[rs.getInt( "row_id" )][rs.getInt( "column_id" )] = Distance.newInstance( rs.getDouble( "value" ) );
+            }
+            // read nodes
+            TLongObjectMap<Cell> cellMap = new TLongObjectHashMap<>();
+            rs = database.read( "SELECT *, ST_AsText(geom) AS point FROM nodes" );
+            while ( rs.next() ) {
+                long cellId = rs.getLong( "cell_id" );
+                Cell cell;
+                if ( cellMap.containsKey( cellId ) ) {
+                    cell = cellMap.get( cellId );
+                } else {
+                    cell = new Cell( cellId );
+                    cellMap.put( cellId, cell );
+                }
+                SaraNode node = graph.createNode( rs.getLong( "id" ), cell );
+                TurnTable turnTable = new TurnTable( turnTableMap.get( rs.getInt( "turn_table_id" ) ).matrix );
+                node.setTurnTable( turnTable );
+                node.setCoordinate( GeometryUtils.toCoordinatesFromWktPoint( rs.getString( "point" ) ) );
+            }
+            // read edges
+            Map<Metric, Map<Edge, Distance>> metricMap = new HashMap<>();
+            for ( Metric value : Metric.values() ) {
+                metricMap.put( value, new HashMap<Edge, Distance>() );
+            }
+            rs = database.read( "SELECT * FROM edges e;" );
+            while ( rs.next() ) {
+                SaraNode source = graph.getNodeById( rs.getLong( "source" ) );
+                SaraNode target = graph.getNodeById( rs.getLong( "target" ) );
+                // length in meters, speed in kmph, CAUTION - convert here
+                double length = rs.getDouble( "metric_length" );
+                double speedFw = rs.getDouble( "metric_speed_forward" );// todo take into consideration direction
+                double time = length / ( speedFw / 3.6 );
+                SaraEdge edge = graph.createEdge( rs.getLong( "id" ), rs.getInt( "oneway" ) != 0,
+                        source,
+                        target,
+                        rs.getInt( "source_pos" ),
+                        rs.getInt( "target_pos" ),
+                        new Pair<>( Metric.LENGTH, Distance.newInstance( length ) ), new Pair<>( Metric.TIME, Distance.newInstance( time ) ) );
+            }
+            // lock nodes and build graph
+            graph.lock();
+            database.close();
             return graph;
         } catch ( SQLException ex ) {
             throw new IOException( ex );
