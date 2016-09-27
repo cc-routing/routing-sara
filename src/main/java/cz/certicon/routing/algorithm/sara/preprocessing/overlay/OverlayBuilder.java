@@ -229,6 +229,10 @@ public class OverlayBuilder {
                 return max;
             }
 
+            if (sourceCell.getId() == targetCell.getId()) {
+                return max;
+            }
+
             max = entry;
 
             sourceCell = sourceCell.getParent();
