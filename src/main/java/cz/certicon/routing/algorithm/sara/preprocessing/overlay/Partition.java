@@ -136,7 +136,7 @@ public class Partition {
 
                                 try {
                                     route = table.graphBuilder.route(saraEntry.getId(), saraExit.getId(), metric);
-                                    distance = this.sumDistance(route, metric, 1, 2);
+                                    distance = this.sumDistance(route, metric, 1, 1);
                                     validRoutes++;
                                 } catch (IllegalStateException ex) {
                                     distance = Distance.newInfinityInstance();
