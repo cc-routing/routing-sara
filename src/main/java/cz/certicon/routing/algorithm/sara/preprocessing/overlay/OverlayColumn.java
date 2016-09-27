@@ -74,9 +74,9 @@ public class OverlayColumn extends ArrayList<OverlayNode> {
      * @param exit exit node
      * @return new Exit Column paired with Entry Column
      */
-    public static OverlayColumn Create(SaraEdge edge, SaraNode entry, SaraNode exit) {
-        OverlayColumn entryColumn = new OverlayColumn(edge, entry, true);
+    public static OverlayColumn Create(SaraEdge edge, SaraNode exit, SaraNode entry) {
         OverlayColumn exitColumn = new OverlayColumn(edge, exit, false);
+        OverlayColumn entryColumn = new OverlayColumn(edge, entry, true);
         entryColumn.other = exitColumn;
         exitColumn.other = entryColumn;
         return exitColumn;
