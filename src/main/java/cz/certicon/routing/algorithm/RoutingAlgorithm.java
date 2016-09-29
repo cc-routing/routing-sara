@@ -11,6 +11,7 @@ import cz.certicon.routing.model.Route;
 import cz.certicon.routing.model.graph.Edge;
 import cz.certicon.routing.model.graph.Metric;
 import cz.certicon.routing.model.graph.Node;
+import cz.certicon.routing.utils.java8.Optional;
 
 /**
  *
@@ -20,9 +21,9 @@ import cz.certicon.routing.model.graph.Node;
  */
 public interface RoutingAlgorithm<N extends Node, E extends Edge> {
 
-    Route route( Graph<N, E> graph, Metric metric, N source, N destination );
+    Optional<Route<N,E>> route( Graph<N, E> graph, Metric metric, N source, N destination );
 
-    Route route( Graph<N, E> graph, Metric metric, E source, E destination );
+    Optional<Route<N,E>> route( Graph<N, E> graph, Metric metric, E source, E destination );
 
-    Route route( Graph<N, E> graph, Metric metric, E source, E destination, Distance toSourceStart, Distance toSourceEnd, Distance toDestinationStart, Distance toDestinationEnd );
+    Optional<Route<N,E>> route( Graph<N, E> graph, Metric metric, E source, E destination, Distance toSourceStart, Distance toSourceEnd, Distance toDestinationStart, Distance toDestinationEnd );
 }

@@ -17,6 +17,7 @@ import cz.certicon.routing.model.graph.Metric;
 import cz.certicon.routing.model.graph.Node;
 import cz.certicon.routing.model.graph.State;
 import cz.certicon.routing.model.queue.FibonacciHeap;
+import cz.certicon.routing.utils.java8.Optional;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -29,10 +30,10 @@ import java.util.Set;
  * @param <N> node type
  * @param <E> edge type
  */
-public class DijkstraAlgorithm<N extends Node, E extends Edge> implements RoutingAlgorithm<N, E> {
+public class DijkstraAlgorithm<N extends Node<N,E>, E extends Edge<N,E>> implements RoutingAlgorithm<N, E> {
 
     @Override
-    public Route route( Graph<N, E> graph, Metric metric, N source, N destination ) {
+    public Optional<Route<N,E>> route( Graph<N, E> graph, Metric metric, N source, N destination ) {
         Map<State<N, E>, Distance> nodeDistanceMap = new HashMap<>();
         PriorityQueue<State<N, E>> pqueue = new FibonacciHeap<>();
         Distance upperBound = Distance.newInfinityInstance();
@@ -41,12 +42,12 @@ public class DijkstraAlgorithm<N extends Node, E extends Edge> implements Routin
     }
 
     @Override
-    public Route route( Graph<N, E> graph, Metric metric, E source, E destination ) {
+    public Optional<Route<N,E>> route( Graph<N, E> graph, Metric metric, E source, E destination ) {
         return route( graph, metric, source, destination, new Distance( 0 ), new Distance( 0 ), new Distance( 0 ), new Distance( 0 ) );
     }
 
     @Override
-    public Route route( Graph<N, E> graph, Metric metric, E source, E destination, Distance toSourceStart, Distance toSourceEnd, Distance toDestinationStart, Distance toDestinationEnd ) {
+    public Optional<Route<N,E>> route( Graph<N, E> graph, Metric metric, E source, E destination, Distance toSourceStart, Distance toSourceEnd, Distance toDestinationStart, Distance toDestinationEnd ) {
         Map<State<N, E>, Distance> nodeDistanceMap = new HashMap<>();
         PriorityQueue<State<N, E>> pqueue = new FibonacciHeap<>();
         // create upper bound if the edges are equal and mark it
@@ -72,7 +73,7 @@ public class DijkstraAlgorithm<N extends Node, E extends Edge> implements Routin
         return route( graph, metric, nodeDistanceMap, pqueue, upperBound, new EdgeEndCondition( graph, destination, toDestinationStart, toDestinationEnd ), singleEdgePath, destination );
     }
 
-    private Route route( Graph<N, E> graph, Metric metric, Map<State<N, E>, Distance> nodeDistanceMap, PriorityQueue<State<N, E>> pqueue, Distance upperBound, EndCondition<N, E> endCondition, E singleEdgePath, E endEdge ) {
+    private Optional<Route<N,E>> route( Graph<N, E> graph, Metric metric, Map<State<N, E>, Distance> nodeDistanceMap, PriorityQueue<State<N, E>> pqueue, Distance upperBound, EndCondition<N, E> endCondition, E singleEdgePath, E endEdge ) {
         Map<State, State> predecessorMap = new HashMap<>();
         Set<State> closedStates = new HashSet<>();
         State finalState = null;
@@ -107,13 +108,13 @@ public class DijkstraAlgorithm<N extends Node, E extends Edge> implements Routin
             if ( endEdge != null ) {
                 builder.addAsLast( endEdge );
             }
-            return builder.build();
+            return Optional.of( builder.build() );
         } else if ( singleEdgePath != null ) {
             Route.RouteBuilder<N, E> builder = Route.<N, E>builder();
             builder.addAsFirst( singleEdgePath );
-            return builder.build();
+            return Optional.of( builder.build() );
         } else {
-            throw new IllegalStateException( "Path not found. Something is wrong." );
+            return Optional.empty();
         }
     }
 

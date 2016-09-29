@@ -65,7 +65,7 @@ public class Route<N extends Node, E extends Edge> {
         };
     }
 
-    public static <N extends Node, E extends Edge> RouteBuilder builder() {
+    public static <N extends Node<N,E>, E extends Edge<N,E>> RouteBuilder builder() {
         return new RouteBuilder<>();
     }
 
@@ -202,7 +202,7 @@ public class Route<N extends Node, E extends Edge> {
             return this;
         }
 
-        public Route build() {
+        public Route<N,E> build() {
             return new Route( new ArrayList<>( edges ), source, target );
         }
     }

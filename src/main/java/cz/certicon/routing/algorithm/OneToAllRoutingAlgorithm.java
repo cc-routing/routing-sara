@@ -10,6 +10,7 @@ import cz.certicon.routing.model.graph.Edge;
 import cz.certicon.routing.model.graph.Graph;
 import cz.certicon.routing.model.graph.Metric;
 import cz.certicon.routing.model.graph.Node;
+import cz.certicon.routing.utils.java8.Optional;
 import java.util.Map;
 
 /**
@@ -18,9 +19,9 @@ import java.util.Map;
  * @param <N> node type
  * @param <E> edge type
  */
-public interface OneToAllRoutingAlgorithm<N extends Node, E extends Edge> {
+public interface OneToAllRoutingAlgorithm<N extends Node<N,E>, E extends Edge<N,E>> {
 
-    Map<E, Route<N,E>> route( Graph<N, E> graph, Metric metric, E sourceEdge, Direction sourceDirection, Map<E, Direction> targetEdges );
+    Map<E, Optional<Route<N,E>>> route( Graph<N, E> graph, Metric metric, E sourceEdge, Direction sourceDirection, Map<E, Direction> targetEdges );
 
     public static enum Direction {
         FORWARD, BACKWARD;

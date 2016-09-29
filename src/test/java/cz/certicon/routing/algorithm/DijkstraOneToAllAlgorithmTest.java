@@ -12,6 +12,7 @@ import cz.certicon.routing.model.graph.Metric;
 import cz.certicon.routing.model.graph.Node;
 import cz.certicon.routing.model.graph.TurnTable;
 import cz.certicon.routing.utils.GraphGeneratorUtils;
+import cz.certicon.routing.utils.java8.Optional;
 import java.util.EnumSet;
 import java.util.HashMap;
 import java.util.Map;
@@ -76,21 +77,21 @@ public class DijkstraOneToAllAlgorithmTest {
         targetMap.put( edgeMap.get( 4L ), OneToAllRoutingAlgorithm.Direction.FORWARD );
         targetMap.put( edgeMap.get( 5L ), OneToAllRoutingAlgorithm.Direction.BACKWARD );
         targetMap.put( edgeMap.get( 6L ), OneToAllRoutingAlgorithm.Direction.FORWARD );
-        Map<Edge, Route<Node, Edge>> result = instance.route( graph, Metric.LENGTH, sourceEdge, sourceDirection, targetMap );
+        Map<Edge, Optional<Route<Node, Edge>>> result = instance.route( graph, Metric.LENGTH, sourceEdge, sourceDirection, targetMap );
 
         assertEquals( targetMap.size(), result.size() );
         assertTrue( result.containsKey( edgeMap.get( 0L ) ) );
-        assertEquals( toString( Route.builder().addAsLast( edgeMap.get( 3L ) ).addAsLast( edgeMap.get( 4L ) ).addAsLast( edgeMap.get( 6L ) ).addAsLast( edgeMap.get( 5L ) ).addAsLast( edgeMap.get( 2L ) ).addAsLast( edgeMap.get( 1L ) ).addAsLast( edgeMap.get( 0L ) ).build() ), toString( result.get( edgeMap.get( 0L ) ) ) );
+        assertEquals( toString( Route.builder().addAsLast( edgeMap.get( 3L ) ).addAsLast( edgeMap.get( 4L ) ).addAsLast( edgeMap.get( 6L ) ).addAsLast( edgeMap.get( 5L ) ).addAsLast( edgeMap.get( 2L ) ).addAsLast( edgeMap.get( 1L ) ).addAsLast( edgeMap.get( 0L ) ).build() ), toString( result.get( edgeMap.get( 0L ) ).get() ) );
         assertTrue( result.containsKey( edgeMap.get( 1L ) ) );
-        assertEquals( toString( Route.builder().addAsLast( edgeMap.get( 3L ) ).addAsLast( edgeMap.get( 0L ) ).addAsLast( edgeMap.get( 1L ) ).build() ), toString( result.get( edgeMap.get( 1L ) ) ) );
+        assertEquals( toString( Route.builder().addAsLast( edgeMap.get( 3L ) ).addAsLast( edgeMap.get( 0L ) ).addAsLast( edgeMap.get( 1L ) ).build() ), toString( result.get( edgeMap.get( 1L ) ).get() ) );
         assertTrue( result.containsKey( edgeMap.get( 2L ) ) );
-        assertEquals( toString( Route.builder().addAsLast( edgeMap.get( 3L ) ).addAsLast( edgeMap.get( 4L ) ).addAsLast( edgeMap.get( 6L ) ).addAsLast( edgeMap.get( 5L ) ).addAsLast( edgeMap.get( 2L ) ).build() ), toString( result.get( edgeMap.get( 2L ) ) ) );
+        assertEquals( toString( Route.builder().addAsLast( edgeMap.get( 3L ) ).addAsLast( edgeMap.get( 4L ) ).addAsLast( edgeMap.get( 6L ) ).addAsLast( edgeMap.get( 5L ) ).addAsLast( edgeMap.get( 2L ) ).build() ), toString( result.get( edgeMap.get( 2L ) ).get() ) );
         assertTrue( result.containsKey( edgeMap.get( 4L ) ) );
-        assertEquals( toString( Route.builder().addAsLast( edgeMap.get( 3L ) ).addAsLast( edgeMap.get( 4L ) ).build() ), toString( result.get( edgeMap.get( 4L ) ) ) );
+        assertEquals( toString( Route.builder().addAsLast( edgeMap.get( 3L ) ).addAsLast( edgeMap.get( 4L ) ).build() ), toString( result.get( edgeMap.get( 4L ) ).get() ) );
         assertTrue( result.containsKey( edgeMap.get( 5L ) ) );
-        assertEquals( toString( Route.builder().addAsLast( edgeMap.get( 3L ) ).addAsLast( edgeMap.get( 4L ) ).addAsLast( edgeMap.get( 6L ) ).addAsLast( edgeMap.get( 5L ) ).build() ), toString( result.get( edgeMap.get( 5L ) ) ) );
+        assertEquals( toString( Route.builder().addAsLast( edgeMap.get( 3L ) ).addAsLast( edgeMap.get( 4L ) ).addAsLast( edgeMap.get( 6L ) ).addAsLast( edgeMap.get( 5L ) ).build() ), toString( result.get( edgeMap.get( 5L ) ).get() ) );
         assertTrue( result.containsKey( edgeMap.get( 6L ) ) );
-        assertEquals( toString( Route.builder().addAsLast( edgeMap.get( 3L ) ).addAsLast( edgeMap.get( 4L ) ).addAsLast( edgeMap.get( 6L ) ).build() ), toString( result.get( edgeMap.get( 6L ) ) ) );
+        assertEquals( toString( Route.builder().addAsLast( edgeMap.get( 3L ) ).addAsLast( edgeMap.get( 4L ) ).addAsLast( edgeMap.get( 6L ) ).build() ), toString( result.get( edgeMap.get( 6L ) ).get() ) );
 
         // TODO test turn restrictions somehow - Uturns?
 //        Node source = nodeMap.get( 0L );

@@ -14,15 +14,16 @@ import cz.certicon.routing.model.graph.State;
 import cz.certicon.routing.model.queue.FibonacciHeap;
 import cz.certicon.routing.model.queue.PriorityQueue;
 import cz.certicon.routing.model.values.Distance;
+import cz.certicon.routing.utils.java8.Optional;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
-public class DijkstraOneToAllAlgorithm<N extends Node, E extends Edge> implements OneToAllRoutingAlgorithm<N, E> {
+public class DijkstraOneToAllAlgorithm<N extends Node<N, E>, E extends Edge<N, E>> implements OneToAllRoutingAlgorithm<N, E> {
 
     @Override
-    public Map<E, Route<N, E>> route( Graph<N, E> graph, Metric metric, E sourceEdge, Direction sourceDirection, Map<E, Direction> targetEdges ) {
+    public Map<E, Optional<Route<N, E>>> route( Graph<N, E> graph, Metric metric, E sourceEdge, Direction sourceDirection, Map<E, Direction> targetEdges ) {
         Map<State<N, E>, Distance> nodeDistanceMap = new HashMap<>();
         PriorityQueue<State<N, E>> pqueue = new FibonacciHeap<>();
         putNodeDistance( nodeDistanceMap, pqueue, new State( sourceDirection.equals( Direction.FORWARD ) ? sourceEdge.getTarget() : sourceEdge.getSource(), sourceEdge ), Distance.newInstance( 0 ) );
@@ -55,15 +56,19 @@ public class DijkstraOneToAllAlgorithm<N extends Node, E extends Edge> implement
                 }
             }
         }
-        Map<E, Route<N, E>> resultMap = new HashMap<>();
-        for ( Map.Entry<E, State> entry : finalStates.entrySet() ) {
-            Route.RouteBuilder<N, E> builder = Route.<N, E>builder();
-            State<N, E> currentState = entry.getValue();
-            while ( currentState != null && !currentState.isFirst() ) {
-                builder.addAsFirst( currentState.getEdge() );
-                currentState = predecessorMap.get( currentState );
+        Map<E, Optional<Route<N, E>>> resultMap = new HashMap<>();
+        for ( Map.Entry<E, Direction> entry : targetEdges.entrySet() ) {
+            Optional<Route<N, E>> optional = Optional.empty();
+            if ( finalStates.containsKey( entry.getKey() ) ) {
+                State<N, E> currentState = finalStates.get( entry.getKey() );
+                Route.RouteBuilder<N, E> builder = Route.<N, E>builder();
+                while ( currentState != null && !currentState.isFirst() ) {
+                    builder.addAsFirst( currentState.getEdge() );
+                    currentState = predecessorMap.get( currentState );
+                }
+                optional = Optional.of( builder.build() );
             }
-            resultMap.put( entry.getKey(), builder.build() );
+            resultMap.put( entry.getKey(), optional );
         }
         return resultMap;
     }

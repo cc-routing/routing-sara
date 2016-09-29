@@ -12,26 +12,27 @@ import cz.certicon.routing.model.graph.Metric;
 import cz.certicon.routing.model.graph.SaraEdge;
 import cz.certicon.routing.model.graph.SaraNode;
 import cz.certicon.routing.model.values.Distance;
+import cz.certicon.routing.utils.java8.Optional;
 
 /**
  *
  * @author Michael Blaha {@literal <michael.blaha@certicon.cz>}
  */
-public class MultilevelDijkstraAlgorithm implements RoutingAlgorithm<SaraNode,SaraEdge> {
+public class MultilevelDijkstraAlgorithm implements RoutingAlgorithm<SaraNode, SaraEdge> {
 
     @Override
-    public Route route( Graph<SaraNode, SaraEdge> graph, Metric metric, SaraNode source, SaraNode destination ) {
+    public Optional<Route<SaraNode, SaraEdge>> route( Graph<SaraNode, SaraEdge> graph, Metric metric, SaraNode source, SaraNode destination ) {
         throw new UnsupportedOperationException( "Not supported yet." ); //To change body of generated methods, choose Tools | Templates.
     }
 
     @Override
-    public Route route( Graph<SaraNode, SaraEdge> graph, Metric metric, SaraEdge source, SaraEdge destination ) {
+    public Optional<Route<SaraNode, SaraEdge>> route( Graph<SaraNode, SaraEdge> graph, Metric metric, SaraEdge source, SaraEdge destination ) {
         throw new UnsupportedOperationException( "Not supported yet." ); //To change body of generated methods, choose Tools | Templates.
     }
 
     @Override
-    public Route route( Graph<SaraNode, SaraEdge> graph, Metric metric, SaraEdge source, SaraEdge destination, Distance toSourceStart, Distance toSourceEnd, Distance toDestinationStart, Distance toDestinationEnd ) {
+    public Optional<Route<SaraNode, SaraEdge>> route( Graph<SaraNode, SaraEdge> graph, Metric metric, SaraEdge source, SaraEdge destination, Distance toSourceStart, Distance toSourceEnd, Distance toDestinationStart, Distance toDestinationEnd ) {
         throw new UnsupportedOperationException( "Not supported yet." ); //To change body of generated methods, choose Tools | Templates.
     }
-    
+
 }
