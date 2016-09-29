@@ -5,9 +5,11 @@
  */
 package cz.certicon.routing.model.graph;
 
+import cz.certicon.routing.model.Route;
 import cz.certicon.routing.model.values.Coordinate;
 import cz.certicon.routing.model.values.Distance;
 import cz.certicon.routing.utils.collections.Iterator;
+import cz.certicon.routing.utils.java8.Optional;
 import java.util.Map;
 import java.util.Set;
 
@@ -134,7 +136,7 @@ public interface Graph<N extends Node, E extends Edge> {
     void removeEdge( E edge );
 
     public void lock();
-    
+
     Set<Metric> getMetrics();
 
     /**

@@ -10,6 +10,8 @@ import cz.certicon.routing.model.graph.Edge;
 import cz.certicon.routing.model.graph.Graph;
 import cz.certicon.routing.model.graph.Node;
 import cz.certicon.routing.utils.collections.Iterator;
+import cz.certicon.routing.utils.efficiency.BitArray;
+import cz.certicon.routing.utils.efficiency.LongBitArray;
 import gnu.trove.map.TIntObjectMap;
 import gnu.trove.map.hash.TIntObjectHashMap;
 import java.util.ArrayList;
@@ -33,20 +35,21 @@ public class GraphComponentSearcher {
         for ( N node : graph.getNodes() ) {
             nodes.add( node );
         }
+        Set<N> visited = new HashSet<>();
+        Queue<N> queue = new LinkedList<>();
         while ( !nodes.isEmpty() ) {
             N startNode = getAny( nodes );
             Collection<N> component = new ArrayList<>();
             componentList.add( component );
-            Queue<N> queue = new LinkedList<>();
             queue.add( startNode );
             while ( !queue.isEmpty() ) {
                 N node = queue.poll();
-                nodes.remove( node );
-                component.add( node );
                 for ( E edge : node.getEdges() ) {
                     N target = edge.getOtherNode( node );
                     if ( nodes.contains( target ) ) {
                         queue.add( target );
+                        nodes.remove( target );
+                        component.add( target );
                     }
                 }
             }
