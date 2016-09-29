@@ -48,6 +48,7 @@ public class DisplayUtils {
             Cell parent = node.getParent();
             CollectionUtils.getList( cellMap, parent ).add( node );
         }
+        viewer.setNumberOfColors( cellMap.size() );
         for ( List<Node> value : cellMap.values() ) {
             viewer.addNodeCluster( value );
         }

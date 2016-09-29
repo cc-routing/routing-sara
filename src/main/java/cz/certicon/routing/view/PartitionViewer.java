@@ -14,6 +14,8 @@ import java.util.Collection;
  * @author Michael Blaha {@literal <michael.blaha@certicon.cz>}
  */
 public interface PartitionViewer {
+    
+    public void setNumberOfColors(int numberOfColors);
 
     public <E extends Edge> void addCutEdges( Collection<E> cutEdges );
 

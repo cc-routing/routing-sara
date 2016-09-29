@@ -87,18 +87,26 @@ public class JxPartitionViewer extends AbstractJxMapViewer implements PartitionV
     @Override
     public void display() {
         super.display();
-        Thread repaintThread = new Thread( new Repainter( getPainters() ) );
-        repaintThread.setDaemon( true );
-        repaintThread.start();
+//        Thread repaintThread = new Thread( new Repainter( getPainters() ) );
+//        repaintThread.setDaemon( true );
+//        repaintThread.start();
+    }
+
+    @Override
+    public void setNumberOfColors( int numberOfColors ) {
+        colorSupplier = ColorUtils.createColorSupplier( numberOfColors );
     }
 
     private static class Repainter implements Runnable {
 
-        private final ColorUtils.ColorSupplier colorSupplier = ColorUtils.createColorSupplier( NUMBER_OF_COLORS );
+        private final ColorUtils.ColorSupplier colorSupplier;
         private final List<Painter<JXMapViewer>> painters;
+        private final int numberOfColors;
 
-        public Repainter( List<Painter<JXMapViewer>> painters ) {
+        public Repainter( List<Painter<JXMapViewer>> painters, int numberOfColors ) {
             this.painters = painters;
+            this.numberOfColors = numberOfColors;
+            colorSupplier = ColorUtils.createColorSupplier( numberOfColors );
         }
 
         @Override
@@ -107,7 +115,7 @@ public class JxPartitionViewer extends AbstractJxMapViewer implements PartitionV
                 try {
                     Thread.sleep( 10000 );
                     List<Color> colors = new ArrayList<>();
-                    for ( int i = 0; i < NUMBER_OF_COLORS; i++ ) {
+                    for ( int i = 0; i < numberOfColors; i++ ) {
                         colors.add( colorSupplier.nextColor() );
                     }
                     Random random = RandomUtils.createRandom();

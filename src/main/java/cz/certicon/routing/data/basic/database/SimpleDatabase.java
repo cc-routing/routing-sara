@@ -120,6 +120,9 @@ public class SimpleDatabase {
     }
 
     private void setBatch( boolean on ) throws IOException {
+        if(!database.isOpen()){
+            database.open();
+        }
         try {
             if ( on && !batch ) {
                 database.getConnection().setAutoCommit( false );
