@@ -13,8 +13,10 @@ import cz.certicon.routing.model.graph.SaraGraph;
 import cz.certicon.routing.model.graph.SaraNode;
 import cz.certicon.routing.model.graph.TurnTable;
 import cz.certicon.routing.model.values.Distance;
+import cz.certicon.routing.utils.java8.Optional;
 import gnu.trove.map.TLongObjectMap;
 import gnu.trove.map.hash.TLongObjectHashMap;
+import java.util.List;
 import lombok.Getter;
 
 /**
@@ -126,16 +128,29 @@ public class SubGraphBuilder {
 
     /**
      * finds route in L0 cell sub sara graph = shortcut in L1.
+     *
      * @param sourceNodeId
      * @param targetNodeId
      * @param metric
-     * @return route
+     * @return route distance
      */
-    public Route route(long sourceNodeId, long targetNodeId, Metric metric) {
+    public Optional<Route<SaraNode, SaraEdge>> route(long sourceNodeId, long targetNodeId, Metric metric) {
         SaraNode source = this.subNodes.get(sourceNodeId);
         SaraNode target = this.subNodes.get(targetNodeId);
 
-        Route route = this.builder.router.route(this.subGraph, metric, source, target);
+        Optional<Route<SaraNode, SaraEdge>> route = this.builder.router.route(this.subGraph, metric, source, target);
+
         return route;
+    }
+
+    public Distance sumDistance(List<SaraEdge> edges, Metric metric) {
+        Distance distance = new Distance(0);
+        for (int idx = 1; idx < edges.size() - 1; idx++) {
+            SaraEdge edge = edges.get(idx);
+            Distance value = edge.getLength(metric);
+            distance = distance.add(value);
+        }
+
+        return distance;
     }
 }
