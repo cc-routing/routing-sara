@@ -12,6 +12,7 @@ import cz.certicon.routing.model.graph.Metric;
 import cz.certicon.routing.model.graph.SaraEdge;
 import cz.certicon.routing.model.graph.SaraNode;
 import cz.certicon.routing.model.values.Distance;
+import cz.certicon.routing.utils.java8.Optional;
 import gnu.trove.map.TLongObjectMap;
 import gnu.trove.map.hash.TLongObjectHashMap;
 import java.util.ArrayList;
@@ -102,7 +103,6 @@ public class Partition {
 
         DijkstraAlgorithm router = this.parent.router;
         Distance distance;
-        Route route;
 
         int validRoutes = 0;
         int invalidRoutes = 0;
@@ -134,23 +134,29 @@ public class Partition {
                                 distance = Distance.newInfinityInstance();
                             } else {
 
-                                try {
-                                    route = table.graphBuilder.route(saraEntry.getId(), saraExit.getId(), metric);
-                                    distance = this.sumDistance(route, metric, 1, 1);
+                                Optional<Route<SaraNode, SaraEdge>> route = table.graphBuilder.route(saraEntry.getId(), saraExit.getId(), metric);
+
+                                if (route.isPresent()) {
+                                    distance = table.graphBuilder.sumDistance(route.get().getEdgeList(), metric);
                                     validRoutes++;
-                                } catch (IllegalStateException ex) {
+                                } else {
                                     distance = Distance.newInfinityInstance();
                                     invalidRoutes++;
                                 }
                             }
-
                         } else {
                             //L2+ distances are calculated from this.L-1 overlay graph
                             OverlayNode overEntry = entryNode.getLowerNode();
                             OverlayNode overExit = exitNode.getLowerNode();
                             Partition lower = this.parent.partitions.get(this.level - 1);
-                            route = router.route(lower.overlayGraph, metric, overEntry, overExit);
-                            distance = this.sumDistance(route, metric, 0, 1);
+                            Optional<Route<OverlayNode, OverlayEdge>> route = router.route(lower.overlayGraph, metric, overEntry, overExit);
+                            if (route.isPresent()) {
+                                distance = this.sumDistance(route.get().getEdges(), metric);
+                                validRoutes++;
+                            } else {
+                                distance = Distance.newInfinityInstance();
+                                invalidRoutes++;
+                            }
                         }
 
                         edge.setLength(metric, distance);
@@ -161,39 +167,29 @@ public class Partition {
         }
 
         double ratio = (100 * invalidRoutes) / (validRoutes + invalidRoutes);
+
         String info = String.format("Level=%d,ForbiddenUTurns=%d,  ValidRoutes=%d, InvalidRoutes=%d=%f",
                 this.level, forbiddenUTurns, validRoutes, invalidRoutes, ratio);
+
         System.out.println(info + "%");
     }
 
     /**
-     * sum distance from route
+     * sum distance for Overlay route
      *
      * @param route
      * @param map
-     * @param from: L1: 1 first edge skipped, L2+: 0
-     * @param to : L1: -2 exit edge is skipped, route is formed by SaraEdges
-     * from from L1 cell.subSaraGraph L2+: -1 entire route is summed, route is
-     * formed by OverlayEdges from overlya graph
-     * @return
+     * @return route distance
      */
-    private Distance sumDistance(Route route, Metric metric, int from, int to) {
-
-        Iterable<SaraEdge> routeEdges = route.getEdges();
-        List<SaraEdge> edges = new ArrayList<>();
-
-        for (SaraEdge item : routeEdges) {
-            edges.add(item);
-        }
+    private Distance sumDistance(Iterable<OverlayEdge> edges, Metric metric) {
 
         Distance distance = new Distance(0);
-        for (int idx = from; idx < edges.size() - to; idx++) {
-            SaraEdge edge = edges.get(idx);
+
+        for (OverlayEdge edge : edges) {
             Distance value = edge.getLength(metric);
             distance = distance.add(value);
         }
 
         return distance;
     }
-
 }
