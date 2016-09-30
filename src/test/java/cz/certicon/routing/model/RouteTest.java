@@ -13,6 +13,7 @@ import cz.certicon.routing.model.graph.SimpleNode;
 import cz.certicon.routing.model.graph.SimpleEdge;
 import cz.certicon.routing.model.graph.UndirectedGraph;
 import cz.certicon.routing.utils.GraphUtils;
+import cz.certicon.routing.utils.ToStringUtils;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -68,7 +69,7 @@ public class RouteTest {
         Route.RouteBuilder builder = Route.builder();
 
         Route<SimpleNode, SimpleEdge> route = builder.addAsLast( cd ).addAsFirst( bc ).addAsLast( de ).addAsFirst( ab ).build();
-        assertEquals( "Route{source=0,target=4,edges=[0,1,2,3]}", toString( route ) );
+        assertEquals( "Route{source=0,target=4,edges=[0,1,2,3]}", ToStringUtils.toString( route ) );
     }
 
     /**
@@ -93,16 +94,6 @@ public class RouteTest {
         Route route = builder.addAsLast( cd ).addAsFirst( bc ).addAsLast( de ).addAsFirst( ab ).build();
 
 //        assertEquals( route.toString(), "Route(edges=[Edge(id=0, oneway=false, source=Node(id=0), target=Node(id=1), length=Distance(value=0.0)), Edge(id=1, oneway=false, source=Node(id=2), target=Node(id=1), length=Distance(value=0.0)), Edge(id=2, oneway=false, source=Node(id=2), target=Node(id=3), length=Distance(value=0.0)), Edge(id=3, oneway=false, source=Node(id=4), target=Node(id=3), length=Distance(value=0.0))], source=Node(id=0), target=Node(id=4))" );
-    }
-
-    private static <N extends Node, E extends Edge> String toString( Route<N, E> route ) {
-        StringBuilder sb = new StringBuilder();
-        sb.append( "Route{source=" ).append( route.getSource().getId() ).append( ",target=" ).append( route.getTarget().getId() ).append( ",edges=[" );
-        for ( E edge : route.getEdges() ) {
-            sb.append( edge.getId() ).append( "," );
-        }
-        sb.replace( sb.length() - 1, sb.length(), "]}" );
-        return sb.toString();
     }
 
 }

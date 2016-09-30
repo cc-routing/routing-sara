@@ -15,6 +15,7 @@ import cz.certicon.routing.model.graph.SimpleNode;
 import cz.certicon.routing.model.graph.UndirectedGraph;
 import cz.certicon.routing.model.values.Distance;
 import cz.certicon.routing.utils.GraphUtils;
+import cz.certicon.routing.utils.ToStringUtils;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -110,7 +111,7 @@ public class ContractNodeTest {
 //        System.out.println( toString( result ) );
 //        System.out.println( result.toString() );
         System.out.println( graph );
-        assertEquals( expResult, toString( result ) );
+        assertEquals( expResult, ToStringUtils.toString( result ) );
     }
 
     /**
@@ -129,36 +130,4 @@ public class ContractNodeTest {
         assertEquals( expResult, result );
     }
 
-    private String toString( final ContractNode node ) {
-        StringBuilder sb = new StringBuilder();
-        sb.append( node.getClass().getSimpleName() ).append( "{edges={" );
-        List<ContractEdge> edges = new ArrayList<>();
-        for ( ContractEdge edge : node.getEdges() ) {
-            edges.add( edge );
-        }
-        Collections.sort( edges, new EdgeComparator<>( node ) );
-        for ( ContractEdge edge : edges ) {
-            sb.append( "edge[" ).append( edge.getEdges().size() ).append( "]->node#" ).append( edge.getOtherNode( node ).getId() ).append( "," );
-        }
-        if ( !edges.isEmpty() ) {
-            sb.replace( sb.length() - 1, sb.length(), "" );
-        }
-        sb.append( "}}" );
-        return sb.toString();
-    }
-
-    private static class EdgeComparator<N extends Node, E extends Edge> implements Comparator<E> {
-
-        private final N node;
-
-        public EdgeComparator( N node ) {
-            this.node = node;
-        }
-
-        @Override
-        public int compare( E o1, E o2 ) {
-            return Long.compare( o1.getOtherNode( node ).getId(), o2.getOtherNode( node ).getId() );
-        }
-
-    }
 }

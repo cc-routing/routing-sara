@@ -5,6 +5,7 @@
  */
 package cz.certicon.routing.algorithm;
 
+import cz.certicon.routing.model.Identifiable;
 import cz.certicon.routing.model.MinimalCut;
 import cz.certicon.routing.model.basic.Pair;
 import cz.certicon.routing.model.graph.Edge;
@@ -19,6 +20,8 @@ import cz.certicon.routing.model.values.Distance;
 import cz.certicon.routing.utils.GraphGeneratorUtils;
 import cz.certicon.routing.utils.GraphUtils;
 import cz.certicon.routing.utils.RandomUtils;
+import cz.certicon.routing.utils.ToStringUtils;
+import cz.certicon.routing.utils.java8.Mappers;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -27,6 +30,8 @@ import java.util.EnumSet;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java8.util.stream.Collectors;
+import java8.util.stream.StreamSupport;
 import org.junit.After;
 import org.junit.AfterClass;
 import org.junit.Before;
@@ -86,7 +91,7 @@ public class FordFulkersonMinimalCutTest {
             Node targetNode = nodeMap.get( 5L );
             MinimalCut<Edge> expected = new MinimalCut<>( Arrays.asList( edgeMap.get( 4L ), edgeMap.get( 5L ) ), 74 );
             MinimalCut<Edge> result = instance.compute( graph, Metric.LENGTH, sourceNode, targetNode );
-            assertEquals( toString( expected ), toString( result ) );
+            assertEquals( ToStringUtils.toString( expected ), ToStringUtils.toString( result ) );
         }
 
         {
@@ -113,8 +118,8 @@ public class FordFulkersonMinimalCutTest {
             MinimalCut<Edge> expected1 = new MinimalCut<>( Arrays.<Edge>asList( edges[0], edges[6], edges[7] ), 12 );
             MinimalCut<Edge> expected2 = new MinimalCut<>( Arrays.<Edge>asList( edges[0], edges[2], edges[4], edges[10] ), 12 );
             MinimalCut<Edge> result = instance.compute( g, Metric.SIZE, nodes[0], nodes[1] );
-            if ( !toString( result ).equals( toString( expected1 ) ) ) {
-                assertEquals( toString( expected2 ), toString( result ) );
+            if ( !ToStringUtils.toString( result ).equals( ToStringUtils.toString( expected1 ) ) ) {
+                assertEquals( ToStringUtils.toString( expected2 ), ToStringUtils.toString( result ) );
             }
         }
         {
@@ -142,9 +147,9 @@ public class FordFulkersonMinimalCutTest {
             MinimalCut<Edge> expected2 = new MinimalCut<>( Arrays.asList( edges[0], edges[5], edges[6], edges[7], edges[8], edges[9] ), 14 );// 4 or 8+9 or 9+12
             MinimalCut<Edge> expected3 = new MinimalCut<>( Arrays.asList( edges[0], edges[5], edges[6], edges[7], edges[9], edges[12] ), 14 );// 4 or 8+9 or 9+12
             MinimalCut<Edge> result = instance.compute( g, Metric.SIZE, nodes[0], nodes[1] );
-            if ( !toString( result ).equals( toString( expected1 ) ) ) {
-                if ( !toString( result ).equals( toString( expected2 ) ) ) {
-                    assertEquals( toString( expected3 ), toString( result ) );
+            if ( !ToStringUtils.toString( result ).equals( ToStringUtils.toString( expected1 ) ) ) {
+                if ( !ToStringUtils.toString( result ).equals( ToStringUtils.toString( expected2 ) ) ) {
+                    assertEquals( ToStringUtils.toString( expected3 ), ToStringUtils.toString( result ) );
                 }
             }
         }
@@ -153,29 +158,6 @@ public class FordFulkersonMinimalCutTest {
     private SimpleEdge createEdge( UndirectedGraph g, int id, int source, int target, int length, Node[] nodes ) {
         SimpleEdge edge = g.createEdge( id, false, (SimpleNode) nodes[source], (SimpleNode) nodes[target], -1, -1, new Pair<>( Metric.LENGTH, Distance.newInstance( length ) ), new Pair<>( Metric.SIZE, Distance.newInstance( length ) ) );
         return edge;
-    }
-
-    public String toString( MinimalCut<Edge> minimalCut ) {
-//        System.out.println( "cut edges:" );
-//        for ( Edge cutEdge : minimalCut.getCutEdges()) {
-//            System.out.println( cutEdge );
-//        }
-
-        List<Edge> sortedEdges = new ArrayList<>( minimalCut.getCutEdges() );
-        Collections.sort( sortedEdges, new Comparator<Edge>() {
-            @Override
-            public int compare( Edge o1, Edge o2 ) {
-                return Long.compare( o1.getId(), o2.getId() );
-            }
-        } );
-
-        StringBuilder sb = new StringBuilder();
-        sb.append( "MinimalCut{cut=" ).append( minimalCut.getCutSize() ).append( ",edges=[" );
-        for ( Edge edge : sortedEdges ) {
-            sb.append( edge.getId() ).append( "," );
-        }
-        sb.replace( sb.length() - 1, sb.length(), "]}" );
-        return sb.toString();
     }
 
 }

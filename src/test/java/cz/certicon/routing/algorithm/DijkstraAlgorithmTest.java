@@ -17,12 +17,20 @@ import cz.certicon.routing.model.graph.UndirectedGraph;
 import cz.certicon.routing.model.values.Distance;
 import cz.certicon.routing.utils.GraphGeneratorUtils;
 import cz.certicon.routing.utils.RandomUtils;
+import cz.certicon.routing.utils.ToStringUtils;
+import cz.certicon.routing.utils.java8.IteratorStreams;
+import cz.certicon.routing.utils.java8.Mappers;
 import cz.certicon.routing.utils.java8.Optional;
 import java.util.ArrayList;
 import java.util.EnumSet;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java8.util.Spliterator;
+import java8.util.Spliterators;
+import java8.util.function.Function;
+import java8.util.stream.Collectors;
+import java8.util.stream.StreamSupport;
 import org.junit.After;
 import org.junit.AfterClass;
 import org.junit.Before;
@@ -80,7 +88,7 @@ public class DijkstraAlgorithmTest {
         DijkstraAlgorithm instance = new DijkstraAlgorithm();
         Route<Node, Edge> expResult = Route.builder().addAsLast( edgeMap.get( 0L ) ).addAsLast( edgeMap.get( 4L ) ).addAsLast( edgeMap.get( 6L ) ).addAsLast( edgeMap.get( 5L ) ).build();
         Optional<Route<Node, Edge>> result = instance.route( graph, Metric.LENGTH, source, destination );
-        assertEquals( toString( expResult ), toString( result.get() ) );
+        assertEquals(  ToStringUtils.toString( expResult ),  ToStringUtils.toString( result.get() ) );
     }
 
     /**
@@ -94,7 +102,7 @@ public class DijkstraAlgorithmTest {
         DijkstraAlgorithm instance = new DijkstraAlgorithm();
         Route<Node, Edge> expResult = Route.builder().addAsLast( edgeMap.get( 1L ) ).addAsLast( edgeMap.get( 0L ) ).addAsLast( edgeMap.get( 4L ) ).addAsLast( edgeMap.get( 6L ) ).addAsLast( edgeMap.get( 5L ) ).build();
         Optional<Route<Node, Edge>> result = instance.route( graph, Metric.LENGTH, source, destination );
-        assertEquals( toString( expResult ), toString( result.get() ) );
+        assertEquals(  ToStringUtils.toString( expResult ),  ToStringUtils.toString( result.get() ) );
     }
 
     /**
@@ -112,17 +120,8 @@ public class DijkstraAlgorithmTest {
         DijkstraAlgorithm instance = new DijkstraAlgorithm();
         Route<Node, Edge> expResult = Route.builder().addAsLast( edgeMap.get( 1L ) ).addAsLast( edgeMap.get( 0L ) ).addAsLast( edgeMap.get( 4L ) ).addAsLast( edgeMap.get( 6L ) ).addAsLast( edgeMap.get( 5L ) ).addAsLast( edgeMap.get( 2L ) ).build();
         Optional<Route<Node, Edge>> result = instance.route( graph, Metric.LENGTH, source, destination, toSourceStart, toSourceEnd, toDestinationStart, toDestinationEnd );
-        assertEquals( toString( expResult ), toString( result.get() ) );
+        assertEquals( ToStringUtils.toString( expResult ),  ToStringUtils.toString( result.get() ) );
     }
 
-    private static String toString( Route<Node, Edge> route ) {
-        StringBuilder sb = new StringBuilder();
-        sb.append( "Route{source=" ).append( route.getSource().getId() ).append( ",target=" ).append( route.getTarget().getId() ).append( ",edges=[" );
-        for ( Edge edge : route.getEdges() ) {
-            sb.append( edge.getId() ).append( "," );
-        }
-        sb.replace( sb.length() - 1, sb.length(), "]}" );
-        return sb.toString();
-    }
 
 }

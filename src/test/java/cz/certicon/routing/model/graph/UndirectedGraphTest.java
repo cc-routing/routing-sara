@@ -8,6 +8,7 @@ package cz.certicon.routing.model.graph;
 import cz.certicon.routing.model.Identifiable;
 import cz.certicon.routing.model.values.Distance;
 import cz.certicon.routing.utils.GraphGeneratorUtils;
+import cz.certicon.routing.utils.ToStringUtils;
 import cz.certicon.routing.utils.collections.CollectionUtils;
 import cz.certicon.routing.utils.collections.Iterator;
 import java.util.ArrayList;
@@ -77,7 +78,7 @@ public class UndirectedGraphTest {
         System.out.println( "getNodes" );
         Graph instance = graph;
         String expResult = "[0,1,2,3,4,5]";
-        String result = nodeIteratorToString( instance.getNodes() );
+        String result = ToStringUtils.toString( instance.getNodes() );
         assertEquals( expResult, result );
     }
 
@@ -101,7 +102,7 @@ public class UndirectedGraphTest {
         System.out.println( "getEdges" );
         Graph instance = graph;
         String expResult = "[0,1,2,3,4,5,6]";
-        String result = edgeIteratorToString( instance.getEdges() );
+        String result = ToStringUtils.toString( instance.getEdges() );
         assertEquals( expResult, result );
     }
 
@@ -121,7 +122,7 @@ public class UndirectedGraphTest {
 
     private void testGetIncomingEdges( long nodeId, String expResult ) {
         Node node = nodeMap.get( nodeId );
-        String result = edgeIteratorToString( graph.getIncomingEdges( node ) );
+        String result = ToStringUtils.toString( graph.getIncomingEdges( node ) );
         assertEquals( expResult, result );
     }
 
@@ -141,7 +142,7 @@ public class UndirectedGraphTest {
 
     private void testGetOutgoingEdges( long nodeId, String expResult ) {
         Node node = nodeMap.get( nodeId );
-        String result = edgeIteratorToString( graph.getOutgoingEdges( node ) );
+        String result = ToStringUtils.toString( graph.getOutgoingEdges( node ) );
         assertEquals( expResult, result );
     }
 
@@ -217,30 +218,6 @@ public class UndirectedGraphTest {
             Node result = graph.getOtherNode( edge, nodeMap.get( otherNodeId ) );
             assertEquals( expResult, result );
         }
-    }
-
-    private static String edgeIteratorToString( Iterator<Edge> iterator ) {
-        List<Edge> list = CollectionUtils.asList( iterator );
-        Collections.sort( list, Identifiable.Comparators.createIdComparator() );
-        StringBuilder sb = new StringBuilder();
-        sb.append( "[" );
-        for ( Edge edge : list ) {
-            sb.append( edge.getId() ).append( "," );
-        }
-        sb.replace( sb.length() - 1, sb.length(), "]" );
-        return sb.toString();
-    }
-
-    private static String nodeIteratorToString( Iterator<Node> iterator ) {
-        List<Node> list = CollectionUtils.asList( iterator );
-        Collections.sort( list, Identifiable.Comparators.createIdComparator() );
-        StringBuilder sb = new StringBuilder();
-        sb.append( "[" );
-        for ( Node node : list ) {
-            sb.append( node.getId() ).append( "," );
-        }
-        sb.replace( sb.length() - 1, sb.length(), "]" );
-        return sb.toString();
     }
 
     /**

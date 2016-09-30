@@ -113,9 +113,4 @@ public class NaturalCutsFilterTest {
 //        System.out.println( "Press enter to continue..." );
 //        new Scanner( System.in ).nextLine();
     }
-
-    private String toString( ContractGraph graph ) {
-        StringBuilder sb = new StringBuilder();
-        return graph.toString();
-    }
 }

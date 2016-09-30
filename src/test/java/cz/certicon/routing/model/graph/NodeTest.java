@@ -7,6 +7,7 @@ package cz.certicon.routing.model.graph;
 
 import cz.certicon.routing.model.values.Distance;
 import cz.certicon.routing.utils.GraphGeneratorUtils;
+import cz.certicon.routing.utils.ToStringUtils;
 import java.util.ArrayList;
 import java.util.EnumSet;
 import java.util.HashMap;
@@ -35,7 +36,7 @@ public class NodeTest {
         this.nodeMap = new HashMap<>();
         this.edgeMap = new HashMap<>();
         this.turnTables = new HashMap<>();
-        this.graph = GraphGeneratorUtils.createGraph(EnumSet.of( Metric.LENGTH), nodeMap, edgeMap, turnTables );
+        this.graph = GraphGeneratorUtils.createGraph( EnumSet.of( Metric.LENGTH ), nodeMap, edgeMap, turnTables );
     }
 
     @BeforeClass
@@ -70,7 +71,7 @@ public class NodeTest {
 
     private void testGetIncomingEdges( long nodeId, String expResult ) {
         Node node = nodeMap.get( nodeId );
-        String result = edgeIteratorToString( graph.getIncomingEdges( node ) );
+        String result = ToStringUtils.toString( graph.getIncomingEdges( node ) );
         assertEquals( expResult, result );
     }
 
@@ -90,7 +91,7 @@ public class NodeTest {
 
     private void testGetOutgoingEdges( long nodeId, String expResult ) {
         Node node = nodeMap.get( nodeId );
-        String result = edgeIteratorToString( graph.getOutgoingEdges(node) );
+        String result = ToStringUtils.toString( graph.getOutgoingEdges( node ) );
         assertEquals( expResult, result );
     }
 
@@ -104,7 +105,6 @@ public class NodeTest {
 //        assertEquals( 0, instance.getId() );
 //        assertNotEquals( 0, createNode( new ArrayList<SimpleNode>(), 1 ).getId() );
 //    }
-
     /**
      * Test of addEdge method, of class Node.
      */
@@ -116,7 +116,6 @@ public class NodeTest {
 //        node.addEdge( createEdge( new ArrayList<SimpleEdge>(), 1, true, node, node, 0, false ) );
 //        assertEquals( "[0,1]", edgeIteratorToString( node.getOutgoingEdges() ) );
 //    }
-
     /**
      * Test of addEdge method, of class Node.
      */
@@ -135,7 +134,6 @@ public class NodeTest {
 //        assertEquals( 5, node.getEdgePosition( b ) );
 //        assertEquals( 6, node.getEdgePosition( c ) );
 //    }
-
     /**
      * Test of setTurnTable method, of class Node.
      */
@@ -162,7 +160,6 @@ public class NodeTest {
 //        node.addEdge( createEdge( new ArrayList<SimpleEdge>(), 1, true, node, node, 0 ) );
 //        assertEquals( 2, node.getDegree() );
 //    }
-
     /**
      * Test of lock method, of class Node.
      */
@@ -174,24 +171,4 @@ public class NodeTest {
 //        node.lock();
 //        node.addEdge( createEdge( new ArrayList<SimpleEdge>(), 1, true, node, node, 0 ) );
 //    }
-
-    private static String edgeIteratorToString( Iterator<Edge> iterator ) {
-        StringBuilder sb = new StringBuilder();
-        sb.append( "[" );
-        while ( iterator.hasNext() ) {
-            sb.append( iterator.next().getId() ).append( "," );
-        }
-        sb.replace( sb.length() - 1, sb.length(), "]" );
-        return sb.toString();
-    }
-
-    private static String nodeIteratorToString( Iterator<SimpleNode> iterator ) {
-        StringBuilder sb = new StringBuilder();
-        sb.append( "[" );
-        while ( iterator.hasNext() ) {
-            sb.append( iterator.next().getId() ).append( "," );
-        }
-        sb.replace( sb.length() - 1, sb.length(), "]" );
-        return sb.toString();
-    }
 }
