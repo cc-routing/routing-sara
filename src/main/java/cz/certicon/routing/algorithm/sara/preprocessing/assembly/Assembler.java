@@ -5,6 +5,7 @@
  */
 package cz.certicon.routing.algorithm.sara.preprocessing.assembly;
 
+import cz.certicon.routing.model.basic.MaxIdContainer;
 import cz.certicon.routing.model.graph.Edge;
 import cz.certicon.routing.model.graph.Graph;
 import cz.certicon.routing.model.graph.Node;
@@ -20,5 +21,8 @@ import cz.certicon.routing.model.graph.preprocessing.ContractGraph;
  */
 public interface Assembler {
 
-    <N extends Node, E extends Edge> SaraGraph assemble( Graph<N, E> originalGraph, ContractGraph graph );
+    <N extends Node, E extends Edge> SaraGraph assemble( Graph<N, E> originalGraph, ContractGraph graph, MaxIdContainer cellId );
+
+    <N extends Node, E extends Edge> SaraGraph assemble( Graph<N, E> originalGraph, ContractGraph graph, MaxIdContainer cellId, int layers );
+
 }

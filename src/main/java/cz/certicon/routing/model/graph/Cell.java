@@ -35,6 +35,10 @@ public class Cell implements Identifiable {
         this.parent = parent;
     }
 
+    public boolean hasParent() {
+        return parent != null;
+    }
+
     public void lock() {
         locked = true;
     }
@@ -69,6 +73,5 @@ public class Cell implements Identifiable {
         }
         return true;
     }
-    
-    
+
 }

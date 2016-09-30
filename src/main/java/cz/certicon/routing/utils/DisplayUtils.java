@@ -42,17 +42,29 @@ import java.util.Map;
 public class DisplayUtils {
 
     public static void display( SaraGraph graph ) {
-        PartitionViewer viewer = new JxPartitionViewer();
-        Map<Cell, List<Node>> cellMap = new HashMap<>();
-        for ( SaraNode node : graph.getNodes() ) {
-            Cell parent = node.getParent();
-            CollectionUtils.getList( cellMap, parent ).add( node );
+        int layers = 1;
+        Cell cell = graph.getNodes().next().getParent();
+        while ( cell.hasParent() ) {
+//            System.out.println( "- Layer #" + layers + ", " + "parenting: 1 to " + layers  );
+            PartitionViewer viewer = new JxPartitionViewer();
+            Map<Cell, List<Node>> cellMap = new HashMap<>();
+            for ( SaraNode node : graph.getNodes() ) {
+                Cell parent = node.getParent();
+                for ( int i = 1; i < layers; i++ ) {
+                    parent = parent.getParent();
+                }
+                CollectionUtils.getList( cellMap, parent ).add( node );
+            }
+//            System.out.println( "- Adding #" + cellMap.size() + " clusters..." );
+            viewer.setNumberOfColors( cellMap.size() );
+            for ( List<Node> value : cellMap.values() ) {
+                viewer.addNodeCluster( value );
+            }
+//            System.out.println( "- Displaying" );
+            viewer.display();
+            layers++;
+            cell = cell.getParent();
         }
-        viewer.setNumberOfColors( cellMap.size() );
-        for ( List<Node> value : cellMap.values() ) {
-            viewer.addNodeCluster( value );
-        }
-        viewer.display();
     }
 
     public static <N extends Node, E extends Edge> void display( Graph<N, E> graph, Collection<ElementContainer<N>> nodeGroups ) {

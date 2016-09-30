@@ -6,6 +6,7 @@
 package cz.certicon.routing.algorithm.sara.preprocessing.assembly;
 
 import cz.certicon.routing.algorithm.sara.preprocessing.filtering.NaturalCutsFilter;
+import cz.certicon.routing.model.basic.MaxIdContainer;
 import cz.certicon.routing.model.graph.Cell;
 import cz.certicon.routing.model.graph.Edge;
 import cz.certicon.routing.model.graph.SimpleEdge;
@@ -57,7 +58,7 @@ public class GreedyAssemblerTest {
     private final Map<Long, Node> nodeMap;
     private final Map<Long, Edge> edgeMap;
     private final Map<TurnTable, TurnTable> turnTables;
-    private static final int CELL_SIZE = 10;
+    private static final int CELL_SIZE = 5;
 
     public GreedyAssemblerTest() {
         this.nodeMap = new HashMap<>();
@@ -107,7 +108,7 @@ public class GreedyAssemblerTest {
 //        System.out.println( "orig graph: " + originalGraph );
         createNewGraph();
         GreedyAssembler assembler = new GreedyAssembler( 0.5, 0.5, CELL_SIZE );
-        SaraGraph assembled = assembler.assemble( originalGraph, graph );
+        SaraGraph assembled = assembler.assemble( originalGraph, graph, new MaxIdContainer( 0 ), 3 );
 
         Map<Cell, List<Node>> cellMap = new HashMap<>();
         for ( SaraNode node : assembled.getNodes() ) {
@@ -197,7 +198,7 @@ public class GreedyAssemblerTest {
 //        }
         createNewGraph();
         GreedyAssembler instance = new GreedyAssembler( 0.5, 0.5, CELL_SIZE );
-        PriorityQueue<NodePair> result = instance.initQueue( graph );
+        PriorityQueue<NodePair> result = instance.initQueue( graph, CELL_SIZE );
         for ( ContractNode node : graph.getNodes() ) {
             for ( ContractEdge edge : graph.getEdges( node ) ) {
                 ContractNode target = graph.getOtherNode( edge, node );
@@ -220,7 +221,7 @@ public class GreedyAssemblerTest {
         createNewGraph();
         GreedyAssembler instance = new GreedyAssembler( 0.5, 0.5, CELL_SIZE );
 //        System.out.println( "INIT QUEUE" );
-        PriorityQueue<NodePair> queue = instance.initQueue( graph );
+        PriorityQueue<NodePair> queue = instance.initQueue( graph, CELL_SIZE );
         NodePair origPair = queue.extractMin();
         ContractNode nodeA = origPair.nodeA;
         ContractNode nodeB = origPair.nodeB;
@@ -267,13 +268,13 @@ public class GreedyAssemblerTest {
 //        }
         createNewGraph();
         GreedyAssembler instance = new GreedyAssembler( 0.5, 0.5, CELL_SIZE );
-        PriorityQueue<NodePair> queue = instance.initQueue( graph );
+        PriorityQueue<NodePair> queue = instance.initQueue( graph, CELL_SIZE );
         NodePair origPair = queue.extractMin();
         ContractNode nodeA = origPair.nodeA;
         ContractNode nodeB = origPair.nodeB;
         instance.clearPairs( queue, origPair, nodeA );
         instance.clearPairs( queue, origPair, nodeB );
-        instance.addPairs( queue, nodeB );
+        instance.addPairs( queue, nodeB, CELL_SIZE );
         for ( ContractNode node : graph.getNodes() ) {
             for ( ContractEdge edge : graph.getEdges( node ) ) {
                 ContractNode target = graph.getOtherNode( edge, node );

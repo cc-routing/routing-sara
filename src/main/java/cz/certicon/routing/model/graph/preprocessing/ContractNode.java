@@ -5,6 +5,7 @@
  */
 package cz.certicon.routing.model.graph.preprocessing;
 
+import cz.certicon.routing.model.basic.MaxIdContainer;
 import cz.certicon.routing.model.basic.Pair;
 import cz.certicon.routing.model.graph.AbstractNode;
 import cz.certicon.routing.model.graph.Graph;
@@ -97,21 +98,4 @@ public class ContractNode extends AbstractNode<ContractNode, ContractEdge> {
         return new ContractNode( newGraph, id, new HashSet<>( nodes ) );
     }
 
-    public static class MaxIdContainer {
-
-        private long maxId;
-
-        public MaxIdContainer( long maxId ) {
-            this.maxId = maxId;
-        }
-
-        public long getEdgeMaxId() {
-            return maxId;
-        }
-
-        public long next() {
-            return ++maxId;
-        }
-
-    }
 }

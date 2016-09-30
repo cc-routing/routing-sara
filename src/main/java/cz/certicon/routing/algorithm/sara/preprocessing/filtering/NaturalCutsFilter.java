@@ -19,6 +19,7 @@ import cz.certicon.routing.model.graph.SimpleNode;
 import cz.certicon.routing.model.graph.UndirectedGraph;
 import cz.certicon.routing.model.graph.preprocessing.ContractNode;
 import cz.certicon.routing.model.graph.preprocessing.ContractGraph;
+import cz.certicon.routing.model.basic.MaxIdContainer;
 import cz.certicon.routing.model.values.Distance;
 import cz.certicon.routing.utils.DisplayUtils;
 import cz.certicon.routing.utils.GraphUtils;
@@ -246,7 +247,7 @@ public class NaturalCutsFilter implements Filter {
         return cutEdges;
     }
 
-    private <N extends Node> ContractNode contractNode( Graph<ContractNode, ContractEdge> graph, ElementContainer<N> nodeGroup, ContractNode.MaxIdContainer nodeMaxIdContainer, ContractNode.MaxIdContainer edgeMaxIdContainer ) {
+    private <N extends Node> ContractNode contractNode( Graph<ContractNode, ContractEdge> graph, ElementContainer<N> nodeGroup, MaxIdContainer nodeMaxIdContainer, MaxIdContainer edgeMaxIdContainer ) {
         // TODO must contract only neighbors! while nodeGroup notEmpty contractnode with first neighbor
         Set<ContractNode> nodeSet = new HashSet<>();
         for ( N n : nodeGroup ) {
@@ -328,13 +329,13 @@ public class NaturalCutsFilter implements Filter {
         while ( graphEdges.hasNext() ) {
             maxEdgeId = Math.max( maxEdgeId, graphEdges.next().getId() );
         }
-        ContractNode.MaxIdContainer edgeMaxIdContainer = new ContractNode.MaxIdContainer( maxEdgeId );
+        MaxIdContainer edgeMaxIdContainer = new MaxIdContainer( maxEdgeId );
         long maxNodeId = 0;
         Iterator<N> graphNodes = graph.getNodes();
         while ( graphNodes.hasNext() ) {
             maxNodeId = Math.max( maxNodeId, graphNodes.next().getId() );
         }
-        ContractNode.MaxIdContainer nodeMaxIdContainer = new ContractNode.MaxIdContainer( maxNodeId );
+        MaxIdContainer nodeMaxIdContainer = new MaxIdContainer( maxNodeId );
         // - contract core
         ContractNode core = contractNode( tmpGraph, coreNodes, nodeMaxIdContainer, edgeMaxIdContainer );
         // - contract ring
@@ -446,7 +447,7 @@ public class NaturalCutsFilter implements Filter {
                 }
             }
         }
-        return new SplitGraphMessenger<>( fragmentOrigNodes, origEdgesMapList );
+        return new SplitGraphMessenger<N, E>( fragmentOrigNodes, origEdgesMapList );
     }
 
     private <N extends Node, E extends Edge> ContractGraph buildFilteredGraph( List<Set<N>> fragmentOrigNodes, List<Map<Integer, Set<E>>> origEdgesMapList ) {
@@ -517,11 +518,24 @@ public class NaturalCutsFilter implements Filter {
 //            return 2 * EDGE_INIT_SIZE;
 //        }
 //    }
-    @Value
     private static class SplitGraphMessenger<N extends Node, E extends Edge> {
 
-        List<Set<N>> fragmentOrigNodes;
-        List<Map<Integer, Set<E>>> origEdgesMapList;
+        private final List<Set<N>> fragmentOrigNodes;
+        private final List<Map<Integer, Set<E>>> origEdgesMapList;
+
+        public SplitGraphMessenger( List<Set<N>> fragmentOrigNodes, List<Map<Integer, Set<E>>> origEdgesMapList ) {
+            this.fragmentOrigNodes = fragmentOrigNodes;
+            this.origEdgesMapList = origEdgesMapList;
+        }
+
+        public List<Set<N>> getFragmentOrigNodes() {
+            return fragmentOrigNodes;
+        }
+
+        public List<Map<Integer, Set<E>>> getOrigEdgesMapList() {
+            return origEdgesMapList;
+        }
+
     }
 
     private static void testPrintContractMap( Map<SimpleNode, Set<SimpleEdge>> contractedMap ) {

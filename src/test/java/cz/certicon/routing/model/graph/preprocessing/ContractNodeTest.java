@@ -5,6 +5,7 @@
  */
 package cz.certicon.routing.model.graph.preprocessing;
 
+import cz.certicon.routing.model.basic.MaxIdContainer;
 import cz.certicon.routing.model.basic.Pair;
 import cz.certicon.routing.model.graph.Edge;
 import cz.certicon.routing.model.graph.Graph;
@@ -88,8 +89,8 @@ public class ContractNodeTest {
             ContractNode neighbor = neighbors[i];
             ContractEdge edge = graph.createEdge( i + 2, false, nodeB, neighbor, origEdges, new Pair<>( Metric.SIZE, Distance.newInstance( 1 ) ) );
         }
-        ContractNode.MaxIdContainer nodeMaxIdContainer = new ContractNode.MaxIdContainer( 9 );
-        ContractNode.MaxIdContainer edgeMaxIdContainer = new ContractNode.MaxIdContainer( 9 );
+        MaxIdContainer nodeMaxIdContainer = new MaxIdContainer( 9 );
+        MaxIdContainer edgeMaxIdContainer = new MaxIdContainer( 9 );
 
 //        System.out.println( "nodes:" );
 //        System.out.println( nodeA );
