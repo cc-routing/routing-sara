@@ -5,6 +5,7 @@
  */
 package cz.certicon.routing.algorithm.sara.preprocessing.overlay;
 
+import cz.certicon.routing.algorithm.OneToAllRoutingAlgorithm.Direction;
 import cz.certicon.routing.model.graph.SaraEdge;
 import cz.certicon.routing.model.graph.SaraNode;
 import java.util.ArrayList;
@@ -80,5 +81,29 @@ public class OverlayColumn extends ArrayList<OverlayNode> {
         entryColumn.other = exitColumn;
         exitColumn.other = entryColumn;
         return exitColumn;
+    }
+
+    /**
+     * @return Direction for oneToAll routing
+     */
+    public Direction getDirection() {
+        if (this.isEntry) {
+            return this.getDirection(edge.getTarget() == this.node);
+        } else {
+            return this.getDirection(edge.getSource() == this.node);
+        }
+    }
+
+    /**
+     *
+     * @param forward
+     * @return Direction from boolean
+     */
+    private Direction getDirection(boolean forward) {
+        if (forward) {
+            return Direction.FORWARD;
+        } else {
+            return Direction.BACKWARD;
+        }
     }
 }

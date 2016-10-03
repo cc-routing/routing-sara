@@ -5,18 +5,21 @@
  */
 package cz.certicon.routing.algorithm.sara.preprocessing.overlay;
 
-import cz.certicon.routing.algorithm.DijkstraAlgorithm;
+import cz.certicon.routing.algorithm.OneToAllRoutingAlgorithm.Direction;
 import cz.certicon.routing.model.Route;
 import cz.certicon.routing.model.graph.Cell;
 import cz.certicon.routing.model.graph.Metric;
 import cz.certicon.routing.model.graph.SaraEdge;
+import cz.certicon.routing.model.graph.SaraGraph;
 import cz.certicon.routing.model.graph.SaraNode;
 import cz.certicon.routing.model.values.Distance;
 import cz.certicon.routing.utils.java8.Optional;
 import gnu.trove.map.TLongObjectMap;
 import gnu.trove.map.hash.TLongObjectHashMap;
-import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
 import lombok.Getter;
 
 /**
@@ -101,12 +104,9 @@ public class Partition {
             return;
         }
 
-        DijkstraAlgorithm router = this.parent.router;
-        Distance distance;
-
         int validRoutes = 0;
         int invalidRoutes = 0;
-        int forbiddenUTurns = 0;
+        int forbiddenRoutes = 0;
 
         for (Cell cell : this.cells.valueCollection()) {
 
@@ -114,64 +114,82 @@ public class Partition {
 
             // creates edges for each etry-exit matrix in each cell
             for (OverlayNode entryNode : table.entryPoints.values()) {
-
                 for (OverlayNode exitNode : table.exitPoints.values()) {
+                    this.overlayGraph.addEdge(entryNode, exitNode);
+                }
+            }
 
-                    OverlayEdge edge = this.overlayGraph.addEdge(entryNode, exitNode);
+            if (this.level == 1) {
+                // L1 distances are calculated from SaraSubGraphs in cells
+                SaraGraph subSara = table.graphBuilder.subGraph;
 
-                    // apply for all metrics defined in L0 SaraGraph
-                    for (Metric metric : this.parent.metrics) {
+                for (Metric metric : this.parent.metrics) {
 
-                        if (this.level == 1) {
-                            // L1 distances are calculated from SaraSubGraphs in cells
-                            SaraNode saraEntry = entryNode.column.other.node;
-                            SaraNode saraExit = exitNode.column.other.node;
+                    for (OverlayNode entryNode : table.entryPoints.values()) {
 
-                            if (saraEntry.getId() == saraExit.getId()) {
+                        Map<SaraEdge, Direction> targets = new HashMap<>();
+                        Map<SaraEdge, OverlayEdge> mapper = new HashMap<>();
+
+                        OverlayColumn begCol = entryNode.column.other;
+                        SaraEdge begEdge = begCol.edge;
+                        long begId = begEdge.getId();
+                        begEdge = subSara.getEdgeById(begId);
+                        Direction begDir = begCol.getDirection();
+
+                        for (OverlayEdge edge : entryNode.getOutgoingEdges()) {
+
+                            OverlayNode exitNode = edge.getTarget();
+                            OverlayColumn endCol = exitNode.column.other;
+
+                            if (begCol.node.getId() == endCol.node.getId()) {
                                 // two-way L0 SaraEdge is split in two L1 OverlayEdges
                                 // U-turn in this case is forbidden
-                                forbiddenUTurns++;
-                                distance = Distance.newInfinityInstance();
+                                forbiddenRoutes++;
+                                Distance distance = Distance.newInfinityInstance();
+                                edge.setLength(metric, distance);
                             } else {
+                                SaraEdge endEdge = endCol.edge;
 
-                                Optional<Route<SaraNode, SaraEdge>> route = table.graphBuilder.route(saraEntry.getId(), saraExit.getId(), metric);
-
-                                if (route.isPresent()) {
-                                    distance = table.graphBuilder.sumDistance(route.get().getEdgeList(), metric);
-                                    validRoutes++;
-                                } else {
-                                    distance = Distance.newInfinityInstance();
-                                    invalidRoutes++;
-                                }
+                                long endId = endEdge.getId();
+                                Direction endDir = endCol.getDirection();
+                                endEdge = subSara.getEdgeById(endId);
+                                targets.put(endEdge, endDir);
+                                mapper.put(endEdge, edge);
                             }
-                        } else {
-                            //L2+ distances are calculated from this.L-1 overlay graph
-                            OverlayNode overEntry = entryNode.getLowerNode();
-                            OverlayNode overExit = exitNode.getLowerNode();
-                            Partition lower = this.parent.partitions.get(this.level - 1);
-                            Optional<Route<OverlayNode, OverlayEdge>> route = router.route(lower.overlayGraph, metric, overEntry, overExit);
-                            if (route.isPresent()) {
-                                distance = this.sumDistance(route.get().getEdges(), metric);
+                        }
+
+                        Map<SaraEdge, Optional<Route<SaraNode, SaraEdge>>> routeMap
+                                = this.parent.oneToAll.route(subSara, metric, begEdge, begDir, targets);
+
+                        for (Entry<SaraEdge, Optional<Route<SaraNode, SaraEdge>>> entry : routeMap.entrySet()) {
+                            SaraEdge endEdge = entry.getKey();
+                            OverlayEdge edge = mapper.get(endEdge);
+                            Optional<Route<SaraNode, SaraEdge>> result = entry.getValue();
+
+                            Distance distance;
+
+                            if (result.isPresent()) {
+                                Route<SaraNode, SaraEdge> route = result.get();
+                                List<SaraEdge> edges = route.getEdgeList();
+                                distance = table.graphBuilder.sumDistance(edges, metric);
                                 validRoutes++;
                             } else {
                                 distance = Distance.newInfinityInstance();
                                 invalidRoutes++;
                             }
+
+                            edge.setLength(metric, distance);
                         }
-
-                        edge.setLength(metric, distance);
-                    }
-                }
-
+                    } // Metric
+                } //L1
+            } else {
+                //L2+
             }
-        }
 
-        double ratio = (100 * invalidRoutes) / (validRoutes + invalidRoutes);
+        } //CEll
 
-        String info = String.format("Level=%d,ForbiddenUTurns=%d,  ValidRoutes=%d, InvalidRoutes=%d=%f",
-                this.level, forbiddenUTurns, validRoutes, invalidRoutes, ratio);
+        System.out.println("L" + this.level + ": valid=" + validRoutes + "; invalid=" + invalidRoutes + " forbidden=" + forbiddenRoutes);
 
-        System.out.println(info + "%");
     }
 
     /**
