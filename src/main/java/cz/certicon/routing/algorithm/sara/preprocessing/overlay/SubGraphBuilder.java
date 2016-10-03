@@ -38,11 +38,6 @@ public class SubGraphBuilder {
     final private TLongObjectMap<SaraNode> subNodes;
 
     /**
-     * Mapper to edges (1:1 to subEdges) in full graph.
-     */
-    final private TLongObjectMap<SaraNode> nodeMap;
-
-    /**
      * Sara SubGraph, the result of the build.
      */
     @Getter
@@ -62,7 +57,6 @@ public class SubGraphBuilder {
         this.cell = table.cell;
         this.subGraph = new SaraGraph(builder.metrics);
         this.subNodes = new TLongObjectHashMap<>();
-        this.nodeMap = new TLongObjectHashMap<>();
     }
 
     /**
@@ -87,7 +81,6 @@ public class SubGraphBuilder {
             subNode.setTurnTable(turns);
 
             this.subNodes.put(id, subNode);
-            this.nodeMap.put(id, node);
 
             return subNode;
         }
