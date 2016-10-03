@@ -66,17 +66,21 @@ public class SubGraphBuilder {
      * @param node L0 node
      * @return
      */
-    private SaraNode checkNode(SaraNode node) {
+    private SaraNode checkNode(long edgeId, SaraNode node) {
 
-        long id = node.getId();
+        long id = 0;
+
+        if (node.getParent() == this.cell) {
+            id = node.getId();
+        } else {
+            id = -edgeId;
+        }
 
         if (this.subNodes.containsKey(id)) {
-
             return this.subNodes.get(id);
-
         } else {
 
-            SaraNode subNode = this.subGraph.createNode(id, cell);
+            SaraNode subNode = this.subGraph.createNode(id, node.getParent());
 
             TurnTable turns = node.getTurnTable();
             subNode.setTurnTable(turns);
@@ -97,17 +101,18 @@ public class SubGraphBuilder {
      */
     public void addEdge(SaraEdge edge) {
 
+        long id = edge.getId();
+
         SaraNode source = edge.getSource();
         SaraNode target = edge.getTarget();
 
-        SaraNode subSource = this.checkNode(source);
-        SaraNode subTarget = this.checkNode(target);
+        SaraNode subSource = this.checkNode(id, source);
+        SaraNode subTarget = this.checkNode(id, target);
 
         int sourceIdx = edge.getSourcePosition();
         int targetIdx = edge.getTargetPosition();
         boolean oneway = edge.isOneWay();
 
-        long id = edge.getId();
         SaraEdge subEdge = this.subGraph.createEdge(id, oneway, subSource, subTarget, sourceIdx, targetIdx);
 
         for (Metric key : this.builder.metrics) {
