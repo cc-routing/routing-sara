@@ -12,6 +12,7 @@ import cz.certicon.routing.model.graph.SaraEdge;
 import cz.certicon.routing.model.graph.SaraGraph;
 import cz.certicon.routing.model.graph.SaraNode;
 import cz.certicon.routing.model.graph.TurnTable;
+import cz.certicon.routing.model.values.Coordinate;
 import cz.certicon.routing.model.values.Distance;
 import cz.certicon.routing.utils.java8.Optional;
 import gnu.trove.map.TLongObjectMap;
@@ -79,6 +80,9 @@ public class SubGraphBuilder {
 
             TurnTable turns = node.getTurnTable();
             subNode.setTurnTable(turns);
+
+            Coordinate coord = node.getCoordinate();
+            subNode.setCoordinate(coord);
 
             this.subNodes.put(id, subNode);
 
