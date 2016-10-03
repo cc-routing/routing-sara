@@ -6,6 +6,7 @@
 package cz.certicon.routing.algorithm.sara.preprocessing.overlay;
 
 import cz.certicon.routing.algorithm.DijkstraAlgorithm;
+import cz.certicon.routing.algorithm.DijkstraOneToAllAlgorithm;
 import cz.certicon.routing.model.graph.Cell;
 import cz.certicon.routing.model.graph.Metric;
 import cz.certicon.routing.model.graph.SaraEdge;
@@ -47,7 +48,10 @@ public class OverlayBuilder {
      * shared instance of the DijkstraAlgorithm.
      */
     @Getter
-    DijkstraAlgorithm router;
+    DijkstraAlgorithm oneToOne;
+
+    @Getter
+    DijkstraOneToAllAlgorithm oneToAll;
 
     /**
      *
@@ -63,7 +67,8 @@ public class OverlayBuilder {
         this.partitions = new ArrayList<>();
         this.addPartition();
 
-        this.router = new DijkstraAlgorithm();
+        this.oneToOne = new DijkstraAlgorithm();
+        this.oneToAll = new DijkstraOneToAllAlgorithm();
     }
 
     /**
