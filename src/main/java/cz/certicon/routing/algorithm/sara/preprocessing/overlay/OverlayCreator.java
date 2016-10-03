@@ -50,7 +50,7 @@ public class OverlayCreator {
         this.setup = setup;
     }
 
-    public SaraGraph GetSaraGraph() {
+    public SaraGraph getSaraGraph() {
         try {
 
             if (this.setup.randomSeed > 0) {
@@ -89,8 +89,8 @@ public class OverlayCreator {
         }
     }
 
-    public OverlayBuilder CreateBuilder() {
-        SaraGraph sara = this.GetSaraGraph();
+    public OverlayBuilder createBuilder() {
+        SaraGraph sara = this.getSaraGraph();
         if (sara == null) {
             return null;
         }
@@ -98,8 +98,8 @@ public class OverlayCreator {
         return builder;
     }
 
-    public OverlayBuilder CreateOverlays() {
-        OverlayBuilder builder = this.CreateBuilder();
+    public OverlayBuilder createOverlays() {
+        OverlayBuilder builder = this.createBuilder();
         if (builder != null) {
             builder.buildOverlays();
         }
