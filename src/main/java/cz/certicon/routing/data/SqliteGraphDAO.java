@@ -27,6 +27,8 @@ import gnu.trove.map.TIntObjectMap;
 import gnu.trove.map.TLongObjectMap;
 import gnu.trove.map.hash.TIntObjectHashMap;
 import gnu.trove.map.hash.TLongObjectHashMap;
+import gnu.trove.set.TLongSet;
+import gnu.trove.set.hash.TLongHashSet;
 import java.io.IOException;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -64,21 +66,45 @@ public class SqliteGraphDAO implements GraphDAO {
         if ( !DatabaseUtils.columnExists( database, "nodes", "cell_id" ) ) {
             database.write( "ALTER TABLE nodes ADD cell_id INTEGER DEFAULT(-1)" );
         }
+        if ( DatabaseUtils.tableExists( database, "cells" ) ) {
+            database.write( "DROP TABLE IF EXISTS cells" );
+            database.write( "DROP INDEX IF EXISTS `idx_id_cells`" );
+        }
+        database.write( "CREATE TABLE cells (id INTEGER, parent INTEGER)" );
         try {
-            PreparedStatement preparedStatement = database.preparedStatement( "UPDATE nodes SET cell_id = ? WHERE id = ?" );
+            PreparedStatement nodeStatement = database.preparedStatement( "UPDATE nodes SET cell_id = ? WHERE id = ?" );
+            PreparedStatement cellStatement = database.preparedStatement( "INSERT INTO cells (id,parent) VALUES (?,?)" );
             int nodeCounter = 0;
+            int cellCounter = 0;
+            TLongSet set = new TLongHashSet();
             for ( SaraNode node : graph.getNodes() ) {
+                Cell cell = node.getParent();
 //                System.out.println( "Node#" + node.getId() );
-                preparedStatement.setLong( 1, node.getParent().getId() );
-                preparedStatement.setLong( 2, node.getId() );
-                preparedStatement.addBatch();
+                nodeStatement.setLong( 1, cell.getId() );
+                nodeStatement.setLong( 2, node.getId() );
+                nodeStatement.addBatch();
 //                System.out.println( "Batch added. Nodes count: " + nodeCounter );
                 if ( ++nodeCounter % BATCH_SIZE == 0 ) {
-                    preparedStatement.executeBatch();
+                    nodeStatement.executeBatch();
 //                    System.out.println( "Done saving: #" + nodeCounter  );
                 }
+                while ( cell != null ) {
+                    if ( set.contains( cell.getId() ) ) { // multiple nodes belong to the same cell! Do not add it again.
+                        break;
+                    }
+                    set.add( cell.getId() );
+                    cellStatement.setLong( 1, cell.getId() );
+                    cellStatement.setLong( 2, cell.hasParent() ? cell.getParent().getId() : -1 );
+                    cellStatement.addBatch();
+                    if ( ++cellCounter % BATCH_SIZE == 0 ) {
+                        cellStatement.executeBatch();
+                    }
+                    cell = cell.getParent();
+                }
             }
-            preparedStatement.executeBatch();
+            nodeStatement.executeBatch();
+            cellStatement.executeBatch();
+            database.write( "CREATE UNIQUE INDEX `idx_id_cells` ON `cells` (`id` DESC)" );
             database.close();
         } catch ( SQLException ex ) {
             throw new IOException( ex );
@@ -182,6 +208,28 @@ public class SqliteGraphDAO implements GraphDAO {
                 TurnTable turnTable = new TurnTable( turnTableMap.get( rs.getInt( "turn_table_id" ) ).matrix );
                 node.setTurnTable( turnTable );
                 node.setCoordinate( GeometryUtils.toCoordinatesFromWktPoint( rs.getString( "point" ) ) );
+            }
+            // read cells            
+            rs = database.read( "SELECT * FROM cells c ORDER BY c.id DESC" );
+            while ( rs.next() ) {
+                long cellId = rs.getLong( "id" );
+                long parentId = rs.getLong( "parent" );
+                Cell cell;
+                if ( cellMap.containsKey( cellId ) ) {
+                    cell = cellMap.get( cellId );
+                } else {
+                    cell = new Cell( cellId );
+                    cellMap.put( cellId, cell );
+                }
+                if ( parentId >= 0 ) {
+                    if ( !cellMap.containsKey( parentId ) ) {
+                        throw new IllegalStateException( "Map does not contain parent: #" + parentId + " for: #" + cellId );
+                    }
+                    cell.setParent( cellMap.get( parentId ) );
+                    cell.lock();
+                } else {
+                    cell.lock();
+                }
             }
             // read edges
             Map<Metric, Map<Edge, Distance>> metricMap = new HashMap<>();

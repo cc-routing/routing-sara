@@ -33,4 +33,13 @@ public class DatabaseUtils {
             throw new IOException( ex );
         }
     }
+
+    public static boolean tableExists( SimpleDatabase database, String tableName ) throws IOException {
+        try {
+            ResultSet rs = database.read( "SELECT name FROM sqlite_master WHERE type='table' AND name='" + tableName + "';" );
+            return rs.next();
+        } catch ( SQLException ex ) {
+            throw new IOException( ex );
+        }
+    }
 }

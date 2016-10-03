@@ -10,7 +10,7 @@ package cz.certicon.routing.model.basic;
  * @author Michael Blaha {@literal <michael.blaha@gmail.com>}
  */
 public class MaxIdContainer {
-    
+
     private long maxId;
 
     public MaxIdContainer( long maxId ) {
@@ -24,5 +24,5 @@ public class MaxIdContainer {
     public long next() {
         return ++maxId;
     }
-    
+
 }
