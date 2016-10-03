@@ -44,7 +44,7 @@ public class DisplayUtils {
     public static void display( SaraGraph graph ) {
         int layers = 1;
         Cell cell = graph.getNodes().next().getParent();
-        while ( cell.hasParent() ) {
+        while ( cell != null ) {
 //            System.out.println( "- Layer #" + layers + ", " + "parenting: 1 to " + layers  );
             PartitionViewer viewer = new JxPartitionViewer();
             Map<Cell, List<Node>> cellMap = new HashMap<>();

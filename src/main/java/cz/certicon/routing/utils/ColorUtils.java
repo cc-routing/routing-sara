@@ -14,8 +14,12 @@ import java.util.List;
  * @author Michael Blaha {@literal <michael.blaha@certicon.cz>}
  */
 public class ColorUtils {
+    private static final int MAX_COLORS = 40;
 
     public static ColorSupplier createColorSupplier( int numberOfColors ) {
+        if(numberOfColors > MAX_COLORS){
+            numberOfColors = MAX_COLORS;
+        }
         return new ColorSupplier( numberOfColors );
     }
 
