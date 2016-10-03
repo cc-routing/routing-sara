@@ -36,6 +36,7 @@ public class OverlayCreator {
         double coreRatioInverse = 10;
         double lowIntervalProbability = 0.03;
         double lowerIntervalLimit = 0.6;
+        boolean runPunch = false;
     }
 
     @Getter
@@ -49,7 +50,7 @@ public class OverlayCreator {
         this.setup = setup;
     }
 
-    public SaraGraph CreateSaraGraph() {
+    public SaraGraph GetSaraGraph() {
         try {
 
             if (this.setup.randomSeed > 0) {
@@ -67,12 +68,21 @@ public class OverlayCreator {
             double lowIntervalProbability = this.setup.lowIntervalProbability;
             double lowerIntervalLimit = this.setup.lowerIntervalLimit;
             GraphDAO graphDAO = new SqliteGraphDAO(properties);
-            Graph graph = graphDAO.loadGraph();
-            Filter filter = new NaturalCutsFilter(cellRatio, coreRatioInverse, maxCellSize);
-            ContractGraph filteredGraph = filter.filter(graph);
-            Assembler assembler = new GreedyAssembler(lowIntervalProbability, lowerIntervalLimit, maxCellSize);
-            SaraGraph saraGraph = assembler.assemble(graph, filteredGraph);
-            return saraGraph;
+            SaraGraph sara = null;
+
+            if (this.setup.runPunch) {
+                Graph graph = graphDAO.loadGraph();
+
+                Filter filter = new NaturalCutsFilter(cellRatio, coreRatioInverse, maxCellSize);
+                ContractGraph filteredGraph = filter.filter(graph);
+                Assembler assembler = new GreedyAssembler(lowIntervalProbability, lowerIntervalLimit, maxCellSize);
+                sara = assembler.assemble(graph, filteredGraph);
+                graphDAO.saveGraph(sara);
+            } else {
+                sara = graphDAO.loadSaraGraph();
+            }
+
+            return sara;
 
         } catch (Exception ex) {
             return null;
@@ -80,7 +90,7 @@ public class OverlayCreator {
     }
 
     public OverlayBuilder CreateBuilder() {
-        SaraGraph sara = this.CreateSaraGraph();
+        SaraGraph sara = this.GetSaraGraph();
         if (sara == null) {
             return null;
         }
