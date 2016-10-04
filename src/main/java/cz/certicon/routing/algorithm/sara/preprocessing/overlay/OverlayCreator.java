@@ -11,6 +11,7 @@ import cz.certicon.routing.algorithm.sara.preprocessing.filtering.Filter;
 import cz.certicon.routing.algorithm.sara.preprocessing.filtering.NaturalCutsFilter;
 import cz.certicon.routing.data.GraphDAO;
 import cz.certicon.routing.data.SqliteGraphDAO;
+import cz.certicon.routing.model.basic.MaxIdContainer;
 import cz.certicon.routing.model.graph.Graph;
 import cz.certicon.routing.model.graph.SaraGraph;
 import cz.certicon.routing.model.graph.preprocessing.ContractGraph;
@@ -37,6 +38,8 @@ public class OverlayCreator {
         double lowIntervalProbability = 0.03;
         double lowerIntervalLimit = 0.6;
         boolean runPunch = false;
+        int layerCount = 1;
+
     }
 
     @Getter
@@ -70,13 +73,15 @@ public class OverlayCreator {
             GraphDAO graphDAO = new SqliteGraphDAO(properties);
             SaraGraph sara = null;
 
+            MaxIdContainer cellId = new MaxIdContainer(0);
+
             if (this.setup.runPunch) {
                 Graph graph = graphDAO.loadGraph();
 
                 Filter filter = new NaturalCutsFilter(cellRatio, coreRatioInverse, maxCellSize);
                 ContractGraph filteredGraph = filter.filter(graph);
                 Assembler assembler = new GreedyAssembler(lowIntervalProbability, lowerIntervalLimit, maxCellSize);
-                sara = assembler.assemble(graph, filteredGraph);
+                sara = assembler.assemble(graph, filteredGraph, cellId, this.setup.layerCount);
                 graphDAO.saveGraph(sara);
             } else {
                 sara = graphDAO.loadSaraGraph();
