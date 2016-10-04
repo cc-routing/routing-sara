@@ -151,12 +151,17 @@ public class OverlayBuilder {
 
             if (sourceId == targetId) {
 
+                CellRouteTable table = partition.checkCell(sourceCell);
+
                 if (level == 1) {
-                    partition.checkCell(sourceCell).graphBuilder.addEdge(edge);
+                    table.graphBuilder.addEdge(edge);
                 }
 
                 return;
             }
+
+            CellRouteTable sourceTable = partition.checkCell(sourceCell);
+            CellRouteTable targetTable = partition.checkCell(targetCell);
 
             if (level == 1) {
 
@@ -167,12 +172,10 @@ public class OverlayBuilder {
                     exitColumn2 = OverlayColumn.Create(edge, target, source);
                     entryColumn2 = exitColumn2.getOther();
                 }
-            }
 
-            CellRouteTable sourceTable = partition.checkCell(sourceCell);
-            CellRouteTable targetTable = partition.checkCell(targetCell);
-            sourceTable.graphBuilder.addEdge(edge);
-            targetTable.graphBuilder.addEdge(edge);
+                sourceTable.graphBuilder.addEdge(edge);
+                targetTable.graphBuilder.addEdge(edge);
+            }
 
             OverlayNode exitNode1 = overGraph.addNode(exitColumn1, sourceTable.exitPoints, edge);
             OverlayNode entryNode1 = overGraph.addNode(entryColumn1, targetTable.entryPoints, edge);
