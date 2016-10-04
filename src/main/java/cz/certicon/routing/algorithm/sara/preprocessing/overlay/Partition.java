@@ -188,8 +188,13 @@ public class Partition {
 
         } //CEll
 
-        System.out.println("L" + this.level + ": valid=" + validRoutes + "; invalid=" + invalidRoutes + " forbidden=" + forbiddenRoutes);
+        String info = "L=" + this.level
+                + "; cells=" + this.cells.size()
+                + "; valid=" + validRoutes
+                + "; invalid=" + invalidRoutes
+                + "; forbidden=" + forbiddenRoutes;
 
+        System.out.println(info);
     }
 
     /**
