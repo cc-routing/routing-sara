@@ -66,6 +66,7 @@ public class BottomUpPreprocessor implements Preprocessor {
             // - assign parents
             SaraGraph saraGraph = null;
             for ( int i = 0; i < input.getNumberOfLayers(); i++ ) {
+                assembler.setMaxCellSize( currentCellSize );
                 ContractGraph assembled = assembler.assemble( filteredGraph );
                 if ( saraGraph == null ) {
                     saraGraph = new SaraGraph( EnumSet.of( Metric.LENGTH, Metric.TIME ) );
@@ -103,7 +104,6 @@ public class BottomUpPreprocessor implements Preprocessor {
                 }
                 filteredGraph = assembled;
                 currentCellSize *= input.getCellSize();
-                assembler.setMaxCellSize( currentCellSize );
                 progressListener.nextStep();
             }
             long edgeCount = IteratorStreams.stream( saraGraph.getEdges() ).filter( new Predicate<SaraEdge>() {
