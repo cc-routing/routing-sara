@@ -35,13 +35,14 @@ public class GraphComponentSearcher {
         for ( N node : graph.getNodes() ) {
             nodes.add( node );
         }
-        Set<N> visited = new HashSet<>();
         Queue<N> queue = new LinkedList<>();
         while ( !nodes.isEmpty() ) {
             N startNode = getAny( nodes );
             Collection<N> component = new ArrayList<>();
             componentList.add( component );
             queue.add( startNode );
+            nodes.remove( startNode );
+            component.add( startNode );
             while ( !queue.isEmpty() ) {
                 N node = queue.poll();
                 for ( E edge : node.getEdges() ) {
