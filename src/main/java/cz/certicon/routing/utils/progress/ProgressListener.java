@@ -3,7 +3,7 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package cz.certicon.routing.model.utility;
+package cz.certicon.routing.utils.progress;
 
 /**
  * Interface defining the progress listener functionality. It can be adjusted

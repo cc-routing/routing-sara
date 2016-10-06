@@ -82,6 +82,24 @@ public class EffectiveUtils {
     }
 
     /**
+     * Fill the array with the given value (all the elements of the array will
+     * be equal to the given value after this operation is performed).
+     *
+     * @param <T> array and value type
+     * @param array array to be edited
+     * @param value value to be spread all over the array
+     */
+    public static <T> void fillArray( T[] array, T value ) {
+        int len = array.length;
+        if ( len > 0 ) {
+            array[0] = value;
+        }
+        for ( int i = 1; i < len; i += i ) {
+            System.arraycopy( array, 0, array, i, ( ( len - i ) < i ) ? ( len - i ) : i );
+        }
+    }
+
+    /**
      * Copy values from source array to target array
      *
      * @param source source array

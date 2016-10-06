@@ -21,8 +21,7 @@ import cz.certicon.routing.model.graph.preprocessing.ContractGraph;
  */
 public interface Assembler {
 
-    <N extends Node, E extends Edge> SaraGraph assemble( Graph<N, E> originalGraph, ContractGraph graph, MaxIdContainer cellId );
+    <N extends Node, E extends Edge> ContractGraph assemble( ContractGraph graph );
 
-    <N extends Node, E extends Edge> SaraGraph assemble( Graph<N, E> originalGraph, ContractGraph graph, MaxIdContainer cellId, int layers );
-
+    void setMaxCellSize(int maxCellSize);
 }

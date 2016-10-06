@@ -67,6 +67,8 @@ public class TimeLogger {
      * Enumeration for event types
      */
     public static enum Event {
+        ASSEMBLING,
+        FILTERING,
         /**
          * Preprocessing
          */

@@ -5,7 +5,6 @@
  */
 package cz.certicon.routing.utils.progress;
 
-import cz.certicon.routing.model.utility.ProgressListener;
 import cz.certicon.routing.utils.DoubleComparator;
 
 /**

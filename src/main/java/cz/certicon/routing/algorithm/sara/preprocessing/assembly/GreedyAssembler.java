@@ -5,42 +5,18 @@
  */
 package cz.certicon.routing.algorithm.sara.preprocessing.assembly;
 
-import cz.certicon.routing.model.basic.Pair;
-import cz.certicon.routing.model.graph.Cell;
 import cz.certicon.routing.model.graph.Edge;
 import cz.certicon.routing.model.graph.preprocessing.NodePair;
-import cz.certicon.routing.model.graph.Graph;
 import cz.certicon.routing.model.graph.Metric;
 import cz.certicon.routing.model.graph.Node;
-import cz.certicon.routing.model.graph.SaraEdge;
-import cz.certicon.routing.model.graph.SaraGraph;
-import cz.certicon.routing.model.graph.SaraNode;
 import cz.certicon.routing.model.graph.preprocessing.ContractEdge;
 import cz.certicon.routing.model.graph.preprocessing.ContractNode;
 import cz.certicon.routing.model.graph.preprocessing.ContractGraph;
 import cz.certicon.routing.model.basic.MaxIdContainer;
 import cz.certicon.routing.model.queue.FibonacciHeap;
 import cz.certicon.routing.model.queue.PriorityQueue;
-import cz.certicon.routing.model.values.Distance;
 import cz.certicon.routing.utils.RandomUtils;
-import cz.certicon.routing.utils.java8.IteratorStreams;
-import cz.certicon.routing.utils.java8.Mappers;
-import cz.certicon.routing.utils.java8.Optional;
-import cz.certicon.routing.utils.java8.Supplier;
-import gnu.trove.map.TLongObjectMap;
-import gnu.trove.map.hash.TLongObjectHashMap;
-import java.util.ArrayList;
-import java.util.EnumSet;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
 import java.util.Random;
-import java.util.Set;
-import java8.util.stream.Collectors;
-import java8.util.stream.StreamSupport;
-import lombok.Value;
 
 /**
  *
@@ -50,7 +26,7 @@ public class GreedyAssembler implements Assembler {
 
     private final double lowIntervalProbability;
     private final double lowerIntervalLimit;
-    private final long maxCellSize;
+    private long maxCellSize;
     private final Random rand;
 
     /**
@@ -68,82 +44,13 @@ public class GreedyAssembler implements Assembler {
     }
 
     @Override
-    public <N extends Node, E extends Edge> SaraGraph assemble( Graph<N, E> originalGraph, ContractGraph filteredGraph, MaxIdContainer cellId, int layers ) {
-        if ( layers < 1 ) {
-            throw new IllegalArgumentException( "Number of layers must be positive!" );
-        }
-        ContractGraph graph = filteredGraph;
-        long currentCellSize = maxCellSize;
-        // for i < layers
-        // - assemble graph
-        // - create sara graph
-        // - assign parents
-        SaraGraph saraGraph = null;
-        for ( int i = 0; i < layers; i++ ) {
-            ContractGraph assembled = recursiveAssemble( graph, currentCellSize );
-            if ( saraGraph == null ) {
-                saraGraph = new SaraGraph( EnumSet.of( Metric.LENGTH, Metric.TIME ) );
-                for ( ContractNode node : assembled.getNodes() ) {
-                    Cell cell = new Cell( cellId.next() );
-//                    System.out.println( "putting: " + node.getId() + " -> " + cell.getId() + ", nodes=[" + StreamSupport.stream( node.getNodes() ).map( Mappers.identifiableToString ).collect( Collectors.joining( "," ) ) + "]" );
-                    for ( Node origNode : node.getNodes() ) {
-                        SaraNode saraNode = saraGraph.createNode( origNode.getId(), cell );
-                        saraNode.setCoordinate( origNode.getCoordinate() );
-                        saraNode.setTurnTable( origNode.getTurnTable() );
-                    }
-                }
-                for ( E edge : originalGraph.getEdges() ) {
-                    SaraEdge saraEdge = saraGraph.createEdge( edge.getId(), edge.isOneWay(),
-                            saraGraph.getNodeById( edge.getSource().getId() ), saraGraph.getNodeById( edge.getTarget().getId() ),
-                            edge.getSourcePosition(), edge.getTargetPosition(),
-                            new Pair<>( Metric.LENGTH, edge.getLength( Metric.LENGTH ) ), new Pair<>( Metric.TIME, edge.getLength( Metric.TIME ) ) );
-                }
-            } else {
-                for ( ContractNode node : assembled.getNodes() ) {
-                    Cell cell = new Cell( cellId.next() );
-//                    System.out.println( "putting&getting: " + node.getId() + " -> " + cell.getId() + ", nodes=[" + StreamSupport.stream( node.getNodes() ).map( Mappers.identifiableToString ).collect( Collectors.joining( "," ) ) + "]" );
-                    for ( Node n : node.getNodes() ) {
-                        Cell parent = saraGraph.getNodeById( n.getId() ).getParent();
-                        for ( int j = 1; j < i; j++ ) {
-                            parent = parent.getParent();
-                        }
-                        if ( !parent.hasParent() ) {
-                            parent.setParent( cell );
-                            parent.lock();
-                        }
-                    }
-                }
-
-            }
-            graph = assembled;
-            currentCellSize *= maxCellSize;
-        }
-        return saraGraph;
+    public void setMaxCellSize( int maxCellSize ) {
+        this.maxCellSize = maxCellSize;
     }
 
     @Override
-    public <N extends Node, E extends Edge> SaraGraph assemble( Graph<N, E> originalGraph, ContractGraph filteredGraph, MaxIdContainer cellId ) {
-        ContractGraph graph = recursiveAssemble( filteredGraph, maxCellSize );
-        SaraGraph saraGraph = new SaraGraph( EnumSet.of( Metric.LENGTH, Metric.TIME ) );
-        for ( ContractNode node : graph.getNodes() ) {
-            Cell cell = new Cell( cellId.next() );
-            for ( Node origNode : node.getNodes() ) {
-                SaraNode saraNode = saraGraph.createNode( origNode.getId(), cell );
-                saraNode.setCoordinate( origNode.getCoordinate() );
-                saraNode.setTurnTable( origNode.getTurnTable() );
-            }
-        }
-        for ( E edge : originalGraph.getEdges() ) {
-            SaraEdge saraEdge = saraGraph.createEdge( edge.getId(), edge.isOneWay(),
-                    saraGraph.getNodeById( edge.getSource().getId() ), saraGraph.getNodeById( edge.getTarget().getId() ),
-                    edge.getSourcePosition(), edge.getTargetPosition(),
-                    new Pair<>( Metric.LENGTH, edge.getLength( Metric.LENGTH ) ), new Pair<>( Metric.TIME, edge.getLength( Metric.TIME ) ) );
-        }
-        return saraGraph;
-    }
-
-    private <N extends Node, E extends Edge> ContractGraph recursiveAssemble( ContractGraph filteredGraph, long currentMaxCellSize ) {
-        ContractGraph graph = (ContractGraph) filteredGraph.copy();
+    public <N extends Node, E extends Edge> ContractGraph assemble( ContractGraph graph ) {
+        graph = (ContractGraph) graph.copy();
 //        System.out.println( "Assembling..." );
         // find max ids
         long maxNodeId = -1;
@@ -156,7 +63,7 @@ public class GreedyAssembler implements Assembler {
         }
         // P = {{x,y}; x,y  V, {x,y} e E, s(x)+s(y) < U} // all pairs of adjacent vertices with combined size lower than U  
         // Sort P according to (minimizing): score({x,y}) = r * (w(x,y)/sqrt(s(x))+w(x,y)/sqrt(s(y))), where r is with probability a picked randomly from [0,b] and with probability 1-a picked randomly from [b,1]
-        PriorityQueue<NodePair> queue = initQueue( graph, currentMaxCellSize );
+        PriorityQueue<NodePair> queue = initQueue( graph, maxCellSize );
         MaxIdContainer maxNodeIdContainer = new MaxIdContainer( maxNodeId );
         MaxIdContainer maxEdgeIdContainer = new MaxIdContainer( maxEdgeId );
 //        System.out.println( "MAX CELL SIZE = " + maxCellSize );
@@ -180,7 +87,7 @@ public class GreedyAssembler implements Assembler {
 
             // Update score value (with the new r for each iteration) for the adjacent edges (pairs) of the contracted pair (edge) and if the new size s is higher or equal to U, remove pair from P
             // - add new pairs with the contracted node
-            addPairs( queue, contractedNode, currentMaxCellSize );
+            addPairs( queue, contractedNode, maxCellSize );
         }
         //End While
         //Return partitions, i.e. in which partition each vertex belongs
@@ -275,4 +182,5 @@ public class GreedyAssembler implements Assembler {
         double targetWeight = nodePair.getSizeB();
         return /*Double.MAX_VALUE*/ -ratio * ( ( edgeWeight / Math.sqrt( sourceWeight ) ) + ( edgeWeight / Math.sqrt( targetWeight ) ) );
     }
+
 }
