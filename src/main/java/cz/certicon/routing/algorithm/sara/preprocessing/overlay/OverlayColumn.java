@@ -9,6 +9,7 @@ import cz.certicon.routing.algorithm.OneToAllRoutingAlgorithm.Direction;
 import cz.certicon.routing.model.graph.SaraEdge;
 import cz.certicon.routing.model.graph.SaraNode;
 import java.util.ArrayList;
+import java.util.List;
 import lombok.Getter;
 
 /**
@@ -17,16 +18,25 @@ import lombok.Getter;
  *
  * @author Blahoslav Potoček <potocek@merica.cz>
  */
-public class OverlayColumn extends ArrayList<OverlayNode> {
+public class OverlayColumn {
 
     /**
-     * Related L0 SaraEdge.
+     * related L0 SaraNode
      */
     @Getter
     SaraNode node;
 
+    /**
+     * related L0 SaraEdge
+     */
     @Getter
     SaraEdge edge;
+
+    /**
+     * "vertical" collection of OverlayNodes in a column over this Sara node
+     */
+    @Getter
+    List<OverlayNode> nodes = new ArrayList<>();
 
     /**
      * false: entryPoint, exitPoint direction corresponds to this.edge
@@ -58,7 +68,7 @@ public class OverlayColumn extends ArrayList<OverlayNode> {
         this.edge = edge;
         this.node = node;
         this.isEntry = isEntry;
-        this.add(null);
+        this.nodes.add(null);
 
         if (this.isEntry) {
             this.id = node.getId();

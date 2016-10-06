@@ -7,8 +7,11 @@ package cz.certicon.routing.algorithm.sara.preprocessing.overlay;
 
 import cz.certicon.routing.model.graph.AbstractEdge;
 import cz.certicon.routing.model.graph.Graph;
+import cz.certicon.routing.model.graph.Metric;
+import cz.certicon.routing.model.graph.SaraEdge;
 import cz.certicon.routing.model.graph.TurnTable;
 import cz.certicon.routing.model.values.Distance;
+import lombok.Getter;
 
 /**
  *
@@ -17,9 +20,26 @@ import cz.certicon.routing.model.values.Distance;
  */
 public class OverlayEdge extends AbstractEdge<OverlayNode, OverlayEdge> {
 
-    public OverlayEdge(OverlayGraph graph, long id, OverlayNode source, OverlayNode target) {
+    @Getter
+    SaraEdge saraEdge = null;
 
+    public OverlayEdge(OverlayGraph graph, long id, OverlayNode source, OverlayNode target) {
         super(graph, id, true, source, target, -1, -1);
+    }
+
+    public OverlayEdge(OverlayGraph graph, OverlayEdge edge) {
+        this(graph, edge.getId(), graph.getNodeById(edge.getSource().getId()), graph.getNodeById(edge.getTarget().getId()));
+        if (edge.saraEdge != null) {
+            this.setLink(edge.saraEdge);
+        }
+    }
+
+    public void setLink(SaraEdge edge) {
+        this.saraEdge = edge;
+        for (Metric metric : this.getGraph().getMetrics()) {
+            Distance distance = edge.getLength(metric);
+            this.setLength(metric, distance);
+        }
     }
 
     @Override
