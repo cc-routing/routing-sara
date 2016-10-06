@@ -6,7 +6,6 @@
 package cz.certicon.routing.algorithm.sara.preprocessing.overlay;
 
 import cz.certicon.routing.model.Route;
-import cz.certicon.routing.model.graph.Cell;
 import cz.certicon.routing.model.graph.Metric;
 import cz.certicon.routing.model.graph.SaraEdge;
 import cz.certicon.routing.model.graph.SaraGraph;
@@ -26,12 +25,7 @@ import lombok.Getter;
  * Builder of the Sara SubGraph for the specific Cell. Applicable only for the
  * Cells at L1.
  */
-public class SubGraphBuilder {
-
-    /**
-     * Related cell.
-     */
-    final private Cell cell;
+public class SubGraphBuilder extends BaseSubBuilder {
 
     /**
      * Auxiliary collection of sub nodes.
@@ -45,17 +39,12 @@ public class SubGraphBuilder {
     SaraGraph subGraph;
 
     /**
-     * root overlay builder
-     */
-    OverlayBuilder builder;
-
-    /**
      *
      * @param table
      */
     public SubGraphBuilder(CellRouteTable table) {
-        this.builder = table.partition.parent;
-        this.cell = table.cell;
+        super(table);
+
         this.subGraph = new SaraGraph(builder.metrics);
         this.subNodes = new TLongObjectHashMap<>();
     }
@@ -125,7 +114,7 @@ public class SubGraphBuilder {
      * builds Sara subGraph (only for cells at L1)
      */
     public void buildSubGraph() {
-        //this.subGraph.lock();
+        // this.subGraph.lock(); TODO?
     }
 
     /**
