@@ -25,7 +25,7 @@ import lombok.Getter;
  * Builder of the Sara SubGraph for the specific Cell. Applicable only for the
  * Cells at L1.
  */
-public class SubGraphBuilder extends BaseSubBuilder {
+public class SubSaraBuilder extends BaseSubBuilder {
 
     /**
      * Auxiliary collection of sub nodes.
@@ -42,7 +42,7 @@ public class SubGraphBuilder extends BaseSubBuilder {
      *
      * @param table
      */
-    public SubGraphBuilder(CellRouteTable table) {
+    public SubSaraBuilder(CellRouteTable table) {
         super(table);
 
         this.subGraph = new SaraGraph(builder.metrics);
