@@ -30,7 +30,7 @@ public interface GraphDataDao {
 
         Coordinate coordinate;
         long id;
-        long cellId;
+        long[] cellIds;
         int edgeCount;
         TLongList incomingEdges;
         TLongList outgoingEdges;

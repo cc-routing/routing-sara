@@ -49,6 +49,7 @@ public abstract class AbstractJxMapViewer {
     private final Map<GeoPosition, Painter<JXMapViewer>> pointPainterMap = new HashMap<>();
     private final Map<List<GeoPosition>, Painter<JXMapViewer>> polygonPainterMap = new HashMap<>();
     private JPanel infoPanel;
+    private boolean centering = true;
 
     public AbstractJxMapViewer() {
         this.mapKit = new JXMapKit();
@@ -65,7 +66,7 @@ public abstract class AbstractJxMapViewer {
         routePainter.setColor( color );
         painters.add( routePainter );
         polygonPainterMap.put( geoPositions, routePainter );
-        repaint();
+        repaint(centering);
     }
 
     public void removePolygon( List<GeoPosition> geoPositions ) {
@@ -74,7 +75,7 @@ public abstract class AbstractJxMapViewer {
         for ( GeoPosition geoPosition : geoPositions ) {
             fitGeoPosition.remove( geoPosition );
         }
-        repaint();
+        repaint(centering);
     }
 
     public void addPoint( GeoPosition geoPosition ) {
@@ -87,14 +88,14 @@ public abstract class AbstractJxMapViewer {
         nodePainter.setColor( color );
         painters.add( nodePainter );
         pointPainterMap.put( geoPosition, nodePainter );
-        repaint();
+        repaint(centering);
     }
 
     public void removePoint( GeoPosition geoPosition ) {
         painters.remove( pointPainterMap.get( geoPosition ) );
         pointPainterMap.remove( geoPosition );
         fitGeoPosition.remove( geoPosition );
-        repaint();
+        repaint(centering);
     }
 
     public void addCluster( Collection<GeoPosition> geoPositions, Color color ) {
@@ -102,11 +103,15 @@ public abstract class AbstractJxMapViewer {
         ClusterPainter clusterPainter = new ClusterPainter( geoPositions );
         clusterPainter.setColor( color );
         painters.add( clusterPainter );
-        repaint();
+        repaint(centering);
     }
 
     public void register( Clickable clickable ) {
         clickables.add( clickable );
+    }
+    
+    public void setCentering(boolean centering){
+        this.centering = centering;
     }
 
     public void allowInfo( boolean info ) {
@@ -164,9 +169,11 @@ public abstract class AbstractJxMapViewer {
         display();
     }
 
-    public void repaint() {
+    public void repaint( boolean center ) {
         if ( frame != null ) {
-            mapViewer.zoomToBestFit( fitGeoPosition, 0.7 );
+            if ( center ) {
+                mapViewer.zoomToBestFit( fitGeoPosition, 0.7 );
+            }
             CompoundPainter<JXMapViewer> painter = new CompoundPainter<>( painters );
             mapViewer.setOverlayPainter( painter );
         }

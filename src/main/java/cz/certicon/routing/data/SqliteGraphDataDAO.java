@@ -51,7 +51,8 @@ public class SqliteGraphDataDAO implements GraphDataDao {
         try {
             ResultSet rs;
             long tableId;
-            long cellId;
+            TLongArrayList cellIds = new TLongArrayList();
+            long parent;
             int tableSize;
             Coordinate coordinate;
             Distance[][] matrix;
@@ -60,10 +61,19 @@ public class SqliteGraphDataDAO implements GraphDataDao {
                 tableId = rs.getLong( "turn_table_id" );
                 tableSize = rs.getInt( "size" );
                 matrix = new Distance[tableSize][tableSize];
-                cellId = rs.getLong( "cell_id" );
+                parent = rs.getLong( "cell_id" );
                 coordinate = GeometryUtils.toCoordinatesFromWktPoint( rs.getString( "point" ) );
             } else {
                 throw new IllegalArgumentException( "Unknown node: " + nodeId );
+            }
+            while ( parent >= 0 ) {
+                cellIds.add( parent );
+                rs = database.read( "SELECT * FROM cells WHERE id = " + parent );
+                if ( rs.next() ) {
+                    parent = rs.getLong( "parent" );
+                } else {
+                    parent = -1;
+                }
             }
             rs = database.read( "SELECT * FROM turn_table_values WHERE turn_table_id = " + tableId );
             while ( rs.next() ) {
@@ -79,7 +89,7 @@ public class SqliteGraphDataDAO implements GraphDataDao {
             while ( rs.next() ) {
                 outgoingEdges.add( rs.getLong( "id" ) );
             }
-            return new NodeData( coordinate, nodeId, cellId, tableSize, incomingEdges, outgoingEdges, new TurnTable( matrix ) );
+            return new NodeData( coordinate, nodeId, cellIds.toArray(), tableSize, incomingEdges, outgoingEdges, new TurnTable( matrix ) );
         } catch ( SQLException ex ) {
             throw new IOException( ex );
         }

@@ -177,14 +177,15 @@ public class JxDebugViewer<N extends Node, E extends Edge> extends AbstractJxMap
 
         }
     }
-    
-    private void visible(){
-        if(!visible){
+
+    private void visible() {
+        if ( !visible ) {
             display();
             visible = true;
+//            setCentering( false );
         }
     }
-    
+
     private static class EdgeData implements Clickable {
 
         private final GraphDataDao.EdgeData edgeData;
@@ -230,7 +231,7 @@ public class JxDebugViewer<N extends Node, E extends Edge> extends AbstractJxMap
             panel.removeAll();
             panel.setLayout( new GridLayout( 0, 2 ) );
             Presentation.addRow( panel, "id", nodeData.getId() );
-            Presentation.addRow( panel, "cell_id", nodeData.getId(), "", "" );
+            Presentation.addRow( panel, "cell_id", Arrays.toString( nodeData.getCellIds() ) );
             for ( int i = 0; i < nodeData.getEdgeCount(); i++ ) {
                 StringBuilder sb = new StringBuilder();
                 for ( int j = 0; j < nodeData.getEdgeCount(); j++ ) {
