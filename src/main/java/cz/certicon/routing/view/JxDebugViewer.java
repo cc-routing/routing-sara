@@ -75,6 +75,7 @@ public class JxDebugViewer<N extends Node, E extends Edge> extends AbstractJxMap
     private final Map<Long, NodeData> nodeDataMap = new HashMap<>();
     private final Map<Long, EdgeData> edgeDataMap = new HashMap<>();
     private boolean stepByInput = false;
+    private boolean visible = false;
 
     public JxDebugViewer( GraphDataDao graphDataDao, Graph<N, E> graph, long delayInMillis ) {
         this.graphDataDao = graphDataDao;
@@ -89,12 +90,14 @@ public class JxDebugViewer<N extends Node, E extends Edge> extends AbstractJxMap
 
     @Override
     public void blinkEdge( long edgeId ) {
+        visible();
         displayEdge( edgeId );
         removeEdge( edgeId );
     }
 
     @Override
     public void displayNode( long nodeId ) {
+        visible();
         try {
             TimeMeasurement time = new TimeMeasurement();
             time.setTimeUnits( TimeUnits.MILLISECONDS );
@@ -111,6 +114,7 @@ public class JxDebugViewer<N extends Node, E extends Edge> extends AbstractJxMap
 
     @Override
     public void removeNode( long nodeId ) {
+        visible();
         NodeData nodeData = nodeDataMap.get( nodeId );
         removePoint( nodeData.getGeoPosition() );
         nodeDataMap.remove( nodeId );
@@ -118,6 +122,7 @@ public class JxDebugViewer<N extends Node, E extends Edge> extends AbstractJxMap
 
     @Override
     public void displayEdge( long edgeId ) {
+        visible();
         try {
             TimeMeasurement time = new TimeMeasurement();
             time.setTimeUnits( TimeUnits.MILLISECONDS );
@@ -134,6 +139,7 @@ public class JxDebugViewer<N extends Node, E extends Edge> extends AbstractJxMap
 
     @Override
     public void removeEdge( long edgeId ) {
+        visible();
         EdgeData edgeData = edgeDataMap.get( edgeId );
         removePolygon( edgeData.getGeoPositions() );
         edgeDataMap.remove( edgeId );
@@ -141,6 +147,7 @@ public class JxDebugViewer<N extends Node, E extends Edge> extends AbstractJxMap
 
     @Override
     public void closeEdge( long edgeId ) {
+        visible();
         TimeMeasurement time = new TimeMeasurement();
         time.setTimeUnits( TimeUnits.MILLISECONDS );
         time.start();
@@ -170,7 +177,14 @@ public class JxDebugViewer<N extends Node, E extends Edge> extends AbstractJxMap
 
         }
     }
-
+    
+    private void visible(){
+        if(!visible){
+            display();
+            visible = true;
+        }
+    }
+    
     private static class EdgeData implements Clickable {
 
         private final GraphDataDao.EdgeData edgeData;

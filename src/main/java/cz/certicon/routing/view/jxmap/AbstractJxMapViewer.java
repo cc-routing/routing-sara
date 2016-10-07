@@ -65,6 +65,7 @@ public abstract class AbstractJxMapViewer {
         routePainter.setColor( color );
         painters.add( routePainter );
         polygonPainterMap.put( geoPositions, routePainter );
+        repaint();
     }
 
     public void removePolygon( List<GeoPosition> geoPositions ) {
@@ -73,6 +74,7 @@ public abstract class AbstractJxMapViewer {
         for ( GeoPosition geoPosition : geoPositions ) {
             fitGeoPosition.remove( geoPosition );
         }
+        repaint();
     }
 
     public void addPoint( GeoPosition geoPosition ) {
@@ -85,12 +87,14 @@ public abstract class AbstractJxMapViewer {
         nodePainter.setColor( color );
         painters.add( nodePainter );
         pointPainterMap.put( geoPosition, nodePainter );
+        repaint();
     }
 
     public void removePoint( GeoPosition geoPosition ) {
         painters.remove( pointPainterMap.get( geoPosition ) );
         pointPainterMap.remove( geoPosition );
         fitGeoPosition.remove( geoPosition );
+        repaint();
     }
 
     public void addCluster( Collection<GeoPosition> geoPositions, Color color ) {
@@ -98,6 +102,7 @@ public abstract class AbstractJxMapViewer {
         ClusterPainter clusterPainter = new ClusterPainter( geoPositions );
         clusterPainter.setColor( color );
         painters.add( clusterPainter );
+        repaint();
     }
 
     public void register( Clickable clickable ) {
@@ -157,6 +162,14 @@ public abstract class AbstractJxMapViewer {
     public void displayPolygon( List<GeoPosition> geoPositions ) {
         addPolygon( geoPositions );
         display();
+    }
+
+    public void repaint() {
+        if ( frame != null ) {
+            mapViewer.zoomToBestFit( fitGeoPosition, 0.7 );
+            CompoundPainter<JXMapViewer> painter = new CompoundPainter<>( painters );
+            mapViewer.setOverlayPainter( painter );
+        }
     }
 
     public static List<GeoPosition> toGeoPosition( List<Coordinate> coordinates ) {

@@ -55,7 +55,7 @@ public class SqliteGraphDataDAO implements GraphDataDao {
             int tableSize;
             Coordinate coordinate;
             Distance[][] matrix;
-            rs = database.read( "SELECT n.*, ST_AsText(n.geom) AS point, t.size FROM nodes n JOIN turn_tables t ON n.turn_table_id = t.id WHERE id = " + nodeId );
+            rs = database.read( "SELECT n.*, ST_AsText(n.geom) AS point, t.size FROM nodes n JOIN turn_tables t ON n.turn_table_id = t.id WHERE n.id = " + nodeId );
             if ( rs.next() ) {
                 tableId = rs.getLong( "turn_table_id" );
                 tableSize = rs.getInt( "size" );
@@ -89,7 +89,7 @@ public class SqliteGraphDataDAO implements GraphDataDao {
     public EdgeData loadEdgeData( long edgeId ) throws IOException {
         try {
             ResultSet rs;
-            rs = database.read( "SELECT *,ST_AsText(geom) AS geom FROM edges e WHERE id = " + edgeId );
+            rs = database.read( "SELECT *,ST_AsText(geom) AS edge_geom FROM edges e WHERE id = " + edgeId );
             if ( rs.next() ) {
                 long sourceId = rs.getLong( "source" );
                 long targetId = rs.getLong( "target" );
@@ -97,7 +97,7 @@ public class SqliteGraphDataDAO implements GraphDataDao {
                 double length = rs.getDouble( "metric_length" );
                 double speedFw = rs.getDouble( "metric_speed_forward" );// todo take into consideration direction
                 double time = length / ( speedFw / 3.6 );
-                List<Coordinate> coordinates = GeometryUtils.toCoordinatesFromWktLinestring( rs.getString( "geom" ) );
+                List<Coordinate> coordinates = GeometryUtils.toCoordinatesFromWktLinestring( rs.getString( "edge_geom" ) );
                 Map<Metric, Distance> distanceMap = new HashMap<>();
                 distanceMap.put( Metric.LENGTH, Distance.newInstance( length ) );
                 distanceMap.put( Metric.TIME, Distance.newInstance( time ) );
