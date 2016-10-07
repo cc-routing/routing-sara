@@ -13,32 +13,36 @@ import java.awt.RenderingHints;
 import java.awt.geom.Point2D;
 import java.util.ArrayList;
 import java.util.List;
+import javax.swing.JPanel;
 import org.jdesktop.swingx.JXMapViewer;
 import org.jdesktop.swingx.mapviewer.GeoPosition;
 import org.jdesktop.swingx.painter.Painter;
 
 /**
  *
- * Paints a route
- *
- * @author Martin Steiger
  * @author Michael Blaha {@literal <michael.blaha@certicon.cz>}
  */
-public class RoutePainter implements Painter<JXMapViewer> {
+public class NodePainter implements Painter<JXMapViewer> {
     
-    public static Color COLOR_DEFAULT = Color.RED;
+    public static Color COLOR_DEFAULT = Color.GREEN;
 
     private Color color = COLOR_DEFAULT;
-    private final boolean antiAlias = true;
-    private final List<GeoPosition> track;
+    private boolean antiAlias = true;
+    private static final int SIZE = 6;
+
+    private GeoPosition position;
 
     /**
-     * @param track the track
+     * @param position
      */
-    public RoutePainter( List<GeoPosition> track ) {
+    public NodePainter( GeoPosition position ) {
         // copy the list so that changes in the 
         // original list do not have an effect here
-        this.track = new ArrayList<>( track );
+        this.position = position;
+    }
+
+    public void setColor( Color color ) {
+        this.color = color;
     }
 
     @Override
@@ -57,43 +61,24 @@ public class RoutePainter implements Painter<JXMapViewer> {
         g.setColor( Color.BLACK );
         g.setStroke( new BasicStroke( 4 ) );
 
-        drawRoute( g, map );
+        drawNode( g, map );
 
         // do the drawing again
         g.setColor( color );
         g.setStroke( new BasicStroke( 2 ) );
 
-        drawRoute( g, map );
+        drawNode( g, map );
 
         g.dispose();
-    }
-
-    public void setColor( Color color ) {
-        this.color = color;
     }
 
     /**
      * @param g the graphics object
      * @param map the map
      */
-    private void drawRoute( Graphics2D g, JXMapViewer map ) {
-        int lastX = 0;
-        int lastY = 0;
-
-        boolean first = true;
-
-        for ( GeoPosition gp : track ) {
-            // convert geo-coordinate to world bitmap pixel
-            Point2D pt = map.getTileFactory().geoToPixel( gp, map.getZoom() );
-
-            if ( first ) {
-                first = false;
-            } else {
-                g.drawLine( lastX, lastY, (int) pt.getX(), (int) pt.getY() );
-            }
-
-            lastX = (int) pt.getX();
-            lastY = (int) pt.getY();
-        }
+    private void drawNode( Graphics2D g, JXMapViewer map ) {
+        // convert geo-coordinate to world bitmap pixel
+        Point2D pt = map.getTileFactory().geoToPixel( position, map.getZoom() );
+        g.drawOval( (int) pt.getX() - ( SIZE / 2 ), (int) pt.getY() - ( SIZE / 2 ), SIZE, SIZE );
     }
 }
