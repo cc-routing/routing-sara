@@ -66,7 +66,7 @@ public abstract class AbstractJxMapViewer {
         routePainter.setColor( color );
         painters.add( routePainter );
         polygonPainterMap.put( geoPositions, routePainter );
-        repaint(centering);
+        repaint( centering );
     }
 
     public void removePolygon( List<GeoPosition> geoPositions ) {
@@ -75,7 +75,7 @@ public abstract class AbstractJxMapViewer {
         for ( GeoPosition geoPosition : geoPositions ) {
             fitGeoPosition.remove( geoPosition );
         }
-        repaint(centering);
+        repaint( centering );
     }
 
     public void addPoint( GeoPosition geoPosition ) {
@@ -88,14 +88,14 @@ public abstract class AbstractJxMapViewer {
         nodePainter.setColor( color );
         painters.add( nodePainter );
         pointPainterMap.put( geoPosition, nodePainter );
-        repaint(centering);
+        repaint( centering );
     }
 
     public void removePoint( GeoPosition geoPosition ) {
         painters.remove( pointPainterMap.get( geoPosition ) );
         pointPainterMap.remove( geoPosition );
         fitGeoPosition.remove( geoPosition );
-        repaint(centering);
+        repaint( centering );
     }
 
     public void addCluster( Collection<GeoPosition> geoPositions, Color color ) {
@@ -103,14 +103,14 @@ public abstract class AbstractJxMapViewer {
         ClusterPainter clusterPainter = new ClusterPainter( geoPositions );
         clusterPainter.setColor( color );
         painters.add( clusterPainter );
-        repaint(centering);
+        repaint( centering );
     }
 
     public void register( Clickable clickable ) {
         clickables.add( clickable );
     }
-    
-    public void setCentering(boolean centering){
+
+    public void setCentering( boolean centering ) {
         this.centering = centering;
     }
 
@@ -162,6 +162,7 @@ public abstract class AbstractJxMapViewer {
 
         } );
         frame.setVisible( true );
+        repaint( true );
     }
 
     public void displayPolygon( List<GeoPosition> geoPositions ) {
