@@ -5,16 +5,13 @@
  */
 package cz.certicon.routing.algorithm.sara.preprocessing.overlay;
 
-import cz.certicon.routing.algorithm.sara.preprocessing.assembly.Assembler;
-import cz.certicon.routing.algorithm.sara.preprocessing.assembly.GreedyAssembler;
-import cz.certicon.routing.algorithm.sara.preprocessing.filtering.Filter;
-import cz.certicon.routing.algorithm.sara.preprocessing.filtering.NaturalCutsFilter;
+import cz.certicon.routing.algorithm.sara.preprocessing.BottomUpPreprocessor;
+import cz.certicon.routing.algorithm.sara.preprocessing.PreprocessingInput;
 import cz.certicon.routing.data.GraphDAO;
 import cz.certicon.routing.data.SqliteGraphDAO;
 import cz.certicon.routing.model.basic.MaxIdContainer;
 import cz.certicon.routing.model.graph.Graph;
 import cz.certicon.routing.model.graph.SaraGraph;
-import cz.certicon.routing.model.graph.preprocessing.ContractGraph;
 import cz.certicon.routing.utils.RandomUtils;
 import java.io.InputStream;
 import java.util.Properties;
@@ -37,9 +34,9 @@ public class OverlayCreator {
         double coreRatioInverse = 10;
         double lowIntervalProbability = 0.03;
         double lowerIntervalLimit = 0.6;
+        int numberOfAssemblyRuns = 100; //100-1000?
         boolean runPunch = false;
         int layerCount = 1;
-
     }
 
     @Getter
@@ -65,11 +62,6 @@ public class OverlayCreator {
             properties.load(in);
             in.close();
 
-            int maxCellSize = this.setup.maxCellSize;
-            double cellRatio = this.setup.cellRatio;
-            double coreRatioInverse = this.setup.coreRatioInverse;
-            double lowIntervalProbability = this.setup.lowIntervalProbability;
-            double lowerIntervalLimit = this.setup.lowerIntervalLimit;
             GraphDAO graphDAO = new SqliteGraphDAO(properties);
             SaraGraph sara = null;
 
@@ -78,10 +70,17 @@ public class OverlayCreator {
             if (this.setup.runPunch) {
                 Graph graph = graphDAO.loadGraph();
 
-                Filter filter = new NaturalCutsFilter(cellRatio, coreRatioInverse, maxCellSize);
-                ContractGraph filteredGraph = filter.filter(graph);
-                Assembler assembler = new GreedyAssembler(lowIntervalProbability, lowerIntervalLimit, maxCellSize);
-                sara = assembler.assemble(graph, filteredGraph, cellId, this.setup.layerCount);
+                PreprocessingInput input = new PreprocessingInput(
+                        this.setup.maxCellSize,
+                        this.setup.cellRatio,
+                        this.setup.coreRatioInverse,
+                        this.setup.lowIntervalProbability,
+                        this.setup.lowerIntervalLimit,
+                        this.setup.numberOfAssemblyRuns,
+                        this.setup.layerCount
+                );
+                BottomUpPreprocessor bottomUp = new BottomUpPreprocessor();
+                sara = bottomUp.preprocess(graph, input, cellId);
                 graphDAO.saveGraph(sara);
             } else {
                 sara = graphDAO.loadSaraGraph();
