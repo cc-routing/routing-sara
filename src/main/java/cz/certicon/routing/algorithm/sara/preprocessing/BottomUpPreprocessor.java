@@ -39,7 +39,7 @@ import java8.util.function.ToIntFunction;
  */
 public class BottomUpPreprocessor implements Preprocessor {
 
-    private static final double FILTER_TO_ASSEMBLY_RATIO = 1000;
+    private static final double FILTER_TO_ASSEMBLY_RATIO = 100;
 
     @Override
     public <N extends Node, E extends Edge> SaraGraph preprocess( Graph<N, E> graph, PreprocessingInput input, MaxIdContainer cellIdContainer ) {
@@ -70,12 +70,8 @@ public class BottomUpPreprocessor implements Preprocessor {
             assembler.setMaxCellSize( currentCellSize );
             ContractGraph assembled = null;
             long bestEdgeCount = Long.MAX_VALUE;
-            TimeLogger.log( "ASSEMBLING_ASSEMBLER", TimeLogger.Command.CONTINUE );
             for ( int run = 0; run < input.getNumberOfAssemblyRuns(); run++ ) {
-                TimeLogger.log( "ASSEMBLING_ASSEMBLER_CALCULATION", TimeLogger.Command.CONTINUE );
                 ContractGraph assembledTmp = assembler.assemble( filteredGraph );
-                TimeLogger.log( "ASSEMBLING_ASSEMBLER_CALCULATION", TimeLogger.Command.PAUSE );
-                TimeLogger.log( "ASSEMBLING_ASSEMBLER_COMPARISON", TimeLogger.Command.CONTINUE );
                 long edgeCount = IteratorStreams.stream( assembledTmp.getEdges() )
                         .mapToInt( new ToIntFunction<ContractEdge>() {
                             @Override
@@ -89,10 +85,7 @@ public class BottomUpPreprocessor implements Preprocessor {
                     bestEdgeCount = edgeCount;
                 }
                 progressListener.nextStep();
-                TimeLogger.log( "ASSEMBLING_ASSEMBLER_COMPARISON", TimeLogger.Command.PAUSE );
             }
-            TimeLogger.log( "ASSEMBLING_ASSEMBLER", TimeLogger.Command.PAUSE );
-            TimeLogger.log( "ASSEMBLING_BUILDER", TimeLogger.Command.CONTINUE );
             if ( saraGraph == null ) {
                 saraGraph = new SaraGraph( EnumSet.of( Metric.LENGTH, Metric.TIME ) );
                 for ( ContractNode node : assembled.getNodes() ) {
@@ -126,7 +119,6 @@ public class BottomUpPreprocessor implements Preprocessor {
                     }
                 }
             }
-            TimeLogger.log( "ASSEMBLING_BUILDER", TimeLogger.Command.PAUSE );
             filteredGraph = assembled;
             currentCellSize *= input.getCellSize();
         }

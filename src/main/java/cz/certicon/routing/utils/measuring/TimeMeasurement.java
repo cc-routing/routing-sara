@@ -18,7 +18,6 @@ public class TimeMeasurement {
 
     private TimeUnits timeUnits = TimeUnits.MILLISECONDS;
     private long start = -1;
-    private long time;
     private long accumulated = 0;
 
     public void start() {
@@ -39,8 +38,8 @@ public class TimeMeasurement {
         if ( start == -1 ) {
             return 0;
         }
-        time = System.nanoTime() - start;
-        return timeUnits.fromNano( accumulated + time );
+        accumulated += System.nanoTime() - start;
+        return timeUnits.fromNano( accumulated );
     }
 
     /**
@@ -52,7 +51,7 @@ public class TimeMeasurement {
         if ( start == -1 ) {
             return 0;
         }
-        return timeUnits.fromNano( accumulated + time );
+        return timeUnits.fromNano( accumulated  );
     }
 
     /**
@@ -108,8 +107,7 @@ public class TimeMeasurement {
         if ( start == -1 ) {
             return 0;
         }
-        time = System.nanoTime() - start;
-        accumulated += time;
+        accumulated += System.nanoTime() - start;
         return timeUnits.fromNano( accumulated );
     }
 
