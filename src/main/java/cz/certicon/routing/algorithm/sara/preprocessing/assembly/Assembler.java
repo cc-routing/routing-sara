@@ -5,11 +5,6 @@
  */
 package cz.certicon.routing.algorithm.sara.preprocessing.assembly;
 
-import cz.certicon.routing.model.basic.MaxIdContainer;
-import cz.certicon.routing.model.graph.Edge;
-import cz.certicon.routing.model.graph.Graph;
-import cz.certicon.routing.model.graph.Node;
-import cz.certicon.routing.model.graph.SaraGraph;
 import cz.certicon.routing.model.graph.preprocessing.ContractGraph;
 
 /**
@@ -21,7 +16,7 @@ import cz.certicon.routing.model.graph.preprocessing.ContractGraph;
  */
 public interface Assembler {
 
-    <N extends Node, E extends Edge> ContractGraph assemble( ContractGraph graph );
+    ContractGraph assemble( ContractGraph graph );
 
-    void setMaxCellSize(int maxCellSize);
+    void setMaxCellSize( int maxCellSize );
 }

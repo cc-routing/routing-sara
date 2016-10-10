@@ -87,7 +87,7 @@ public class Time implements Number<Time> {
 
     @Override
     public String toString() {
-        return "" + getTime();
+        return "" + getTime() + " " + timeUnits.getUnit();
     }
 
     /**

@@ -20,6 +20,7 @@ import java.util.Map;
 public class TimeLogger {
 
     private static final Map<Event, TimeMeasurement> TIME_MAP = new HashMap<>();
+    private static final Map<String, TimeMeasurement> TIME_STRING_MAP = new HashMap<>();
     private static TimeUnits timeUnits = TimeUnits.MILLISECONDS;
 
     /**
@@ -31,6 +32,9 @@ public class TimeLogger {
     public static void setTimeUnits( TimeUnits timeUnits ) {
         TimeLogger.timeUnits = timeUnits;
         for ( TimeMeasurement value : TIME_MAP.values() ) {
+            value.setTimeUnits( timeUnits );
+        }
+        for ( TimeMeasurement value : TIME_STRING_MAP.values() ) {
             value.setTimeUnits( timeUnits );
         }
     }
@@ -59,6 +63,34 @@ public class TimeLogger {
             time = new TimeMeasurement();
             time.setTimeUnits( timeUnits );
             TIME_MAP.put( event, time );
+        }
+        return time;
+    }
+
+    /**
+     * Log given {@link Command} for given {@link Event} type
+     *
+     * @param eventName given event name
+     * @param command given command
+     */
+    public static void log( String eventName, Command command ) {
+        command.execute( getTimeMeasurement( eventName ) );
+    }
+
+    /**
+     * Returns {@link TimeMeasurement} object for the given event. Extract
+     * elapsed {@link Time} via
+     * {@link TimeMeasurement#getTime() timeMeasurement.getTime()}
+     *
+     * @param eventName given event name
+     * @return time measurement object
+     */
+    public static TimeMeasurement getTimeMeasurement( String eventName ) {
+        TimeMeasurement time = TIME_STRING_MAP.get( eventName );
+        if ( time == null ) {
+            time = new TimeMeasurement();
+            time.setTimeUnits( timeUnits );
+            TIME_STRING_MAP.put( eventName, time );
         }
         return time;
     }

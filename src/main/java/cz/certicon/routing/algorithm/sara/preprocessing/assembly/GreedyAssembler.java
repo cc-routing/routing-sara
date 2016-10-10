@@ -16,6 +16,7 @@ import cz.certicon.routing.model.basic.MaxIdContainer;
 import cz.certicon.routing.model.queue.FibonacciHeap;
 import cz.certicon.routing.model.queue.PriorityQueue;
 import cz.certicon.routing.utils.RandomUtils;
+import cz.certicon.routing.utils.measuring.TimeLogger;
 import java.util.Random;
 
 /**
@@ -49,10 +50,13 @@ public class GreedyAssembler implements Assembler {
     }
 
     @Override
-    public <N extends Node, E extends Edge> ContractGraph assemble( ContractGraph graph ) {
+    public ContractGraph assemble( ContractGraph graph ) {
+        TimeLogger.log( "ASSEMBLING_ASSEMBLER_CALCULATION_COPY", TimeLogger.Command.CONTINUE );
         graph = (ContractGraph) graph.copy();
+        TimeLogger.log( "ASSEMBLING_ASSEMBLER_CALCULATION_COPY", TimeLogger.Command.PAUSE );
 //        System.out.println( "Assembling..." );
         // find max ids
+        TimeLogger.log( "ASSEMBLING_ASSEMBLER_CALCULATION_MAXID", TimeLogger.Command.CONTINUE );
         long maxNodeId = -1;
         long maxEdgeId = -1;
         for ( ContractNode node : graph.getNodes() ) {
@@ -61,8 +65,10 @@ public class GreedyAssembler implements Assembler {
         for ( ContractEdge edge : graph.getEdges() ) {
             maxEdgeId = Math.max( maxEdgeId, edge.getId() );
         }
+        TimeLogger.log( "ASSEMBLING_ASSEMBLER_CALCULATION_MAXID", TimeLogger.Command.PAUSE );
         // P = {{x,y}; x,y  V, {x,y} e E, s(x)+s(y) < U} // all pairs of adjacent vertices with combined size lower than U  
-        // Sort P according to (minimizing): score({x,y}) = r * (w(x,y)/sqrt(s(x))+w(x,y)/sqrt(s(y))), where r is with probability a picked randomly from [0,b] and with probability 1-a picked randomly from [b,1]
+        // Sort P according to (minimizing): score({x,y}) = r * (w(x,y)/sqrt(s(x))+w(x,y)/sqrt(s(y))), where r is with probability a picked randomly from [0,b] and with probability 1-a picked randomly from [b,1]        
+        TimeLogger.log( "ASSEMBLING_ASSEMBLER_CALCULATION_OTHER", TimeLogger.Command.CONTINUE );
         PriorityQueue<NodePair> queue = initQueue( graph, maxCellSize );
         MaxIdContainer maxNodeIdContainer = new MaxIdContainer( maxNodeId );
         MaxIdContainer maxEdgeIdContainer = new MaxIdContainer( maxEdgeId );
@@ -101,6 +107,7 @@ public class GreedyAssembler implements Assembler {
 //            }
 //        }
 //        builder.nodes( nodes ).edges( edges );
+        TimeLogger.log( "ASSEMBLING_ASSEMBLER_CALCULATION_OTHER", TimeLogger.Command.PAUSE );
         return graph;
     }
 

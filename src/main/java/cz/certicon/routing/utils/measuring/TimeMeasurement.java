@@ -63,7 +63,7 @@ public class TimeMeasurement {
      * @return saved elapsed time
      */
     public Time getTime() {
-        return new Time( TimeUnits.NANOSECONDS, accumulated + time );
+        return new Time( timeUnits, getTimeElapsed() );
     }
 
     /**
