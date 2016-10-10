@@ -134,6 +134,13 @@ public class SubSaraBuilder extends BaseSubBuilder {
         return route;
     }
 
+    /**
+     * sum route distance
+     *
+     * @param edges
+     * @param metric
+     * @return route distance
+     */
     public Distance sumDistance(List<SaraEdge> edges, Metric metric) {
         Distance distance = new Distance(0);
         for (int idx = 1; idx < edges.size() - 1; idx++) {

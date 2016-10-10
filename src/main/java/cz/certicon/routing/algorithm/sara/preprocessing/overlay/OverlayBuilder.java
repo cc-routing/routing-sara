@@ -95,6 +95,18 @@ public class OverlayBuilder {
             this.addPartition();
             cell = cell.getParent();
         }
+
+        for (SaraNode node : graph.getNodes()) {
+            cell = node.getParent();
+            int level = 1;
+
+            while (cell != null) {
+                Partition partition = this.partitions.get(level);
+                partition.checkCell(cell);
+                cell = cell.getParent();
+                level++;
+            }
+        }
     }
 
     /**
@@ -108,11 +120,16 @@ public class OverlayBuilder {
             this.checkForBorder(edge);
         }
 
-        Partition part1 = this.partitions.get(1);
-        part1.buildCellSubGraphs();
-
         for (Partition partition : this.partitions) {
             partition.buildOverlayGraph();
+        }
+
+        for (Partition partition : this.partitions) {
+            partition.buildSubGraphs();
+        }
+
+        for (Partition partition : this.partitions) {
+            partition.buildCustomization();
         }
     }
 
@@ -151,17 +168,15 @@ public class OverlayBuilder {
 
             if (sourceId == targetId) {
 
-                CellRouteTable table = partition.checkCell(sourceCell);
-
                 if (level == 1) {
-                    table.graphBuilder.addEdge(edge);
+                    sourceCell.getRouteTable().subSara.addEdge(edge);
                 }
 
                 return;
             }
 
-            CellRouteTable sourceTable = partition.checkCell(sourceCell);
-            CellRouteTable targetTable = partition.checkCell(targetCell);
+            CellRouteTable sourceTable = sourceCell.getRouteTable();
+            CellRouteTable targetTable = targetCell.getRouteTable();
 
             if (level == 1) {
 
@@ -173,19 +188,19 @@ public class OverlayBuilder {
                     entryColumn2 = exitColumn2.getOther();
                 }
 
-                sourceTable.graphBuilder.addEdge(edge);
-                targetTable.graphBuilder.addEdge(edge);
+                sourceTable.subSara.addEdge(edge);
+                targetTable.subSara.addEdge(edge);
             }
 
             OverlayNode exitNode1 = overGraph.addNode(exitColumn1, sourceTable.exitPoints, edge);
             OverlayNode entryNode1 = overGraph.addNode(entryColumn1, targetTable.entryPoints, edge);
 
-            overGraph.addEdge(exitNode1, entryNode1);
+            overGraph.addEdge(edge.getId(), exitNode1, entryNode1).setLink(edge);
 
             if (twoWay) {
                 OverlayNode exitNode2 = overGraph.addNode(exitColumn2, targetTable.exitPoints, edge);
                 OverlayNode entryNode2 = overGraph.addNode(entryColumn2, sourceTable.entryPoints, edge);
-                overGraph.addEdge(exitNode2, entryNode2);
+                overGraph.addEdge(-edge.getId(), exitNode2, entryNode2).setLink(edge);;
             }
 
             sourceCell = sourceCell.getParent();
@@ -202,6 +217,12 @@ public class OverlayBuilder {
         }
     }
 
+    public void resetRoutingCounters() {
+        for (Partition part : this.partitions) {
+            part.routingCounter = 0;
+        }
+    }
+
     /**
      * Finds highest level OverlayNode which is not in the same cell with source
      * and target
@@ -214,6 +235,18 @@ public class OverlayBuilder {
      */
     public OverlayNode getMaxOverlayNode(SaraNode node, SaraEdge edge, SaraNode source, SaraNode target) {
 
+        OverlayNode re = this.getMaxOverNode(node, edge, source, target);
+        if (re != null) {
+            int lev = re.level();
+            Partition part = this.partitions.get(lev);
+            part.routingCounter++;
+        }
+
+        return re;
+    }
+
+    private OverlayNode getMaxOverNode(SaraNode node, SaraEdge edge, SaraNode source, SaraNode target) {
+
         BorderNodeMap entryMap = node.getParent().getRouteTable().entryPoints;
 
         if (!entryMap.containsKey(edge)) {
@@ -223,7 +256,6 @@ public class OverlayBuilder {
 
         OverlayNode max = null;
         OverlayNode entry = entryMap.get(edge);
-        OverlayColumn column = entry.column;
         Cell sourceCell = source.getParent();
         Cell targetCell = target.getParent();
 
@@ -252,11 +284,11 @@ public class OverlayBuilder {
                 return max;
             }
 
-            if (entry.level() == column.size() - 1) {
+            entry = entry.getUpperNode();
+
+            if (entry == null) {
                 return max;
             }
-
-            entry = entry.getUpperNode();
         }
     }
 }

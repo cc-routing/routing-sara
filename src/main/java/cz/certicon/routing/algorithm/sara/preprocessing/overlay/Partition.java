@@ -54,6 +54,13 @@ public class Partition {
     @Getter
     OverlayGraph overlayGraph;
 
+    @Getter
+    long routingCounter = 0;
+
+    int validRoutes = 0;
+    int invalidRoutes = 0;
+    int forbiddenRoutes = 0;
+
     public Partition(OverlayBuilder parent, int level) {
 
         this.parent = parent;
@@ -89,24 +96,28 @@ public class Partition {
     /**
      * Builds Sara Sub graphs for L1 cells.
      */
-    public void buildCellSubGraphs() {
-        for (Cell cell : this.cells.valueCollection()) {
-            cell.getRouteTable().graphBuilder.buildSubGraph();
-        }
-    }
-
-    /**
-     * builds overlay graph in this partition.
-     */
-    public void buildOverlayGraph() {
+    public void buildSubGraphs() {
 
         if (this.level == 0) {
             return;
         }
 
-        int validRoutes = 0;
-        int invalidRoutes = 0;
-        int forbiddenRoutes = 0;
+        if (this.level == 1) {
+            for (Cell cell : this.cells.valueCollection()) {
+                cell.getRouteTable().subSara.buildSubGraph();
+            }
+        } else {
+            for (Cell cell : this.cells.valueCollection()) {
+                cell.getRouteTable().subOverlay.buildSubGraph();
+            }
+        }
+    }
+
+    public void buildOverlayGraph() {
+
+        if (this.level == 0) {
+            return;
+        }
 
         for (Cell cell : this.cells.valueCollection()) {
 
@@ -119,74 +130,35 @@ public class Partition {
                 }
             }
 
-            if (this.level == 1) {
-                // L1 distances are calculated from SaraSubGraphs in cells
-                SaraGraph subSara = table.graphBuilder.subGraph;
-
-                for (Metric metric : this.parent.metrics) {
-
-                    for (OverlayNode entryNode : table.entryPoints.values()) {
-
-                        Map<SaraEdge, Direction> targets = new HashMap<>();
-                        Map<SaraEdge, OverlayEdge> mapper = new HashMap<>();
-
-                        OverlayColumn begCol = entryNode.column.other;
-                        SaraEdge begEdge = begCol.edge;
-                        long begId = begEdge.getId();
-                        begEdge = subSara.getEdgeById(begId);
-                        Direction begDir = begCol.getDirection();
-
-                        for (OverlayEdge edge : entryNode.getOutgoingEdges()) {
-
-                            OverlayNode exitNode = edge.getTarget();
-                            OverlayColumn endCol = exitNode.column.other;
-
-                            if (begCol.node.getId() == endCol.node.getId()) {
-                                // two-way L0 SaraEdge is split in two L1 OverlayEdges
-                                // U-turn in this case is forbidden
-                                forbiddenRoutes++;
-                                Distance distance = Distance.newInfinityInstance();
-                                edge.setLength(metric, distance);
-                            } else {
-                                SaraEdge endEdge = endCol.edge;
-
-                                long endId = endEdge.getId();
-                                Direction endDir = endCol.getDirection();
-                                endEdge = subSara.getEdgeById(endId);
-                                targets.put(endEdge, endDir);
-                                mapper.put(endEdge, edge);
-                            }
-                        }
-
-                        Map<SaraEdge, Optional<Route<SaraNode, SaraEdge>>> routeMap
-                                = this.parent.oneToAll.route(subSara, metric, begEdge, begDir, targets);
-
-                        for (Entry<SaraEdge, Optional<Route<SaraNode, SaraEdge>>> entry : routeMap.entrySet()) {
-                            SaraEdge endEdge = entry.getKey();
-                            OverlayEdge edge = mapper.get(endEdge);
-                            Optional<Route<SaraNode, SaraEdge>> result = entry.getValue();
-
-                            Distance distance;
-
-                            if (result.isPresent()) {
-                                Route<SaraNode, SaraEdge> route = result.get();
-                                List<SaraEdge> edges = route.getEdgeList();
-                                distance = table.graphBuilder.sumDistance(edges, metric);
-                                validRoutes++;
-                            } else {
-                                distance = Distance.newInfinityInstance();
-                                invalidRoutes++;
-                            }
-
-                            edge.setLength(metric, distance);
-                        }
-                    } // Metric
-                } //L1
-            } else {
-                //L2+
+            Cell cellParent = cell.getParent();
+            if (cellParent != null) {
+                CellRouteTable upTable = cellParent.getRouteTable();
+                upTable.subOverlay.subCells.add(cell);
             }
+        }
+    }
 
-        } //CEll
+    /**
+     * builds overlay graph in this partition.
+     */
+    public void buildCustomization() {
+
+        if (this.level == 0) {
+            return;
+        }
+
+        if (this.level == 1) {
+            for (Cell cell : this.cells.valueCollection()) {
+                this.customizeFirstLevel(cell);
+            }
+        } else {
+
+            this.copyDistances();
+
+            for (Cell cell : this.cells.valueCollection()) {
+                this.customizeUpperLevel(cell);
+            }
+        }
 
         String info = "L=" + this.level
                 + "; cells=" + this.cells.size()
@@ -198,21 +170,156 @@ public class Partition {
     }
 
     /**
-     * sum distance for Overlay route
-     *
-     * @param route
-     * @param map
-     * @return route distance
+     * copy calculated edge distances from full graph at L(n-1) to cell
+     * subGraphs at L(n)
      */
-    private Distance sumDistance(Iterable<OverlayEdge> edges, Metric metric) {
-
-        Distance distance = new Distance(0);
-
-        for (OverlayEdge edge : edges) {
-            Distance value = edge.getLength(metric);
-            distance = distance.add(value);
+    private void copyDistances() {
+        for (Cell cell : this.cells.valueCollection()) {
+            cell.getRouteTable().subOverlay.copyDistances();
         }
+    }
 
-        return distance;
+    /**
+     * calculates shortcuts over cell in L1
+     *
+     * @param cell
+     */
+    private void customizeFirstLevel(Cell cell) {
+
+        CellRouteTable table = cell.getRouteTable();
+        SubSaraBuilder subBuilder = table.subSara;
+
+        // L1 distances are calculated from Sara SubGraphs in cells
+        SaraGraph subGraph = subBuilder.subGraph;
+
+        for (Metric metric : this.parent.metrics) {
+
+            for (OverlayNode entryNode : table.entryPoints.values()) {
+
+                Map<SaraEdge, Direction> targets = new HashMap<>();
+                Map<SaraEdge, OverlayEdge> mapper = new HashMap<>();
+
+                OverlayColumn begCol = entryNode.column.other;
+                SaraEdge begEdge = begCol.edge;
+                long begId = begEdge.getId();
+                begEdge = subGraph.getEdgeById(begId);
+                Direction begDir = begCol.getDirection();
+
+                for (OverlayEdge cellEdge : entryNode.getOutgoingEdges()) {
+
+                    OverlayNode exitNode = cellEdge.getTarget();
+                    OverlayColumn endCol = exitNode.column.other;
+
+                    if (begCol.node.getId() == endCol.node.getId()) {
+                        // two-way L0 SaraEdge is split in two L1 OverlayEdges
+                        // U-turn in this case is forbidden
+                        forbiddenRoutes++;
+                        Distance distance = Distance.newInfinityInstance();
+                        cellEdge.setLength(metric, distance);
+                    } else {
+                        SaraEdge endEdge = endCol.edge;
+
+                        long endId = endEdge.getId();
+                        Direction endDir = endCol.getDirection();
+                        endEdge = subGraph.getEdgeById(endId);
+                        targets.put(endEdge, endDir);
+                        mapper.put(endEdge, cellEdge);
+                    }
+                }
+
+                Map<SaraEdge, Optional<Route<SaraNode, SaraEdge>>> routeMap
+                        = this.parent.oneToAll.route(subGraph, metric, begEdge, begDir, targets);
+
+                for (Entry<SaraEdge, Optional<Route<SaraNode, SaraEdge>>> entry : routeMap.entrySet()) {
+
+                    SaraEdge endEdge = entry.getKey();
+                    OverlayEdge cellEdge = mapper.get(endEdge);
+                    Optional<Route<SaraNode, SaraEdge>> result = entry.getValue();
+
+                    //OverlayNode s = edge.getSource();
+                    //OverlayNode t = edge.getTarget();
+                    Distance distance;
+
+                    if (result.isPresent()) {
+                        Route<SaraNode, SaraEdge> route = result.get();
+                        List<SaraEdge> edges = route.getEdgeList();
+                        distance = subBuilder.sumDistance(edges, metric);
+                        //edge.saraWay = edges;
+                        validRoutes++;
+                    } else {
+                        distance = Distance.newInfinityInstance();
+                        invalidRoutes++;
+                    }
+
+                    cellEdge.setLength(metric, distance);
+                }
+            } // Metric
+        }
+    }
+
+    /**
+     * calculates shortcuts over cell in L2+
+     *
+     * @param cell
+     */
+    private void customizeUpperLevel(Cell cell) {
+
+        CellRouteTable table = cell.getRouteTable();
+
+        SubOverlayBuilder subBuilder = table.subOverlay;
+        OverlayGraph subGraph = subBuilder.subGraph;
+
+        //OverlayGraph full = this.parent.partitions.get(this.level - 1).overlayGraph;
+        for (Metric metric : this.parent.metrics) {
+
+            for (OverlayNode entryNode : table.entryPoints.values()) {
+
+                Map<OverlayEdge, OverlayEdge> mapper = new HashMap<>();
+                Map<OverlayEdge, Direction> targets = new HashMap<>();
+                OverlayEdge begEdge = entryNode.getIncomingEdges().next();
+                long begId = begEdge.getId();
+                begEdge = subGraph.getEdgeById(begId);
+
+                Direction begDir = Direction.FORWARD;
+
+                for (OverlayEdge cellEdge : entryNode.getOutgoingEdges()) {
+
+                    Direction endDir = Direction.FORWARD;
+                    OverlayEdge endEdge = cellEdge.getTarget().getOutgoingEdges().next();
+                    long endId = endEdge.getId();
+                    endEdge = subGraph.getEdgeById(endId);
+
+                    targets.put(endEdge, endDir);
+                    mapper.put(endEdge, cellEdge);
+                }
+
+                Map<OverlayEdge, Optional<Route<OverlayNode, OverlayEdge>>> routeMap
+                        = this.parent.oneToAll.route(subGraph, metric, begEdge, begDir, targets);
+
+                for (Entry<OverlayEdge, Optional<Route<OverlayNode, OverlayEdge>>> entry : routeMap.entrySet()) {
+
+                    Optional<Route<OverlayNode, OverlayEdge>> result = entry.getValue();
+
+                    OverlayEdge endEdge = entry.getKey();
+                    OverlayEdge cellEdge = mapper.get(endEdge);
+
+                    Distance distance;
+
+                    if (result.isPresent()) {
+                        Route<OverlayNode, OverlayEdge> route = result.get();
+                        List<OverlayEdge> edges = route.getEdgeList();
+                        //cellEdge.overWay = edges;
+                        distance = subBuilder.sumDistance(edges, metric);
+                        validRoutes++;
+                    } else {
+                        distance = Distance.newInfinityInstance();
+                        invalidRoutes++;
+                    }
+
+                    //assign calculated shortcut
+                    cellEdge.setLength(metric, distance);
+                }
+            } // Metric
+        }
     }
 }

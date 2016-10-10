@@ -52,6 +52,11 @@ public class OverlayNode extends AbstractNode<OverlayNode, OverlayEdge> {
         this.borderMap = map;
         this.borderIndex = map.size();
         this.borderMap.put(edge, this);
+        column.nodes.add(this);
+    }
+
+    OverlayNode(OverlayGraph graph, long id) {
+        super(graph, id);
     }
 
     @Override
@@ -98,8 +103,8 @@ public class OverlayNode extends AbstractNode<OverlayNode, OverlayEdge> {
 
         int level = this.level();
 
-        if (level < this.column.size()) {
-            return this.column.get(level + 1);
+        if (level < this.column.nodes.size() - 1) {
+            return this.column.nodes.get(level + 1);
         } else {
             return null;
         }
@@ -115,7 +120,7 @@ public class OverlayNode extends AbstractNode<OverlayNode, OverlayEdge> {
         int level = this.level();
 
         if (level > 1) {
-            return this.column.get(level - 1);
+            return this.column.nodes.get(level - 1);
         } else {
             return null;
         }

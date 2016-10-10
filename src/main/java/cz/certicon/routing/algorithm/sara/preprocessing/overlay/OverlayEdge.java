@@ -7,8 +7,12 @@ package cz.certicon.routing.algorithm.sara.preprocessing.overlay;
 
 import cz.certicon.routing.model.graph.AbstractEdge;
 import cz.certicon.routing.model.graph.Graph;
+import cz.certicon.routing.model.graph.Metric;
+import cz.certicon.routing.model.graph.SaraEdge;
 import cz.certicon.routing.model.graph.TurnTable;
 import cz.certicon.routing.model.values.Distance;
+import java.util.List;
+import lombok.Getter;
 
 /**
  *
@@ -17,9 +21,37 @@ import cz.certicon.routing.model.values.Distance;
  */
 public class OverlayEdge extends AbstractEdge<OverlayNode, OverlayEdge> {
 
-    public OverlayEdge(OverlayGraph graph, long id, OverlayNode source, OverlayNode target) {
+    /**
+     * underlaying border SaraEdge
+     */
+    @Getter
+    SaraEdge saraEdge = null;
 
+    //public List<SaraEdge> saraWay;
+    //public List<OverlayEdge> overWay;
+
+    public OverlayEdge(OverlayGraph graph, long id, OverlayNode source, OverlayNode target) {
         super(graph, id, true, source, target, -1, -1);
+    }
+
+    public OverlayEdge(OverlayGraph graph, OverlayEdge edge) {
+        this(graph, edge.getId(), graph.getNodeById(edge.getSource().getId()), graph.getNodeById(edge.getTarget().getId()));
+        if (edge.saraEdge != null) {
+            this.setLink(edge.saraEdge);
+        }
+    }
+
+    /**
+     * sets the link to the underlying SaraEdge
+     *
+     * @param edge
+     */
+    public void setLink(SaraEdge edge) {
+        this.saraEdge = edge;
+        for (Metric metric : this.getGraph().getMetrics()) {
+            Distance distance = edge.getLength(metric);
+            this.setLength(metric, distance);
+        }
     }
 
     @Override

@@ -16,6 +16,13 @@ import java.util.Set;
  */
 public class OverlayGraph extends AbstractUndirectedGraph<OverlayNode, OverlayEdge> {
 
+    private long maxEdgeId = 0;
+
+    /**
+     * adding edges with id is locked
+     */
+    private boolean lockEdgesById = false;
+
     public OverlayGraph(OverlayBuilder builder) {
         super(builder.metrics);
     }
@@ -26,8 +33,35 @@ public class OverlayGraph extends AbstractUndirectedGraph<OverlayNode, OverlayEd
         return node;
     }
 
+    public OverlayNode addNode(long id) {
+        OverlayNode node = new OverlayNode(this, id);
+        this.addNode(node);
+        return node;
+    }
+
     public OverlayEdge addEdge(OverlayNode source, OverlayNode target) {
-        OverlayEdge edge = new OverlayEdge(this, this.getEdgeCount(), source, target);
+        this.lockEdgesById = true;
+        OverlayEdge edge = new OverlayEdge(this, ++this.maxEdgeId, source, target);
+        this.addEdge(edge);
+        return edge;
+    }
+
+    public OverlayEdge addEdge(long id, OverlayNode source, OverlayNode target) {
+        if (this.lockEdgesById) {
+            throw new IllegalStateException("add overlay edge by id is locked");
+        }
+        long absId = Math.abs(id);
+        if (absId > this.maxEdgeId) {
+            this.maxEdgeId = absId;
+        }
+
+        OverlayEdge edge = new OverlayEdge(this, id, source, target);
+        this.addEdge(edge);
+        return edge;
+    }
+
+    public OverlayEdge addCopy(OverlayEdge item) {
+        OverlayEdge edge = new OverlayEdge(this, item);
         this.addEdge(edge);
         return edge;
     }
@@ -36,5 +70,4 @@ public class OverlayGraph extends AbstractUndirectedGraph<OverlayNode, OverlayEd
     protected AbstractUndirectedGraph<OverlayNode, OverlayEdge> newInstance(Set<Metric> metrics) {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
-
 }

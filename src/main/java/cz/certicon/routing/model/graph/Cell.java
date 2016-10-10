@@ -22,7 +22,7 @@ public class Cell implements Identifiable {
 
     @Getter
     @Setter
-    CellRouteTable routeTable;
+    public CellRouteTable routeTable;
 
     public Cell( long id ) {
         this.id = id;

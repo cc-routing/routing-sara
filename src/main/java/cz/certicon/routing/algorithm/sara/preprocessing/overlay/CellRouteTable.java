@@ -40,19 +40,28 @@ public class CellRouteTable {
     Cell cell;
 
     /**
-     * L1 SaraSubGraph builder.
+     * L1 Sara SubGraph builder.
      */
     @Getter
-    SubGraphBuilder graphBuilder;
+    SubSaraBuilder subSara;
+
+    /**
+     * L2+ Overlay SubGraph builder.
+     */
+    @Getter
+    SubOverlayBuilder subOverlay;
 
     public CellRouteTable(Partition partition, Cell cell) {
+
         this.partition = partition;
         this.cell = cell;
         this.entryPoints = new BorderNodeMap(this, true);
         this.exitPoints = new BorderNodeMap(this, false);
 
         if (partition.level == 1) {
-            this.graphBuilder = new SubGraphBuilder(this);
+            this.subSara = new SubSaraBuilder(this);
+        } else {
+            this.subOverlay = new SubOverlayBuilder(this);
         }
     }
 }
