@@ -31,7 +31,7 @@ public class OverlayCreator {
         long randomSeed = -1;
         int maxCellSize = 500;
         double cellRatio = 1;
-        double coreRatioInverse = 10;
+        double coreRatio = 0.1;
         double lowIntervalProbability = 0.03;
         double lowerIntervalLimit = 0.6;
         int numberOfAssemblyRuns = 100; //100-1000?
@@ -73,7 +73,7 @@ public class OverlayCreator {
                 PreprocessingInput input = new PreprocessingInput(
                         this.setup.maxCellSize,
                         this.setup.cellRatio,
-                        this.setup.coreRatioInverse,
+                        this.setup.coreRatio,
                         this.setup.lowIntervalProbability,
                         this.setup.lowerIntervalLimit,
                         this.setup.numberOfAssemblyRuns,
