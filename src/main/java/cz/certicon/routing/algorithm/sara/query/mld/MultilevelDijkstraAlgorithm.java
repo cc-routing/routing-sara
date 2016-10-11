@@ -197,7 +197,7 @@ public class MultilevelDijkstraAlgorithm<N extends Node, E extends Edge> impleme
                             System.out.print(" - OVERLAY node lvl " + levelNode.level() + " (SARA node " + traverseNode.getId() + ")");
                         }
 
-                        State traverseState = new State(traverseNode, traverseNode.getColumn().getEdge());
+                        State traverseState = new State(levelNode, traverseNode.getColumn().getEdge());
                         if (!closedOverlayStates.contains(traverseState)) {
                             Distance traverseDistance = (overlayNodeDistanceMap.containsKey(traverseState)) ? overlayNodeDistanceMap.get(traverseState) : Distance.newInfinityInstance();
                             Distance newDistance = alternativeDistance.add(graph.getLength(metric, traverseNode.getColumn().getEdge()));
