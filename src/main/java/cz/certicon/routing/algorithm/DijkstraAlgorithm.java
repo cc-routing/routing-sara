@@ -30,10 +30,10 @@ import java.util.Set;
  * @param <N> node type
  * @param <E> edge type
  */
-public class DijkstraAlgorithm<N extends Node<N,E>, E extends Edge<N,E>> implements RoutingAlgorithm<N, E> {
+public class DijkstraAlgorithm<N extends Node<N, E>, E extends Edge<N, E>> implements RoutingAlgorithm<N, E> {
 
     @Override
-    public Optional<Route<N,E>> route( Graph<N, E> graph, Metric metric, N source, N destination ) {
+    public Optional<Route<N, E>> route( Graph<N, E> graph, Metric metric, N source, N destination ) {
         Map<State<N, E>, Distance> nodeDistanceMap = new HashMap<>();
         PriorityQueue<State<N, E>> pqueue = new FibonacciHeap<>();
         Distance upperBound = Distance.newInfinityInstance();
@@ -42,12 +42,12 @@ public class DijkstraAlgorithm<N extends Node<N,E>, E extends Edge<N,E>> impleme
     }
 
     @Override
-    public Optional<Route<N,E>> route( Graph<N, E> graph, Metric metric, E source, E destination ) {
+    public Optional<Route<N, E>> route( Graph<N, E> graph, Metric metric, E source, E destination ) {
         return route( graph, metric, source, destination, new Distance( 0 ), new Distance( 0 ), new Distance( 0 ), new Distance( 0 ) );
     }
 
     @Override
-    public Optional<Route<N,E>> route( Graph<N, E> graph, Metric metric, E source, E destination, Distance toSourceStart, Distance toSourceEnd, Distance toDestinationStart, Distance toDestinationEnd ) {
+    public Optional<Route<N, E>> route( Graph<N, E> graph, Metric metric, E source, E destination, Distance toSourceStart, Distance toSourceEnd, Distance toDestinationStart, Distance toDestinationEnd ) {
         Map<State<N, E>, Distance> nodeDistanceMap = new HashMap<>();
         PriorityQueue<State<N, E>> pqueue = new FibonacciHeap<>();
         // create upper bound if the edges are equal and mark it
@@ -73,7 +73,7 @@ public class DijkstraAlgorithm<N extends Node<N,E>, E extends Edge<N,E>> impleme
         return route( graph, metric, nodeDistanceMap, pqueue, upperBound, new EdgeEndCondition( graph, destination, toDestinationStart, toDestinationEnd ), singleEdgePath, destination );
     }
 
-    private Optional<Route<N,E>> route( Graph<N, E> graph, Metric metric, Map<State<N, E>, Distance> nodeDistanceMap, PriorityQueue<State<N, E>> pqueue, Distance upperBound, EndCondition<N, E> endCondition, E singleEdgePath, E endEdge ) {
+    private Optional<Route<N, E>> route( Graph<N, E> graph, Metric metric, Map<State<N, E>, Distance> nodeDistanceMap, PriorityQueue<State<N, E>> pqueue, Distance upperBound, EndCondition<N, E> endCondition, E singleEdgePath, E endEdge ) {
         Map<State, State> predecessorMap = new HashMap<>();
         Set<State> closedStates = new HashSet<>();
         State finalState = null;
@@ -85,6 +85,10 @@ public class DijkstraAlgorithm<N extends Node<N,E>, E extends Edge<N,E>> impleme
             Pair<State, Distance> updatePair = endCondition.update( finalState, upperBound, state, distance );
             upperBound = updatePair.b;
             finalState = updatePair.a;
+            if ( distance.isGreaterThan( upperBound ) ) {
+                pqueue.clear();
+                break;
+            }
             for ( E edge : graph.getOutgoingEdges( state.getNode() ) ) {
                 N targetNode = graph.getOtherNode( edge, state.getNode() );
                 State targetState = new State( targetNode, edge );
