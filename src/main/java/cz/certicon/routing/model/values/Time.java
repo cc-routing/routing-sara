@@ -51,7 +51,7 @@ public class Time implements Number<Time> {
      *
      * @return time in the current units
      */
-    public long getTime() {
+    public long getValue() {
         return timeUnits.fromNano( nanoseconds );
     }
 
@@ -61,7 +61,7 @@ public class Time implements Number<Time> {
      * @param timeUnits provided units
      * @return time in the provided units
      */
-    public long getTime( TimeUnits timeUnits ) {
+    public long getValue( TimeUnits timeUnits ) {
         return timeUnits.fromNano( nanoseconds );
     }
 
@@ -82,12 +82,12 @@ public class Time implements Number<Time> {
      * by the divisor
      */
     public Time divide( long divisor ) {
-        return new Time( timeUnits, getTime() / divisor );
+        return new Time( timeUnits, Time.this.getValue() / divisor );
     }
 
     @Override
     public String toString() {
-        return "" + getTime() + " " + timeUnits.getUnit();
+        return "" + Time.this.getValue() + " " + timeUnits.getUnit();
     }
 
     /**
@@ -97,7 +97,7 @@ public class Time implements Number<Time> {
      * @return string in format "%d %s", time, unit
      */
     public String toString( TimeUnits timeUnits ) {
-        return getTime( timeUnits ) + " " + timeUnits.getUnit();
+        return getValue( timeUnits ) + " " + timeUnits.getUnit();
     }
 
     @Override

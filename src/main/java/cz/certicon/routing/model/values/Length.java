@@ -52,7 +52,7 @@ public class Length implements Number<Length> {
      *
      * @return length in the current units
      */
-    public long getLength() {
+    public long getValue() {
         return lengthUnits.fromNano( nanometers );
     }
 
@@ -62,7 +62,7 @@ public class Length implements Number<Length> {
      * @param lengthUnits provided units
      * @return length in the provided units
      */
-    public long getLength( LengthUnits lengthUnits ) {
+    public long getValue( LengthUnits lengthUnits ) {
         return lengthUnits.fromNano( nanometers );
     }
 
@@ -73,7 +73,7 @@ public class Length implements Number<Length> {
      * @return string in format "%d %s", length, unit
      */
     public String toString( LengthUnits lengthUnits ) {
-        return getLength( lengthUnits ) + " " + lengthUnits.getUnit();
+        return getValue( lengthUnits ) + " " + lengthUnits.getUnit();
     }
 
     /**
@@ -87,7 +87,7 @@ public class Length implements Number<Length> {
 
     @Override
     public String toString() {
-        return "" + getLength();
+        return "" + Length.this.getValue();
     }
 
     @Override

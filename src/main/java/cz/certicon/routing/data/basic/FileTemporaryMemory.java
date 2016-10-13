@@ -22,12 +22,12 @@ public class FileTemporaryMemory implements TemporaryMemory {
 
     @Override
     public DataDestination getMemoryAsDestination() {
-        return new FileDestination( file );
+        return new FileDataDestination( file );
     }
 
     @Override
     public DataSource getMemoryAsSource() {
-        return new FileSource( file );
+        return new FileDataSource( file );
     }
 
 }

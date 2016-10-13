@@ -8,8 +8,8 @@ package cz.certicon.routing.model;
 import cz.certicon.routing.model.graph.Edge;
 import cz.certicon.routing.model.values.Length;
 import cz.certicon.routing.model.values.Time;
-import cz.certicon.routing.model.graph.SimpleEdge;
 import cz.certicon.routing.model.values.Coordinate;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import lombok.AccessLevel;
@@ -31,5 +31,13 @@ public class RouteData<E extends Edge> {
 
     public List<Coordinate> getCoordiantes( E edge ) {
         return coordinateMap.get( edge );
+    }
+
+    public List<E> getEdges() {
+        List<E> edges = new ArrayList<>();
+        for ( Map.Entry<E, List<Coordinate>> entry : coordinateMap.entrySet() ) {
+            edges.add( entry.getKey() );
+        }
+        return edges;
     }
 }

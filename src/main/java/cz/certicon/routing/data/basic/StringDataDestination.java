@@ -14,7 +14,7 @@ import java.io.OutputStream;
  *
  * @author Michael Blaha  {@literal <michael.blaha@certicon.cz>}
  */
-public class StringDestination implements DataDestination {
+public class StringDataDestination implements DataDestination {
 
     private final StringBuilder sb = new StringBuilder();
 

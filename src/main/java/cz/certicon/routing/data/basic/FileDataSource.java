@@ -16,7 +16,7 @@ import java.util.Scanner;
  *
  * @author Michael Blaha {@literal <michael.blaha@certicon.cz>}
  */
-public class FileSource implements DataSource {
+public class FileDataSource implements DataSource {
 
     private final File file;
     private Scanner scanner;
@@ -26,7 +26,7 @@ public class FileSource implements DataSource {
      *
      * @param file file
      */
-    public FileSource( File file ) {
+    public FileDataSource( File file ) {
         this.file = file;
     }
 

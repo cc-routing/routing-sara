@@ -16,7 +16,7 @@ import java.io.PrintWriter;
  *
  * @author Michael Blaha {@literal <michael.blaha@certicon.cz>}
  */
-public class FileDestination implements DataDestination {
+public class FileDataDestination implements DataDestination {
 
     private final File file;
     private PrintWriter writer;
@@ -26,7 +26,7 @@ public class FileDestination implements DataDestination {
      *
      * @param file destination
      */
-    public FileDestination( File file ) {
+    public FileDataDestination( File file ) {
         this.file = file;
     }
 
