@@ -7,9 +7,11 @@ package cz.certicon.routing.model;
 
 import cz.certicon.routing.model.graph.Edge;
 import cz.certicon.routing.model.graph.Graph;
+import cz.certicon.routing.model.graph.Metric;
 import cz.certicon.routing.model.graph.Node;
 import cz.certicon.routing.model.graph.SimpleNode;
 import cz.certicon.routing.model.graph.SimpleEdge;
+import cz.certicon.routing.model.values.Distance;
 import cz.certicon.routing.utils.collections.ImmutableIterator;
 import cz.certicon.routing.utils.collections.Iterator;
 import java.util.ArrayList;
@@ -65,7 +67,15 @@ public class Route<N extends Node, E extends Edge> {
         };
     }
 
-    public static <N extends Node<N,E>, E extends Edge<N,E>> RouteBuilder builder() {
+    public Distance calculateDistance( Metric metric ) {
+        Distance dist = Distance.newInstance( 0 );
+        for ( E edge : edges ) {
+            dist = dist.add( edge.getLength( metric ) );
+        }
+        return dist;
+    }
+
+    public static <N extends Node<N, E>, E extends Edge<N, E>> RouteBuilder builder() {
         return new RouteBuilder<>();
     }
 
@@ -202,7 +212,7 @@ public class Route<N extends Node, E extends Edge> {
             return this;
         }
 
-        public Route<N,E> build() {
+        public Route<N, E> build() {
             return new Route( new ArrayList<>( edges ), source, target );
         }
     }
