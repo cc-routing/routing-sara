@@ -5,7 +5,6 @@
  */
 package cz.certicon.routing.algorithm.sara.query.mld;
 
-import cz.certicon.routing.algorithm.DijkstraAlgorithm;
 import cz.certicon.routing.algorithm.RoutingAlgorithm;
 import cz.certicon.routing.algorithm.sara.preprocessing.overlay.OverlayBuilder;
 import cz.certicon.routing.algorithm.sara.preprocessing.overlay.OverlayEdge;
@@ -31,17 +30,19 @@ import java.util.Set;
 
 /**
  *
- * @author Michael Blaha {@literal <michael.blaha@certicon.cz>}
+ * @author Roman Vaclavik {@literal <vaclavik@merica.cz>}
+ * @param <N> node type
+ * @param <E> edge type
  */
 public class MultilevelDijkstraAlgorithm<N extends Node, E extends Edge> implements RoutingAlgorithm<N, E> {
 
-    public Optional<Route<SaraNode, SaraEdge>> route(Graph<SaraNode, SaraEdge> graph, OverlayBuilder overlayGraph, Metric metric, SaraNode source, SaraNode destination, boolean out) {
+    public Optional<Route<N, E>> route(Graph<SaraNode, SaraEdge> graph, OverlayBuilder overlayGraph, Metric metric, SaraNode source, SaraNode destination, RouteUnpacker unpacker) {
         Map<State<SaraNode, SaraEdge>, Distance> nodeDistanceMap = new HashMap<>();
         PriorityQueue<State<SaraNode, SaraEdge>> pqueue = new FibonacciHeap<>();
         Map<State<OverlayNode, SaraEdge>, Distance> overlayNodeDistanceMap = new HashMap<>();
         PriorityQueue<State<OverlayNode, SaraEdge>> overlayPqueue = new FibonacciHeap<>();
         putNodeDistance(nodeDistanceMap, pqueue, new State<SaraNode, SaraEdge>(source, null), Distance.newInstance(0));
-        return route(graph, overlayGraph, metric, nodeDistanceMap, pqueue, overlayNodeDistanceMap, overlayPqueue, source, destination, out);
+        return route(graph, overlayGraph, metric, nodeDistanceMap, pqueue, overlayNodeDistanceMap, overlayPqueue, source, destination, unpacker);
     }
 
     @Override
@@ -64,11 +65,10 @@ public class MultilevelDijkstraAlgorithm<N extends Node, E extends Edge> impleme
     // 2) unpacker
     // 3) bidirectional MLD
     // 4) should we deal with (distance, closed state, ..) transfer node in overlayGraph?
-    private Optional<Route<SaraNode, SaraEdge>> route(Graph<SaraNode, SaraEdge> graph, OverlayBuilder overlayGraph, Metric metric, Map<State<SaraNode, SaraEdge>, Distance> nodeDistanceMap, PriorityQueue<State<SaraNode, SaraEdge>> pqueue, Map<State<OverlayNode, SaraEdge>, Distance> overlayNodeDistanceMap, PriorityQueue<State<OverlayNode, SaraEdge>> overlayPqueue, SaraNode source, SaraNode target, boolean out) {
-
+    // 5) should closed states and distances for SaraNode and OverlayNode have separated variables?
+    private Optional<Route<N, E>> route(Graph<SaraNode, SaraEdge> graph, OverlayBuilder overlayGraph, Metric metric, Map<State<SaraNode, SaraEdge>, Distance> nodeDistanceMap, PriorityQueue<State<SaraNode, SaraEdge>> pqueue, Map<State<OverlayNode, SaraEdge>, Distance> overlayNodeDistanceMap, PriorityQueue<State<OverlayNode, SaraEdge>> overlayPqueue, SaraNode source, SaraNode target, RouteUnpacker unpacker) {
         Set<State> closedStates = new HashSet<>();
         Set<State> closedOverlayStates = new HashSet<>();
-
         Map<State, State> predecessorMap = new HashMap<>();
         State finalState = null;
 
@@ -81,13 +81,9 @@ public class MultilevelDijkstraAlgorithm<N extends Node, E extends Edge> impleme
                 Distance distance = nodeDistanceMap.get(state);
                 closedStates.add(state);
 
-                if (out) {
-                    System.out.println("Relaxing SARA node " + state.getNode().getId() + " with distance " + nodeDistanceMap.get(state).getValue());
-                }
-
                 //end condition - it has to be checked only in L0 graph. Once the target node is closed, its tentative distance cannot be improved.
                 if (state.getNode().getId() == target.getId()) {
-                    //System.out.println("MLD - distance >>> " + nodeDistanceMap.get(state));
+                    //System.out.println("MLD - final state >>> " + nodeDistanceMap.get(state));
                     finalState = state;
                     break;
                 }
@@ -103,89 +99,54 @@ public class MultilevelDijkstraAlgorithm<N extends Node, E extends Edge> impleme
 
                     // upper levels can be used further
                     if (levelNode != null) {
-                        if (out) {
-                            System.out.print(" - OVERLAY node lvl " + levelNode.level() + " (SARA node " + transferNode.getId() + ")");
-                        }
-
                         State transferState = new State(levelNode, transferEdge);
                         if (!closedOverlayStates.contains(transferState)) {
                             Distance transferDistance = (overlayNodeDistanceMap.containsKey(transferState)) ? overlayNodeDistanceMap.get(transferState) : Distance.newInfinityInstance();
                             Distance alternativeDistance = distance.add(graph.getLength(metric, transferEdge)).add(state.isFirst() ? Distance.newInstance(0) : graph.getTurnCost(state.getNode(), state.getEdge(), transferEdge));
 
-                            if (out) {
-                                System.out.print(" with distance " + alternativeDistance.getValue() + " against " + transferDistance.getValue());
-                            }
-
                             if (alternativeDistance.isLowerThan(transferDistance)) {
-                                putOverlayNodeDistance(overlayNodeDistanceMap, overlayPqueue, transferState, alternativeDistance, true);
+                                putOverlayNodeDistance(overlayNodeDistanceMap, overlayPqueue, transferState, alternativeDistance);
                                 predecessorMap.put(transferState, state);
-                                if (out) {
-                                    System.out.print(" added/updated");
-                                }
                             }
                         }
                     } // routing is still done in L0
                     else {
-                        if (out) {
-                            System.out.print(" - SARA node " + transferNode.getId());
-                        }
-
                         State transferState = new State(transferNode, transferEdge);
                         if (!closedStates.contains(transferState)) {
                             Distance transferDistance = (nodeDistanceMap.containsKey(transferState)) ? nodeDistanceMap.get(transferState) : Distance.newInfinityInstance();
                             Distance alternativeDistance = distance.add(graph.getLength(metric, transferEdge)).add(state.isFirst() ? Distance.newInstance(0) : graph.getTurnCost(state.getNode(), state.getEdge(), transferEdge));
 
-                            if (out) {
-                                System.out.print(" with distance " + alternativeDistance.getValue() + " against " + transferDistance.getValue());
-                            }
-
                             if (alternativeDistance.isLowerThan(transferDistance)) {
                                 putNodeDistance(nodeDistanceMap, pqueue, transferState, alternativeDistance);
                                 predecessorMap.put(transferState, state);
-                                if (out) {
-                                    System.out.print(" added/updated");
-                                }
                             }
                         }
                     }
-
-                    if (out) {
-                        System.out.println("");
-                    }
                 }
-            } //overlay graph
-            // --------------------->o----------------------------->o----------------------------->o
+            } // overlay graph
+            // ----------)(----------->o----------------------------->o------------)(----------------->o
             // state.getEdge   state.getNode   transferEdge   transferNode    traverseEdge    traverseNode
             else {
                 State<OverlayNode, SaraEdge> overlayState = overlayPqueue.extractMin();
                 Distance distance = overlayNodeDistanceMap.get(overlayState);
                 closedOverlayStates.add(overlayState);
 
-                if (out) {
-                    System.out.println("Relaxing OVERLAY node lvl " + overlayState.getNode().level() + " (SARA node " + overlayState.getNode().getId() + ")" + " with distance " + overlayNodeDistanceMap.get(overlayState).getValue());
-                }
-
                 //get the overlay graph from the level of OverlayNode
                 OverlayGraph oGraph = overlayGraph.getPartitions().get(overlayState.getNode().level()).getOverlayGraph();
 
-                //relax neighboring nodes, i.e. exit points in the particular cell
+                //relax neighboring nodes, i.e. exit points in the particular cell + corresponding border edge
                 Iterator<OverlayEdge> edges = oGraph.getOutgoingEdges(overlayState.getNode());
                 while (edges.hasNext()) {
                     OverlayEdge transferEdge = edges.next();
                     OverlayNode transferNode = oGraph.getOtherNode(transferEdge, overlayState.getNode());
                     State transferState = new State(transferNode, transferEdge);
 
-                    //State transferState = new State(transferNode, transferEdge);
-                    //if (!closedOverlayStates.contains(transferState)) {
                     //make a move inside the cell through the shortcut
                     //transfer node is not store anywhere since we are interested in traverse node only
-                    //Distance transferDistance = (overlayNodeDistanceMap.containsKey(transferState)) ? overlayNodeDistanceMap.get(transferState) : Distance.newInfinityInstance();
                     Distance alternativeDistance = distance.add(oGraph.getLength(metric, transferEdge));
-                    //if (alternativeDistance.isLowerThan(transferDistance)) {
-                    //putOverlayNodeDistance(overlayNodeDistanceMap, overlayPqueue, transferState, alternativeDistance,false);
 
-                    //use traverse transferEdge to the next cell
-                    OverlayEdge traverseEdge = oGraph.getOutgoingEdges(transferNode).next();
+                    //use traverse edge to the next cell
+                    OverlayEdge traverseEdge = oGraph.getOutgoingEdges(transferNode).next();//exactly one border edge must exist
                     OverlayNode traverseNode = oGraph.getOtherNode(traverseEdge, transferNode);
 
                     //find OverlayNode at maximal level, where three of nodes are still in different cells
@@ -193,107 +154,37 @@ public class MultilevelDijkstraAlgorithm<N extends Node, E extends Edge> impleme
 
                     // upper levels can be used further
                     if (levelNode != null) {
-                        if (out) {
-                            System.out.print(" - OVERLAY node lvl " + levelNode.level() + " (SARA node " + traverseNode.getId() + ")");
-                        }
-
                         State traverseState = new State(levelNode, traverseNode.getColumn().getEdge());
                         if (!closedOverlayStates.contains(traverseState)) {
                             Distance traverseDistance = (overlayNodeDistanceMap.containsKey(traverseState)) ? overlayNodeDistanceMap.get(traverseState) : Distance.newInfinityInstance();
                             Distance newDistance = alternativeDistance.add(graph.getLength(metric, traverseNode.getColumn().getEdge()));
 
-                            if (out) {
-                                System.out.print(" with distance " + newDistance.getValue() + " against " + traverseDistance.getValue());
-                            }
-
                             if (newDistance.isLowerThan(traverseDistance)) {
-                                putOverlayNodeDistance(overlayNodeDistanceMap, overlayPqueue, traverseState, newDistance, true);
+                                putOverlayNodeDistance(overlayNodeDistanceMap, overlayPqueue, traverseState, newDistance);
                                 predecessorMap.put(transferState, overlayState);
                                 predecessorMap.put(traverseState, transferState);
-                                if (out) {
-                                    System.out.print(" added/updated");
-                                }
                             }
                         }
                     } // routing is going back to L0
                     else {
-                        if (out) {
-                            System.out.print(" - SARA node " + traverseNode.getId());
-                        }
-
                         State traverseState = new State(traverseNode.getColumn().getNode(), traverseNode.getColumn().getEdge());
                         if (!closedStates.contains(traverseState)) {
                             Distance traverseDistance = (nodeDistanceMap.containsKey(traverseState)) ? nodeDistanceMap.get(traverseState) : Distance.newInfinityInstance();
                             Distance newDistance = alternativeDistance.add(graph.getLength(metric, traverseNode.getColumn().getEdge()));
 
-                            if (out) {
-                                System.out.print(" with distance " + newDistance.getValue() + " against " + traverseDistance.getValue());
-                            }
-
                             if (newDistance.isLowerThan(traverseDistance)) {
                                 putNodeDistance(nodeDistanceMap, pqueue, traverseState, newDistance);
                                 predecessorMap.put(transferState, overlayState);
                                 predecessorMap.put(traverseState, transferState);
-                                if (out) {
-                                    System.out.print(" added/updated");
-                                }
                             }
                         }
                     }
-
-                    if (out) {
-                        System.out.println("");
-                    }
-                    //}
-                    //}
-
                 }
             }
         }
 
         //path unpacking
-        if (finalState != null) {
-            DijkstraAlgorithm dijkstra = new DijkstraAlgorithm();
-            Route.RouteBuilder<N, E> builder = Route.<N, E>builder();
-            State<N, E> currentState = finalState;
-
-            while (currentState != null && !currentState.isFirst()) {
-                if (!(currentState.getNode() instanceof OverlayNode)) {
-                    if (out) {
-                        System.out.println("Source = " + currentState.getNode().getId() + ", edge = " + currentState.getEdge().getId());
-                    }
-                    builder.addAsFirst(currentState.getEdge());
-                } else {
-                    OverlayNode oTo = (OverlayNode) currentState.getNode();
-                    currentState = predecessorMap.get(currentState);
-                    if (!(currentState.getNode() instanceof OverlayNode)) {
-                        throw new IllegalStateException("OverlayNode not found. Something is wrong.");
-                    }
-                    OverlayNode oFrom = (OverlayNode) currentState.getNode();
-
-                    if (out) {
-                        System.out.println("OVERLAY from = " + oFrom.getId() + ";" + currentState.getEdge().getId() + ", to = " + oTo.getId() + ";" + oTo.getColumn().getEdge().getId());
-                    }
-
-                    Optional<Route<SaraNode, SaraEdge>> subResult = dijkstra.route(graph, metric, currentState.getEdge(), oTo.getColumn().getEdge());
-                    //TODO:
-                    Route<SaraNode, SaraEdge> subRoute = subResult.get();
-                    for (int i = subRoute.getEdgeList().size() - 2; i >= 0; i--) {
-                        builder.addAsFirst((E) subRoute.getEdgeList().get(i));
-                        if (out) {
-                            System.out.println("Edge = " + subRoute.getEdgeList().get(i));
-                        }
-                    }
-                }
-                currentState = predecessorMap.get(currentState);
-            }
-
-            Route<SaraNode, SaraEdge> route = (Route<SaraNode, SaraEdge>) builder.build();
-            return Optional.of(route);
-
-        } else {
-            return Optional.empty();
-        }
+        return unpacker.unpack(graph, overlayGraph, metric, finalState, predecessorMap);
     }
 
     private void putNodeDistance(Map<State<SaraNode, SaraEdge>, Distance> nodeDistanceMap, PriorityQueue<State<SaraNode, SaraEdge>> pqueue, State<SaraNode, SaraEdge> node, Distance distance) {
@@ -301,10 +192,8 @@ public class MultilevelDijkstraAlgorithm<N extends Node, E extends Edge> impleme
         nodeDistanceMap.put(node, distance);
     }
 
-    private void putOverlayNodeDistance(Map<State<OverlayNode, SaraEdge>, Distance> overlayNodeDistanceMap, PriorityQueue<State<OverlayNode, SaraEdge>> overlayPqueue, State<OverlayNode, SaraEdge> overlayNode, Distance distance, boolean withPqueueUpdate) {
-        if (withPqueueUpdate) {
-            overlayPqueue.decreaseKey(overlayNode, distance.getValue());
-        }
+    private void putOverlayNodeDistance(Map<State<OverlayNode, SaraEdge>, Distance> overlayNodeDistanceMap, PriorityQueue<State<OverlayNode, SaraEdge>> overlayPqueue, State<OverlayNode, SaraEdge> overlayNode, Distance distance) {
+        overlayPqueue.decreaseKey(overlayNode, distance.getValue());
         overlayNodeDistanceMap.put(overlayNode, distance);
     }
 }
