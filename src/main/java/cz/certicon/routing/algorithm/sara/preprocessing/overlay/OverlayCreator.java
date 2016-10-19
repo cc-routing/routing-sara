@@ -34,9 +34,12 @@ public class OverlayCreator {
         double coreRatio = 0.1;
         double lowIntervalProbability = 0.03;
         double lowerIntervalLimit = 0.6;
-        int numberOfAssemblyRuns = 100; //100-1000?
+        int numberOfAssemblyRuns = 1; //100-1000?
         boolean runPunch = false;
         int layerCount = 1;
+        String dbFolder = "D:/";
+        String dbName = "sara-db-data";
+        String spatialModulePath = "";
     }
 
     @Getter
@@ -58,9 +61,13 @@ public class OverlayCreator {
             }
 
             Properties properties = new Properties();
-            InputStream in = getClass().getClassLoader().getResourceAsStream("spatialite.properties");
-            properties.load(in);
-            in.close();
+            properties.put("driver", "org.sqlite.JDBC");
+            properties.put("url", "jdbc:sqlite:" + setup.dbFolder + setup.dbName + ".sqlite");
+            properties.put("spatialite_path", setup.spatialModulePath);
+
+            //InputStream in = getClass().getClassLoader().getResourceAsStream("spatialite.properties");
+            //properties.load(in);
+            //in.close();
 
             GraphDAO graphDAO = new SqliteGraphDAO(properties);
             SaraGraph sara = null;
