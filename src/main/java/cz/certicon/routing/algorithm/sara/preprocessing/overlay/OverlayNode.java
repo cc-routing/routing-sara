@@ -46,7 +46,7 @@ public class OverlayNode extends AbstractNode<OverlayNode, OverlayEdge> {
      * @param edge related border edge
      */
     OverlayNode(OverlayGraph graph, OverlayColumn column, BorderNodeMap map, SaraEdge edge) {
-        super(graph, column.id);
+        super(graph, graph.getNodesCount() + 1);
 
         this.column = column;
         this.borderMap = map;
