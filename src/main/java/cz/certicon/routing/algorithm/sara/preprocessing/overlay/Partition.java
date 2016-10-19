@@ -244,7 +244,9 @@ public class Partition {
                         Route<SaraNode, SaraEdge> route = result.get();
                         List<SaraEdge> edges = route.getEdgeList();
                         distance = subBuilder.sumDistance(edges, metric);
-                        //edge.saraWay = edges;
+                        if (OverlayBuilder.keepShortcuts) {
+                            cellEdge.saraWay = edges;
+                        }
                         validRoutes++;
                     } else {
                         distance = Distance.newInfinityInstance();
@@ -308,7 +310,9 @@ public class Partition {
                     if (result.isPresent()) {
                         Route<OverlayNode, OverlayEdge> route = result.get();
                         List<OverlayEdge> edges = route.getEdgeList();
-                        //cellEdge.overWay = edges;
+                        if (OverlayBuilder.keepShortcuts) {
+                            cellEdge.overWay = edges;
+                        }
                         distance = subBuilder.sumDistance(edges, metric);
                         validRoutes++;
                     } else {

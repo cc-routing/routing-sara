@@ -27,8 +27,15 @@ public class OverlayEdge extends AbstractEdge<OverlayNode, OverlayEdge> {
     @Getter
     SaraEdge saraEdge = null;
 
-    //public List<SaraEdge> saraWay;
-    //public List<OverlayEdge> overWay;
+    /**
+     * devel: in memory storage (in L1) of the caluclated shortcut in L0
+     */
+    public List<SaraEdge> saraWay;
+
+    /**
+     * devel: in memory storage (in LN2+) of the caluclated shortcut in LN-1
+     */
+    public List<OverlayEdge> overWay;
 
     public OverlayEdge(OverlayGraph graph, long id, OverlayNode source, OverlayNode target) {
         super(graph, id, true, source, target, -1, -1);

@@ -26,6 +26,11 @@ import lombok.Getter;
 public class OverlayBuilder {
 
     /**
+     * devel setup whether to keep calculated shortcuts in memory
+     */
+    public static boolean keepShortcuts = false;
+
+    /**
      * collection of overlay partitions for each level. Partition at L0 is void,
      * L0 is represented by basic SaraGraph.
      */

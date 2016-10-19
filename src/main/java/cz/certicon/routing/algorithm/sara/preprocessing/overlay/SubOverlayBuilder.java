@@ -140,8 +140,10 @@ public class SubOverlayBuilder extends BaseSubBuilder {
                     destEdge.setLength(metric, distance);
                 }
 
-                //destEdge.overWay = srcEdge.overWay;
-                //destEdge.saraWay = srcEdge.saraWay;
+                if (OverlayBuilder.keepShortcuts) {
+                    destEdge.overWay = srcEdge.overWay;
+                    destEdge.saraWay = srcEdge.saraWay;
+                }
 
             } else {
                 // border edge from cell to cell, distance already copied from SaraEdge
