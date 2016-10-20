@@ -13,7 +13,6 @@ import cz.certicon.routing.model.graph.SaraEdge;
 import cz.certicon.routing.model.graph.SaraGraph;
 import cz.certicon.routing.model.graph.SaraNode;
 import cz.certicon.routing.model.values.Distance;
-import cz.certicon.routing.utils.java8.Optional;
 import gnu.trove.map.TLongObjectMap;
 import gnu.trove.map.hash.TLongObjectHashMap;
 import java.util.HashMap;
@@ -21,6 +20,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import lombok.Getter;
+import java8.util.Optional;
 
 /**
  *

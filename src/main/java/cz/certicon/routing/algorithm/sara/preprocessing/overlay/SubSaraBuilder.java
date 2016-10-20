@@ -13,10 +13,10 @@ import cz.certicon.routing.model.graph.SaraNode;
 import cz.certicon.routing.model.graph.TurnTable;
 import cz.certicon.routing.model.values.Coordinate;
 import cz.certicon.routing.model.values.Distance;
-import cz.certicon.routing.utils.java8.Optional;
 import gnu.trove.map.TLongObjectMap;
 import gnu.trove.map.hash.TLongObjectHashMap;
 import java.util.List;
+import java8.util.Optional;
 import lombok.Getter;
 
 /**

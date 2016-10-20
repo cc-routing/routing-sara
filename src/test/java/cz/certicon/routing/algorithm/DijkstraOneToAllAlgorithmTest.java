@@ -13,7 +13,7 @@ import cz.certicon.routing.model.graph.Node;
 import cz.certicon.routing.model.graph.TurnTable;
 import cz.certicon.routing.utils.GraphGeneratorUtils;
 import cz.certicon.routing.utils.ToStringUtils;
-import cz.certicon.routing.utils.java8.Optional;
+import java8.util.Optional;
 import java.util.EnumSet;
 import java.util.HashMap;
 import java.util.Map;

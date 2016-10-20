@@ -9,6 +9,7 @@ package cz.certicon.routing.utils.java8;
  *
  * @author Michael Blaha {@literal <michael.blaha@gmail.com>}
  * @param <T>
+ * @deprecated use {@link java8.util.function.Supplier} instead
  */
 public interface Supplier<T> {
 

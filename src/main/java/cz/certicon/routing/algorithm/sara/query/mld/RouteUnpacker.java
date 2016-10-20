@@ -12,7 +12,7 @@ import cz.certicon.routing.model.graph.Graph;
 import cz.certicon.routing.model.graph.Metric;
 import cz.certicon.routing.model.graph.Node;
 import cz.certicon.routing.model.graph.State;
-import cz.certicon.routing.utils.java8.Optional;
+import java8.util.Optional;
 import java.util.Map;
 
 /**

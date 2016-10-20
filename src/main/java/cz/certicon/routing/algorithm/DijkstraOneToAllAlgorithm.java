@@ -14,11 +14,11 @@ import cz.certicon.routing.model.graph.State;
 import cz.certicon.routing.model.queue.FibonacciHeap;
 import cz.certicon.routing.model.queue.PriorityQueue;
 import cz.certicon.routing.model.values.Distance;
-import cz.certicon.routing.utils.java8.Optional;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
+import java8.util.Optional;
 
 public class DijkstraOneToAllAlgorithm<N extends Node<N, E>, E extends Edge<N, E>> implements OneToAllRoutingAlgorithm<N, E> {
 

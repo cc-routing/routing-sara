@@ -11,6 +11,7 @@ import java.util.NoSuchElementException;
  *
  * @author Michael Blaha {@literal <michael.blaha@gmail.com>}
  * @param <T>
+ * @deprecated use {@link java8.util.Optional} instead
  */
 public class Optional<T> {
 
