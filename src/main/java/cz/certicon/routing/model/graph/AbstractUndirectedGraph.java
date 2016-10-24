@@ -201,6 +201,17 @@ public abstract class AbstractUndirectedGraph<N extends Node, E extends Edge> im
         for ( N node : getNodes() ) {
             node.lock();
         }
+        for ( Metric metric : metrics ) {
+            if ( !metricMap.containsKey( metric ) ) {
+                throw new IllegalStateException( "Metric not set but required: " + metric );
+            }
+            Map<Edge, Distance> distanceMap = metricMap.get( metric );
+            for ( E edge : getEdges() ) {
+                if ( !distanceMap.containsKey( edge ) ) {
+                    throw new IllegalStateException( "Metric not set but required for: " + metric + " -> #" + edge );
+                }
+            }
+        }
         this.locked = true;
     }
 
