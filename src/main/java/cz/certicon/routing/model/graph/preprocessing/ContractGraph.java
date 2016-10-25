@@ -8,6 +8,7 @@ package cz.certicon.routing.model.graph.preprocessing;
 import cz.certicon.routing.model.basic.Pair;
 import cz.certicon.routing.model.graph.AbstractUndirectedGraph;
 import cz.certicon.routing.model.graph.Edge;
+import cz.certicon.routing.model.graph.Graph;
 import cz.certicon.routing.model.graph.Metric;
 import cz.certicon.routing.model.graph.Node;
 import cz.certicon.routing.model.values.Distance;
@@ -70,7 +71,7 @@ public class ContractGraph extends AbstractUndirectedGraph<ContractNode, Contrac
     }
 
     @Override
-    protected AbstractUndirectedGraph<ContractNode, ContractEdge> newInstance( Set<Metric> metrics ) {
+    public Graph<ContractNode, ContractEdge> newInstance( Set<Metric> metrics ) {
         return new ContractGraph( metrics );
     }
 

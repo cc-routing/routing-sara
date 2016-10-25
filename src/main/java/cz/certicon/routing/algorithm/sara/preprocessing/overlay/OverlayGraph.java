@@ -6,6 +6,7 @@
 package cz.certicon.routing.algorithm.sara.preprocessing.overlay;
 
 import cz.certicon.routing.model.graph.AbstractUndirectedGraph;
+import cz.certicon.routing.model.graph.Graph;
 import cz.certicon.routing.model.graph.Metric;
 import cz.certicon.routing.model.graph.SaraEdge;
 import java.util.Set;
@@ -67,7 +68,7 @@ public class OverlayGraph extends AbstractUndirectedGraph<OverlayNode, OverlayEd
     }
 
     @Override
-    protected AbstractUndirectedGraph<OverlayNode, OverlayEdge> newInstance(Set<Metric> metrics) {
+    public Graph<OverlayNode, OverlayEdge> newInstance(Set<Metric> metrics) {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 }

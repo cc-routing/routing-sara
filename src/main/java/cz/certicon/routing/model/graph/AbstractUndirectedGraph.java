@@ -222,7 +222,7 @@ public abstract class AbstractUndirectedGraph<N extends Node, E extends Edge> im
 
     @Override
     public Graph<N, E> copy() {
-        AbstractUndirectedGraph<N, E> instance = newInstance( metrics );
+        AbstractUndirectedGraph<N, E> instance = (AbstractUndirectedGraph<N, E>) newInstance( metrics );
         for ( N node : getNodes() ) {
             N newNode = (N) node.copy( instance );
             instance.nodes.put( newNode.getId(), newNode );
@@ -237,7 +237,8 @@ public abstract class AbstractUndirectedGraph<N extends Node, E extends Edge> im
         return instance;
     }
 
-    abstract protected AbstractUndirectedGraph<N, E> newInstance( Set<Metric> metrics );
+    @Override
+    abstract public Graph<N, E> newInstance( Set<Metric> metrics );
 
     protected void addNode( N node ) {
         checkLock();

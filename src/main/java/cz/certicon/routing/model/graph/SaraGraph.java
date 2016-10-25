@@ -53,7 +53,7 @@ public class SaraGraph extends AbstractUndirectedGraph<SaraNode, SaraEdge> {
     }
 
     @Override
-    protected AbstractUndirectedGraph<SaraNode, SaraEdge> newInstance( Set<Metric> metrics ) {
+    public Graph<SaraNode, SaraEdge> newInstance( Set<Metric> metrics ) {
         return new SaraGraph( metrics );
     }
 }

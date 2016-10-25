@@ -17,6 +17,7 @@ import java.util.EnumSet;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import org.hamcrest.CoreMatchers;
 import org.junit.After;
 import org.junit.AfterClass;
 import org.junit.Before;
@@ -30,16 +31,14 @@ import static org.junit.Assert.*;
  */
 public class UndirectedGraphTest {
 
-    private final Graph<Node, Edge> graph;
-    private final Map<Long, Node> nodeMap;
-    private final Map<Long, Edge> edgeMap;
-    private final Map<TurnTable, TurnTable> turnTables;
+    private Graph<Node, Edge> graph;
+    private Map<Long, Node> nodeMap;
+    private Map<Long, Edge> edgeMap;
+    private Map<TurnTable, TurnTable> turnTables;
+    ToStringUtils.UndirectedNodeCreator nc;
+    ToStringUtils.UndirectedEdgeCreator ec;
 
     public UndirectedGraphTest() {
-        this.nodeMap = new HashMap<>();
-        this.edgeMap = new HashMap<>();
-        this.turnTables = new HashMap<>();
-        this.graph = GraphGeneratorUtils.createGraph( EnumSet.of( Metric.LENGTH ), nodeMap, edgeMap, turnTables );
     }
 
     @BeforeClass
@@ -52,6 +51,12 @@ public class UndirectedGraphTest {
 
     @Before
     public void setUp() {
+        nodeMap = new HashMap<>();
+        edgeMap = new HashMap<>();
+        turnTables = new HashMap<>();
+        graph = GraphGeneratorUtils.createGraph( EnumSet.of( Metric.LENGTH ), nodeMap, edgeMap, turnTables );
+        nc = new ToStringUtils.UndirectedNodeCreator();
+        ec = new ToStringUtils.UndirectedEdgeCreator();
     }
 
     @After
@@ -239,5 +244,24 @@ public class UndirectedGraphTest {
                 }
             }
         }
+    }
+
+    @Test
+    public void fromGraph_Returns_EmptyGraph_From_EmptyGraph_() {
+        assertGraph( "cz.certicon.routing.model.graph.UndirectedGraph{nodes=[],edges=[]}" );
+    }
+
+    @Test
+    public void fromGraph_Returns_ThreeNodeGraph_From_ThreeNodeGraph_() {
+        assertGraph( "cz.certicon.routing.model.graph.UndirectedGraph{nodes=[1,4,5],edges=[]}" );
+    }
+    @Test
+    public void fromGraph_Returns_ThreeNodeTwoEdgesGraph_From_ThreeNodeTwoEdgesGraph_() {
+        assertGraph( "cz.certicon.routing.model.graph.UndirectedGraph{nodes=[1,4,5],edges=[1{5->4},7{1<->5}]}" );
+    }
+
+    private void assertGraph( String representation ) {
+        UndirectedGraph fromGraph = UndirectedGraph.fromGraph( ToStringUtils.fromString( new UndirectedGraph(), representation, nc, ec ) );
+        assertThat( ToStringUtils.toString( fromGraph ), CoreMatchers.equalTo( representation ) );
     }
 }

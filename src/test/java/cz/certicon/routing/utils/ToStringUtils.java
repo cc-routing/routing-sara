@@ -9,17 +9,30 @@ import cz.certicon.routing.model.Identifiable;
 import static cz.certicon.routing.model.Identifiable.Comparators.*;
 import cz.certicon.routing.model.MinimalCut;
 import cz.certicon.routing.model.Route;
+import cz.certicon.routing.model.basic.Pair;
 import cz.certicon.routing.model.graph.Edge;
+import cz.certicon.routing.model.graph.Graph;
 import cz.certicon.routing.model.graph.Node;
+import cz.certicon.routing.model.graph.SimpleEdge;
+import cz.certicon.routing.model.graph.SimpleNode;
+import cz.certicon.routing.model.graph.UndirectedGraph;
 import cz.certicon.routing.model.graph.preprocessing.ContractEdge;
 import cz.certicon.routing.model.graph.preprocessing.ContractNode;
+import cz.certicon.routing.utils.java8.IteratorStreams;
 import static cz.certicon.routing.utils.java8.IteratorStreams.*;
+import cz.certicon.routing.utils.java8.Mappers;
 import static cz.certicon.routing.utils.java8.Mappers.*;
 import java.util.Comparator;
 import java.util.Iterator;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import java8.util.function.Function;
+import java8.util.stream.Collector;
+import java8.util.stream.Collectors;
 import static java8.util.stream.Collectors.*;
 import java8.util.stream.StreamSupport;
+import lombok.NonNull;
+import org.junit.Test;
 
 /**
  *
@@ -127,5 +140,92 @@ public class ToStringUtils {
         return sb.toString();
          */
         return "[" + stream( iterator ).sorted( createIdComparator() ).map( identifiableToString ).collect( joining( "," ) ) + "]";
+    }
+
+    public static <N extends Node, E extends Edge> String toString( @NonNull Graph<N, E> graph ) {
+        String result = graph.getClass().getName() + "{"
+                + "nodes=["
+                + IteratorStreams.stream( graph.getNodes() )
+                .sorted( Identifiable.Comparators.createIdComparator() )
+                .map( Mappers.identifiableToString )
+                .collect( Collectors.joining( "," ) )
+                + "]"
+                + ",edges=["
+                + IteratorStreams.stream( graph.getEdges() )
+                .sorted( Identifiable.Comparators.createIdComparator() )
+                .map( new Function<E, String>() {
+                    @Override
+                    public String apply( E t ) {
+                        return t.getId() + "{" + t.getSource().getId() + ( t.isOneWay() ? "" : "<" ) + "->" + t.getTarget().getId() + "}";
+                    }
+                } ).collect( Collectors.joining( "," ) )
+                + "]"
+                + "}";
+        return result;
+    }
+
+    public static <G extends Graph<N, E>, N extends Node, E extends Edge> Graph<N, E> fromString( G graph, String string, NodeCreator<G, N, E> nodeCreator, EdgeCreator<G, N, E> edgeCreator ) {
+        String rest = string.substring( graph.getClass().getName().length() );
+        Matcher nodeMatcher = Pattern.compile( "nodes=\\[[^\\]]*\\]" ).matcher( rest );
+        if ( nodeMatcher.find() ) {
+            String nodeArray = nodeMatcher.group( 0 );
+            for ( String node : nodeArray.substring( "nodes=[".length(), nodeArray.length() - 1 ).split( "," ) ) {
+                if ( !node.isEmpty() ) {
+                    long id = Long.parseLong( node );
+                    nodeCreator.createNode( graph, id );
+                }
+            }
+        }
+        Matcher edgeMatcher = Pattern.compile( "edges=\\[[^\\]]*\\]" ).matcher( rest );
+        if ( edgeMatcher.find() ) {
+            String edgeArray = edgeMatcher.group( 0 );
+            for ( String edge : edgeArray.substring( "edges=[".length(), edgeArray.length() - 1 ).split( "," ) ) {
+                if ( !edge.isEmpty() ) {
+                    System.out.println( "edge = '" + edge + "'" );
+                    long id = Long.parseLong( edge.substring( 0, edge.indexOf( "{" ) ) );
+                    String direction = edge.substring( edge.indexOf( "{" ) + 1, edge.length() - 1 );
+                    long targetId = Long.parseLong( direction.substring( direction.lastIndexOf( ">" ) + 1 ) );
+                    long sourceId;
+                    boolean oneway;
+                    if ( direction.contains( "<->" ) ) {
+                        oneway = false;
+                        sourceId = Long.parseLong( direction.substring( 0, direction.indexOf( "<" ) ) );
+                    } else {
+                        oneway = true;
+                        sourceId = Long.parseLong( direction.substring( 0, direction.indexOf( "-" ) ) );
+                    }
+                    edgeCreator.createEdge( graph, id, oneway, graph.getNodeById( sourceId ), graph.getNodeById( targetId ) );
+                }
+            }
+        }
+        return graph;
+    }
+
+    public interface NodeCreator<G extends Graph<N, E>, N extends Node, E extends Edge> {
+
+        N createNode( G graph, long id );
+    }
+
+    public interface EdgeCreator<G extends Graph<N, E>, N extends Node, E extends Edge> {
+
+        E createEdge( G graph, long id, boolean oneway, N source, N target );
+    }
+
+    public static class UndirectedNodeCreator implements ToStringUtils.NodeCreator<UndirectedGraph, SimpleNode, SimpleEdge> {
+
+        @Override
+        public SimpleNode createNode( UndirectedGraph graph, long id ) {
+            return graph.createNode( id );
+        }
+
+    }
+
+    public static class UndirectedEdgeCreator implements ToStringUtils.EdgeCreator<UndirectedGraph, SimpleNode, SimpleEdge> {
+
+        @Override
+        public SimpleEdge createEdge( UndirectedGraph graph, long id, boolean oneway, SimpleNode source, SimpleNode target ) {
+            return graph.createEdge( id, oneway, source, target, 0, 0, new Pair[]{} );
+        }
+
     }
 }

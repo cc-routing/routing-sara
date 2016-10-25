@@ -142,4 +142,6 @@ public interface Graph<N extends Node, E extends Edge> {
      * @return deep copy
      */
     Graph<N, E> copy();
+
+    Graph<N, E> newInstance( Set<Metric> metrics );
 }
