@@ -237,9 +237,38 @@ public class OverlayBuilder {
      * @param target targetNode
      * @return
      */
-    public OverlayNode getMaxOverlayNode(SaraNode node, SaraEdge edge, SaraNode source, SaraNode target) {
+    public OverlayNode getMaxEntryNode(SaraNode node, SaraEdge edge, SaraNode source, SaraNode target) {
 
-        OverlayNode re = this.getMaxOverNode(node, edge, source, target);
+        CellRouteTable table = node.getParent().getRouteTable();
+        BorderNodeMap borderMap = table.entryPoints;
+
+        if (!borderMap.containsKey(edge)) {
+            //not a border edge
+            return null;
+        }
+
+        OverlayNode re = borderMap.get(edge);
+        return this.checkMaxNode(re, source, target);
+    }
+
+    public OverlayNode getMaxExitNode(SaraNode node, SaraEdge edge, SaraNode source, SaraNode target) {
+
+        CellRouteTable table = node.getParent().getRouteTable();
+        BorderNodeMap borderMap = table.exitPoints;
+
+        if (!borderMap.containsKey(edge)) {
+            //not a border edge
+            return null;
+        }
+
+        OverlayNode re = borderMap.get(edge);
+        return this.checkMaxNode(re, source, target);
+    }
+
+    private OverlayNode checkMaxNode(OverlayNode re, SaraNode source, SaraNode target) {
+
+        re = this.getMaxNode(re, source, target);
+
         if (re != null) {
             int lev = re.level();
             Partition part = this.partitions.get(lev);
@@ -249,27 +278,19 @@ public class OverlayBuilder {
         return re;
     }
 
-    private OverlayNode getMaxOverNode(SaraNode node, SaraEdge edge, SaraNode source, SaraNode target) {
-
-        BorderNodeMap entryMap = node.getParent().getRouteTable().entryPoints;
-
-        if (!entryMap.containsKey(edge)) {
-            //not a border edge
-            return null;
-        }
+    private OverlayNode getMaxNode(OverlayNode node, SaraNode source, SaraNode target) {
 
         OverlayNode max = null;
-        OverlayNode entry = entryMap.get(edge);
         Cell sourceCell = source.getParent();
         Cell targetCell = target.getParent();
 
         while (true) {
 
-            if (entry.isMyCell(sourceCell)) {
+            if (node.isMyCell(sourceCell)) {
                 return max;
             }
 
-            if (entry.isMyCell(targetCell)) {
+            if (node.isMyCell(targetCell)) {
                 return max;
             }
 
@@ -277,7 +298,7 @@ public class OverlayBuilder {
                 return max;
             }
 
-            max = entry;
+            max = node;
 
             sourceCell = sourceCell.getParent();
             if (sourceCell == null) {
@@ -288,9 +309,9 @@ public class OverlayBuilder {
                 return max;
             }
 
-            entry = entry.getUpperNode();
+            node = node.getUpperNode();
 
-            if (entry == null) {
+            if (node == null) {
                 return max;
             }
         }
