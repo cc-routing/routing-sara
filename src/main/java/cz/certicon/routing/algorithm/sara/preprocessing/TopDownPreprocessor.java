@@ -59,18 +59,18 @@ public class TopDownPreprocessor implements Preprocessor {
     public <N extends Node, E extends Edge> SaraGraph preprocess( Graph<N, E> graph, PreprocessingInput input, MaxIdContainer cellIdContainer, ProgressListener progressListener ) {
         // perform preprocessing on the whole area
         List<Pair<UndirectedGraph, Cell>> graphs = new LinkedList<>();
-        Filter filter = new NaturalCutsFilter( input.getCellRatio(), 1 / input.getCoreRatio(), input.getCellSize() );
-        Assembler assembler = new GreedyAssembler( input.getLowIntervalProbability(), input.getLowIntervalLimit(), input.getCellSize() );
-        int currentCellSize = pow( input.getCellSize(), input.getNumberOfLayers() );
+        Filter filter = new NaturalCutsFilter( input.getCellRatio(), 1 / input.getCoreRatio(), input.getCellSizes()[0] );
+        Assembler assembler = new GreedyAssembler( input.getLowIntervalProbability(), input.getLowIntervalLimit(), input.getCellSizes()[0] );
         graphs.add( new Pair<>( UndirectedGraph.fromGraph( graph ), new Cell( cellIdContainer.next() ) ) );
         for ( int layer = 0; layer < input.getNumberOfLayers(); layer++ ) {
             List<Pair<UndirectedGraph, Cell>> newGraphs = new LinkedList<>();
             for ( Pair<UndirectedGraph, Cell> pair : graphs ) {
                 UndirectedGraph g = pair.a;
                 // filter
+                filter.setMaxCellSize( input.getCellSizes()[input.getNumberOfLayers() - layer - 1] );
                 ContractGraph filteredGraph = filter.filter( g );
                 // assembly large areas
-                assembler.setMaxCellSize( currentCellSize );
+                assembler.setMaxCellSize( input.getCellSizes()[input.getNumberOfLayers() - layer - 1] );
                 Optional<ContractGraph> assembled = Optional.empty();
                 long bestEdgeCount = Long.MAX_VALUE;
                 for ( int run = 0; run < input.getNumberOfAssemblyRuns(); run++ ) {
@@ -116,7 +116,6 @@ public class TopDownPreprocessor implements Preprocessor {
                     newGraphs.add( new Pair<>( newGraph, newCell ) );
                 }
                 // repeat for N layers    
-                currentCellSize /= input.getCellSize();
             }
             graphs = newGraphs;
         }
@@ -124,7 +123,7 @@ public class TopDownPreprocessor implements Preprocessor {
         SaraGraph saraGraph = new SaraGraph( EnumSet.of( Metric.LENGTH, Metric.TIME ) );
         for ( Pair<UndirectedGraph, Cell> pair : graphs ) {
             UndirectedGraph g = pair.a;
-            for ( SimpleNode node : g.getNodes()) {
+            for ( SimpleNode node : g.getNodes() ) {
                 SaraNode saraNode = saraGraph.createNode( node.getId(), pair.b );
                 saraNode.setCoordinate( node.getCoordinate() );
                 saraNode.setTurnTable( node.getTurnTable() );

@@ -18,4 +18,6 @@ import cz.certicon.routing.model.graph.preprocessing.ContractGraph;
 public interface Filter {
 
     <N extends Node, E extends Edge> ContractGraph filter( Graph<N, E> graph );
+    
+    void setMaxCellSize(int maxCellSize);
 }

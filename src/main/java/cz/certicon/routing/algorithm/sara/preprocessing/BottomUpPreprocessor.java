@@ -51,23 +51,22 @@ public class BottomUpPreprocessor implements Preprocessor {
         double filterRatio = FILTER_TO_ASSEMBLY_RATIO / ( FILTER_TO_ASSEMBLY_RATIO + input.getNumberOfAssemblyRuns() * input.getNumberOfLayers() );
         progressListener.init( 1, filterRatio );
         TimeLogger.log( TimeLogger.Event.FILTERING, TimeLogger.Command.START );
-        Filter filter = new NaturalCutsFilter( input.getCellRatio(), 1 / input.getCoreRatio(), input.getCellSize() );
+        Filter filter = new NaturalCutsFilter( input.getCellRatio(), 1 / input.getCoreRatio(), input.getCellSizes()[0] );
         ContractGraph filteredGraph = filter.filter( graph );
         TimeLogger.log( TimeLogger.Event.FILTERING, TimeLogger.Command.STOP );
         progressListener.nextStep();
         int assemblySize = input.getNumberOfAssemblyRuns() * input.getNumberOfLayers();
         progressListener.init( assemblySize, 1.0 - filterRatio );
         TimeLogger.log( TimeLogger.Event.ASSEMBLING, TimeLogger.Command.START );
-        Assembler assembler = new GreedyAssembler( input.getLowIntervalProbability(), input.getLowIntervalLimit(), input.getCellSize() );
+        Assembler assembler = new GreedyAssembler( input.getLowIntervalProbability(), input.getLowIntervalLimit(), input.getCellSizes()[0] );
 
-        int currentCellSize = input.getCellSize();
         // for i < layers
         // - assemble graph
         // - create sara graph
         // - assign parents
         SaraGraph saraGraph = null;
         for ( int i = 0; i < input.getNumberOfLayers(); i++ ) {
-            assembler.setMaxCellSize( currentCellSize );
+            assembler.setMaxCellSize( input.getCellSizes()[i] );
             ContractGraph assembled = null;
             long bestEdgeCount = Long.MAX_VALUE;
             for ( int run = 0; run < input.getNumberOfAssemblyRuns(); run++ ) {
@@ -120,7 +119,6 @@ public class BottomUpPreprocessor implements Preprocessor {
                 }
             }
             filteredGraph = assembled;
-            currentCellSize *= input.getCellSize();
         }
         TimeLogger.log( TimeLogger.Event.ASSEMBLING, TimeLogger.Command.STOP );
         return saraGraph;

@@ -62,6 +62,7 @@ import java.util.Stack;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import lombok.Value;
+import lombok.experimental.NonFinal;
 import lombok.experimental.Wither;
 
 /**
@@ -101,8 +102,8 @@ public class NaturalCutsFilter implements Filter {
     private final double cellRatio; // alpha
     @Wither
     private final double coreRatioInverse; // f
-    @Wither
-    private final int maxCellSize; // U
+    @NonFinal
+    private int maxCellSize; // U
 
     /**
      * Creates new instance
@@ -509,6 +510,11 @@ public class NaturalCutsFilter implements Filter {
 //            nodes.get( i ).lock();
 //        }
 //        return new FilteredGraph( UndirectedGraph.builder().nodes( nodes ).edges( edges ).build(), nodeSizeMap );
+    }
+
+    @Override
+    public void setMaxCellSize( int maxCellSize ) {
+        this.maxCellSize = maxCellSize;
     }
 
 //    private int getEdgeInitSize( SimpleEdge edge ) {

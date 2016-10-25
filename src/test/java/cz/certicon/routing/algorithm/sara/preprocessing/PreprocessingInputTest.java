@@ -86,36 +86,6 @@ public class PreprocessingInputTest {
         }
     }
 
-    @Test( expected = IllegalArgumentException.class )
-    public void testWitherInvalid() {
-        if ( !isValid ) {
-            PreprocessingInput instance = new PreprocessingInput( 1, 0.1, 0.1, 0.1, 0.1, 1, 1 );
-            if ( instance.getCellRatio() != cellRatio ) {
-                instance.withCellRatio( cellRatio );
-            }
-            if ( instance.getCellSize() != cellSize ) {
-                instance.withCellSize( cellSize );
-            }
-            if ( instance.getCoreRatio() != coreRatio ) {
-                instance.withCoreRatio( coreRatio );
-            }
-            if ( instance.getLowIntervalLimit() != lowIntervalLimit ) {
-                instance.withLowIntervalLimit( lowIntervalLimit );
-            }
-            if ( instance.getLowIntervalProbability() != lowIntervalProbability ) {
-                instance.withLowIntervalProbability( lowIntervalProbability );
-            }
-            if ( instance.getNumberOfAssemblyRuns() != numberOfAssemblyRuns ) {
-                instance.withNumberOfAssemblyRuns( numberOfAssemblyRuns );
-            }
-            if ( instance.getNumberOfLayers() != numberOfLayers ) {
-                instance.withNumberOfLayers( numberOfLayers );
-            }
-        } else {
-            throw new IllegalArgumentException();
-        }
-    }
-
     @Test
     public void testValid() {
         if ( isValid ) {
