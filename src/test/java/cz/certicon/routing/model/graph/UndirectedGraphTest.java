@@ -76,11 +76,11 @@ public class UndirectedGraphTest {
     }
 
     /**
-     * Test of getNodes method, of class UndirectedGraph.
+     * Test of getNodeIds method, of class UndirectedGraph.
      */
     @Test
     public void testGetNodes() {
-        System.out.println( "getNodes" );
+        System.out.println( "getNodeIds" );
         Graph instance = graph;
         String expResult = "[0,1,2,3,4,5]";
         String result = ToStringUtils_Test.toString( instance.getNodes() );
@@ -100,11 +100,11 @@ public class UndirectedGraphTest {
     }
 
     /**
-     * Test of getEdges method, of class UndirectedGraph.
+     * Test of getEdgeIds method, of class UndirectedGraph.
      */
     @Test
     public void testGetEdges() {
-        System.out.println( "getEdges" );
+        System.out.println( "getEdgeIds" );
         Graph instance = graph;
         String expResult = "[0,1,2,3,4,5,6]";
         String result = ToStringUtils_Test.toString( instance.getEdges() );

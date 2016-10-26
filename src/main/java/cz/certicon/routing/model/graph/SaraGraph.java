@@ -26,17 +26,6 @@ public class SaraGraph extends AbstractUndirectedGraph<SaraNode, SaraEdge> {
         return node.getParent();
     }
 
-//    @Override
-//    public Graph copy() {
-//        Graph graphCopy = graph.copy();
-//        Map<Node, NodeInfo> nodeInfoMapCopy = new HashMap<>();
-//        Iterator<Node> nodes = graphCopy.getNodes();
-//        while ( nodes.hasNext() ) {
-//            Node node = nodes.next();
-//            nodeInfoMapCopy.put( node, nodeInfoMap.get( node ) );
-//        }
-//        return new SaraGraph( (UndirectedGraph) graphCopy, nodeInfoMapCopy );
-//    }
     public SaraNode createNode( long id, Cell parent ) {
         SaraNode node = new SaraNode( this, id, parent );
         addNode( node );

@@ -89,7 +89,7 @@ public class BottomUpPreprocessor implements Preprocessor {
                 saraGraph = new SaraGraph( EnumSet.of( Metric.LENGTH, Metric.TIME ) );
                 for ( ContractNode node : assembled.getNodes() ) {
                     Cell cell = new Cell( cellIdContainer.next() );
-//                    System.out.println( "putting: " + node.getId() + " -> " + cell.getId() + ", nodes=[" + StreamSupport.stream( node.getNodes() ).map( Mappers.identifiableToString ).collect( Collectors.joining( "," ) ) + "]" );
+//                    System.out.println( "putting: " + node.getId() + " -> " + cell.getId() + ", nodes=[" + StreamSupport.stream( node.getNodeIds() ).map( Mappers.identifiableToString ).collect( Collectors.joining( "," ) ) + "]" );
                     for ( Node origNode : node.getNodes() ) {
                         SaraNode saraNode = saraGraph.createNode( origNode.getId(), cell );
                         saraNode.setCoordinate( origNode.getCoordinate() );
@@ -105,7 +105,7 @@ public class BottomUpPreprocessor implements Preprocessor {
             } else {
                 for ( ContractNode node : assembled.getNodes() ) {
                     Cell cell = new Cell( cellIdContainer.next() );
-//                    System.out.println( "putting&getting: " + node.getId() + " -> " + cell.getId() + ", nodes=[" + StreamSupport.stream( node.getNodes() ).map( Mappers.identifiableToString ).collect( Collectors.joining( "," ) ) + "]" );
+//                    System.out.println( "putting&getting: " + node.getId() + " -> " + cell.getId() + ", nodes=[" + StreamSupport.stream( node.getNodeIds() ).map( Mappers.identifiableToString ).collect( Collectors.joining( "," ) ) + "]" );
                     for ( Node n : node.getNodes() ) {
                         Cell parent = saraGraph.getNodeById( n.getId() ).getParent();
                         for ( int j = 1; j < i; j++ ) {

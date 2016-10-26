@@ -111,7 +111,7 @@ public class GreedyAssemblerTest {
         ContractGraph assembled = assembler.assemble(  graph );
 
 //        Map<Cell, List<Node>> cellMap = new HashMap<>();
-//        for ( SaraNode node : assembled.getNodes() ) {
+//        for ( SaraNode node : assembled.getNodeIds() ) {
 //            Cell parent = node.getParent();
 //            CollectionUtils.getList( cellMap, parent ).add( node );
 //        }
@@ -131,10 +131,10 @@ public class GreedyAssemblerTest {
 //        }
 //        
 //        DisplayUtils.displayAll( assembled );
-//        nodes = assembled.getNodes();
+//        nodes = assembled.getNodeIds();
 //        while ( nodes.hasNext() ) {
 //            ContractNode node = (ContractNode) nodes.next();
-//            for ( Node n : node.getNodes() ) {
+//            for ( Node n : node.getNodeIds() ) {
 //                if ( !origNodes.contains( n ) ) {
 //                    System.out.println( "Graph does not contain node: node = " + n + ", graph = " + assembled );
 //                }
@@ -155,13 +155,13 @@ public class GreedyAssemblerTest {
 //        while(partitions.hasNext()){
 //            Partition partition = partitions.next();
 //            Color c = colorSupplier.nextColor();
-//            nodes = partition.getNodes();
+//            nodes = partition.getNodeIds();
 //            while(nodes.hasNext()){
 //                Node node = nodes.next();
 //                presenter.setNodeColor( node.getId(), c);
 //            }
 //        }
-//        nodes = assembled.getNodes();
+//        nodes = assembled.getNodeIds();
 //        while ( nodes.hasNext() ) {
 //            ContractNode node = (ContractNode) nodes.next();
 //            Color c = colorSupplier.nextColor();
@@ -174,11 +174,11 @@ public class GreedyAssemblerTest {
 //        System.out.println( assembled );
 //        createNewGraph();
 //        presenter.setGraph( originalGraph );
-//        nodes = assembled.getNodes();
+//        nodes = assembled.getNodeIds();
 //        while ( nodes.hasNext() ) {
 //            ContractNode node = (ContractNode) nodes.next();
 //            Color c = colorMap.get( node );
-//            for ( Node n : node.getNodes() ) {
+//            for ( Node n : node.getNodeIds() ) {
 //                presenter.setNodeColor( n.getId(), c );
 //            }
 //        }

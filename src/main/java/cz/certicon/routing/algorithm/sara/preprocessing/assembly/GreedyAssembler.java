@@ -101,7 +101,7 @@ public class GreedyAssembler implements Assembler {
 //        UndirectedGraph.UndirectedGraphBuilder builder = UndirectedGraph.builder();
 //        Set<ContractEdge> edges = new HashSet<>();
 //        for ( ContractNode node : nodes ) {
-//            edgeIterator = node.getEdges();
+//            edgeIterator = node.getEdgeIds();
 //            while ( edgeIterator.hasNext() ) {
 //                edges.add( (ContractEdge) edgeIterator.next() );
 //            }
@@ -156,7 +156,7 @@ public class GreedyAssembler implements Assembler {
             ContractNode neighbor = edge.getOtherNode( contractedNode );
             NodePair nodePair = new NodePair( contractedNode, neighbor, edge );
             if ( nodePair.nodeA.getNodes().size() + nodePair.nodeB.getNodes().size() < currentMaxCellSize ) {
-//                System.out.println( "nodeA[" + nodePair.nodeA.getId() + "->" + nodePair.nodeA.getNodes().size() + "] + nodeB[" + nodePair.nodeB.getId() + "->" + nodePair.nodeB.getNodes().size() + "] < " + maxCellSize );
+//                System.out.println( "nodeA[" + nodePair.nodeA.getId() + "->" + nodePair.nodeA.getNodeIds().size() + "] + nodeB[" + nodePair.nodeB.getId() + "->" + nodePair.nodeB.getNodeIds().size() + "] < " + maxCellSize );
                 double newScore = score( nodePair, ratio );
 //                System.out.println( "adding with score[" + newScore + "]: " + nodePair );
                 queue.add( nodePair, newScore );

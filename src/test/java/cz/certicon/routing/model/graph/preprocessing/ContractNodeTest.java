@@ -116,11 +116,11 @@ public class ContractNodeTest {
     }
 
     /**
-     * Test of getNodes method, of class ContractNode.
+     * Test of getNodeIds method, of class ContractNode.
      */
     @Test
     public void testGetNodes() {
-        System.out.println( "getNodes" );
+        System.out.println( "getNodeIds" );
         UndirectedGraph g = new UndirectedGraph();
         ContractGraph graph = new ContractGraph();
         Set<Node> origNodes = new HashSet<Node>( Arrays.asList( g.createNode( -1 ), g.createNode( -2 ), g.createNode( -3 ) ) );

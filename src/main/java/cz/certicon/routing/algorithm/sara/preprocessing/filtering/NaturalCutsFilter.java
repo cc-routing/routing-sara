@@ -347,7 +347,7 @@ public class NaturalCutsFilter implements Filter {
 //        ElementContainer<ContractNode> ringElementContainer = new SetElementContainer<>();
 //        ringElementContainer.add( ring );
 //        ElementContainer<ContractNode> treeElementContainer = new SetElementContainer<>();
-//        for ( ContractNode node : tmpGraph.getNodes() ) {
+//        for ( ContractNode node : tmpGraph.getNodeIds() ) {
 //            if ( !node.equals( core ) && !node.equals( ring ) ) {
 //                treeElementContainer.add( node );
 //            }
