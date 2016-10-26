@@ -92,16 +92,48 @@ public class ToStringUtils_TestTest {
     }
 
     @Test
-    public void graph_toString_for_emptyGraph_returns_emptyGraph() throws Exception {
-        OptimizedGraph g = new OptimizedGraph();
-        g.createNode(1);
+    public void graph_toString_for_empty_graph_returns_empty_graph() throws Exception {
+        OptimizedGraph g = new OptimizedGraph( 100, 100 );
         assertThat( ToStringUtils_Test.toString( g ), equalTo( "{nodes=[],edges=[]}" ) );
     }
 
     @Test
+    public void graph_toString_for_1_node_graph_returns_1_node_graph() throws Exception {
+        OptimizedGraph g = new OptimizedGraph( 100, 100 );
+        g.createNode( 1 );
+        assertThat( ToStringUtils_Test.toString( g ), equalTo( "{nodes=[1],edges=[]}" ) );
+    }
+
+    @Test
+    public void graph_toString_for_3_nodes_graph_returns_3_nodes_graph() throws Exception {
+        OptimizedGraph g = new OptimizedGraph( 100, 100 );
+        g.createNode( 1 );
+        g.createNode( 11 );
+        g.createNode( 7 );
+        assertThat( ToStringUtils_Test.toString( g ), equalTo( "{nodes=[1,7,11],edges=[]}" ) );
+    }
+
+    @Test
+    public void graph_toString_for_3_nodes_2_edges_graph_returns_3_nodes_2_edges_graph() throws Exception {
+        OptimizedGraph g = new OptimizedGraph( 100, 100 );
+        g.createNode( 2 );
+        g.createNode( 11 );
+        g.createNode( 7 );
+        g.createEdge( 1, 2, 7, true );
+        g.createEdge( 2, 11, 7, false );
+        assertThat( ToStringUtils_Test.toString( g ), equalTo( "{nodes=[2,7,11],edges=[1{2->7},2{11<->7}]}" ) );
+    }
+
+
+    @Test
     public void graph_fromString_for_emptyGraph_returns_emptyGraph() throws Exception {
-
-
+        String g = "{nodes=[],edges=[]}";
+        assertThat( ToStringUtils_Test.toString( ToStringUtils_Test.optimizedGraphFromString( g ) ), equalTo( g ) );
+    }
+    @Test
+    public void graph_fromString_for_3_nodes_2_edges_returns_3_nodes_2_edges_graph() throws Exception {
+        String g = "{nodes=[1,5,7],edges=[2{5->7},7{5<->1}]}";
+        assertThat( ToStringUtils_Test.toString( ToStringUtils_Test.optimizedGraphFromString( g ) ), equalTo( g ) );
     }
 
 }
