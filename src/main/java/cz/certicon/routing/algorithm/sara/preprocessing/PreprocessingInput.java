@@ -72,4 +72,8 @@ public class PreprocessingInput {
         this.numberOfLayers = numberOfLayers;
     }
 
+    public PreprocessingInput withCellSize( int cellSize ) {
+        return new PreprocessingInput( cellSize, cellRatio, coreRatio, lowIntervalProbability, lowIntervalLimit, numberOfAssemblyRuns, numberOfLayers );
+    }
+
 }
