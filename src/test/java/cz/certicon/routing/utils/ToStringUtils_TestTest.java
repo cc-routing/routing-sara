@@ -130,6 +130,7 @@ public class ToStringUtils_TestTest {
         String g = "{nodes=[],edges=[]}";
         assertThat( ToStringUtils_Test.toString( ToStringUtils_Test.optimizedGraphFromString( g ) ), equalTo( g ) );
     }
+
     @Test
     public void graph_fromString_for_3_nodes_2_edges_returns_3_nodes_2_edges_graph() throws Exception {
         String g = "{nodes=[1,5,7],edges=[2{5->7},7{5<->1}]}";

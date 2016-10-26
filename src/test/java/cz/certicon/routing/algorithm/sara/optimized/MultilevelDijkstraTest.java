@@ -13,6 +13,7 @@ import java.util.ArrayList;
 
 import static org.junit.Assert.*;
 import static org.hamcrest.CoreMatchers.*;
+
 /**
  * Created by blaha on 26.10.2016.
  */
@@ -31,8 +32,16 @@ public class MultilevelDijkstraTest {
     @Test
     public void from_node_A_to_node_A_returns_empty_route() throws Exception {
         OptimizedGraph graph = ToStringUtils_Test.optimizedGraphFromString( "{nodes=[1],edges=[]}" );
-        Optional<Route> routeOptional = multilevelDijkstra.route(graph, graph.getNodeById( 1 ), graph.getNodeById( 1 ));
+        Optional<Route> routeOptional = multilevelDijkstra.route( graph, graph.getNodeById( 1 ), graph.getNodeById( 1 ) );
         assertThat( routeOptional.isPresent(), equalTo( true ) );
         assertThat( routeOptional.get().getEdges(), equalTo( new long[0] ) );
+    }
+
+    @Test
+    public void from_node_A_to_node_B_returns_AB_route() throws Exception {
+        OptimizedGraph graph = ToStringUtils_Test.optimizedGraphFromString( "{nodes=[1,2],edges=[1{1->2}]}" );
+        Optional<Route> routeOptional = multilevelDijkstra.route( graph, graph.getNodeById( 1 ), graph.getNodeById( 2 ) );
+        assertThat( routeOptional.isPresent(), equalTo( true ) );
+        assertThat( routeOptional.get().getEdges(), equalTo( new long[1] ) );
     }
 }
