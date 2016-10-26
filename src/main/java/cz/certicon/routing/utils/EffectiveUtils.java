@@ -85,7 +85,7 @@ public class EffectiveUtils {
      * Fill the array with the given value (all the elements of the array will
      * be equal to the given value after this operation is performed).
      *
-     * @param <T> array and value type
+     * @param <T>   array and value type
      * @param array array to be edited
      * @param value value to be spread all over the array
      */
@@ -106,7 +106,7 @@ public class EffectiveUtils {
      * @param target target (destination) array
      */
     public static void copyArray( int[] source, int[] target ) {
-        System.arraycopy( source, 0, target, 0, target.length );
+        System.arraycopy( source, 0, target, 0, Math.min( source.length, target.length ) );
     }
 
     /**
@@ -116,7 +116,7 @@ public class EffectiveUtils {
      * @param target target (destination) array
      */
     public static void copyArray( long[] source, long[] target ) {
-        System.arraycopy( source, 0, target, 0, target.length );
+        System.arraycopy( source, 0, target, 0, Math.min( source.length, target.length ) );
     }
 
     /**
@@ -126,7 +126,7 @@ public class EffectiveUtils {
      * @param target target (destination) array
      */
     public static void copyArray( double[] source, double[] target ) {
-        System.arraycopy( source, 0, target, 0, target.length );
+        System.arraycopy( source, 0, target, 0, Math.min( source.length, target.length ) );
     }
 
     /**
@@ -136,7 +136,7 @@ public class EffectiveUtils {
      * @param target target (destination) array
      */
     public static void copyArray( boolean[] source, boolean[] target ) {
-        System.arraycopy( source, 0, target, 0, target.length );
+        System.arraycopy( source, 0, target, 0, Math.min( source.length, target.length ) );
     }
 
     /**
@@ -146,6 +146,6 @@ public class EffectiveUtils {
      * @param target target (destination) array
      */
     public static void copyArray( float[] source, float[] target ) {
-        System.arraycopy( source, 0, target, 0, target.length );
+        System.arraycopy( source, 0, target, 0, Math.min( source.length, target.length ) );
     }
 }
