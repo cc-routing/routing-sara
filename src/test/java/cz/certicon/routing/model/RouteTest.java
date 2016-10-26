@@ -13,7 +13,7 @@ import cz.certicon.routing.model.graph.SimpleNode;
 import cz.certicon.routing.model.graph.SimpleEdge;
 import cz.certicon.routing.model.graph.UndirectedGraph;
 import cz.certicon.routing.utils.GraphUtils;
-import cz.certicon.routing.utils.ToStringUtils;
+import cz.certicon.routing.utils.ToStringUtils_Test;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -69,7 +69,7 @@ public class RouteTest {
         Route.RouteBuilder builder = Route.builder();
 
         Route<SimpleNode, SimpleEdge> route = builder.addAsLast( cd ).addAsFirst( bc ).addAsLast( de ).addAsFirst( ab ).build();
-        assertEquals( "Route{source=0,target=4,edges=[0,1,2,3]}", ToStringUtils.toString( route ) );
+        assertEquals("Route{source=0,target=4,edges=[0,1,2,3]}", ToStringUtils_Test.toString( route ) );
     }
 
     /**

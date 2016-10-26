@@ -14,7 +14,7 @@ import cz.certicon.routing.model.graph.TurnTable;
 import cz.certicon.routing.model.values.Distance;
 import cz.certicon.routing.utils.GraphGeneratorUtils;
 import cz.certicon.routing.utils.RandomUtils;
-import cz.certicon.routing.utils.ToStringUtils;
+import cz.certicon.routing.utils.ToStringUtils_Test;
 import java8.util.Optional;
 import java.util.EnumSet;
 import java.util.HashMap;
@@ -76,7 +76,7 @@ public class DijkstraAlgorithmTest {
         DijkstraAlgorithm instance = new DijkstraAlgorithm();
         Route<Node, Edge> expResult = Route.builder().addAsLast( edgeMap.get( 0L ) ).addAsLast( edgeMap.get( 4L ) ).addAsLast( edgeMap.get( 6L ) ).addAsLast( edgeMap.get( 5L ) ).build();
         Optional<Route<Node, Edge>> result = instance.route( graph, Metric.LENGTH, source, destination );
-        assertEquals(  ToStringUtils.toString( expResult ),  ToStringUtils.toString( result.get() ) );
+        assertEquals(ToStringUtils_Test.toString( expResult ),  ToStringUtils_Test.toString( result.get() ) );
     }
 
     /**
@@ -90,7 +90,7 @@ public class DijkstraAlgorithmTest {
         DijkstraAlgorithm instance = new DijkstraAlgorithm();
         Route<Node, Edge> expResult = Route.builder().addAsLast( edgeMap.get( 1L ) ).addAsLast( edgeMap.get( 0L ) ).addAsLast( edgeMap.get( 4L ) ).addAsLast( edgeMap.get( 6L ) ).addAsLast( edgeMap.get( 5L ) ).build();
         Optional<Route<Node, Edge>> result = instance.route( graph, Metric.LENGTH, source, destination );
-        assertEquals(  ToStringUtils.toString( expResult ),  ToStringUtils.toString( result.get() ) );
+        assertEquals(ToStringUtils_Test.toString( expResult ),  ToStringUtils_Test.toString( result.get() ) );
     }
 
     /**
@@ -108,7 +108,7 @@ public class DijkstraAlgorithmTest {
         DijkstraAlgorithm instance = new DijkstraAlgorithm();
         Route<Node, Edge> expResult = Route.builder().addAsLast( edgeMap.get( 1L ) ).addAsLast( edgeMap.get( 0L ) ).addAsLast( edgeMap.get( 4L ) ).addAsLast( edgeMap.get( 6L ) ).addAsLast( edgeMap.get( 5L ) ).addAsLast( edgeMap.get( 2L ) ).build();
         Optional<Route<Node, Edge>> result = instance.route( graph, Metric.LENGTH, source, destination, toSourceStart, toSourceEnd, toDestinationStart, toDestinationEnd );
-        assertEquals( ToStringUtils.toString( expResult ),  ToStringUtils.toString( result.get() ) );
+        assertEquals(ToStringUtils_Test.toString( expResult ),  ToStringUtils_Test.toString( result.get() ) );
     }
 
 

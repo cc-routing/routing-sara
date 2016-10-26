@@ -20,7 +20,7 @@ import cz.certicon.routing.model.values.Distance;
 import cz.certicon.routing.utils.GraphGeneratorUtils;
 import cz.certicon.routing.utils.GraphUtils;
 import cz.certicon.routing.utils.RandomUtils;
-import cz.certicon.routing.utils.ToStringUtils;
+import cz.certicon.routing.utils.ToStringUtils_Test;
 import cz.certicon.routing.utils.java8.Mappers;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -91,7 +91,7 @@ public class FordFulkersonMinimalCutTest {
             Node targetNode = nodeMap.get( 5L );
             MinimalCut<Edge> expected = new MinimalCut<>( Arrays.asList( edgeMap.get( 4L ), edgeMap.get( 5L ) ), 74 );
             MinimalCut<Edge> result = instance.compute( graph, Metric.LENGTH, sourceNode, targetNode );
-            assertEquals( ToStringUtils.toString( expected ), ToStringUtils.toString( result ) );
+            assertEquals(ToStringUtils_Test.toString( expected ), ToStringUtils_Test.toString( result ) );
         }
 
         {
@@ -118,8 +118,8 @@ public class FordFulkersonMinimalCutTest {
             MinimalCut<Edge> expected1 = new MinimalCut<>( Arrays.<Edge>asList( edges[0], edges[6], edges[7] ), 12 );
             MinimalCut<Edge> expected2 = new MinimalCut<>( Arrays.<Edge>asList( edges[0], edges[2], edges[4], edges[10] ), 12 );
             MinimalCut<Edge> result = instance.compute( g, Metric.SIZE, nodes[0], nodes[1] );
-            if ( !ToStringUtils.toString( result ).equals( ToStringUtils.toString( expected1 ) ) ) {
-                assertEquals( ToStringUtils.toString( expected2 ), ToStringUtils.toString( result ) );
+            if ( !ToStringUtils_Test.toString( result ).equals(ToStringUtils_Test.toString( expected1 ) ) ) {
+                assertEquals(ToStringUtils_Test.toString( expected2 ), ToStringUtils_Test.toString( result ) );
             }
         }
         {
@@ -147,9 +147,9 @@ public class FordFulkersonMinimalCutTest {
             MinimalCut<Edge> expected2 = new MinimalCut<>( Arrays.asList( edges[0], edges[5], edges[6], edges[7], edges[8], edges[9] ), 14 );// 4 or 8+9 or 9+12
             MinimalCut<Edge> expected3 = new MinimalCut<>( Arrays.asList( edges[0], edges[5], edges[6], edges[7], edges[9], edges[12] ), 14 );// 4 or 8+9 or 9+12
             MinimalCut<Edge> result = instance.compute( g, Metric.SIZE, nodes[0], nodes[1] );
-            if ( !ToStringUtils.toString( result ).equals( ToStringUtils.toString( expected1 ) ) ) {
-                if ( !ToStringUtils.toString( result ).equals( ToStringUtils.toString( expected2 ) ) ) {
-                    assertEquals( ToStringUtils.toString( expected3 ), ToStringUtils.toString( result ) );
+            if ( !ToStringUtils_Test.toString( result ).equals(ToStringUtils_Test.toString( expected1 ) ) ) {
+                if ( !ToStringUtils_Test.toString( result ).equals(ToStringUtils_Test.toString( expected2 ) ) ) {
+                    assertEquals(ToStringUtils_Test.toString( expected3 ), ToStringUtils_Test.toString( result ) );
                 }
             }
         }

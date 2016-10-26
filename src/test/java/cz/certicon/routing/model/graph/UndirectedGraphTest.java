@@ -8,7 +8,7 @@ package cz.certicon.routing.model.graph;
 import cz.certicon.routing.model.Identifiable;
 import cz.certicon.routing.model.values.Distance;
 import cz.certicon.routing.utils.GraphGeneratorUtils;
-import cz.certicon.routing.utils.ToStringUtils;
+import cz.certicon.routing.utils.ToStringUtils_Test;
 import cz.certicon.routing.utils.collections.CollectionUtils;
 import cz.certicon.routing.utils.collections.Iterator;
 import java.util.ArrayList;
@@ -35,8 +35,8 @@ public class UndirectedGraphTest {
     private Map<Long, Node> nodeMap;
     private Map<Long, Edge> edgeMap;
     private Map<TurnTable, TurnTable> turnTables;
-    ToStringUtils.UndirectedNodeCreator nc;
-    ToStringUtils.UndirectedEdgeCreator ec;
+    ToStringUtils_Test.UndirectedNodeCreator nc;
+    ToStringUtils_Test.UndirectedEdgeCreator ec;
 
     public UndirectedGraphTest() {
     }
@@ -55,8 +55,8 @@ public class UndirectedGraphTest {
         edgeMap = new HashMap<>();
         turnTables = new HashMap<>();
         graph = GraphGeneratorUtils.createGraph( EnumSet.of( Metric.LENGTH ), nodeMap, edgeMap, turnTables );
-        nc = new ToStringUtils.UndirectedNodeCreator();
-        ec = new ToStringUtils.UndirectedEdgeCreator();
+        nc = new ToStringUtils_Test.UndirectedNodeCreator();
+        ec = new ToStringUtils_Test.UndirectedEdgeCreator();
     }
 
     @After
@@ -83,7 +83,7 @@ public class UndirectedGraphTest {
         System.out.println( "getNodes" );
         Graph instance = graph;
         String expResult = "[0,1,2,3,4,5]";
-        String result = ToStringUtils.toString( instance.getNodes() );
+        String result = ToStringUtils_Test.toString( instance.getNodes() );
         assertEquals( expResult, result );
     }
 
@@ -107,7 +107,7 @@ public class UndirectedGraphTest {
         System.out.println( "getEdges" );
         Graph instance = graph;
         String expResult = "[0,1,2,3,4,5,6]";
-        String result = ToStringUtils.toString( instance.getEdges() );
+        String result = ToStringUtils_Test.toString( instance.getEdges() );
         assertEquals( expResult, result );
     }
 
@@ -127,7 +127,7 @@ public class UndirectedGraphTest {
 
     private void testGetIncomingEdges( long nodeId, String expResult ) {
         Node node = nodeMap.get( nodeId );
-        String result = ToStringUtils.toString( graph.getIncomingEdges( node ) );
+        String result = ToStringUtils_Test.toString( graph.getIncomingEdges( node ) );
         assertEquals( expResult, result );
     }
 
@@ -147,7 +147,7 @@ public class UndirectedGraphTest {
 
     private void testGetOutgoingEdges( long nodeId, String expResult ) {
         Node node = nodeMap.get( nodeId );
-        String result = ToStringUtils.toString( graph.getOutgoingEdges( node ) );
+        String result = ToStringUtils_Test.toString( graph.getOutgoingEdges( node ) );
         assertEquals( expResult, result );
     }
 
@@ -261,7 +261,7 @@ public class UndirectedGraphTest {
     }
 
     private void assertGraph( String representation ) {
-        UndirectedGraph fromGraph = UndirectedGraph.fromGraph( ToStringUtils.fromString( new UndirectedGraph(), representation, nc, ec ) );
-        assertThat( ToStringUtils.toString( fromGraph ), CoreMatchers.equalTo( representation ) );
+        UndirectedGraph fromGraph = UndirectedGraph.fromGraph(ToStringUtils_Test.fromString( new UndirectedGraph(), representation, nc, ec ) );
+        assertThat(ToStringUtils_Test.toString( fromGraph ), CoreMatchers.equalTo( representation ) );
     }
 }

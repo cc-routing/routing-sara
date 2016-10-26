@@ -16,7 +16,7 @@ import cz.certicon.routing.model.graph.SimpleNode;
 import cz.certicon.routing.model.graph.UndirectedGraph;
 import cz.certicon.routing.model.values.Distance;
 import cz.certicon.routing.utils.GraphUtils;
-import cz.certicon.routing.utils.ToStringUtils;
+import cz.certicon.routing.utils.ToStringUtils_Test;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -112,7 +112,7 @@ public class ContractNodeTest {
 //        System.out.println( toString( result ) );
 //        System.out.println( result.toString() );
         System.out.println( graph );
-        assertEquals( expResult, ToStringUtils.toString( result ) );
+        assertEquals(expResult, ToStringUtils_Test.toString( result ) );
     }
 
     /**

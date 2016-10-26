@@ -5,24 +5,30 @@
  */
 package cz.certicon.routing.utils;
 
+import cz.certicon.routing.algorithm.sara.optimized.model.OptimizedGraph;
 import cz.certicon.routing.model.basic.Pair;
+import cz.certicon.routing.model.graph.Graph;
+import cz.certicon.routing.model.graph.SimpleEdge;
+import cz.certicon.routing.model.graph.SimpleNode;
 import cz.certicon.routing.model.graph.UndirectedGraph;
+import java8.util.stream.IntStream;
 import org.junit.Test;
+
 import static org.junit.Assert.*;
 import static org.hamcrest.CoreMatchers.*;
+
 import org.junit.Before;
 
 /**
- *
  * @author Michael Blaha {@literal <michael.blaha@gmail.com>}
  */
-public class TestToStringUtils {
+public class ToStringUtils_TestTest {
 
     UndirectedGraph graph;
     ToStringUtils_Test.UndirectedNodeCreator nc;
     ToStringUtils_Test.UndirectedEdgeCreator ec;
 
-    public TestToStringUtils() {
+    public ToStringUtils_TestTest() {
     }
 
     @Before
@@ -83,6 +89,19 @@ public class TestToStringUtils {
     public void graphFromStringReturnsGraphWithThreeNodesAndTwoEdges() {
         String g = "cz.certicon.routing.model.graph.UndirectedGraph{nodes=[1,4,5],edges=[2{1->4},5{5<->4}]}";
         assertThat( ToStringUtils_Test.toString( ToStringUtils_Test.fromString( new UndirectedGraph(), g, nc, ec ) ), equalTo( g ) );
+    }
+
+    @Test
+    public void graph_toString_for_emptyGraph_returns_emptyGraph() throws Exception {
+        OptimizedGraph g = new OptimizedGraph();
+        g.createNode(1);
+        assertThat( ToStringUtils_Test.toString( g ), equalTo( "{nodes=[],edges=[]}" ) );
+    }
+
+    @Test
+    public void graph_fromString_for_emptyGraph_returns_emptyGraph() throws Exception {
+
+
     }
 
 }

@@ -7,7 +7,7 @@ package cz.certicon.routing.model.graph;
 
 import cz.certicon.routing.model.values.Distance;
 import cz.certicon.routing.utils.GraphGeneratorUtils;
-import cz.certicon.routing.utils.ToStringUtils;
+import cz.certicon.routing.utils.ToStringUtils_Test;
 import java.util.ArrayList;
 import java.util.EnumSet;
 import java.util.HashMap;
@@ -71,7 +71,7 @@ public class NodeTest {
 
     private void testGetIncomingEdges( long nodeId, String expResult ) {
         Node node = nodeMap.get( nodeId );
-        String result = ToStringUtils.toString( graph.getIncomingEdges( node ) );
+        String result = ToStringUtils_Test.toString( graph.getIncomingEdges( node ) );
         assertEquals( expResult, result );
     }
 
@@ -91,7 +91,7 @@ public class NodeTest {
 
     private void testGetOutgoingEdges( long nodeId, String expResult ) {
         Node node = nodeMap.get( nodeId );
-        String result = ToStringUtils.toString( graph.getOutgoingEdges( node ) );
+        String result = ToStringUtils_Test.toString( graph.getOutgoingEdges( node ) );
         assertEquals( expResult, result );
     }
 
