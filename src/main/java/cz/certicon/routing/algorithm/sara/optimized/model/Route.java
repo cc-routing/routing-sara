@@ -4,6 +4,8 @@ package cz.certicon.routing.algorithm.sara.optimized.model;
 import gnu.trove.list.array.TLongArrayList;
 import lombok.Builder;
 
+import java.util.Arrays;
+
 /**
  * Created by blaha on 26.10.2016.
  */
@@ -41,6 +43,12 @@ public class Route {
 
         public Route build() {
             return new Route( edges.toArray() );
+        }
+
+        public Route buildReverse() {
+            TLongArrayList reversed = new TLongArrayList( edges );
+            reversed.reverse();
+            return new Route( reversed.toArray() );
         }
     }
 }

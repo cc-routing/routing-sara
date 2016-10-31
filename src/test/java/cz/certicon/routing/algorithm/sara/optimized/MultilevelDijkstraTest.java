@@ -36,7 +36,7 @@ public class MultilevelDijkstraTest {
         OptimizedGraph graph = ToStringUtils_Test.optimizedGraphFromString( "{nodes=[1],edges=[]}" );
         Optional<Route> routeOptional = multilevelDijkstra.route( graph, graph.getNodeById( 1 ), graph.getNodeById( 1 ), metric );
         assertThat( routeOptional.isPresent(), equalTo( true ) );
-        assertThat( routeOptional.get().getEdges(), equalTo( new long[0] ) );
+        assertThat( routeOptional.get().getEdges(), equalTo( new long[]{} ) );
     }
 
     @Test
@@ -44,9 +44,23 @@ public class MultilevelDijkstraTest {
         OptimizedGraph graph = new OptimizedGraph( 10, 10 );
         graph.createNode( 1 );
         graph.createNode( 2 );
-        graph.createEdge( 1, 1, 2, true, 0, 0 );
+        graph.createEdge( 1, 1, 2, true, 0, 0, new Pair<>( Metric.LENGTH, 1.0 ) );
         Optional<Route> routeOptional = multilevelDijkstra.route( graph, 1, 2, metric );
         assertThat( routeOptional.isPresent(), equalTo( true ) );
         assertThat( routeOptional.get().getEdges(), equalTo( new long[]{ 1 } ) );
+    }
+
+    @Test
+    public void from_node_A_to_node_C_returns_ABC_route() throws Exception {
+        OptimizedGraph graph = new OptimizedGraph( 10, 10 );
+        graph.createNode( 1 );
+        graph.createNode( 2 );
+        graph.createNode( 3 );
+        graph.createEdge( 1, 1, 2, true, 0, 0, new Pair<>( Metric.LENGTH, 1.0 ) );
+        graph.createEdge( 2, 3, 1, true, 0, 1, new Pair<>( Metric.LENGTH, 1.0 ) );
+        graph.createEdge( 3, 2, 3, true, 1, 1, new Pair<>( Metric.LENGTH, 1.0 ) );
+        Optional<Route> routeOptional = multilevelDijkstra.route( graph, 1, 3, metric );
+        assertThat( routeOptional.isPresent(), equalTo( true ) );
+        assertThat( routeOptional.get().getEdges(), equalTo( new long[]{ 1, 3 } ) );
     }
 }

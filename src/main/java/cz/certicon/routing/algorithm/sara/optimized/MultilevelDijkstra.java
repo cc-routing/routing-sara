@@ -68,7 +68,7 @@ public class MultilevelDijkstra {
                 builder.edge( graph.getEdgeId( state.edge ) );
                 state = predecessorMap.get( state );
             }
-            return Optional.of( builder.build() );
+            return Optional.of( builder.buildReverse() );
         }
         return Optional.empty();
     }

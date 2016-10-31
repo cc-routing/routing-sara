@@ -1,13 +1,12 @@
 package cz.certicon.routing.algorithm.sara.optimized.model;
 
+import cz.certicon.routing.model.basic.Pair;
 import cz.certicon.routing.model.graph.Metric;
 import gnu.trove.map.TLongIntMap;
 import gnu.trove.map.hash.TLongIntHashMap;
 import lombok.ToString;
 
-import java.util.Arrays;
-import java.util.EnumMap;
-import java.util.Map;
+import java.util.*;
 
 import static cz.certicon.routing.utils.EffectiveUtils.*;
 
@@ -50,8 +49,8 @@ public class OptimizedGraph {
 
     public final void enlargeEdgeCapacityBy( int size ) {
         edgeIds = enlarge( edgeIds, size );
-        sources = enlarge( sources,  size );
-        targets = enlarge( targets,  size );
+        sources = enlarge( sources, size );
+        targets = enlarge( targets, size );
         oneways = enlarge( oneways, size );
         for ( Metric metric :
                 Metric.values() ) {
@@ -68,7 +67,15 @@ public class OptimizedGraph {
         return idx;
     }
 
-    public int createEdge( long id, long source, long target, boolean oneway, int sourceTableIdx, int targetTableIdx ) {
+    public int createEdge( long id, long source, long target, boolean oneway, int sourceTableIdx, int targetTableIdx, Pair<Metric, Double>... distances ) {
+        List<Pair<Metric, Double>> distanceList = new ArrayList<>();
+        for ( Pair<Metric, Double> pair : distances ) {
+            distanceList.add( pair );
+        }
+        return createEdge( id, source, target, oneway, sourceTableIdx, targetTableIdx, distanceList );
+    }
+
+    public int createEdge( long id, long source, long target, boolean oneway, int sourceTableIdx, int targetTableIdx, Collection<Pair<Metric, Double>> distances ) {
         int idx = edgeMap.size();
         edgeIds[idx] = id;
         edgeMap.put( id, idx );
@@ -81,6 +88,9 @@ public class OptimizedGraph {
         outgoingEdges[sourceIdx][sourceTableIdx] = idx;
         incomingEdges[targetIdx] = enlargeToIndex( incomingEdges[targetIdx], targetTableIdx );
         incomingEdges[targetIdx][targetTableIdx] = idx;
+        for ( Pair<Metric, Double> pair : distances ) {
+            lengths.get( pair.a )[idx] = pair.b.floatValue();
+        }
         return idx;
     }
 
