@@ -186,4 +186,9 @@ public class EffectiveUtils {
         int[][] newArray = Arrays.copyOf( orig, orig.length + sizeBy );
         return newArray;
     }
+
+    public static float[][][] enlarge( float[][][] orig, int sizeBy ) {
+        float[][][] newArray = Arrays.copyOf( orig, orig.length + sizeBy );
+        return newArray;
+    }
 }

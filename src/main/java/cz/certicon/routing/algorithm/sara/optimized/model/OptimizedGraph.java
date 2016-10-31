@@ -33,6 +33,11 @@ public class OptimizedGraph {
     private int[][] outgoingEdges = new int[0][0];
     private int[][] incomingEdges = new int[0][0];
 
+    private int[] sourceTableIndices = new int[0];
+    private int[] targetTableIndices = new int[0];
+
+    private float[][][] turnTables = new float[0][0][0];
+
     public OptimizedGraph() {
     }
 
@@ -45,6 +50,7 @@ public class OptimizedGraph {
         nodeIds = enlarge( nodeIds, size );
         outgoingEdges = enlarge( outgoingEdges, size );
         incomingEdges = enlarge( incomingEdges, size );
+        turnTables = enlarge( turnTables, size );
     }
 
     public final void enlargeEdgeCapacityBy( int size ) {
@@ -56,14 +62,21 @@ public class OptimizedGraph {
                 Metric.values() ) {
             lengths.put( metric, enlarge( lengths.get( metric ), size ) );
         }
+        sourceTableIndices = enlarge( sourceTableIndices, size );
+        targetTableIndices = enlarge( targetTableIndices, size );
     }
 
     public int createNode( long id ) {
+        return createNode( id, null );
+    }
+
+    public int createNode( long id, float[][] turnTable ) {
         int idx = nodeMap.size();
         nodeIds[idx] = id;
         nodeMap.put( id, idx );
         outgoingEdges[idx] = new int[0];
         incomingEdges[idx] = new int[0];
+        turnTables[idx] = turnTable;
         return idx;
     }
 
@@ -88,6 +101,8 @@ public class OptimizedGraph {
         outgoingEdges[sourceIdx][sourceTableIdx] = idx;
         incomingEdges[targetIdx] = enlargeToIndex( incomingEdges[targetIdx], targetTableIdx );
         incomingEdges[targetIdx][targetTableIdx] = idx;
+        sourceTableIndices[idx] = sourceTableIdx;
+        targetTableIndices[idx] = targetTableIdx;
         for ( Pair<Metric, Double> pair : distances ) {
             lengths.get( pair.a )[idx] = pair.b.floatValue();
         }
@@ -171,4 +186,13 @@ public class OptimizedGraph {
         return array.length <= index ? enlarge( array, index - array.length + 1 ) : array;
     }
 
+    public float getTurnDistance( int nodeIdx, int edgeFromIdx, int edgeToIdx ) {
+        if ( turnTables[nodeIdx] == null ) {
+            return 0;
+        }
+        // sourceTableIndices contains index of the edge on its source, both enter and exit
+        int sourceIdx = ( nodeIdx == sources[edgeFromIdx] ) ? sourceTableIndices[edgeFromIdx] : targetTableIndices[edgeFromIdx];
+        int targetIdx = ( nodeIdx == sources[edgeToIdx] ) ? sourceTableIndices[edgeToIdx] : targetTableIndices[edgeToIdx];
+        return turnTables[nodeIdx][sourceIdx][targetIdx];
+    }
 }

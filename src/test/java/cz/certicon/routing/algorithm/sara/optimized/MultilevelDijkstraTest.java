@@ -63,4 +63,19 @@ public class MultilevelDijkstraTest {
         assertThat( routeOptional.isPresent(), equalTo( true ) );
         assertThat( routeOptional.get().getEdges(), equalTo( new long[]{ 1, 3 } ) );
     }
+
+
+    @Test
+    public void from_node_A_to_node_C_with_restrictions_returns_AC_route() throws Exception {
+        OptimizedGraph graph = new OptimizedGraph( 10, 10 );
+        graph.createNode( 1 );
+        graph.createNode( 2, new float[][]{ { Float.MAX_VALUE, Float.MAX_VALUE }, { Float.MAX_VALUE, Float.MAX_VALUE } } );
+        graph.createNode( 3 );
+        graph.createEdge( 1, 1, 2, true, 0, 0, new Pair<>( Metric.LENGTH, 1.0 ) );
+        graph.createEdge( 2, 2, 3, true, 1, 0, new Pair<>( Metric.LENGTH, 1.0 ) );
+        graph.createEdge( 3, 1, 3, true, 1, 1, new Pair<>( Metric.LENGTH, 100.0 ) );
+        Optional<Route> routeOptional = multilevelDijkstra.route( graph, 1, 3, metric );
+        assertThat( routeOptional.isPresent(), equalTo( true ) );
+        assertThat( routeOptional.get().getEdges(), equalTo( new long[]{ 3 } ) );
+    }
 }

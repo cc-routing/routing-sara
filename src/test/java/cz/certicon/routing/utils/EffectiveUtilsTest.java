@@ -161,4 +161,14 @@ public class EffectiveUtilsTest {
         assertThat( result, equalTo( expected ) );
     }
 
+    @Test
+    public void enlarge_float_3d_enlarges_to_twice_size() throws Exception {
+        float value = 1.0f;
+        float[][] def = null;
+        float[][][] input = new float[][][]{ { { value, value }, { value, value, value }, { value, value }, { value, value, value }, { value, value } }, { { value } } };
+        float[][][] expected = new float[][][]{ { { value, value }, { value, value, value }, { value, value }, { value, value, value }, { value, value } }, { { value } }, def, def };
+        float[][][] result = enlarge( input, input.length );
+        assertThat( result, equalTo( expected ) );
+    }
+
 }

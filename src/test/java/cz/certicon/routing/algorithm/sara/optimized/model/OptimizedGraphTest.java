@@ -19,7 +19,7 @@ public class OptimizedGraphTest {
 
     @Before
     public void setUp() throws Exception {
-        graph = new OptimizedGraph( 100, 100 );
+        graph = new OptimizedGraph( 10, 10 );
         graph.createNode( 1 );
         graph.createNode( 2 );
         graph.createNode( 3 );
@@ -145,8 +145,21 @@ public class OptimizedGraphTest {
     public void getIncomingEdges_for_node_1_returns_array_of_0() throws Exception {
         assertThat( graph.getIncomingEdges( 1 ), equalTo( new int[]{ 0 } ) );
     }
+
     @Test
     public void getIncomingEdges_for_node_2_returns_array_of_1() throws Exception {
         assertThat( graph.getIncomingEdges( 2 ), equalTo( new int[]{ 1 } ) );
+    }
+
+    @Test
+    public void getTurnDistance_for_1_return_1() throws Exception {
+        OptimizedGraph g = new OptimizedGraph( 10, 10 );
+        int n1 = g.createNode( 1 );
+        int n2 = g.createNode( 2, new float[][]{ { Float.MAX_VALUE, 1.0f }, { 2.0f, Float.MAX_VALUE } } );
+        int n3 = g.createNode( 3 );
+        int e1 = g.createEdge( 1, 1, 2, false, 0, 0 );
+        int e2 = g.createEdge( 2, 2, 3, false, 1, 0 );
+        assertThat( g.getTurnDistance( n2, e1, e2 ), equalTo( 1.0f ) );
+        assertThat( g.getTurnDistance( n2, e2, e1 ), equalTo( 2.0f ) );
     }
 }
