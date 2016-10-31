@@ -5,6 +5,8 @@
  */
 package cz.certicon.routing.utils;
 
+import java.util.Arrays;
+
 /**
  * Utility class offering operations which require higher efficiency (execution
  * optimizations)
@@ -147,5 +149,41 @@ public class EffectiveUtils {
      */
     public static void copyArray( float[] source, float[] target ) {
         System.arraycopy( source, 0, target, 0, Math.min( source.length, target.length ) );
+    }
+
+
+    public static long[] enlarge( long[] orig, int sizeBy ) {
+        long[] newArray = new long[orig.length + sizeBy];
+        copyArray( orig, newArray );
+        return newArray;
+    }
+
+    public static int[] enlarge( int[] orig, int sizeBy ) {
+        int[] newArray = new int[orig.length + sizeBy];
+        copyArray( orig, newArray );
+        return newArray;
+    }
+
+    public static boolean[] enlarge( boolean[] orig, int sizeBy ) {
+        boolean[] newArray = new boolean[orig.length + sizeBy];
+        copyArray( orig, newArray );
+        return newArray;
+    }
+
+    public static float[] enlarge( float[] orig, int sizeBy ) {
+        float[] newArray = new float[orig.length + sizeBy];
+        copyArray( orig, newArray );
+        return newArray;
+    }
+
+    public static double[] enlarge( double[] orig, int sizeBy ) {
+        double[] newArray = new double[orig.length + sizeBy];
+        copyArray( orig, newArray );
+        return newArray;
+    }
+
+    public static int[][] enlarge( int[][] orig, int sizeBy ) {
+        int[][] newArray = Arrays.copyOf( orig, orig.length + sizeBy );
+        return newArray;
     }
 }

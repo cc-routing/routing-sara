@@ -7,10 +7,7 @@ package cz.certicon.routing.utils;
 
 import cz.certicon.routing.algorithm.sara.optimized.model.OptimizedGraph;
 import cz.certicon.routing.model.basic.Pair;
-import cz.certicon.routing.model.graph.Graph;
-import cz.certicon.routing.model.graph.SimpleEdge;
-import cz.certicon.routing.model.graph.SimpleNode;
-import cz.certicon.routing.model.graph.UndirectedGraph;
+import cz.certicon.routing.model.graph.*;
 import java8.util.stream.IntStream;
 import org.junit.Test;
 
@@ -91,6 +88,8 @@ public class ToStringUtils_TestTest {
         assertThat( ToStringUtils_Test.toString( ToStringUtils_Test.fromString( new UndirectedGraph(), g, nc, ec ) ), equalTo( g ) );
     }
 
+    /**************************************** OPTIMIZED *************************************************/
+
     @Test
     public void graph_toString_for_empty_graph_returns_empty_graph() throws Exception {
         OptimizedGraph g = new OptimizedGraph( 100, 100 );
@@ -119,9 +118,11 @@ public class ToStringUtils_TestTest {
         g.createNode( 2 );
         g.createNode( 11 );
         g.createNode( 7 );
-        g.createEdge( 1, 2, 7, true );
-        g.createEdge( 2, 11, 7, false );
-        assertThat( ToStringUtils_Test.toString( g ), equalTo( "{nodes=[2,7,11],edges=[1{2->7},2{11<->7}]}" ) );
+        int e1 = g.createEdge( 1, 2, 7, true, 0, 0 );
+        g.setLength( e1, Metric.LENGTH, 1 );
+        int e2 = g.createEdge( 2, 11, 7, false, 0, 1 );
+        g.setLength( e2, Metric.LENGTH, 2 );
+        assertThat( ToStringUtils_Test.toString( g ), equalTo( "{nodes=[2,7,11],edges=[1{2->7;1.0},2{11<->7;2.0}]}" ) );
     }
 
 
@@ -133,7 +134,7 @@ public class ToStringUtils_TestTest {
 
     @Test
     public void graph_fromString_for_3_nodes_2_edges_returns_3_nodes_2_edges_graph() throws Exception {
-        String g = "{nodes=[1,5,7],edges=[2{5->7},7{5<->1}]}";
+        String g = "{nodes=[1,5,7],edges=[2{5->7;1.0:2.0},7{5<->1;2.0:3.0}]}";
         assertThat( ToStringUtils_Test.toString( ToStringUtils_Test.optimizedGraphFromString( g ) ), equalTo( g ) );
     }
 

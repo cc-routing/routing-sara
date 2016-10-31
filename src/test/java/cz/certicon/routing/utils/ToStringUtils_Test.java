@@ -13,12 +13,7 @@ import static cz.certicon.routing.model.Identifiable.Comparators.*;
 import cz.certicon.routing.model.MinimalCut;
 import cz.certicon.routing.model.Route;
 import cz.certicon.routing.model.basic.Pair;
-import cz.certicon.routing.model.graph.Edge;
-import cz.certicon.routing.model.graph.Graph;
-import cz.certicon.routing.model.graph.Node;
-import cz.certicon.routing.model.graph.SimpleEdge;
-import cz.certicon.routing.model.graph.SimpleNode;
-import cz.certicon.routing.model.graph.UndirectedGraph;
+import cz.certicon.routing.model.graph.*;
 import cz.certicon.routing.model.graph.preprocessing.ContractEdge;
 import cz.certicon.routing.model.graph.preprocessing.ContractNode;
 import cz.certicon.routing.utils.java8.IteratorStreams;
@@ -35,8 +30,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import java8.util.J8Arrays;
-import java8.util.function.Function;
-import java8.util.function.LongFunction;
+import java8.util.function.*;
 import java8.util.stream.Collectors;
 
 import static java8.util.stream.Collectors.*;
@@ -254,17 +248,40 @@ public class ToStringUtils_Test {
                         .sorted()
                         .mapToObj( new LongFunction<String>() {
                             @Override
-                            public String apply( long value ) {
+                            public String apply( final long value ) {
+                                final int e = graph.getEdgeById( value );
                                 return value + "{" +
-                                        graph.getNodeId( graph.getSource( graph.getEdgeById( value ) ) ) +
-                                        ( graph.isOneway( graph.getEdgeById( value ) ) ? "" : "<" ) + "->" +
-                                        graph.getNodeId( graph.getTarget( graph.getEdgeById( value ) ) ) +
+                                        graph.getNodeId( graph.getSource( e ) ) +
+                                        ( graph.isOneway( e ) ? "" : "<" ) + "->" +
+                                        graph.getNodeId( graph.getTarget( e ) ) +
+                                        ";" +
+                                        J8Arrays.stream( Metric.values() ).mapToDouble( new ToDoubleFunction<Metric>() {
+                                            @Override
+                                            public double applyAsDouble( Metric metric ) {
+                                                return graph.getLength( e, metric );
+                                            }
+                                        } ).filter( new DoublePredicate() {
+                                            @Override
+                                            public boolean test( double len ) {
+                                                return len != 0;
+                                            }
+                                        } ).mapToObj( new DoubleFunction<String>() {
+                                            @Override
+                                            public String apply( double len ) {
+                                                return len + "";
+                                            }
+                                        } ).collect( Collectors.joining( ":" ) ) +
+                                        "" +
                                         "}";
                             }
                         } ).collect( joining( "," ) ) +
                 "]}";
     }
 
+    /**
+     * @param string
+     * @return
+     */
     public static OptimizedGraph optimizedGraphFromString( String string ) {
         OptimizedGraph graph = new OptimizedGraph();
         Matcher nodeMatcher = Pattern.compile( "nodes=\\[[^\\]]*\\]" ).matcher( string );
@@ -287,11 +304,19 @@ public class ToStringUtils_Test {
             for ( String edge : split ) {
                 if ( !edge.isEmpty() ) {
                     long id = Long.parseLong( edge.substring( 0, edge.indexOf( "{" ) ) );
-                    String direction = edge.substring( edge.indexOf( "{" ) + 1, edge.length() - 1 );
+                    String details = edge.substring( edge.indexOf( "{" ) + 1, edge.length() - 1 );
+                    String[] detailsArray = details.split( ";" );
+                    // direction
+                    String direction = detailsArray[0];
                     long targetId = Long.parseLong( direction.substring( direction.lastIndexOf( ">" ) + 1 ) );
                     boolean oneway = !direction.contains( "<->" );
                     long sourceId = Long.parseLong( direction.substring( 0, direction.indexOf( oneway ? "-" : "<" ) ) );
-                    graph.createEdge( id, sourceId, targetId, oneway );
+                    int idx = graph.createEdge( id, sourceId, targetId, oneway, 0, 0 ); // FIXME 0,0
+                    // lengths
+                    String[] lengths = detailsArray[1].split( ":" );
+                    for ( int i = 0; i < lengths.length; i++ ) {
+                        graph.setLength( idx, Metric.values()[i], Float.parseFloat( lengths[i] ) );
+                    }
                 }
             }
         }

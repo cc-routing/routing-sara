@@ -1,9 +1,15 @@
 package cz.certicon.routing.algorithm.sara.optimized.model;
 
-import cz.certicon.routing.utils.EffectiveUtils;
+import cz.certicon.routing.model.graph.Metric;
 import gnu.trove.map.TLongIntMap;
 import gnu.trove.map.hash.TLongIntHashMap;
 import lombok.ToString;
+
+import java.util.Arrays;
+import java.util.EnumMap;
+import java.util.Map;
+
+import static cz.certicon.routing.utils.EffectiveUtils.*;
 
 /**
  * Created by blaha on 26.10.2016.
@@ -15,10 +21,18 @@ public class OptimizedGraph {
     private final TLongIntMap edgeMap = new TLongIntHashMap();
 
     private long[] nodeIds = new long[0];
+    private long[] edgeIds = new long[0];
 
     private int[] sources = new int[0];
     private int[] targets = new int[0];
     private boolean[] oneways = new boolean[0];
+    private Map<Metric, float[]> lengths = new EnumMap<Metric, float[]>( Metric.class ) {{
+        for ( Metric metric : Metric.values() ) {
+            put( metric, new float[0] );
+        }
+    }};
+    private int[][] outgoingEdges = new int[0][0];
+    private int[][] incomingEdges = new int[0][0];
 
     public OptimizedGraph() {
     }
@@ -30,27 +44,43 @@ public class OptimizedGraph {
 
     public final void enlargeNodeCapacityBy( int size ) {
         nodeIds = enlarge( nodeIds, size );
+        outgoingEdges = enlarge( outgoingEdges, size );
+        incomingEdges = enlarge( incomingEdges, size );
     }
 
     public final void enlargeEdgeCapacityBy( int size ) {
-        sources = enlarge( sources, size );
-        targets = enlarge( targets, size );
+        edgeIds = enlarge( edgeIds, size );
+        sources = enlarge( sources,  size );
+        targets = enlarge( targets,  size );
         oneways = enlarge( oneways, size );
+        for ( Metric metric :
+                Metric.values() ) {
+            lengths.put( metric, enlarge( lengths.get( metric ), size ) );
+        }
     }
 
     public int createNode( long id ) {
         int idx = nodeMap.size();
         nodeIds[idx] = id;
         nodeMap.put( id, idx );
+        outgoingEdges[idx] = new int[0];
+        incomingEdges[idx] = new int[0];
         return idx;
     }
 
-    public int createEdge( long id, long source, long target, boolean oneway ) {
+    public int createEdge( long id, long source, long target, boolean oneway, int sourceTableIdx, int targetTableIdx ) {
         int idx = edgeMap.size();
+        edgeIds[idx] = id;
         edgeMap.put( id, idx );
-        sources[idx] = getNodeById( source );
-        targets[idx] = getNodeById( target );
+        int sourceIdx = getNodeById( source );
+        sources[idx] = sourceIdx;
+        int targetIdx = getNodeById( target );
+        targets[idx] = targetIdx;
         oneways[idx] = oneway;
+        outgoingEdges[sourceIdx] = enlargeToIndex( outgoingEdges[sourceIdx], sourceTableIdx );
+        outgoingEdges[sourceIdx][sourceTableIdx] = idx;
+        incomingEdges[targetIdx] = enlargeToIndex( incomingEdges[targetIdx], targetTableIdx );
+        incomingEdges[targetIdx][targetTableIdx] = idx;
         return idx;
     }
 
@@ -94,29 +124,41 @@ public class OptimizedGraph {
         return edgeMap.get( id );
     }
 
-    public long getNodeId( int idx ) {
-        return nodeIds[idx];
+    public long getNodeId( int nodeIdx ) {
+        return nodeIds[nodeIdx];
+    }
+
+    public long getEdgeId( int edgeIdx ) {
+        return edgeIds[edgeIdx];
     }
 
     public boolean isOneway( int edgeIdx ) {
         return oneways[edgeIdx];
     }
 
-    private static long[] enlarge( long[] orig, int size ) {
-        long[] newArray = new long[orig.length + size];
-        EffectiveUtils.copyArray( orig, newArray );
-        return newArray;
+    public void setLength( int edgeIdx, Metric metric, float length ) {
+        lengths.get( metric )[edgeIdx] = length;
     }
 
-    private static int[] enlarge( int[] orig, int size ) {
-        int[] newArray = new int[orig.length + size];
-        EffectiveUtils.copyArray( orig, newArray );
-        return newArray;
+    public float getLength( int edgeIdx, Metric metric ) {
+        return lengths.get( metric )[edgeIdx];
     }
 
-    private static boolean[] enlarge( boolean[] orig, int size ) {
-        boolean[] newArray = new boolean[orig.length + size];
-        EffectiveUtils.copyArray( orig, newArray );
-        return newArray;
+    public int[] getOutgoingEdges( int nodeIdx ) {
+        return outgoingEdges[nodeIdx];
     }
+
+    public int[] getIncomingEdges( int nodeIdx ) {
+        return incomingEdges[nodeIdx];
+    }
+
+    public int getOtherNode( int edgeIdx, int nodeIdx ) {
+        int source = sources[edgeIdx];
+        return source != nodeIdx ? source : targets[edgeIdx];
+    }
+
+    private static int[] enlargeToIndex( int[] array, int index ) {
+        return array.length <= index ? enlarge( array, index - array.length + 1 ) : array;
+    }
+
 }
