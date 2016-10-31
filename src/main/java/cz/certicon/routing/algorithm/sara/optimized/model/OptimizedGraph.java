@@ -80,15 +80,45 @@ public class OptimizedGraph {
         return idx;
     }
 
-    public int createEdge( long id, long source, long target, boolean oneway, int sourceTableIdx, int targetTableIdx, Pair<Metric, Double>... distances ) {
-        List<Pair<Metric, Double>> distanceList = new ArrayList<>();
-        for ( Pair<Metric, Double> pair : distances ) {
+    /*********************** OPTIMIZATION CREATE_EDGE METHODS ***********************/
+
+    public int createEdge( long id, long source, long target, boolean oneway, int sourceTableIdx, int targetTableIdx ) {
+        return createEdge( id, source, target, oneway, sourceTableIdx, targetTableIdx, null );
+    }
+
+    public int createEdge( long id, long source, long target, boolean oneway, int sourceTableIdx, int targetTableIdx, Metric metric1, float distance1 ) {
+        int idx = createEdge( id, source, target, oneway, sourceTableIdx, targetTableIdx );
+        lengths.get( metric1 )[idx] = distance1;
+        return idx;
+    }
+
+    public int createEdge( long id, long source, long target, boolean oneway, int sourceTableIdx, int targetTableIdx, Metric metric1, float distance1, Metric metric2, float distance2 ) {
+        int idx = createEdge( id, source, target, oneway, sourceTableIdx, targetTableIdx );
+        lengths.get( metric1 )[idx] = distance1;
+        lengths.get( metric2 )[idx] = distance2;
+        return idx;
+    }
+
+    public int createEdge( long id, long source, long target, boolean oneway, int sourceTableIdx, int targetTableIdx, Metric metric1, float distance1, Metric metric2, float distance2, Metric metric3, float distance3 ) {
+        int idx = createEdge( id, source, target, oneway, sourceTableIdx, targetTableIdx );
+        lengths.get( metric1 )[idx] = distance1;
+        lengths.get( metric2 )[idx] = distance2;
+        lengths.get( metric3 )[idx] = distance3;
+        return idx;
+    }
+
+    public int createEdge( long id, long source, long target, boolean oneway, int sourceTableIdx, int targetTableIdx, Pair<Metric, Float> firstDistance, Pair<Metric, Float>... distances ) {
+        List<Pair<Metric, Float>> distanceList = new ArrayList<>();
+        distanceList.add( firstDistance );
+        for ( Pair<Metric, Float> pair : distances ) {
             distanceList.add( pair );
         }
         return createEdge( id, source, target, oneway, sourceTableIdx, targetTableIdx, distanceList );
     }
 
-    public int createEdge( long id, long source, long target, boolean oneway, int sourceTableIdx, int targetTableIdx, Collection<Pair<Metric, Double>> distances ) {
+    /*********************** END OF OPTIMIZATION CREATE_EDGE METHODS ***********************/
+
+    public int createEdge( long id, long source, long target, boolean oneway, int sourceTableIdx, int targetTableIdx, Collection<Pair<Metric, Float>> distances ) {
         int idx = edgeMap.size();
         edgeIds[idx] = id;
         edgeMap.put( id, idx );
@@ -103,8 +133,10 @@ public class OptimizedGraph {
         incomingEdges[targetIdx][targetTableIdx] = idx;
         sourceTableIndices[idx] = sourceTableIdx;
         targetTableIndices[idx] = targetTableIdx;
-        for ( Pair<Metric, Double> pair : distances ) {
-            lengths.get( pair.a )[idx] = pair.b.floatValue();
+        if ( distances != null ) {
+            for ( Pair<Metric, Float> pair : distances ) {
+                lengths.get( pair.a )[idx] = pair.b.floatValue();
+            }
         }
         return idx;
     }

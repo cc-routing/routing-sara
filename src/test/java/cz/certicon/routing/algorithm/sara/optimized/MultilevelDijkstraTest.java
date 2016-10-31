@@ -44,7 +44,7 @@ public class MultilevelDijkstraTest {
         OptimizedGraph graph = new OptimizedGraph( 10, 10 );
         graph.createNode( 1 );
         graph.createNode( 2 );
-        graph.createEdge( 1, 1, 2, true, 0, 0, new Pair<>( Metric.LENGTH, 1.0 ) );
+        graph.createEdge( 1, 1, 2, true, 0, 0, Metric.LENGTH, 1.0f );
         Optional<Route> routeOptional = multilevelDijkstra.route( graph, 1, 2, metric );
         assertThat( routeOptional.isPresent(), equalTo( true ) );
         assertThat( routeOptional.get().getEdges(), equalTo( new long[]{ 1 } ) );
@@ -56,9 +56,9 @@ public class MultilevelDijkstraTest {
         graph.createNode( 1 );
         graph.createNode( 2 );
         graph.createNode( 3 );
-        graph.createEdge( 1, 1, 2, true, 0, 0, new Pair<>( Metric.LENGTH, 1.0 ) );
-        graph.createEdge( 2, 3, 1, true, 0, 1, new Pair<>( Metric.LENGTH, 1.0 ) );
-        graph.createEdge( 3, 2, 3, true, 1, 1, new Pair<>( Metric.LENGTH, 1.0 ) );
+        graph.createEdge( 1, 1, 2, true, 0, 0, Metric.LENGTH, 1.0f );
+        graph.createEdge( 2, 3, 1, true, 0, 1, new Pair<>( Metric.LENGTH, 1.0f ) );
+        graph.createEdge( 3, 2, 3, true, 1, 1, new Pair<>( Metric.LENGTH, 1.0f ) );
         Optional<Route> routeOptional = multilevelDijkstra.route( graph, 1, 3, metric );
         assertThat( routeOptional.isPresent(), equalTo( true ) );
         assertThat( routeOptional.get().getEdges(), equalTo( new long[]{ 1, 3 } ) );
@@ -71,9 +71,9 @@ public class MultilevelDijkstraTest {
         graph.createNode( 1 );
         graph.createNode( 2, new float[][]{ { Float.MAX_VALUE, Float.MAX_VALUE }, { Float.MAX_VALUE, Float.MAX_VALUE } } );
         graph.createNode( 3 );
-        graph.createEdge( 1, 1, 2, true, 0, 0, new Pair<>( Metric.LENGTH, 1.0 ) );
-        graph.createEdge( 2, 2, 3, true, 1, 0, new Pair<>( Metric.LENGTH, 1.0 ) );
-        graph.createEdge( 3, 1, 3, true, 1, 1, new Pair<>( Metric.LENGTH, 100.0 ) );
+        graph.createEdge( 1, 1, 2, true, 0, 0, Metric.LENGTH, 1.0f );
+        graph.createEdge( 2, 2, 3, true, 1, 0, Metric.LENGTH, 1.0f );
+        graph.createEdge( 3, 1, 3, true, 1, 1, new Pair<>( Metric.LENGTH, 100.0f ) );
         Optional<Route> routeOptional = multilevelDijkstra.route( graph, 1, 3, metric );
         assertThat( routeOptional.isPresent(), equalTo( true ) );
         assertThat( routeOptional.get().getEdges(), equalTo( new long[]{ 3 } ) );
