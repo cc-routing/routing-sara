@@ -7,6 +7,7 @@ package cz.certicon.routing.utils.measuring;
 
 import cz.certicon.routing.model.values.TimeUnits;
 import cz.certicon.routing.model.values.Time;
+
 import java.util.HashMap;
 import java.util.Map;
 
@@ -19,6 +20,7 @@ import java.util.Map;
  */
 public class TimeLogger {
 
+    private static final boolean ALLOW_LOGS = true;
     private static final Map<Event, TimeMeasurement> TIME_MAP = new HashMap<>();
     private static final Map<String, TimeMeasurement> TIME_STRING_MAP = new HashMap<>();
     private static TimeUnits timeUnits = TimeUnits.MILLISECONDS;
@@ -30,23 +32,39 @@ public class TimeLogger {
      * @param timeUnits given time units
      */
     public static void setTimeUnits( TimeUnits timeUnits ) {
-        TimeLogger.timeUnits = timeUnits;
-        for ( TimeMeasurement value : TIME_MAP.values() ) {
-            value.setTimeUnits( timeUnits );
-        }
-        for ( TimeMeasurement value : TIME_STRING_MAP.values() ) {
-            value.setTimeUnits( timeUnits );
+        if ( ALLOW_LOGS ) {
+            TimeLogger.timeUnits = timeUnits;
+            for ( TimeMeasurement value : TIME_MAP.values() ) {
+                value.setTimeUnits( timeUnits );
+            }
+            for ( TimeMeasurement value : TIME_STRING_MAP.values() ) {
+                value.setTimeUnits( timeUnits );
+            }
         }
     }
 
     /**
      * Log given {@link Command} for given {@link Event} type
      *
-     * @param event given event type
+     * @param event   given event type
      * @param command given command
      */
     public static void log( Event event, Command command ) {
-        command.execute( getTimeMeasurement( event ) );
+        if ( ALLOW_LOGS ) {
+            command.execute( getTimeMeasurement( event ) );
+        }
+    }
+
+    /**
+     * Log given {@link Command} for given {@link Event} type
+     *
+     * @param eventName given event name
+     * @param command   given command
+     */
+    public static void log( String eventName, Command command ) {
+        if ( ALLOW_LOGS ) {
+            command.execute( getTimeMeasurement( eventName ) );
+        }
     }
 
     /**
@@ -58,23 +76,17 @@ public class TimeLogger {
      * @return time measurement object
      */
     public static TimeMeasurement getTimeMeasurement( Event event ) {
-        TimeMeasurement time = TIME_MAP.get( event );
-        if ( time == null ) {
-            time = new TimeMeasurement();
-            time.setTimeUnits( timeUnits );
-            TIME_MAP.put( event, time );
+        if ( ALLOW_LOGS ) {
+            TimeMeasurement time = TIME_MAP.get( event );
+            if ( time == null ) {
+                time = new TimeMeasurement();
+                time.setTimeUnits( timeUnits );
+                TIME_MAP.put( event, time );
+            }
+            return time;
+        } else {
+            throw new IllegalStateException( "Logs not allowed" );
         }
-        return time;
-    }
-
-    /**
-     * Log given {@link Command} for given {@link Event} type
-     *
-     * @param eventName given event name
-     * @param command given command
-     */
-    public static void log( String eventName, Command command ) {
-        command.execute( getTimeMeasurement( eventName ) );
     }
 
     /**
