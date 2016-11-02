@@ -5,7 +5,7 @@
  */
 package cz.certicon.routing.model.graph.preprocessing;
 
-import cz.certicon.routing.model.basic.MaxIdContainer;
+import cz.certicon.routing.model.basic.IdSupplier;
 import cz.certicon.routing.model.basic.Pair;
 import cz.certicon.routing.model.graph.AbstractNode;
 import cz.certicon.routing.model.graph.Graph;
@@ -32,14 +32,14 @@ public class ContractNode extends AbstractNode<ContractNode, ContractEdge> {
         this.nodes = new HashSet<>( nodes );
     }
 
-    public ContractNode mergeWith( ContractNode node, MaxIdContainer nodeMaxIdContainer, MaxIdContainer edgeMaxIdContainer ) {
+    public ContractNode mergeWith( ContractNode node, IdSupplier nodeIdSupplier, IdSupplier edgeIdSupplier ) {
 
 //        System.out.println( "N-MERGING: graph = " + graph );
 //        System.out.println( "N-MERGE " + this );
 //        System.out.println( "N-WITH " + node );
         Set<Node> newNodes = new HashSet<>( this.nodes );
         newNodes.addAll( node.nodes );
-        ContractNode contractedNode = ( (ContractGraph) getGraph() ).createNode( nodeMaxIdContainer.next(), newNodes );
+        ContractNode contractedNode = ( (ContractGraph) getGraph() ).createNode( nodeIdSupplier.next(), newNodes );
         Map<ContractNode, Set<ContractEdge>> targetMap = new HashMap<>();
         boolean connected = false;
 //        System.out.println( "iterator edges for: " + this );
@@ -69,9 +69,9 @@ public class ContractNode extends AbstractNode<ContractNode, ContractEdge> {
                 target.removeEdge( edge );
                 curr = edge;
                 if ( prev != null ) {
-                    curr = prev.mergeWith( curr, contractedNode, target, edgeMaxIdContainer.next() );
+                    curr = prev.mergeWith( curr, contractedNode, target, edgeIdSupplier.next() );
                 } else {
-                    curr = ( (ContractGraph) getGraph() ).createEdge( edgeMaxIdContainer.next(), false, contractedNode, target, new HashSet<>( curr.getEdges() ), new Pair<>( Metric.SIZE, edge.getLength( Metric.SIZE ) ) );
+                    curr = ( (ContractGraph) getGraph() ).createEdge( edgeIdSupplier.next(), false, contractedNode, target, new HashSet<>( curr.getEdges() ), new Pair<>( Metric.SIZE, edge.getLength( Metric.SIZE ) ) );
                 }
 //                System.out.println( "curr=" + curr );
                 prev = curr;

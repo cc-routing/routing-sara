@@ -9,7 +9,7 @@ import cz.certicon.routing.algorithm.sara.preprocessing.assembly.Assembler;
 import cz.certicon.routing.algorithm.sara.preprocessing.assembly.GreedyAssembler;
 import cz.certicon.routing.algorithm.sara.preprocessing.filtering.Filter;
 import cz.certicon.routing.algorithm.sara.preprocessing.filtering.NaturalCutsFilter;
-import cz.certicon.routing.model.basic.MaxIdContainer;
+import cz.certicon.routing.model.basic.IdSupplier;
 import cz.certicon.routing.model.basic.Pair;
 import cz.certicon.routing.model.graph.Cell;
 import cz.certicon.routing.model.graph.Edge;
@@ -24,21 +24,15 @@ import cz.certicon.routing.model.graph.UndirectedGraph;
 import cz.certicon.routing.model.graph.preprocessing.ContractEdge;
 import cz.certicon.routing.model.graph.preprocessing.ContractGraph;
 import cz.certicon.routing.model.graph.preprocessing.ContractNode;
-import cz.certicon.routing.model.values.Distance;
 import cz.certicon.routing.utils.java8.IteratorStreams;
-import cz.certicon.routing.utils.measuring.TimeLogger;
 import cz.certicon.routing.utils.progress.EmptyProgressListener;
 import cz.certicon.routing.utils.progress.ProgressListener;
-import java.util.ArrayList;
+
 import java.util.Collection;
 import java.util.EnumSet;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Map;
-import java.util.Queue;
+
 import java8.util.Optional;
 import java8.util.function.ToIntFunction;
 
@@ -51,17 +45,17 @@ public class TopDownPreprocessor implements Preprocessor {
     private static final double FILTER_TO_ASSEMBLY_RATIO = 100;
 
     @Override
-    public <N extends Node, E extends Edge> SaraGraph preprocess( Graph<N, E> graph, PreprocessingInput input, MaxIdContainer cellIdContainer ) {
-        return preprocess( graph, input, cellIdContainer, new EmptyProgressListener() );
+    public <N extends Node, E extends Edge> SaraGraph preprocess( Graph<N, E> graph, PreprocessingInput input, IdSupplier cellIdSupplier ) {
+        return preprocess( graph, input, cellIdSupplier, new EmptyProgressListener() );
     }
 
     @Override
-    public <N extends Node, E extends Edge> SaraGraph preprocess( Graph<N, E> graph, PreprocessingInput input, MaxIdContainer cellIdContainer, ProgressListener progressListener ) {
+    public <N extends Node, E extends Edge> SaraGraph preprocess( Graph<N, E> graph, PreprocessingInput input, IdSupplier cellIdSupplier, ProgressListener progressListener ) {
         // perform preprocessing on the whole area
         List<Pair<UndirectedGraph, Cell>> graphs = new LinkedList<>();
         Filter filter = new NaturalCutsFilter( input.getCellRatio(), 1 / input.getCoreRatio(), input.getCellSizes()[0] );
         Assembler assembler = new GreedyAssembler( input.getLowIntervalProbability(), input.getLowIntervalLimit(), input.getCellSizes()[0] );
-        graphs.add( new Pair<>( UndirectedGraph.fromGraph( graph ), new Cell( cellIdContainer.next() ) ) );
+        graphs.add( new Pair<>( UndirectedGraph.fromGraph( graph ), new Cell( cellIdSupplier.next() ) ) );
         for ( int layer = 0; layer < input.getNumberOfLayers(); layer++ ) {
             List<Pair<UndirectedGraph, Cell>> newGraphs = new LinkedList<>();
             for ( Pair<UndirectedGraph, Cell> pair : graphs ) {
@@ -111,7 +105,7 @@ public class TopDownPreprocessor implements Preprocessor {
                             }
                         }
                     }
-                    Cell newCell = new Cell( cellIdContainer.next() );
+                    Cell newCell = new Cell( cellIdSupplier.next() );
                     newCell.setParent( pair.b );
                     newGraphs.add( new Pair<>( newGraph, newCell ) );
                 }

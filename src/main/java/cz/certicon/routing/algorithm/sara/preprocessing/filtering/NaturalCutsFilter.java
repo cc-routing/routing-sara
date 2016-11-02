@@ -16,34 +16,19 @@ import cz.certicon.routing.model.graph.Graph;
 import cz.certicon.routing.model.graph.Metric;
 import cz.certicon.routing.model.graph.Node;
 import cz.certicon.routing.model.graph.SimpleNode;
-import cz.certicon.routing.model.graph.UndirectedGraph;
 import cz.certicon.routing.model.graph.preprocessing.ContractNode;
 import cz.certicon.routing.model.graph.preprocessing.ContractGraph;
-import cz.certicon.routing.model.basic.MaxIdContainer;
+import cz.certicon.routing.model.basic.IdSupplier;
 import cz.certicon.routing.model.values.Distance;
-import cz.certicon.routing.utils.DisplayUtils;
-import cz.certicon.routing.utils.GraphUtils;
 import cz.certicon.routing.utils.RandomUtils;
-import cz.certicon.routing.utils.ToStringUtils;
 import cz.certicon.routing.utils.collections.CollectionUtils;
-import cz.certicon.routing.view.GraphStreamPresenter;
-import gnu.trove.TIntCollection;
-import gnu.trove.function.TIntFunction;
-import gnu.trove.iterator.TIntIterator;
 import gnu.trove.list.TIntList;
 import gnu.trove.list.array.TIntArrayList;
-import gnu.trove.map.TIntIntMap;
-import gnu.trove.map.TIntObjectMap;
-import gnu.trove.map.TLongObjectMap;
 import gnu.trove.map.TObjectIntMap;
-import gnu.trove.map.hash.TIntIntHashMap;
-import gnu.trove.map.hash.TIntObjectHashMap;
-import gnu.trove.map.hash.TLongObjectHashMap;
 import gnu.trove.map.hash.TObjectIntHashMap;
-import gnu.trove.procedure.TIntProcedure;
 import gnu.trove.set.TIntSet;
 import gnu.trove.set.hash.TIntHashSet;
-import java.awt.Color;
+
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -56,11 +41,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Queue;
 import java.util.Random;
-import java.util.Scanner;
 import java.util.Set;
-import java.util.Stack;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+
 import lombok.Value;
 import lombok.experimental.NonFinal;
 import lombok.experimental.Wither;
@@ -247,7 +229,7 @@ public class NaturalCutsFilter implements Filter {
         return cutEdges;
     }
 
-    private <N extends Node> ContractNode contractNode( Graph<ContractNode, ContractEdge> graph, Set<N> nodeGroup, MaxIdContainer nodeMaxIdContainer, MaxIdContainer edgeMaxIdContainer ) {
+    private <N extends Node> ContractNode contractNode( Graph<ContractNode, ContractEdge> graph, Set<N> nodeGroup, IdSupplier nodeIdSupplier, IdSupplier edgeIdSupplier ) {
         // TODO must contract only neighbors! while nodeGroup notEmpty contractnode with first neighbor
         Set<ContractNode> nodeSet = new HashSet<>();
         for ( N n : nodeGroup ) {
@@ -263,7 +245,7 @@ public class NaturalCutsFilter implements Filter {
                 for ( ContractEdge edge : graph.getEdges( node ) ) {
                     ContractNode target = graph.getOtherNode( edge, node );
                     if ( nodeSet.contains( target ) ) {
-                        node = node.mergeWith( target, nodeMaxIdContainer, edgeMaxIdContainer );
+                        node = node.mergeWith( target, nodeIdSupplier, edgeIdSupplier );
                         nodeSet.remove( target );
                         foundNeighbor = true;
                         break;
@@ -271,7 +253,7 @@ public class NaturalCutsFilter implements Filter {
                 }
                 if ( !foundNeighbor ) {
                     ContractNode target = nodeSet.iterator().next();
-                    node = node.mergeWith( target, nodeMaxIdContainer, edgeMaxIdContainer );
+                    node = node.mergeWith( target, nodeIdSupplier, edgeIdSupplier );
                     nodeSet.remove( target );
                 }
             }
@@ -329,17 +311,17 @@ public class NaturalCutsFilter implements Filter {
         while ( graphEdges.hasNext() ) {
             maxEdgeId = Math.max( maxEdgeId, graphEdges.next().getId() );
         }
-        MaxIdContainer edgeMaxIdContainer = new MaxIdContainer( maxEdgeId );
+        IdSupplier edgeIdSupplier = new IdSupplier( maxEdgeId );
         long maxNodeId = 0;
         Iterator<N> graphNodes = graph.getNodes();
         while ( graphNodes.hasNext() ) {
             maxNodeId = Math.max( maxNodeId, graphNodes.next().getId() );
         }
-        MaxIdContainer nodeMaxIdContainer = new MaxIdContainer( maxNodeId );
+        IdSupplier nodeIdSupplier = new IdSupplier( maxNodeId );
         // - contract core
-        ContractNode core = contractNode( tmpGraph, coreNodes, nodeMaxIdContainer, edgeMaxIdContainer );
+        ContractNode core = contractNode( tmpGraph, coreNodes, nodeIdSupplier, edgeIdSupplier );
         // - contract ring
-        ContractNode ring = contractNode( tmpGraph, ringNodes, nodeMaxIdContainer, edgeMaxIdContainer );
+        ContractNode ring = contractNode( tmpGraph, ringNodes, nodeIdSupplier, edgeIdSupplier );
         // perform minimal cut from core to ring
         MinimalCutAlgorithm minimalCutAlgorithm = new FordFulkersonMinimalCut();
         MinimalCut<ContractEdge> cut = minimalCutAlgorithm.compute( tmpGraph, Metric.SIZE, core, ring );

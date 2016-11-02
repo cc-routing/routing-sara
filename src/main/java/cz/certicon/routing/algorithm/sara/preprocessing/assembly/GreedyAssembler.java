@@ -5,14 +5,12 @@
  */
 package cz.certicon.routing.algorithm.sara.preprocessing.assembly;
 
-import cz.certicon.routing.model.graph.Edge;
 import cz.certicon.routing.model.graph.preprocessing.NodePair;
 import cz.certicon.routing.model.graph.Metric;
-import cz.certicon.routing.model.graph.Node;
 import cz.certicon.routing.model.graph.preprocessing.ContractEdge;
 import cz.certicon.routing.model.graph.preprocessing.ContractNode;
 import cz.certicon.routing.model.graph.preprocessing.ContractGraph;
-import cz.certicon.routing.model.basic.MaxIdContainer;
+import cz.certicon.routing.model.basic.IdSupplier;
 import cz.certicon.routing.model.queue.FibonacciHeap;
 import cz.certicon.routing.model.queue.PriorityQueue;
 import cz.certicon.routing.utils.RandomUtils;
@@ -80,8 +78,8 @@ public class GreedyAssembler implements Assembler {
         // Sort P according to (minimizing): score({x,y}) = r * (w(x,y)/sqrt(s(x))+w(x,y)/sqrt(s(y))), where r is with probability a picked randomly from [0,b] and with probability 1-a picked randomly from [b,1]        
         TimeLogger.log( "ASSEMBLING_ASSEMBLER_CALCULATION_OTHER", TimeLogger.Command.CONTINUE );
         PriorityQueue<NodePair> queue = initQueue( graph, maxCellSize );
-        MaxIdContainer maxNodeIdContainer = new MaxIdContainer( maxNodeId );
-        MaxIdContainer maxEdgeIdContainer = new MaxIdContainer( maxEdgeId );
+        IdSupplier maxNodeIdContainer = new IdSupplier( maxNodeId );
+        IdSupplier maxEdgeIdContainer = new IdSupplier( maxEdgeId );
 //        System.out.println( "MAX CELL SIZE = " + maxCellSize );
         // While P is not empty
         while ( !queue.isEmpty() ) {

@@ -9,7 +9,7 @@ import cz.certicon.routing.algorithm.sara.preprocessing.assembly.Assembler;
 import cz.certicon.routing.algorithm.sara.preprocessing.assembly.GreedyAssembler;
 import cz.certicon.routing.algorithm.sara.preprocessing.filtering.Filter;
 import cz.certicon.routing.algorithm.sara.preprocessing.filtering.NaturalCutsFilter;
-import cz.certicon.routing.model.basic.MaxIdContainer;
+import cz.certicon.routing.model.basic.IdSupplier;
 import cz.certicon.routing.model.basic.Pair;
 import cz.certicon.routing.model.graph.Cell;
 import cz.certicon.routing.model.graph.Edge;
@@ -22,15 +22,12 @@ import cz.certicon.routing.model.graph.SaraNode;
 import cz.certicon.routing.model.graph.preprocessing.ContractEdge;
 import cz.certicon.routing.model.graph.preprocessing.ContractGraph;
 import cz.certicon.routing.model.graph.preprocessing.ContractNode;
-import cz.certicon.routing.model.values.Time;
-import cz.certicon.routing.model.values.TimeUnits;
 import cz.certicon.routing.utils.java8.IteratorStreams;
 import cz.certicon.routing.utils.measuring.TimeLogger;
-import cz.certicon.routing.utils.measuring.TimeMeasurement;
 import cz.certicon.routing.utils.progress.EmptyProgressListener;
 import cz.certicon.routing.utils.progress.ProgressListener;
 import java.util.EnumSet;
-import java8.util.function.Predicate;
+
 import java8.util.function.ToIntFunction;
 
 /**
@@ -42,12 +39,12 @@ public class BottomUpPreprocessor implements Preprocessor {
     private static final double FILTER_TO_ASSEMBLY_RATIO = 100;
 
     @Override
-    public <N extends Node, E extends Edge> SaraGraph preprocess( Graph<N, E> graph, PreprocessingInput input, MaxIdContainer cellIdContainer ) {
-        return preprocess( graph, input, cellIdContainer, new EmptyProgressListener() );
+    public <N extends Node, E extends Edge> SaraGraph preprocess( Graph<N, E> graph, PreprocessingInput input, IdSupplier cellIdSupplier ) {
+        return preprocess( graph, input, cellIdSupplier, new EmptyProgressListener() );
     }
 
     @Override
-    public <N extends Node, E extends Edge> SaraGraph preprocess( Graph<N, E> graph, PreprocessingInput input, MaxIdContainer cellIdContainer, ProgressListener progressListener ) {
+    public <N extends Node, E extends Edge> SaraGraph preprocess( Graph<N, E> graph, PreprocessingInput input, IdSupplier cellIdSupplier, ProgressListener progressListener ) {
         double filterRatio = FILTER_TO_ASSEMBLY_RATIO / ( FILTER_TO_ASSEMBLY_RATIO + input.getNumberOfAssemblyRuns() * input.getNumberOfLayers() );
         progressListener.init( 1, filterRatio );
         TimeLogger.log( TimeLogger.Event.FILTERING, TimeLogger.Command.START );
@@ -88,7 +85,7 @@ public class BottomUpPreprocessor implements Preprocessor {
             if ( saraGraph == null ) {
                 saraGraph = new SaraGraph( EnumSet.of( Metric.LENGTH, Metric.TIME ) );
                 for ( ContractNode node : assembled.getNodes() ) {
-                    Cell cell = new Cell( cellIdContainer.next() );
+                    Cell cell = new Cell( cellIdSupplier.next() );
 //                    System.out.println( "putting: " + node.getId() + " -> " + cell.getId() + ", nodes=[" + StreamSupport.stream( node.getNodeIds() ).map( Mappers.identifiableToString ).collect( Collectors.joining( "," ) ) + "]" );
                     for ( Node origNode : node.getNodes() ) {
                         SaraNode saraNode = saraGraph.createNode( origNode.getId(), cell );
@@ -104,7 +101,7 @@ public class BottomUpPreprocessor implements Preprocessor {
                 }
             } else {
                 for ( ContractNode node : assembled.getNodes() ) {
-                    Cell cell = new Cell( cellIdContainer.next() );
+                    Cell cell = new Cell( cellIdSupplier.next() );
 //                    System.out.println( "putting&getting: " + node.getId() + " -> " + cell.getId() + ", nodes=[" + StreamSupport.stream( node.getNodeIds() ).map( Mappers.identifiableToString ).collect( Collectors.joining( "," ) ) + "]" );
                     for ( Node n : node.getNodes() ) {
                         Cell parent = saraGraph.getNodeById( n.getId() ).getParent();

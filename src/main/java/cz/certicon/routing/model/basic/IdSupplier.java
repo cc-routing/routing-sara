@@ -9,11 +9,11 @@ package cz.certicon.routing.model.basic;
  *
  * @author Michael Blaha {@literal <michael.blaha@gmail.com>}
  */
-public class MaxIdContainer {
+public class IdSupplier {
 
     private long maxId;
 
-    public MaxIdContainer( long maxId ) {
+    public IdSupplier( long maxId ) {
         this.maxId = maxId;
     }
 

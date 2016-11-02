@@ -5,7 +5,7 @@
  */
 package cz.certicon.routing.algorithm.sara.preprocessing;
 
-import cz.certicon.routing.model.basic.MaxIdContainer;
+import cz.certicon.routing.model.basic.IdSupplier;
 import cz.certicon.routing.model.graph.Edge;
 import cz.certicon.routing.model.graph.Graph;
 import cz.certicon.routing.model.graph.Node;
@@ -13,12 +13,34 @@ import cz.certicon.routing.model.graph.SaraGraph;
 import cz.certicon.routing.utils.progress.ProgressListener;
 
 /**
+ * Partitioning preprocessor interface.
  *
  * @author Michael Blaha {@literal <michael.blaha@gmail.com>}
  */
 public interface Preprocessor {
 
-    public <N extends Node, E extends Edge> SaraGraph preprocess( Graph<N, E> graph, PreprocessingInput input, MaxIdContainer cellIdContainer );
+    /**
+     * Graph to create partitions from
+     *
+     * @param graph graph to create partitions from
+     * @param input settings for preprocessing
+     * @param cellIdSupplier id container for cells (serves as a supplier of possible ids)
+     * @param <N> node type
+     * @param <E> edge type
+     * @return partitioned {@link SaraGraph}
+     */
+    <N extends Node, E extends Edge> SaraGraph preprocess( Graph<N, E> graph, PreprocessingInput input, IdSupplier cellIdSupplier );
 
-    public <N extends Node, E extends Edge> SaraGraph preprocess( Graph<N, E> graph, PreprocessingInput input, MaxIdContainer cellIdContainer, ProgressListener progressListener );
+    /**
+     * Graph to create partitions from
+     *
+     * @param graph graph to create partitions from
+     * @param input settings for preprocessing
+     * @param cellIdSupplier id container for cells (serves as a supplier of possible ids)
+     * @param progressListener {@link ProgressListener} to report progress
+     * @param <N> node type
+     * @param <E> edge type
+     * @return partitioned {@link SaraGraph}
+     */
+    <N extends Node, E extends Edge> SaraGraph preprocess( Graph<N, E> graph, PreprocessingInput input, IdSupplier cellIdSupplier, ProgressListener progressListener );
 }

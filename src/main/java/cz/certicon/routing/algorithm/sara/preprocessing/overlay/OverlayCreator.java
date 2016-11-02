@@ -9,11 +9,11 @@ import cz.certicon.routing.algorithm.sara.preprocessing.BottomUpPreprocessor;
 import cz.certicon.routing.algorithm.sara.preprocessing.PreprocessingInput;
 import cz.certicon.routing.data.GraphDAO;
 import cz.certicon.routing.data.SqliteGraphDAO;
-import cz.certicon.routing.model.basic.MaxIdContainer;
+import cz.certicon.routing.model.basic.IdSupplier;
 import cz.certicon.routing.model.graph.Graph;
 import cz.certicon.routing.model.graph.SaraGraph;
 import cz.certicon.routing.utils.RandomUtils;
-import java.io.InputStream;
+
 import java.util.Properties;
 import lombok.Getter;
 import lombok.Setter;
@@ -72,7 +72,7 @@ public class OverlayCreator {
             GraphDAO graphDAO = new SqliteGraphDAO(properties);
             SaraGraph sara = null;
 
-            MaxIdContainer cellId = new MaxIdContainer(0);
+            IdSupplier cellId = new IdSupplier(0);
 
             if (this.setup.runPunch) {
                 Graph graph = graphDAO.loadGraph();

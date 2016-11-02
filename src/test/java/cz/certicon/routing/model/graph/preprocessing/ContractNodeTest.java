@@ -5,30 +5,20 @@
  */
 package cz.certicon.routing.model.graph.preprocessing;
 
-import cz.certicon.routing.model.basic.MaxIdContainer;
+import cz.certicon.routing.model.basic.IdSupplier;
 import cz.certicon.routing.model.basic.Pair;
 import cz.certicon.routing.model.graph.Edge;
-import cz.certicon.routing.model.graph.Graph;
 import cz.certicon.routing.model.graph.Metric;
 import cz.certicon.routing.model.graph.Node;
-import cz.certicon.routing.model.graph.SimpleEdge;
 import cz.certicon.routing.model.graph.SimpleNode;
 import cz.certicon.routing.model.graph.UndirectedGraph;
 import cz.certicon.routing.model.values.Distance;
-import cz.certicon.routing.utils.GraphUtils;
 import cz.certicon.routing.utils.ToStringUtils_Test;
-import java.util.ArrayList;
+
 import java.util.Arrays;
 import java.util.Collection;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.EnumMap;
 import java.util.EnumSet;
-import java.util.HashMap;
 import java.util.HashSet;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
 import java.util.Set;
 import org.junit.After;
 import org.junit.AfterClass;
@@ -89,8 +79,8 @@ public class ContractNodeTest {
             ContractNode neighbor = neighbors[i];
             ContractEdge edge = graph.createEdge( i + 2, false, nodeB, neighbor, origEdges, new Pair<>( Metric.SIZE, Distance.newInstance( 1 ) ) );
         }
-        MaxIdContainer nodeMaxIdContainer = new MaxIdContainer( 9 );
-        MaxIdContainer edgeMaxIdContainer = new MaxIdContainer( 9 );
+        IdSupplier nodeIdSupplier = new IdSupplier( 9 );
+        IdSupplier edgeIdSupplier = new IdSupplier( 9 );
 
 //        System.out.println( "nodes:" );
 //        System.out.println( nodeA );
@@ -107,7 +97,7 @@ public class ContractNodeTest {
 //        System.out.println( "nodeB=" + nodeB );
         System.out.println( graph );
         String expResult = "ContractNode{edges={edge[1]->node#2,edge[1]->node#3,edge[1]->node#4,edge[1]->node#5,edge[1]->node#6}}"; // edge[1]->4 because it is a set and the sets are all the same
-        ContractNode result = nodeA.mergeWith( nodeB, nodeMaxIdContainer, edgeMaxIdContainer );
+        ContractNode result = nodeA.mergeWith( nodeB, nodeIdSupplier, edgeIdSupplier );
 //        System.out.println( expResult );
 //        System.out.println( toString( result ) );
 //        System.out.println( result.toString() );
