@@ -9,15 +9,18 @@ import java.util.Random;
 import java.util.Set;
 
 /**
+ * {@link Set} extension with random element polling.
  *
- * @author Michael Blaha {@literal <michael.blaha@certicon.cz>}
  * @param <E> element type
+ * @author Michael Blaha {@literal <michael.blaha@certicon.cz>}
  */
 interface RandomSet<E> extends Set<E> {
 
-    public E removeAt( int id );
-
-    public E get( int i );
-
-    public E pollRandom( Random rnd );
+    /**
+     * Returns random element (given {@link Random})
+     *
+     * @param rnd {@link Random} source of randomness
+     * @return random element
+     */
+    E pollRandom( Random rnd );
 }

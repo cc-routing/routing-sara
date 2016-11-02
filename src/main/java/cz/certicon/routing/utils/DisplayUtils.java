@@ -5,7 +5,6 @@
  */
 package cz.certicon.routing.utils;
 
-import cz.certicon.routing.algorithm.sara.preprocessing.filtering.ElementContainer;
 import cz.certicon.routing.model.basic.Pair;
 import cz.certicon.routing.model.graph.Cell;
 import cz.certicon.routing.model.graph.Edge;
@@ -17,21 +16,16 @@ import cz.certicon.routing.model.graph.SaraNode;
 import cz.certicon.routing.model.graph.SimpleEdge;
 import cz.certicon.routing.model.graph.SimpleNode;
 import cz.certicon.routing.model.graph.UndirectedGraph;
-import cz.certicon.routing.model.graph.preprocessing.ContractEdge;
 import cz.certicon.routing.model.graph.preprocessing.ContractGraph;
 import cz.certicon.routing.model.graph.preprocessing.ContractNode;
-import cz.certicon.routing.model.values.Distance;
 import cz.certicon.routing.utils.collections.CollectionUtils;
 import cz.certicon.routing.view.GraphStreamPresenter;
 import cz.certicon.routing.view.JxPartitionViewer;
 import cz.certicon.routing.view.PartitionViewer;
-import gnu.trove.map.TLongObjectMap;
-import gnu.trove.map.hash.TLongObjectHashMap;
+
 import java.awt.Color;
 import java.util.Collection;
-import java.util.EnumMap;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
@@ -67,9 +61,9 @@ public class DisplayUtils {
         }
     }
 
-    public static <N extends Node, E extends Edge> void display( Graph<N, E> graph, Collection<ElementContainer<N>> nodeGroups ) {
+    public static <N extends Node, E extends Edge> void display( Graph<N, E> graph, Collection<Collection<N>> nodeGroups ) {
         UndirectedGraph g = new UndirectedGraph();
-        for ( ElementContainer<N> nodeGroup : nodeGroups ) {
+        for ( Collection<N> nodeGroup : nodeGroups ) {
             for ( N n : nodeGroup ) {
                 SimpleNode node = g.createNode( n.getId() );
             }
@@ -89,7 +83,7 @@ public class DisplayUtils {
         presenter.setGraph( g );
         int cnt = 0;
         ColorUtils.ColorSupplier colorSupplier = ColorUtils.createColorSupplier( nodeGroups.size() );
-        for ( ElementContainer<N> nodeGroup : nodeGroups ) {
+        for ( Collection<N> nodeGroup : nodeGroups ) {
             Color color = colorSupplier.nextColor();
             System.out.println( "color #" + ++cnt + ": " + color );
             for ( N n : nodeGroup ) {

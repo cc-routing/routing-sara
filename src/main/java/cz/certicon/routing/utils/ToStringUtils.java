@@ -5,8 +5,9 @@
  */
 package cz.certicon.routing.utils;
 
-import cz.certicon.routing.algorithm.sara.preprocessing.filtering.ElementContainer;
 import cz.certicon.routing.model.graph.SimpleNode;
+
+import java.util.Collection;
 
 /**
  *
@@ -14,7 +15,7 @@ import cz.certicon.routing.model.graph.SimpleNode;
  */
 public class ToStringUtils {
 
-    public static String toString( ElementContainer<SimpleNode> nodeContainer ) {
+    public static String toString( Collection<SimpleNode> nodeContainer ) {
         StringBuilder sb = new StringBuilder();
         sb.append( "{" );
         for ( SimpleNode node : nodeContainer ) {

@@ -17,9 +17,19 @@ import cz.certicon.routing.model.queue.FibonacciHeap;
 import cz.certicon.routing.model.queue.PriorityQueue;
 import cz.certicon.routing.utils.RandomUtils;
 import cz.certicon.routing.utils.measuring.TimeLogger;
+
 import java.util.Random;
 
 /**
+ * Greedy algorithm-based assembler. Pseudo-code:
+ * P = {{x,y}; x,y  V, {x,y}E, s(x)+s(y) < U} // all pairs of adjacent vertices with combined size lower than U
+ * Sort P according to (minimizing): score({x,y}) = r * (w(x,y)s(x)+w(x,y)s(y)), where r is with probability a picked randomly from [0,b] and with probability 1-a picked randomly from [b,1]
+ * While P is not empty
+ * pair = P.pop
+ * Contract pair
+ * Update score value (with the new r for each iteration) for the adjacent edges (pairs) of the contracted pair (edge) and if the new size s is higher or equal to U, remove pair from P
+ * End While
+ * Return partition, i.e. in which cell each vertex belongs
  *
  * @author Michael Blaha {@literal <michael.blaha@certicon.cz>}
  */
@@ -31,11 +41,11 @@ public class GreedyAssembler implements Assembler {
     private final Random rand;
 
     /**
-     * Constructor
+     * Constructor for greedy algorithm-based assembler.
      *
      * @param lowIntervalProbability a
-     * @param lowerIntervalLimit b
-     * @param maxCellSize r
+     * @param lowerIntervalLimit     b
+     * @param maxCellSize            r
      */
     public GreedyAssembler( double lowIntervalProbability, double lowerIntervalLimit, int maxCellSize ) {
         this.lowIntervalProbability = lowIntervalProbability;

@@ -129,7 +129,7 @@ public class NaturalCutsFilter implements Filter {
         // -- remove node
         // -- preserve paths (create edges between all the neighbors)
 //        System.out.println( "started filtering" );
-        ElementContainer<E> cutEdges = getCutEdges( graph );
+        Set<E> cutEdges = getCutEdges( graph );
 //        System.out.println( "cut edges obtained: " + cutEdges.size() );
 //        presenter = new GraphStreamPresenter();
 //        presenter.setGraph( graph );
@@ -171,14 +171,13 @@ public class NaturalCutsFilter implements Filter {
         return filteredGraph;
     }
 
-    private <N extends Node, E extends Edge> ElementContainer<E> getCutEdges( Graph<N, E> graph ) {
+    private <N extends Node, E extends Edge> Set<E> getCutEdges( Graph<N, E> graph ) {
         // init structures
-        ElementContainer<E> cutEdges = new SetElementContainer<>();
-        ElementContainer<N> coreNodes = new SetElementContainer<>();
-        ElementContainer<N> ringNodes = new SetElementContainer<>();
-        ElementContainer<N> treeNodes = new SetElementContainer<>();
-        NodeSizeContainer<N> nodeSizeContainer = new MapNodeSizeContainer<>();
-        NodeSizeContainer<N> nodeOrderContainer = new MapNodeSizeContainer<>();
+        Set<E> cutEdges = new HashSet<>();
+        Set<N> coreNodes = new HashSet<>();
+        Set<N> ringNodes = new HashSet<>();
+        Set<N> treeNodes = new HashSet<>();
+        TObjectIntMap<N> nodeSizeContainer = new TObjectIntHashMap<>();
         Queue<N> nodeQueue = new LinkedList<>();
         RandomSet<N> randomNodes = new MixRandomSet<>( graph.getNodesCount() );
         // TODO need structure which allows random pick and fast element removal (target element)
@@ -206,7 +205,7 @@ public class NaturalCutsFilter implements Filter {
 //            System.out.println( "creating tree: core size = " + ( cellRatio * maxCellSize / coreRatioInverse ) + ", tree size = " + ( cellRatio * maxCellSize ) );
             while ( !nodeQueue.isEmpty() ) {
                 N node = nodeQueue.poll();
-                int size = nodeSizeContainer.getSize( node );
+                int size = nodeSizeContainer.get( node );
                 // all the nodes added to tree before it reached cellRatio * maxCellSize / coreRatioInverse form a "core"
                 if ( sum + size <= cellRatio * maxCellSize / coreRatioInverse ) {
                     sum += size;
@@ -248,7 +247,7 @@ public class NaturalCutsFilter implements Filter {
         return cutEdges;
     }
 
-    private <N extends Node> ContractNode contractNode( Graph<ContractNode, ContractEdge> graph, ElementContainer<N> nodeGroup, MaxIdContainer nodeMaxIdContainer, MaxIdContainer edgeMaxIdContainer ) {
+    private <N extends Node> ContractNode contractNode( Graph<ContractNode, ContractEdge> graph, Set<N> nodeGroup, MaxIdContainer nodeMaxIdContainer, MaxIdContainer edgeMaxIdContainer ) {
         // TODO must contract only neighbors! while nodeGroup notEmpty contractnode with first neighbor
         Set<ContractNode> nodeSet = new HashSet<>();
         for ( N n : nodeGroup ) {
@@ -280,13 +279,13 @@ public class NaturalCutsFilter implements Filter {
         return node;
     }
 
-    private <N extends Node, E extends Edge> void fillMap( ContractGraph graph, ElementContainer<N> container ) {
+    private <N extends Node, E extends Edge> void fillMap( ContractGraph graph, Set<N> container ) {
         for ( N treeNode : container ) {
             ContractNode node = graph.createNode( treeNode.getId(), Arrays.asList( (Node) treeNode ) );
         }
     }
 
-    private <N extends Node> void fillMap( ContractGraph graph, ElementContainer<N> treeNodes, ElementContainer<N> coreNodes, ElementContainer<N> ringNodes, ElementContainer<N> container ) {
+    private <N extends Node> void fillMap( ContractGraph graph, Set<N> treeNodes, Set<N> coreNodes, Set<N> ringNodes, Set<N> container ) {
         for ( N node : container ) {
             for ( Object e : node.getEdges() ) {
                 Edge edge = (Edge) e;
@@ -309,7 +308,7 @@ public class NaturalCutsFilter implements Filter {
      * @param ringNodes ring nodes
      * @return cut edges
      */
-    private <N extends Node, E extends Edge> Collection<Edge> minimalCut( Graph<N, E> graph, ElementContainer<N> treeNodes, ElementContainer<N> coreNodes, ElementContainer<N> ringNodes ) {
+    private <N extends Node, E extends Edge> Collection<Edge> minimalCut( Graph<N, E> graph, Set<N> treeNodes, Set<N> coreNodes, Set<N> ringNodes ) {
         // create a temporary graph
         ContractGraph tmpGraph = new ContractGraph( EnumSet.of( Metric.SIZE ) );
         fillMap( tmpGraph, treeNodes );
@@ -341,20 +340,6 @@ public class NaturalCutsFilter implements Filter {
         ContractNode core = contractNode( tmpGraph, coreNodes, nodeMaxIdContainer, edgeMaxIdContainer );
         // - contract ring
         ContractNode ring = contractNode( tmpGraph, ringNodes, nodeMaxIdContainer, edgeMaxIdContainer );
-//        System.out.println( "tmpgraph [AFTER]: " + tmpGraph );
-//        ElementContainer<ContractNode> coreElementContainer = new SetElementContainer<>();
-//        coreElementContainer.add( core );
-//        ElementContainer<ContractNode> ringElementContainer = new SetElementContainer<>();
-//        ringElementContainer.add( ring );
-//        ElementContainer<ContractNode> treeElementContainer = new SetElementContainer<>();
-//        for ( ContractNode node : tmpGraph.getNodeIds() ) {
-//            if ( !node.equals( core ) && !node.equals( ring ) ) {
-//                treeElementContainer.add( node );
-//            }
-//        }
-//        DisplayUtils.display( tmpGraph, Arrays.asList( treeElementContainer, coreElementContainer, ringElementContainer ) );
-//        System.out.println( "Press enter to continue..." );
-//        new Scanner( System.in ).nextLine();
         // perform minimal cut from core to ring
         MinimalCutAlgorithm minimalCutAlgorithm = new FordFulkersonMinimalCut();
         MinimalCut<ContractEdge> cut = minimalCutAlgorithm.compute( tmpGraph, Metric.SIZE, core, ring );
@@ -368,11 +353,11 @@ public class NaturalCutsFilter implements Filter {
         return cutEdges;
     }
 
-    private <N extends Node, E extends Edge> SplitGraphMessenger splitGraph( Graph<N, E> graph, ElementContainer<E> cutEdges ) {
+    private <N extends Node, E extends Edge> SplitGraphMessenger splitGraph( Graph<N, E> graph, Set<E> cutEdges ) {
 //        System.out.println( "Splitting graph" );
         Queue<N> nodeQueue = new LinkedList<>();
 //        System.out.println( "initializing" );
-        NodeSizeContainer nodeSizeContainer = new MapNodeSizeContainer();
+        TObjectIntMap<N> nodeSizeContainer = new TObjectIntHashMap<>();
         for ( N node : graph.getNodes() ) {
             nodeSizeContainer.put( node, NODE_INIT_SIZE );
         }
@@ -383,13 +368,15 @@ public class NaturalCutsFilter implements Filter {
         TObjectIntMap<N> fragmentMap = new TObjectIntHashMap<>();
         List<N> fragmentCenterMap = new ArrayList<>();
         List<Set<N>> fragmentOrigNodes = new ArrayList<>();
-        ElementContainer<N> nodeContainer = new SetElementContainer<>();
-        nodeContainer.addAll( graph.getNodes() );
+        Set<N> nodeContainer = new HashSet<>();
+        for ( N node: graph.getNodes() ) {
+            nodeContainer.add( node );
+        }
         TIntList sizeMap = new TIntArrayList();
         // -- foreach node
         while ( !nodeContainer.isEmpty() ) {
             fragmentOrigNodes.add( new HashSet<N>() );
-            N center = nodeContainer.any();
+            N center = nodeContainer.iterator().next();
             fragmentCenterMap.add( center );
             nodeQueue.add( center );
             int sum = 0;
@@ -400,7 +387,7 @@ public class NaturalCutsFilter implements Filter {
                 // -- mark each reached node as a part of current fragment
                 fragmentMap.put( node, fragment );
                 fragmentOrigNodes.get( fragment ).add( node );
-                sum += nodeSizeContainer.getSize( node );
+                sum += nodeSizeContainer.get( node );
                 nodeContainer.remove( node );
                 // -- repeat for all its neighbors, do not consider cut edges
                 for ( E edge : graph.getEdges( node ) ) {
@@ -429,7 +416,7 @@ public class NaturalCutsFilter implements Filter {
             N center = fragmentCenterMap.get( i );
             nodeQueue.add( center );
             // -- find all neighbors
-            ElementContainer<N> visitedNodes = new SetElementContainer<>();
+            Set<N> visitedNodes = new HashSet<>();
             while ( !nodeQueue.isEmpty() ) {
                 N node = nodeQueue.poll();
                 visitedNodes.add( node );

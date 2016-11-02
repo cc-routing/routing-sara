@@ -15,9 +15,10 @@ import java.util.Map;
 import java.util.Random;
 
 /**
+ * Implementation of the {@link RandomSet} interface using {@link List} and {@link Map}.
  *
- * @author Michael Blaha {@literal <michael.blaha@certicon.cz>}
  * @param <E> element type
+ * @author Michael Blaha {@literal <michael.blaha@certicon.cz>}
  */
 class MixRandomSet<E> extends AbstractSet<E> implements RandomSet<E> {
 
@@ -53,25 +54,6 @@ class MixRandomSet<E> extends AbstractSet<E> implements RandomSet<E> {
         return true;
     }
 
-    /**
-     * Override element at position <code>id</code> with last element.
-     *
-     * @param id
-     */
-    public E removeAt( int id ) {
-        if ( id >= dta.size() ) {
-            return null;
-        }
-        E res = dta.get( id );
-        idx.remove( res );
-        E last = dta.remove( dta.size() - 1 );
-        // skip filling the hole if last is removed
-        if ( id < dta.size() ) {
-            idx.put( last, id );
-            dta.set( id, last );
-        }
-        return res;
-    }
 
     @Override
     public boolean remove( Object item ) {
@@ -84,10 +66,8 @@ class MixRandomSet<E> extends AbstractSet<E> implements RandomSet<E> {
         return true;
     }
 
-    public E get( int i ) {
-        return dta.get( i );
-    }
 
+    @Override
     public E pollRandom( Random rnd ) {
         if ( dta.isEmpty() ) {
             return null;
@@ -106,4 +86,33 @@ class MixRandomSet<E> extends AbstractSet<E> implements RandomSet<E> {
         return dta.iterator();
     }
 
+    /**
+     * Returns element at the given position
+     *
+     * @param id given position
+     * @return element at the given position
+     */
+    public E get( int id ) {
+        return dta.get( id );
+    }
+
+    /**
+     * Override element at position <code>id</code> with last element.
+     *
+     * @param id given position
+     */
+    public E removeAt( int id ) {
+        if ( id >= dta.size() ) {
+            return null;
+        }
+        E res = dta.get( id );
+        idx.remove( res );
+        E last = dta.remove( dta.size() - 1 );
+        // skip filling the hole if last is removed
+        if ( id < dta.size() ) {
+            idx.put( last, id );
+            dta.set( id, last );
+        }
+        return res;
+    }
 }

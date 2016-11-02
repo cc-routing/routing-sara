@@ -17,7 +17,20 @@ import cz.certicon.routing.model.graph.preprocessing.ContractGraph;
  */
 public interface Filter {
 
+    /**
+     * Filters given graph and creates intermediate areas represented as {@link ContractGraph}
+     *
+     * @param graph graph to be filtered
+     * @param <N>   node type
+     * @param <E>   edge type
+     * @return filtered {@link ContractGraph}
+     */
     <N extends Node, E extends Edge> ContractGraph filter( Graph<N, E> graph );
-    
-    void setMaxCellSize(int maxCellSize);
+
+    /**
+     * Set maximal cell size (U)
+     *
+     * @param maxCellSize maximal cell size
+     */
+    void setMaxCellSize( int maxCellSize );
 }
