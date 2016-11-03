@@ -11,6 +11,7 @@ import lombok.experimental.Wither;
 import static cz.certicon.routing.utils.validation.Validation.*;
 
 /**
+ * Settings for the preprocessor unit.
  *
  * @author Michael Blaha {@literal <michael.blaha@gmail.com>}
  */
@@ -26,6 +27,17 @@ public class PreprocessingInput {
     int numberOfAssemblyRuns;
     int numberOfLayers;
 
+    /**
+     * Constructor
+     *
+     * @param cellSize               maximal size of cell, must be a positive number
+     * @param cellRatio              defines portion of a cell to create a fragment during the filtering phase, must be a number from interval (0,1]
+     * @param coreRatio              defines portion of a fragment to create its core during the filtering phase, must be a number from interval (0,1]
+     * @param lowIntervalProbability probability of selecting the lower interval when generating r for the score function, see {@link cz.certicon.routing.algorithm.sara.preprocessing.assembly.GreedyAssembler} for more details, must be a number from interval [0,1]
+     * @param lowIntervalLimit       defines the lower interval by its upper bound (e.g. lowIntervalLimit = 0.4, then the lower interval is [0,0.4]) when generating r for the score function, see {@link cz.certicon.routing.algorithm.sara.preprocessing.assembly.GreedyAssembler} for more details, must be a number from interval [0,1]
+     * @param numberOfAssemblyRuns   number N of assembly runs per each layer, N assembly runs are performed and the best one is chosen based on its amount of cut edges, must be a positive number
+     * @param numberOfLayers         number of layers the result should have, must be a positive number
+     */
     public PreprocessingInput( int cellSize, double cellRatio, double coreRatio, double lowIntervalProbability, double lowIntervalLimit, int numberOfAssemblyRuns, int numberOfLayers ) {
         // validate input
         validateThat( valid()
@@ -49,6 +61,17 @@ public class PreprocessingInput {
         this.numberOfLayers = numberOfLayers;
     }
 
+    /**
+     * Constructor
+     *
+     * @param cellSizes              maximal size of cell for each layer, each cell size must be a positive number, length of the array must match the number of layers
+     * @param cellRatio              defines portion of a cell to create a fragment during the filtering phase, must be a number from interval (0,1]
+     * @param coreRatio              defines portion of a fragment to create its core during the filtering phase, must be a number from interval (0,1]
+     * @param lowIntervalProbability probability of selecting the lower interval when generating r for the score function, see {@link cz.certicon.routing.algorithm.sara.preprocessing.assembly.GreedyAssembler} for more details, must be a number from interval [0,1]
+     * @param lowIntervalLimit       defines the lower interval by its upper bound (e.g. lowIntervalLimit = 0.4, then the lower interval is [0,0.4]) when generating r for the score function, see {@link cz.certicon.routing.algorithm.sara.preprocessing.assembly.GreedyAssembler} for more details, must be a number from interval [0,1]
+     * @param numberOfAssemblyRuns   number N of assembly runs per each layer, N assembly runs are performed and the best one is chosen based on its amount of cut edges, must be a positive number
+     * @param numberOfLayers         number of layers the result should have, must be a positive number
+     */
     public PreprocessingInput( int[] cellSizes, double cellRatio, double coreRatio, double lowIntervalProbability, double lowIntervalLimit, int numberOfAssemblyRuns, int numberOfLayers ) {
         // validate input
         validateThat( valid()

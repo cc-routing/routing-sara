@@ -37,6 +37,9 @@ import java8.util.Optional;
 import java8.util.function.ToIntFunction;
 
 /**
+ * Implementation of the {@link Preprocessor} interface using top-down preprocessing strategy.
+ * Such strategy filters the bottom layer and assembles it into large areas. Then for each such area
+ * it filters it and assembles into smaller areas, recursively, building it from the top.
  *
  * @author Michael Blaha {@literal <michael.blaha@gmail.com>}
  */

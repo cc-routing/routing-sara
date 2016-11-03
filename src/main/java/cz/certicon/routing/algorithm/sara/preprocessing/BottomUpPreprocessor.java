@@ -26,11 +26,15 @@ import cz.certicon.routing.utils.java8.IteratorStreams;
 import cz.certicon.routing.utils.measuring.TimeLogger;
 import cz.certicon.routing.utils.progress.EmptyProgressListener;
 import cz.certicon.routing.utils.progress.ProgressListener;
+
 import java.util.EnumSet;
 
 import java8.util.function.ToIntFunction;
 
 /**
+ * Implementation of the {@link Preprocessor} interface using bottom-up preprocessing strategy.
+ * Such strategy filters the bottom layer once and then assembles the first layer into small areas.
+ * From the first assembled layer, it then assembles the second layer into larger areas and so on, building it from the bottom.
  *
  * @author Michael Blaha {@literal <michael.blaha@gmail.com>}
  */
