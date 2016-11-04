@@ -8,15 +8,17 @@ package cz.certicon.routing.model.graph.iterator;
 import cz.certicon.routing.model.graph.Edge;
 import cz.certicon.routing.model.graph.Node;
 import cz.certicon.routing.utils.collections.Iterator;
+
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
 /**
+ * Abstract filtering edge iterator. Filteres iterated edges based on the provided predicate implementation.
  *
- * @author Michael Blaha {@literal <blahami2@gmail.com>}
  * @param <N> node type
  * @param <E> edge type
+ * @author Michael Blaha {@literal <blahami2@gmail.com>}
  */
 public abstract class FilterEdgeIterator<N extends Node, E extends Edge> implements Iterator<E> {
 
@@ -26,12 +28,26 @@ public abstract class FilterEdgeIterator<N extends Node, E extends Edge> impleme
     private int nextPosition = -1;
     private final List<E> edges;
 
+    /**
+     * Constructor for node and collection of edges.
+     * Performance note: collection forces this iterator to create a new list
+     *
+     * @param node  node
+     * @param edges all the edges
+     */
     public FilterEdgeIterator( N node, Collection<E> edges ) {
         this.node = node;
         this.edges = new ArrayList<>( edges );
         this.last = getLast( this.node, this.edges );
     }
 
+    /**
+     * Constructor for node and collection of edges.
+     * Safety note: defensive copy is NOT created for performance reasons
+     *
+     * @param node  node
+     * @param edges all the edges
+     */
     public FilterEdgeIterator( N node, List<E> edges ) {
         this.node = node;
         this.edges = edges;
