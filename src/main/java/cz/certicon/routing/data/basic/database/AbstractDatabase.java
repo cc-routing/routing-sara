@@ -20,6 +20,10 @@ import java.util.Properties;
  * necessary.
  *
  * @author Michael Blaha {@literal <michael.blaha@certicon.cz>}
+ * @param <In> output of the reader (type to be read)
+ * @param <InData> additional data for the reader (if it requires any)
+ * @param <Out> type to be written
+ * @param <OutData> additional data
  */
 public abstract class AbstractDatabase<In, Out, InData, OutData> implements Reader<In, InData>, Writer<Out, OutData> {
 

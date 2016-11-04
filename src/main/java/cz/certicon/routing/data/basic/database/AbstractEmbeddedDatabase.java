@@ -5,6 +5,9 @@
  */
 package cz.certicon.routing.data.basic.database;
 
+import cz.certicon.routing.data.basic.Reader;
+import cz.certicon.routing.data.basic.Writer;
+
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
@@ -17,8 +20,10 @@ import java.util.Properties;
  * necessary.
  *
  * @author Michael Blaha {@literal <michael.blaha@certicon.cz>}
- * @param <Entity> entity to be read or written
- * @param <AdditionalData> input data for the read
+ * @param <In> output of the reader (type to be read)
+ * @param <InData> additional data for the reader (if it requires any)
+ * @param <Out> type to be written
+ * @param <OutData> additional data
  */
 public abstract class AbstractEmbeddedDatabase<In, Out, InData, OutData>  extends AbstractDatabase<In, Out, InData, OutData>  {
 

@@ -142,7 +142,6 @@ public class OverlayBuilder {
      * Checks whether specified edge is a border edge between two cells for all
      * levels.
      *
-     * @param graph Basic Sara graph.
      * @param edge Checked edge
      */
     private void checkForBorder(SaraEdge edge) {

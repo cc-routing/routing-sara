@@ -29,19 +29,7 @@ import gnu.trove.map.hash.TObjectIntHashMap;
 import gnu.trove.set.TIntSet;
 import gnu.trove.set.hash.TIntHashSet;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.EnumSet;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
-import java.util.Queue;
-import java.util.Random;
-import java.util.Set;
+import java.util.*;
 
 import lombok.Value;
 import lombok.experimental.NonFinal;
@@ -204,7 +192,7 @@ public class NaturalCutsFilter implements Filter {
 //                    nodeQueue.clear();
                     continue;
                 }
-                for ( E edge : node.getEdges(  ) ) {
+                for ( E edge : node.getEdges() ) {
                     N target = edge.getOtherNode( node );
 //                        System.out.println( "neighbor = " + edge );
                     if ( !coreNodes.contains( target ) && !ringNodes.contains( target ) && !treeNodes.contains( target ) ) {
@@ -241,7 +229,7 @@ public class NaturalCutsFilter implements Filter {
                 nodeSet.remove( node );
             } else {
                 boolean foundNeighbor = false;
-                for ( ContractEdge edge : node.getEdges(  ) ) {
+                for ( ContractEdge edge : node.getEdges() ) {
                     ContractNode target = edge.getOtherNode( node );
                     if ( nodeSet.contains( target ) ) {
                         node = node.mergeWith( target, nodeIdSupplier, edgeIdSupplier );
@@ -262,7 +250,7 @@ public class NaturalCutsFilter implements Filter {
 
     private <N extends Node<N, E>, E extends Edge<N, E>> void fillMap( ContractGraph graph, Set<N> container ) {
         for ( N treeNode : container ) {
-            ContractNode node = graph.createNode( treeNode.getId(), Arrays.asList( (Node) treeNode ) );
+            ContractNode node = graph.createNode( treeNode.getId(), Collections.singletonList( (Node) treeNode ) );
         }
     }
 
@@ -274,7 +262,7 @@ public class NaturalCutsFilter implements Filter {
                 if ( !graph.containsEdge( edge.getId() ) && ( treeNodes.contains( otherNode ) || coreNodes.contains( otherNode ) || ringNodes.contains( otherNode ) ) ) {
                     ContractNode source = graph.getNodeById( node.getId() );
                     ContractNode target = graph.getNodeById( otherNode.getId() );
-                    ContractEdge contractEdge = graph.createEdge( edge.getId(), false, source, target, Arrays.asList( (Edge) edge ) );
+                    ContractEdge contractEdge = graph.createEdge( edge.getId(), false, source, target, Collections.singletonList( edge ) );
                 }
             }
         }
@@ -373,7 +361,7 @@ public class NaturalCutsFilter implements Filter {
                 sum += nodeSizeContainer.get( node );
                 nodeContainer.remove( node );
                 // -- repeat for all its neighbors, do not consider cut edges
-                for ( E edge : node.getEdges(  ) ) {
+                for ( E edge : node.getEdges() ) {
                     if ( !cutEdges.contains( edge ) ) {
                         N target = edge.getOtherNode( node );
                         if ( !fragmentMap.containsKey( target ) ) {
@@ -404,7 +392,7 @@ public class NaturalCutsFilter implements Filter {
                 N node = nodeQueue.poll();
                 visitedNodes.add( node );
                 // -- for all neighbors, if they are connected via regular edge, repeat for them, if via cut edge, add fragment neighbor
-                for ( E edge : node.getEdges(  ) ) {
+                for ( E edge : node.getEdges() ) {
                     N target = edge.getOtherNode( node );
                     if ( !cutEdges.contains( edge ) ) { // continue searching
                         if ( !visitedNodes.contains( target ) ) {

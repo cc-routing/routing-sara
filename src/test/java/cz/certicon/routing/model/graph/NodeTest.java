@@ -94,9 +94,9 @@ public class NodeTest {
         assertEquals( expResult, result );
     }
 
-    /**
-     * Test of getId method, of class Node.
-     */
+//    /**
+//     * Test of getId method, of class Node.
+//     */
 //    @Test
 //    public void testGetId() {
 //        System.out.println( "getId" );
@@ -104,9 +104,9 @@ public class NodeTest {
 //        assertEquals( 0, instance.getId() );
 //        assertNotEquals( 0, createNode( new ArrayList<SimpleNode>(), 1 ).getId() );
 //    }
-    /**
-     * Test of addEdge method, of class Node.
-     */
+//    /**
+//     * Test of addEdge method, of class Node.
+//     */
 //    @Test
 //    public void testAddEdge_Edge() {
 //        System.out.println( "addEdge" );
@@ -115,9 +115,9 @@ public class NodeTest {
 //        node.addEdge( createEdge( new ArrayList<SimpleEdge>(), 1, true, node, node, 0, false ) );
 //        assertEquals( "[0,1]", edgeIteratorToString( node.getOutgoingEdges() ) );
 //    }
-    /**
-     * Test of addEdge method, of class Node.
-     */
+//    /**
+//     * Test of addEdge method, of class Node.
+//     */
 //    @Test
 //    public void testAddEdge_Edge_int() {
 //        System.out.println( "addEdge_int" );
@@ -149,9 +149,9 @@ public class NodeTest {
 //        fail( "The test case is a prototype." );
     }
 
-    /**
-     * Test of getDegree method, of class Node.
-     */
+//    /**
+//     * Test of getDegree method, of class Node.
+//     */
 //    @Test
 //    public void testGetDegree() {
 //        System.out.println( "getDegree" );
@@ -160,9 +160,9 @@ public class NodeTest {
 //        node.addEdge( createEdge( new ArrayList<SimpleEdge>(), 1, true, node, node, 0 ) );
 //        assertEquals( 2, node.getDegree() );
 //    }
-    /**
-     * Test of lock method, of class Node.
-     */
+//    /**
+//     * Test of lock method, of class Node.
+//     */
 //    @Test( expected = IllegalStateException.class )
 //    public void testLock() {
 //        System.out.println( "lock" );
