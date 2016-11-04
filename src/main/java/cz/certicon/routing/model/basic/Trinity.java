@@ -8,7 +8,7 @@ package cz.certicon.routing.model.basic;
 import java.util.Objects;
 
 /**
- * A generic container class for three objects.
+ * A generic container class for three objects. Based on the implementations of the contained object, it support hashCode, equals and toString (via delegation and combination).
  *
  * @author Michael Blaha {@literal <blahami2@gmail.com>}
  * @param <A> class of the first object
@@ -20,6 +20,13 @@ public class Trinity<A, B, C> extends Pair<A, B> {
 
     public final C c;
 
+    /**
+     * Constructor
+     *
+     * @param a object a
+     * @param b object b
+     * @param c object c
+     */
     public Trinity( A a, B b, C c ) {
         super( a, b );
         this.c = c;

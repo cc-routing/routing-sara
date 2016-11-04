@@ -8,17 +8,28 @@ package cz.certicon.routing.model.basic;
 import java.util.Objects;
 
 /**
- * A generic container class for two objects.
+ * A generic container class for two objects. Based on the implementations of the contained object, it support hashCode, equals and toString (via delegation and combination).
  *
- * @author Michael Blaha {@literal <blahami2@gmail.com>}
  * @param <A> class of the first object
  * @param <B> class of the second object
- * 
+ * @author Michael Blaha {@literal <blahami2@gmail.com>}
  */
-public class Pair<A,B> {
+public class Pair<A, B> {
+    /**
+     * Object a
+     */
     public final A a;
+    /**
+     * Object b
+     */
     public final B b;
 
+    /**
+     * Constructor
+     *
+     * @param a object a
+     * @param b object b
+     */
     public Pair( A a, B b ) {
         this.a = a;
         this.b = b;

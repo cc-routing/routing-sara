@@ -8,19 +8,26 @@ package cz.certicon.routing.model.basic;
 import java.util.Objects;
 
 /**
- * A generic container class for four objects.
+ * A generic container class for four objects. Based on the implementations of the contained object, it support hashCode, equals and toString (via delegation and combination).
  *
- * @author Michael Blaha {@literal <blahami2@gmail.com>}
  * @param <A> class of the first object
  * @param <B> class of the second object
  * @param <C> class of the third object
  * @param <D> class of the fourth object
- *
+ * @author Michael Blaha {@literal <blahami2@gmail.com>}
  */
 public class Quaternion<A, B, C, D> extends Trinity<A, B, C> {
 
     public final D d;
 
+    /**
+     * Constructor
+     *
+     * @param a object a
+     * @param b object b
+     * @param c object c
+     * @param d object d
+     */
     public Quaternion( A a, B b, C c, D d ) {
         super( a, b, c );
         this.d = d;
