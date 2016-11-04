@@ -8,21 +8,23 @@ package cz.certicon.routing.model.graph;
 import cz.certicon.routing.model.values.Distance;
 import cz.certicon.routing.utils.GraphGeneratorUtils;
 import cz.certicon.routing.utils.ToStringUtils_Test;
+
 import java.util.ArrayList;
 import java.util.EnumSet;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+
 import org.junit.After;
 import org.junit.AfterClass;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
+
 import static org.junit.Assert.*;
 
 /**
- *
  * @author Michael Blaha {@literal <michael.blaha@certicon.cz>}
  */
 public class NodeTest {
@@ -71,7 +73,7 @@ public class NodeTest {
 
     private void testGetIncomingEdges( long nodeId, String expResult ) {
         Node node = nodeMap.get( nodeId );
-        String result = ToStringUtils_Test.toString( graph.getIncomingEdges( node ) );
+        String result = ToStringUtils_Test.toString( node.getIncomingEdges() );
         assertEquals( expResult, result );
     }
 
@@ -91,7 +93,7 @@ public class NodeTest {
 
     private void testGetOutgoingEdges( long nodeId, String expResult ) {
         Node node = nodeMap.get( nodeId );
-        String result = ToStringUtils_Test.toString( graph.getOutgoingEdges( node ) );
+        String result = ToStringUtils_Test.toString( node.getOutgoingEdges() );
         assertEquals( expResult, result );
     }
 
@@ -134,6 +136,7 @@ public class NodeTest {
 //        assertEquals( 5, node.getEdgePosition( b ) );
 //        assertEquals( 6, node.getEdgePosition( c ) );
 //    }
+
     /**
      * Test of setTurnTable method, of class Node.
      */

@@ -17,5 +17,5 @@ import cz.certicon.routing.model.graph.Node;
  */
 public interface MinimalCutAlgorithm {
 
-    public <N extends Node, E extends Edge> MinimalCut compute( Graph<N, E> graph, Metric metric, N source, N target );
+    <N extends Node<N,E>, E extends Edge<N,E>> MinimalCut compute( Graph<N, E> graph, Metric metric, N source, N target );
 }

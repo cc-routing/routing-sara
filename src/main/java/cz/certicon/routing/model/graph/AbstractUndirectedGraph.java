@@ -28,7 +28,7 @@ import java.util.Set;
  * @param <E> edge type
  * @author Michael Blaha {@literal <michael.blaha@gmail.com>}
  */
-public abstract class AbstractUndirectedGraph<N extends Node, E extends Edge> implements Graph<N, E> {
+public abstract class AbstractUndirectedGraph<N extends Node<N, E>, E extends Edge<N, E>> implements Graph<N, E> {
 
     private final TLongObjectMap<N> nodes;
     private final TLongObjectMap<E> edges;
@@ -75,22 +75,6 @@ public abstract class AbstractUndirectedGraph<N extends Node, E extends Edge> im
         return new ImmutableIterator<>( edges.valueCollection().iterator() );
     }
 
-    @Override
-    public Iterator<E> getIncomingEdges( N node ) {
-        return (Iterator<E>) node.getIncomingEdges();
-    }
-
-    @Override
-    public Iterator<E> getOutgoingEdges( Node node ) {
-        return (Iterator<E>) node.getOutgoingEdges();
-    }
-
-
-    @Override
-    public Iterator<E> getEdges( N node ) {
-        return (Iterator<E>) node.getEdges();
-    }
-
     //    @Override
 //    public Graph copy() {
 //        throw new UnsupportedOperationException( "Not supported yet." ); //To change body of generated methods, choose Tools | Templates.
@@ -119,7 +103,7 @@ public abstract class AbstractUndirectedGraph<N extends Node, E extends Edge> im
     public void removeNode( N node ) {
         checkLock();
         List<E> removeEdges = new ArrayList<>();
-        for ( E edge : getEdges( node ) ) {
+        for ( E edge : node.getEdges() ) {
             removeEdges.add( edge );
         }
         for ( E removeEdge : removeEdges ) {
@@ -172,11 +156,11 @@ public abstract class AbstractUndirectedGraph<N extends Node, E extends Edge> im
     public Graph<N, E> copy() {
         AbstractUndirectedGraph<N, E> instance = (AbstractUndirectedGraph<N, E>) newInstance( metrics );
         for ( N node : getNodes() ) {
-            N newNode = (N) node.copy( instance );
+            N newNode = node.copy( instance );
             instance.nodes.put( newNode.getId(), newNode );
         }
         for ( E edge : getEdges() ) {
-            E newEdge = (E) edge.copy( instance, instance.getNodeById( edge.getSource().getId() ), instance.getNodeById( edge.getTarget().getId() ) );
+            E newEdge = edge.copy( instance, instance.getNodeById( edge.getSource().getId() ), instance.getNodeById( edge.getTarget().getId() ) );
             instance.edges.put( newEdge.getId(), newEdge );
             for ( Metric metric : metrics ) {
                 newEdge.setLength( metric, edge.getLength( metric ) );
@@ -232,7 +216,7 @@ public abstract class AbstractUndirectedGraph<N extends Node, E extends Edge> im
         sb.append( ",mapping={" );
         for ( N node : getNodes() ) {
             sb.append( node.getId() ).append( "=>[" );
-            for ( E e : getEdges( node ) ) {
+            for ( E e : node.getEdges() ) {
                 sb.append( e.getSource().equals( node ) ? "+" : "-" ).append( e.getId() ).append( "," );
             }
             if ( node.getEdges().hasNext() ) {

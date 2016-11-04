@@ -129,7 +129,7 @@ public class UndirectedGraphTest {
 
     private void testGetIncomingEdges( long nodeId, String expResult ) {
         Node node = nodeMap.get( nodeId );
-        String result = ToStringUtils_Test.toString( graph.getIncomingEdges( node ) );
+        String result = ToStringUtils_Test.toString( node.getIncomingEdges() );
         assertEquals( expResult, result );
     }
 
@@ -149,7 +149,7 @@ public class UndirectedGraphTest {
 
     private void testGetOutgoingEdges( long nodeId, String expResult ) {
         Node node = nodeMap.get( nodeId );
-        String result = ToStringUtils_Test.toString( graph.getOutgoingEdges( node ) );
+        String result = ToStringUtils_Test.toString( node.getOutgoingEdges() );
         assertEquals( expResult, result );
     }
 
@@ -234,9 +234,9 @@ public class UndirectedGraphTest {
     public void testGetTurnCost() {
         System.out.println( "getTurnCost" );
 //        System.out.println( graph.toString() );
-        for ( Node node : graph.getNodes() ) {
-            for ( Edge incoming : graph.getIncomingEdges( node ) ) {
-                for ( Edge outgoing : graph.getOutgoingEdges( node ) ) {
+        for ( Node<Node, Edge> node : graph.getNodes() ) {
+            for ( Edge incoming : node.getIncomingEdges() ) {
+                for ( Edge outgoing : node.getOutgoingEdges() ) {
 //                    System.out.println( "turn cost at node: " + node.getId() + " from: " + incoming.getId() + " to: " + outgoing.getId() );
                     if ( incoming.equals( outgoing ) || ( node.getId() == 2 && incoming.getId() == 1 && outgoing.getId() == 2 ) /*see GraphGeneratorUtils.java:132*/ ) {
                         assertEquals( Distance.newInfinityInstance(), node.getTurnDistance( incoming, outgoing ) );

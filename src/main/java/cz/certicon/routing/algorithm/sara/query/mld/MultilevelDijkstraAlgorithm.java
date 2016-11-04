@@ -89,7 +89,7 @@ public class MultilevelDijkstraAlgorithm<N extends Node, E extends Edge> impleme
                 }
 
                 //relax neighboring nodes
-                Iterator<SaraEdge> edges = graph.getOutgoingEdges( state.getNode() );
+                Iterator<SaraEdge> edges = state.getNode().getOutgoingEdges();
                 while ( edges.hasNext() ) {
                     SaraEdge transferEdge = edges.next();
                     SaraNode transferNode = transferEdge.getOtherNode( state.getNode() );
@@ -135,7 +135,7 @@ public class MultilevelDijkstraAlgorithm<N extends Node, E extends Edge> impleme
                 OverlayGraph oGraph = overlayGraph.getPartitions().get( overlayState.getNode().level() ).getOverlayGraph();
 
                 //relax neighboring nodes, i.e. exit points in the particular cell + corresponding border edge
-                Iterator<OverlayEdge> edges = oGraph.getOutgoingEdges( overlayState.getNode() );
+                Iterator<OverlayEdge> edges = overlayState.getNode().getOutgoingEdges();
                 while ( edges.hasNext() ) {
                     OverlayEdge transferEdge = edges.next();
                     OverlayNode transferNode = transferEdge.getOtherNode( overlayState.getNode() );
@@ -146,7 +146,7 @@ public class MultilevelDijkstraAlgorithm<N extends Node, E extends Edge> impleme
                     Distance alternativeDistance = distance.add( transferEdge.getLength( metric ) );
 
                     //use traverse edge to the next cell
-                    OverlayEdge traverseEdge = oGraph.getOutgoingEdges( transferNode ).next();//exactly one border edge must exist
+                    OverlayEdge traverseEdge = transferNode.getOutgoingEdges().next();//exactly one border edge must exist
                     OverlayNode traverseNode = transferEdge.getOtherNode( transferNode );
 
                     //find OverlayNode at maximal level, where three of nodes are still in different cells

@@ -204,7 +204,7 @@ public class NaturalCutsFilter implements Filter {
 //                    nodeQueue.clear();
                     continue;
                 }
-                for ( E edge : graph.getEdges( node ) ) {
+                for ( E edge : node.getEdges(  ) ) {
                     N target = edge.getOtherNode( node );
 //                        System.out.println( "neighbor = " + edge );
                     if ( !coreNodes.contains( target ) && !ringNodes.contains( target ) && !treeNodes.contains( target ) ) {
@@ -241,7 +241,7 @@ public class NaturalCutsFilter implements Filter {
                 nodeSet.remove( node );
             } else {
                 boolean foundNeighbor = false;
-                for ( ContractEdge edge : graph.getEdges( node ) ) {
+                for ( ContractEdge edge : node.getEdges(  ) ) {
                     ContractNode target = edge.getOtherNode( node );
                     if ( nodeSet.contains( target ) ) {
                         node = node.mergeWith( target, nodeIdSupplier, edgeIdSupplier );
@@ -373,7 +373,7 @@ public class NaturalCutsFilter implements Filter {
                 sum += nodeSizeContainer.get( node );
                 nodeContainer.remove( node );
                 // -- repeat for all its neighbors, do not consider cut edges
-                for ( E edge : graph.getEdges( node ) ) {
+                for ( E edge : node.getEdges(  ) ) {
                     if ( !cutEdges.contains( edge ) ) {
                         N target = edge.getOtherNode( node );
                         if ( !fragmentMap.containsKey( target ) ) {
@@ -404,7 +404,7 @@ public class NaturalCutsFilter implements Filter {
                 N node = nodeQueue.poll();
                 visitedNodes.add( node );
                 // -- for all neighbors, if they are connected via regular edge, repeat for them, if via cut edge, add fragment neighbor
-                for ( E edge : graph.getEdges( node ) ) {
+                for ( E edge : node.getEdges(  ) ) {
                     N target = edge.getOtherNode( node );
                     if ( !cutEdges.contains( edge ) ) { // continue searching
                         if ( !visitedNodes.contains( target ) ) {

@@ -49,30 +49,6 @@ public interface Graph<N extends Node, E extends Edge> {
      */
     Iterator<E> getEdges();
 
-    /**
-     * Returns iterator of edges adjacent to the given node
-     *
-     * @param node given node
-     * @return iterator of node's edges
-     */
-    Iterator<E> getEdges( N node );
-
-    /**
-     * Returns iterator of edges incoming to the given node
-     *
-     * @param node given node
-     * @return iterator of incoming edges
-     */
-    Iterator<E> getIncomingEdges( N node );
-
-    /**
-     * Returns iterator of edges outgoing from the given node
-     *
-     * @param node given node
-     * @return iterator of outgoing edges
-     */
-    Iterator<E> getOutgoingEdges( N node );
-
     N getNodeById( long id );
 
     boolean containsNode( long id );

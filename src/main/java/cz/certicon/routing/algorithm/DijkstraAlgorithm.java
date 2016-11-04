@@ -90,7 +90,7 @@ public class DijkstraAlgorithm<N extends Node<N, E>, E extends Edge<N, E>> imple
                 pqueue.clear();
                 break;
             }
-            for ( E edge : graph.getOutgoingEdges( state.getNode() ) ) {
+            for ( E edge : state.getNode().getOutgoingEdges() ) {
                 N targetNode = edge.getOtherNode( state.getNode() );
                 State targetState = new State( targetNode, edge );
                 if ( !closedStates.contains( targetState ) ) {

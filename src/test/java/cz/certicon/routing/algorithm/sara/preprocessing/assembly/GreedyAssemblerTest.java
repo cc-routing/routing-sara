@@ -186,7 +186,7 @@ public class GreedyAssemblerTest {
         GreedyAssembler instance = new GreedyAssembler( 0.5, 0.5, CELL_SIZE );
         PriorityQueue<NodePair> result = instance.initQueue( graph, CELL_SIZE );
         for ( ContractNode node : graph.getNodes() ) {
-            for ( ContractEdge edge : graph.getEdges( node ) ) {
+            for ( ContractEdge edge : node.getEdges() ) {
                 ContractNode target = edge.getOtherNode( node );
                 NodePair pair = new NodePair( node, target, edge );
                 assertTrue( result.contains( pair ) );
@@ -215,7 +215,7 @@ public class GreedyAssemblerTest {
 //        System.out.println( "FIRST CYCLE" );
         PriorityQueue<NodePair> result = instance.clearPairs( queue, origPair, nodeA );
         for ( ContractNode node : graph.getNodes() ) {
-            for ( ContractEdge edge : graph.getEdges( node ) ) {
+            for ( ContractEdge edge : node.getEdges() ) {
 //                System.out.println( "node: " + node + ", edge: " + edge );
                 ContractNode target = edge.getOtherNode( node );
                 NodePair pair = new NodePair( node, target, edge );
@@ -230,7 +230,7 @@ public class GreedyAssemblerTest {
         result = instance.clearPairs( queue, origPair, nodeB );
 //        System.out.println( "SECOND CYCLE" );
         for ( ContractNode node : graph.getNodes() ) {
-            for ( ContractEdge edge : graph.getEdges( node ) ) {
+            for ( ContractEdge edge : node.getEdges() ) {
 //                System.out.println( "node: " + node + ", edge: " + edge );
                 ContractNode target = edge.getOtherNode( node );
                 NodePair pair = new NodePair( node, target, edge );
@@ -262,7 +262,7 @@ public class GreedyAssemblerTest {
         instance.clearPairs( queue, origPair, nodeB );
         instance.addPairs( queue, nodeB, CELL_SIZE );
         for ( ContractNode node : graph.getNodes() ) {
-            for ( ContractEdge edge : graph.getEdges( node ) ) {
+            for ( ContractEdge edge : node.getEdges() ) {
                 ContractNode target = edge.getOtherNode( node );
                 NodePair pair = new NodePair( node, target, edge );
                 if ( ( node.equals( nodeA ) || target.equals( nodeA ) ) && !node.equals( nodeB ) && !target.equals( nodeB ) ) {

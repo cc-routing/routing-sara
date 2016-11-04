@@ -11,10 +11,9 @@ import cz.certicon.routing.model.values.Distance;
 import cz.certicon.routing.utils.collections.Iterator;
 
 /**
- *
- * @author Michael Blaha {@literal <michael.blaha@gmail.com>}
  * @param <N> node type
  * @param <E> edge type
+ * @author Michael Blaha {@literal <michael.blaha@gmail.com>}
  */
 public interface Node<N extends Node, E extends Edge> extends Identifiable {
     /**
@@ -24,13 +23,28 @@ public interface Node<N extends Node, E extends Edge> extends Identifiable {
      * @param target to (turn destination) edge
      * @return cost of the turn
      */
-     Distance getTurnDistance( E source, E target );
+    Distance getTurnDistance( E source, E target );
 
-     Iterator<E> getIncomingEdges();
+    /**
+     * Returns iterator of edges incoming to this node
+     *
+     * @return iterator of incoming edges
+     */
+    Iterator<E> getIncomingEdges();
 
-     Iterator<E> getOutgoingEdges();
+    /**
+     * Returns iterator of edges outgoing from this node
+     *
+     * @return iterator of outgoing edges
+     */
+    Iterator<E> getOutgoingEdges();
 
-     Iterator<E> getEdges();
+    /**
+     * Returns iterator of edges adjacent to this node
+     *
+     * @return iterator of node's edges
+     */
+    Iterator<E> getEdges();
 
     /**
      * Returns Coordinate (latitude, longitude) of this node. Might throw
@@ -38,21 +52,21 @@ public interface Node<N extends Node, E extends Edge> extends Identifiable {
      *
      * @return coordinate
      */
-     Coordinate getCoordinate();
+    Coordinate getCoordinate();
 
-     int getDegree();
+    int getDegree();
 
-     void addEdge( E edge );
+    void addEdge( E edge );
 
-     void removeEdge( E edge );
+    void removeEdge( E edge );
 
-     void setTurnTable( TurnTable turnTable );
+    void setTurnTable( TurnTable turnTable );
 
-     TurnTable getTurnTable();
+    TurnTable getTurnTable();
 
-     void setCoordinate( Coordinate coordinate );
+    void setCoordinate( Coordinate coordinate );
 
-     void lock();
+    void lock();
 
-     N copy( Graph<N, E> newGraph );
+    N copy( Graph<N, E> newGraph );
 }

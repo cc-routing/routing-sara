@@ -44,7 +44,7 @@ public class FordFulkersonMinimalCut implements MinimalCutAlgorithm {
     private static final char FRESH = 0;
 
     @Override
-    public <N extends Node, E extends Edge> MinimalCut compute( Graph<N, E> graph, Metric metric, N sourceNode, N targetNode ) {
+    public <N extends Node<N,E>, E extends Edge<N,E>> MinimalCut compute( Graph<N, E> graph, Metric metric, N sourceNode, N targetNode ) {
         // TODO optimize, change to adjacency lists (currently adjacency table - n^2, wasteful for thin graphs
         // map graph to arrays
 //        System.out.println( "MINIMAL CUT: mapping graph to arrays: " + graph );
@@ -109,7 +109,7 @@ public class FordFulkersonMinimalCut implements MinimalCutAlgorithm {
                 if ( visited[i] && !visited[j] && limits[i][j] != 0 ) {
                     N from = (N) indexToNodeArray[i];
                     N to = (N) indexToNodeArray[j];
-                    for ( E e : graph.getEdges( from ) ) {
+                    for ( E e : from.getEdges(  ) ) {
 //                        System.out.println( "edge: " + e );
                         Node edgeTarget = e.getOtherNode( from );
                         if ( edgeTarget.equals( to ) ) {
