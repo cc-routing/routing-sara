@@ -12,6 +12,7 @@ import cz.certicon.routing.utils.collections.ImmutableIterator;
 import cz.certicon.routing.utils.collections.Iterator;
 import gnu.trove.map.TLongObjectMap;
 import gnu.trove.map.hash.TLongObjectHashMap;
+
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.EnumMap;
@@ -23,10 +24,9 @@ import java.util.Map;
 import java.util.Set;
 
 /**
- *
- * @author Michael Blaha {@literal <michael.blaha@gmail.com>}
  * @param <N> node type
  * @param <E> edge type
+ * @author Michael Blaha {@literal <michael.blaha@gmail.com>}
  */
 public abstract class AbstractUndirectedGraph<N extends Node, E extends Edge> implements Graph<N, E> {
 
@@ -45,7 +45,7 @@ public abstract class AbstractUndirectedGraph<N extends Node, E extends Edge> im
         this.metrics = EnumSet.noneOf( Metric.class );
     }
 
-    public AbstractUndirectedGraph( Set<Metric> metrics ) {
+    public AbstractUndirectedGraph( Collection<Metric> metrics ) {
         this.nodes = new TLongObjectHashMap<>();
         this.edges = new TLongObjectHashMap<>();
         this.metricMap = new EnumMap<>( Metric.class );
@@ -85,70 +85,13 @@ public abstract class AbstractUndirectedGraph<N extends Node, E extends Edge> im
         return (Iterator<E>) node.getOutgoingEdges();
     }
 
-    @Override
-    public N getSourceNode( E edge ) {
-        return (N) edge.getSource();
-    }
-
-    @Override
-    public N getTargetNode( E edge ) {
-        return (N) edge.getTarget();
-    }
-
-    @Override
-    public N getOtherNode( E edge, N node ) {
-        return (N) edge.getOtherNode( node );
-    }
-
-    @Override
-    public Distance getTurnCost( N node, E from, E to ) {
-        return node.getTurnDistance( from, to );
-    }
 
     @Override
     public Iterator<E> getEdges( N node ) {
         return (Iterator<E>) node.getEdges();
     }
 
-    @Override
-    public Coordinate getNodeCoordinate( N node ) {
-//        if ( !nodes.contains( node ) ) {
-//            throw new IllegalArgumentException( "Graph does not contain node: " + node );
-//        }
-        return node.getCoordinate();
-//        if ( coordinates == null ) {
-//            throw new IllegalStateException( "Coordinates not set" );
-//        }
-//        if ( !coordinates.containsKey( node ) ) {
-//            throw new IllegalArgumentException( "Unknown node: " + node );
-//        }
-//        return coordinates.get( node );
-    }
-
-    @Override
-    public Distance getLength( Metric metric, E edge ) {
-        if ( !metricMap.containsKey( metric ) ) {
-            throw new IllegalArgumentException( "Unknown metric: " + metric );
-        }
-        Map<Edge, Distance> distanceMap = metricMap.get( metric );
-        if ( !distanceMap.containsKey( edge ) ) {
-            throw new IllegalArgumentException( "Unknown edge: " + edge );
-        }
-        return distanceMap.get( edge );
-    }
-
-    @Override
-    public void setLength( Metric metric, E edge, Distance distnace ) {
-        checkLock();
-        if ( !metricMap.containsKey( metric ) ) {
-//            metricMap.put( metric, new HashMap<Edge, Distance>() );
-            throw new IllegalArgumentException( "Unknown metric: " + metric );
-        }
-        Map<Edge, Distance> distanceMap = metricMap.get( metric );
-        distanceMap.put( edge, distnace );
-    }
-
-//    @Override
+    //    @Override
 //    public Graph copy() {
 //        throw new UnsupportedOperationException( "Not supported yet." ); //To change body of generated methods, choose Tools | Templates.
 //    }
@@ -216,8 +159,13 @@ public abstract class AbstractUndirectedGraph<N extends Node, E extends Edge> im
     }
 
     @Override
-    public Set<Metric> getMetrics() {
+    public Collection<Metric> getMetrics() {
         return metrics.clone();
+    }
+
+    @Override
+    public boolean hasMetric( Metric metric ) {
+        return metrics.contains( metric );
     }
 
     @Override
@@ -231,7 +179,7 @@ public abstract class AbstractUndirectedGraph<N extends Node, E extends Edge> im
             E newEdge = (E) edge.copy( instance, instance.getNodeById( edge.getSource().getId() ), instance.getNodeById( edge.getTarget().getId() ) );
             instance.edges.put( newEdge.getId(), newEdge );
             for ( Metric metric : metrics ) {
-                newEdge.setLength( metric, getLength( metric, edge ) );
+                newEdge.setLength( metric, edge.getLength( metric ) );
             }
         }
         return instance;

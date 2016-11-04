@@ -11,22 +11,24 @@ import cz.certicon.routing.utils.GraphGeneratorUtils;
 import cz.certicon.routing.utils.ToStringUtils_Test;
 import cz.certicon.routing.utils.collections.CollectionUtils;
 import cz.certicon.routing.utils.collections.Iterator;
+
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.EnumSet;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+
 import org.hamcrest.CoreMatchers;
 import org.junit.After;
 import org.junit.AfterClass;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
+
 import static org.junit.Assert.*;
 
 /**
- *
  * @author Michael Blaha {@literal <michael.blaha@certicon.cz>}
  */
 public class UndirectedGraphTest {
@@ -169,7 +171,7 @@ public class UndirectedGraphTest {
     private void testGetSourceNodeCompare( long edgeId, long nodeId ) {
         Edge edge = edgeMap.get( edgeId );
         Node expResult = nodeMap.get( nodeId );
-        Node result = graph.getSourceNode( edge );
+        Node result = edge.getSource();
         assertEquals( expResult, result );
     }
 
@@ -191,7 +193,7 @@ public class UndirectedGraphTest {
     private void testGetTargetNodeCompare( long edgeId, long nodeId ) {
         Edge edge = edgeMap.get( edgeId );
         Node expResult = nodeMap.get( nodeId );
-        Node result = graph.getTargetNode( edge );
+        Node result = edge.getTarget();
         assertEquals( expResult, result );
     }
 
@@ -214,13 +216,13 @@ public class UndirectedGraphTest {
         {
             Edge edge = edgeMap.get( edgeId );
             Node expResult = nodeMap.get( otherNodeId );
-            Node result = graph.getOtherNode( edge, nodeMap.get( nodeId ) );
+            Node result = edge.getOtherNode( nodeMap.get( nodeId ) );
             assertEquals( expResult, result );
         }
         {
             Edge edge = edgeMap.get( edgeId );
             Node expResult = nodeMap.get( nodeId );
-            Node result = graph.getOtherNode( edge, nodeMap.get( otherNodeId ) );
+            Node result = edge.getOtherNode( nodeMap.get( otherNodeId ) );
             assertEquals( expResult, result );
         }
     }
@@ -237,9 +239,9 @@ public class UndirectedGraphTest {
                 for ( Edge outgoing : graph.getOutgoingEdges( node ) ) {
 //                    System.out.println( "turn cost at node: " + node.getId() + " from: " + incoming.getId() + " to: " + outgoing.getId() );
                     if ( incoming.equals( outgoing ) || ( node.getId() == 2 && incoming.getId() == 1 && outgoing.getId() == 2 ) /*see GraphGeneratorUtils.java:132*/ ) {
-                        assertEquals( Distance.newInfinityInstance(), graph.getTurnCost( node, incoming, outgoing ) );
+                        assertEquals( Distance.newInfinityInstance(), node.getTurnDistance( incoming, outgoing ) );
                     } else {
-                        assertEquals( Distance.newInstance( 0 ), graph.getTurnCost( node, incoming, outgoing ) );
+                        assertEquals( Distance.newInstance( 0 ), node.getTurnDistance( incoming, outgoing ) );
                     }
                 }
             }
@@ -255,13 +257,14 @@ public class UndirectedGraphTest {
     public void fromGraph_Returns_ThreeNodeGraph_From_ThreeNodeGraph_() {
         assertGraph( "cz.certicon.routing.model.graph.UndirectedGraph{nodes=[1,4,5],edges=[]}" );
     }
+
     @Test
     public void fromGraph_Returns_ThreeNodeTwoEdgesGraph_From_ThreeNodeTwoEdgesGraph_() {
         assertGraph( "cz.certicon.routing.model.graph.UndirectedGraph{nodes=[1,4,5],edges=[1{5->4},7{1<->5}]}" );
     }
 
     private void assertGraph( String representation ) {
-        UndirectedGraph fromGraph = UndirectedGraph.fromGraph(ToStringUtils_Test.fromString( new UndirectedGraph(), representation, nc, ec ) );
-        assertThat(ToStringUtils_Test.toString( fromGraph ), CoreMatchers.equalTo( representation ) );
+        UndirectedGraph fromGraph = UndirectedGraph.fromGraph( ToStringUtils_Test.fromString( new UndirectedGraph(), representation, nc, ec ) );
+        assertThat( ToStringUtils_Test.toString( fromGraph ), CoreMatchers.equalTo( representation ) );
     }
 }

@@ -27,7 +27,7 @@ public class ContractEdge extends AbstractEdge<ContractNode, ContractEdge> {
 
     private final Collection<Edge> edges;
 
-    public ContractEdge( Graph<ContractNode, ContractEdge> graph, long id, boolean oneway, ContractNode source, ContractNode target, Collection<Edge> edges ) {
+    public ContractEdge( Graph<ContractNode, ContractEdge> graph, long id, boolean oneway, ContractNode source, ContractNode target, Collection<? extends Edge> edges ) {
         super( graph, id, oneway, source, target, -1, -1 );
         this.edges = new HashSet<>( edges );
 //        System.out.println( "Creating edge: " + this  );

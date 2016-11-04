@@ -17,30 +17,42 @@ import cz.certicon.routing.utils.collections.Iterator;
  * @param <E> edge type
  */
 public interface Node<N extends Node, E extends Edge> extends Identifiable {
+    /**
+     * Returns cost of the turn from edge to edge via this node
+     *
+     * @param source from (turn origin) edge
+     * @param target to (turn destination) edge
+     * @return cost of the turn
+     */
+     Distance getTurnDistance( E source, E target );
 
-    public Distance getTurnDistance( E source, E target );
+     Iterator<E> getIncomingEdges();
 
-    public Iterator<E> getIncomingEdges();
+     Iterator<E> getOutgoingEdges();
 
-    public Iterator<E> getOutgoingEdges();
+     Iterator<E> getEdges();
 
-    public Iterator<E> getEdges();
+    /**
+     * Returns Coordinate (latitude, longitude) of this node. Might throw
+     * IllegalStateException, if the Coordinates are not set
+     *
+     * @return coordinate
+     */
+     Coordinate getCoordinate();
 
-    public Coordinate getCoordinate();
+     int getDegree();
 
-    public int getDegree();
+     void addEdge( E edge );
 
-    public void addEdge( E edge );
+     void removeEdge( E edge );
 
-    public void removeEdge( E edge );
+     void setTurnTable( TurnTable turnTable );
 
-    public void setTurnTable( TurnTable turnTable );
+     TurnTable getTurnTable();
 
-    public TurnTable getTurnTable();
+     void setCoordinate( Coordinate coordinate );
 
-    public void setCoordinate( Coordinate coordinate );
+     void lock();
 
-    public void lock();
-
-    public N copy( Graph<N, E> newGraph );
+     N copy( Graph<N, E> newGraph );
 }

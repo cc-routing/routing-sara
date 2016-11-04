@@ -7,11 +7,12 @@ package cz.certicon.routing.model.graph;
 
 import cz.certicon.routing.model.values.Distance;
 
+import java.util.EnumMap;
+
 /**
- *
- * @author Michael Blaha {@literal <michael.blaha@gmail.com>}
  * @param <N> node type
  * @param <E> edge type
+ * @author Michael Blaha {@literal <michael.blaha@gmail.com>}
  */
 public abstract class AbstractEdge<N extends Node, E extends Edge> implements Edge<N, E> {
 
@@ -22,6 +23,8 @@ public abstract class AbstractEdge<N extends Node, E extends Edge> implements Ed
     private final int sourceIndex;
     private final int targetIndex;
     private final Graph<N, E> graph;
+    private final EnumMap<Metric, Distance> distanceMap = new EnumMap<>( Metric.class );
+    private boolean locked = false;
 
     public AbstractEdge( Graph<N, E> graph, long id, boolean oneway, N source, N target, int sourceIndex, int targetIndex ) {
         this.graph = graph;
@@ -89,12 +92,16 @@ public abstract class AbstractEdge<N extends Node, E extends Edge> implements Ed
 
     @Override
     public Distance getLength( Metric metric ) {
-        return graph.getLength( metric, (E) this );
+        return distanceMap.get( metric );
     }
 
     @Override
     public void setLength( Metric metric, Distance distance ) {
-        graph.setLength( metric, (E) this, distance );
+        checkLock();
+        if ( !getGraph().hasMetric( metric ) ) {
+            throw new IllegalArgumentException( "Graph does not support metric: " + metric.name() );
+        }
+        distanceMap.put( metric, distance );
     }
 
     @Override
@@ -114,6 +121,23 @@ public abstract class AbstractEdge<N extends Node, E extends Edge> implements Ed
 
     protected String additionalToStringData() {
         return "";
+    }
+
+    @Override
+    public void lock() {
+        for ( Metric metric :
+                getGraph().getMetrics() ) {
+            if ( !distanceMap.containsKey( metric ) ) {
+                throw new IllegalStateException( "Unable to lock edge{" + getId() + "}: metrics not filled: missing metric: " + metric.name() );
+            }
+        }
+        this.locked = true;
+    }
+
+    private void checkLock() {
+        if ( locked ) {
+            throw new IllegalStateException( "This object is locked against modification." );
+        }
     }
 
     @Override

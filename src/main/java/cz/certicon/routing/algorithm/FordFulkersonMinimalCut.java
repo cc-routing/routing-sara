@@ -23,6 +23,7 @@ import gnu.trove.map.TObjectIntMap;
 import gnu.trove.map.hash.TObjectIntHashMap;
 import gnu.trove.procedure.TIntProcedure;
 import gnu.trove.queue.TIntQueue;
+
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -34,7 +35,6 @@ import java.util.Set;
 import java.util.Stack;
 
 /**
- *
  * @author Michael Blaha {@literal <michael.blaha@certicon.cz>}
  */
 public class FordFulkersonMinimalCut implements MinimalCutAlgorithm {
@@ -67,7 +67,7 @@ public class FordFulkersonMinimalCut implements MinimalCutAlgorithm {
         for ( E e : graph.getEdges() ) {
             int srcIdx = nodeToIndexMap.get( e.getSource() );
             int tgtIdx = nodeToIndexMap.get( e.getTarget() );
-            int value = graph.getLength( metric, e ).isGreaterOrEqualTo( maxDistance ) ? Integer.MAX_VALUE : (int) Math.round( graph.getLength( metric, e ).getValue() + 10E-8 );
+            int value = e.getLength( metric ).isGreaterOrEqualTo( maxDistance ) ? Integer.MAX_VALUE : (int) Math.round( e.getLength( metric ).getValue() + 10E-8 );
 //            System.out.println( "edge#" + e + ": value = " + value );
             limits[srcIdx][tgtIdx] = value;
             if ( !e.isOneWay() ) {
@@ -111,7 +111,7 @@ public class FordFulkersonMinimalCut implements MinimalCutAlgorithm {
                     N to = (N) indexToNodeArray[j];
                     for ( E e : graph.getEdges( from ) ) {
 //                        System.out.println( "edge: " + e );
-                        Node edgeTarget = graph.getOtherNode( e, from );
+                        Node edgeTarget = e.getOtherNode( from );
                         if ( edgeTarget.equals( to ) ) {
 //                            System.out.println( "adding: " + e );
                             cutEdge.add( e );

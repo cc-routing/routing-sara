@@ -27,7 +27,7 @@ public class ContractNode extends AbstractNode<ContractNode, ContractEdge> {
 
     private final Collection<Node> nodes;
 
-    ContractNode( Graph<ContractNode, ContractEdge> graph, long id, Collection<Node> nodes ) {
+    ContractNode( Graph<ContractNode, ContractEdge> graph, long id, Collection<? extends Node> nodes ) {
         super( graph, id );
         this.nodes = new HashSet<>( nodes );
     }

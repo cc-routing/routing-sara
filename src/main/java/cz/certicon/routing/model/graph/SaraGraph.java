@@ -7,6 +7,8 @@ package cz.certicon.routing.model.graph;
 
 import cz.certicon.routing.model.basic.Pair;
 import cz.certicon.routing.model.values.Distance;
+
+import java.util.Collection;
 import java.util.Set;
 
 /**
@@ -18,7 +20,7 @@ public class SaraGraph extends AbstractUndirectedGraph<SaraNode, SaraEdge> {
     public SaraGraph() {
     }
 
-    public SaraGraph( Set<Metric> metrics ) {
+    public SaraGraph( Collection<Metric> metrics ) {
         super( metrics );
     }
 
@@ -36,7 +38,7 @@ public class SaraGraph extends AbstractUndirectedGraph<SaraNode, SaraEdge> {
         SaraEdge edge = new SaraEdge( this, id, oneway, source, target, sourceIndex, targetIndex );
         addEdge( edge );
         for ( Pair<Metric, Distance> metric : metrics ) {
-            setLength( metric.a, edge, metric.b );
+            edge.setLength( metric.a, metric.b );
         }
         return edge;
     }

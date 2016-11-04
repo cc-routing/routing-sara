@@ -8,14 +8,16 @@ package cz.certicon.routing.model.graph;
 import cz.certicon.routing.model.values.Coordinate;
 import cz.certicon.routing.model.values.Distance;
 import cz.certicon.routing.utils.collections.Iterator;
+
+import java.util.Collection;
 import java.util.Set;
 
 /**
  * Definition of graph
  *
- * @author Michael Blaha {@literal <michael.blaha@certicon.cz>}
  * @param <N>
  * @param <E>
+ * @author Michael Blaha {@literal <michael.blaha@certicon.cz>}
  */
 public interface Graph<N extends Node, E extends Edge> {
 
@@ -79,62 +81,15 @@ public interface Graph<N extends Node, E extends Edge> {
 
     boolean containsEdge( long id );
 
-    /**
-     * Returns source node of the given edge
-     *
-     * @param edge given edge
-     * @return source node
-     */
-    N getSourceNode( E edge );
-
-    /**
-     * Returns target node of the given edge
-     *
-     * @param edge given edge
-     * @return target node
-     */
-    N getTargetNode( E edge );
-
-    /**
-     * Returns other node (node on the opposite side from the given node) of the
-     * given edge
-     *
-     * @param edge given edge
-     * @param node given node
-     * @return the other node
-     */
-    N getOtherNode( E edge, N node );
-
-    /**
-     * Returns cost of the turn from edge to edge via the given node
-     *
-     * @param node crossroad node
-     * @param from from (turn origin) edge
-     * @param to to (turn destination) edge
-     * @return cost of the turn
-     */
-    Distance getTurnCost( N node, E from, E to );
-
-    /**
-     * Returns Coordinate (latitude, longitude) of the given node. Might throw
-     * IllegalStateException, if the Coordinates are not set
-     *
-     * @param node given node
-     * @return coordinate
-     */
-    Coordinate getNodeCoordinate( N node );
-
-    Distance getLength( Metric metric, E edge );
-
-    void setLength( Metric metric, E edge, Distance distnace );
-
     void removeNode( N node );
 
     void removeEdge( E edge );
 
-    public void lock();
+    void lock();
 
-    Set<Metric> getMetrics();
+    Collection<Metric> getMetrics();
+
+    boolean hasMetric(Metric metric);
 
     /**
      * Creates deep copy of this graph

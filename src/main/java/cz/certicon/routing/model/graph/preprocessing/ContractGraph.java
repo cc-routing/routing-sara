@@ -45,17 +45,17 @@ public class ContractGraph extends AbstractUndirectedGraph<ContractNode, Contrac
         return edge.getEdges();
     }
 
-    public ContractNode createNode( long id, Collection<Node> origNodes ) {
+    public ContractNode createNode( long id, Collection<? extends Node> origNodes ) {
         ContractNode node = new ContractNode( this, id, origNodes );
         addNode( node );
         return node;
     }
 
-    public ContractEdge createEdge( long id, boolean oneway, ContractNode source, ContractNode target, Collection<Edge> origEdges, Pair<Metric, Distance>... metrics ) {
+    public ContractEdge createEdge( long id, boolean oneway, ContractNode source, ContractNode target, Collection<? extends Edge> origEdges, Pair<Metric, Distance>... metrics ) {
         ContractEdge edge = new ContractEdge( this, id, oneway, source, target, origEdges );
         addEdge( edge );
         for ( Pair<Metric, Distance> metric : metrics ) {
-            setLength( metric.a, edge, metric.b );
+            edge.setLength( metric.a, metric.b );
         }
         return edge;
     }

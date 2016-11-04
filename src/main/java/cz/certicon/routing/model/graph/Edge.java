@@ -9,34 +9,51 @@ import cz.certicon.routing.model.Identifiable;
 import cz.certicon.routing.model.values.Distance;
 
 /**
- *
- * @author Michael Blaha {@literal <michael.blaha@gmail.com>}
  * @param <N> node type
  * @param <E> edge type
+ * @author Michael Blaha {@literal <michael.blaha@gmail.com>}
  */
 public interface Edge<N extends Node, E extends Edge> extends Identifiable {
 
-    public N getSource();
+    /**
+     * Returns source node of this edge
+     *
+     * @return source node
+     */
+    N getSource();
 
-    public N getTarget();
+    /**
+     * Returns target node of this edge
+     *
+     * @return target node
+     */
+    N getTarget();
 
-    public N getOtherNode( N node );
+    /**
+     * Returns other node (node on the opposite side from the given node) of this edge
+     *
+     * @param node given node
+     * @return the other node
+     */
+    N getOtherNode( N node );
 
-    public Distance getTurnDistance( N node, TurnTable turnTable, E targetEdge );
+    Distance getTurnDistance( N node, TurnTable turnTable, E targetEdge );
 
-    public boolean isOneWay();
+    boolean isOneWay();
 
-    public int getSourcePosition();
+    int getSourcePosition();
 
-    public int getTargetPosition();
+    int getTargetPosition();
 
-    public Distance getLength( Metric metric );
+    Distance getLength( Metric metric );
 
-    public void setLength( Metric metric, Distance distance );
+    void setLength( Metric metric, Distance distance );
 
-    public boolean isSource( N node );
+    boolean isSource( N node );
 
-    public boolean isTarget( N node );
+    boolean isTarget( N node );
 
-    public E copy( Graph<N, E> newGraph, N newSource, N newTarget );
+    E copy( Graph<N, E> newGraph, N newSource, N newTarget );
+
+    void lock();
 }

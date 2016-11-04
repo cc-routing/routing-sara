@@ -25,7 +25,7 @@ public interface Filter {
      * @param <E>   edge type
      * @return filtered {@link ContractGraph}
      */
-    <N extends Node, E extends Edge> ContractGraph filter( Graph<N, E> graph );
+    <N extends Node<N,E>, E extends Edge<N,E>> ContractGraph filter( Graph<N, E> graph );
 
     /**
      * Set maximal cell size (U)

@@ -23,7 +23,7 @@ public class UndirectedGraph extends AbstractUndirectedGraph<SimpleNode, SimpleE
         super();
     }
 
-    public UndirectedGraph( Set<Metric> metrics ) {
+    public UndirectedGraph( Collection<Metric> metrics ) {
         super( metrics );
     }
 
@@ -37,7 +37,7 @@ public class UndirectedGraph extends AbstractUndirectedGraph<SimpleNode, SimpleE
         SimpleEdge edge = new SimpleEdge( this, id, oneway, source, target, sourceIndex, targetIndex );
         addEdge( edge );
         for ( Pair<Metric, Distance> metric : metrics ) {
-            setLength( metric.a, edge, metric.b );
+            edge.setLength( metric.a, metric.b );
         }
         return edge;
     }
@@ -46,7 +46,7 @@ public class UndirectedGraph extends AbstractUndirectedGraph<SimpleNode, SimpleE
         SimpleEdge edge = new SimpleEdge( this, id, oneway, source, target, sourceIndex, targetIndex );
         addEdge( edge );
         for ( Pair<Metric, Distance> metric : metrics ) {
-            setLength( metric.a, edge, metric.b );
+            edge.setLength( metric.a, metric.b );
         }
         return edge;
     }

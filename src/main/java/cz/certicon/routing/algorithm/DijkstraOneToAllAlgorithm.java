@@ -14,10 +14,12 @@ import cz.certicon.routing.model.graph.State;
 import cz.certicon.routing.model.queue.FibonacciHeap;
 import cz.certicon.routing.model.queue.PriorityQueue;
 import cz.certicon.routing.model.values.Distance;
+
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
+
 import java8.util.Optional;
 
 public class DijkstraOneToAllAlgorithm<N extends Node<N, E>, E extends Edge<N, E>> implements OneToAllRoutingAlgorithm<N, E> {
@@ -42,13 +44,13 @@ public class DijkstraOneToAllAlgorithm<N extends Node<N, E>, E extends Edge<N, E
                 break;
             }
             for ( E edge : graph.getOutgoingEdges( state.getNode() ) ) {
-                N targetNode = graph.getOtherNode( edge, state.getNode() );
+                N targetNode = edge.getOtherNode( state.getNode() );
                 State targetState = new State( targetNode, edge );
                 if ( !closedStates.contains( targetState ) ) {
                     Distance targetDistance = ( nodeDistanceMap.containsKey( targetState ) ) ? nodeDistanceMap.get( targetState ) : Distance.newInfinityInstance();
                     Distance alternativeDistance = distance
-                            .add( graph.getLength( metric, edge ) )
-                            .add( state.isFirst() ? Distance.newInstance( 0 ) : graph.getTurnCost( state.getNode(), state.getEdge(), edge ) );
+                            .add( edge.getLength( metric ) )
+                            .add( state.isFirst() ? Distance.newInstance( 0 ) : state.getNode().getTurnDistance( state.getEdge(), edge ) );
                     if ( alternativeDistance.isLowerThan( targetDistance ) ) {
                         putNodeDistance( nodeDistanceMap, pqueue, targetState, alternativeDistance );
                         predecessorMap.put( targetState, state );

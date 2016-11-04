@@ -25,15 +25,16 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
+
 import org.junit.After;
 import org.junit.AfterClass;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
+
 import static org.junit.Assert.*;
 
 /**
- *
  * @author Michael Blaha {@literal <michael.blaha@certicon.cz>}
  */
 public class GreedyAssemblerTest {
@@ -93,7 +94,7 @@ public class GreedyAssemblerTest {
 //        System.out.println( "orig graph: " + originalGraph );
         createNewGraph();
         GreedyAssembler assembler = new GreedyAssembler( 0.5, 0.5, CELL_SIZE );
-        ContractGraph assembled = assembler.assemble(  graph );
+        ContractGraph assembled = assembler.assemble( graph );
 
 //        Map<Cell, List<Node>> cellMap = new HashMap<>();
 //        for ( SaraNode node : assembled.getNodeIds() ) {
@@ -186,7 +187,7 @@ public class GreedyAssemblerTest {
         PriorityQueue<NodePair> result = instance.initQueue( graph, CELL_SIZE );
         for ( ContractNode node : graph.getNodes() ) {
             for ( ContractEdge edge : graph.getEdges( node ) ) {
-                ContractNode target = graph.getOtherNode( edge, node );
+                ContractNode target = edge.getOtherNode( node );
                 NodePair pair = new NodePair( node, target, edge );
                 assertTrue( result.contains( pair ) );
             }
@@ -216,7 +217,7 @@ public class GreedyAssemblerTest {
         for ( ContractNode node : graph.getNodes() ) {
             for ( ContractEdge edge : graph.getEdges( node ) ) {
 //                System.out.println( "node: " + node + ", edge: " + edge );
-                ContractNode target = graph.getOtherNode( edge, node );
+                ContractNode target = edge.getOtherNode( node );
                 NodePair pair = new NodePair( node, target, edge );
                 if ( node.equals( nodeA ) || target.equals( nodeA ) ) {
 //                    System.out.println( "SHOULD NOT CONTAIN: " + pair );
@@ -231,7 +232,7 @@ public class GreedyAssemblerTest {
         for ( ContractNode node : graph.getNodes() ) {
             for ( ContractEdge edge : graph.getEdges( node ) ) {
 //                System.out.println( "node: " + node + ", edge: " + edge );
-                ContractNode target = graph.getOtherNode( edge, node );
+                ContractNode target = edge.getOtherNode( node );
                 NodePair pair = new NodePair( node, target, edge );
                 if ( node.equals( nodeA ) || target.equals( nodeA ) || node.equals( nodeB ) || target.equals( nodeB ) ) {
                     assertFalse( result.contains( pair ) );
@@ -262,7 +263,7 @@ public class GreedyAssemblerTest {
         instance.addPairs( queue, nodeB, CELL_SIZE );
         for ( ContractNode node : graph.getNodes() ) {
             for ( ContractEdge edge : graph.getEdges( node ) ) {
-                ContractNode target = graph.getOtherNode( edge, node );
+                ContractNode target = edge.getOtherNode( node );
                 NodePair pair = new NodePair( node, target, edge );
                 if ( ( node.equals( nodeA ) || target.equals( nodeA ) ) && !node.equals( nodeB ) && !target.equals( nodeB ) ) {
                     assertFalse( queue.contains( pair ) );

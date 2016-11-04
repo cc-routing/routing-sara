@@ -50,7 +50,7 @@ import lombok.experimental.Wither;
 /**
  * Implementation of the {@link Filter} interface. Uses Natural cuts technique
  * for reducing the graph size and dividing it into separate components
- *
+ * <p>
  * C = {} //set of cut edges ***************************************************
  * Repeat O times **************************************************************
  * *** Q = {x; x e V} //set of vertices to go through **************************
@@ -67,10 +67,9 @@ import lombok.experimental.Wither;
  * *** Remove all vertices J from Q ********************************************
  * End While *******************************************************************
  * End Repeat ******************************************************************
- *
+ * <p>
  * Contract each component from GC=(V,E\C) on the origin graph G ***************
  * Return G ********************************************************************
- *
  *
  * @author Michael Blaha {@literal <michael.blaha@certicon.cz>}
  */
@@ -90,11 +89,11 @@ public class NaturalCutsFilter implements Filter {
     /**
      * Creates new instance
      *
-     * @param cellRatio portion of U (max cell size) defining the size of
-     * fragment, alpha, 0 &lt;= alpha &lt;= 1
+     * @param cellRatio        portion of U (max cell size) defining the size of
+     *                         fragment, alpha, 0 &lt;= alpha &lt;= 1
      * @param coreRatioInverse divisor defining the core size, core size =
-     * alpha*U/f, this is f
-     * @param maxCellSize maximal size of a fragment, U
+     *                         alpha*U/f, this is f
+     * @param maxCellSize      maximal size of a fragment, U
      */
     public NaturalCutsFilter( double cellRatio, double coreRatioInverse, int maxCellSize ) {
         this.cellRatio = cellRatio;
@@ -103,7 +102,7 @@ public class NaturalCutsFilter implements Filter {
     }
 
     @Override
-    public <N extends Node, E extends Edge> ContractGraph filter( Graph<N, E> graph ) {
+    public <N extends Node<N, E>, E extends Edge<N, E>> ContractGraph filter( Graph<N, E> graph ) {
 //        GraphStreamPresenter presenter = new GraphStreamPresenter();
 //        presenter.displayGraph( graph );
         // NOTE: contraction
@@ -153,7 +152,7 @@ public class NaturalCutsFilter implements Filter {
         return filteredGraph;
     }
 
-    private <N extends Node, E extends Edge> Set<E> getCutEdges( Graph<N, E> graph ) {
+    private <N extends Node<N, E>, E extends Edge<N, E>> Set<E> getCutEdges( Graph<N, E> graph ) {
         // init structures
         Set<E> cutEdges = new HashSet<>();
         Set<N> coreNodes = new HashSet<>();
@@ -206,7 +205,7 @@ public class NaturalCutsFilter implements Filter {
                     continue;
                 }
                 for ( E edge : graph.getEdges( node ) ) {
-                    N target = graph.getOtherNode( edge, node );
+                    N target = edge.getOtherNode( node );
 //                        System.out.println( "neighbor = " + edge );
                     if ( !coreNodes.contains( target ) && !ringNodes.contains( target ) && !treeNodes.contains( target ) ) {
                         nodeQueue.add( target );
@@ -243,7 +242,7 @@ public class NaturalCutsFilter implements Filter {
             } else {
                 boolean foundNeighbor = false;
                 for ( ContractEdge edge : graph.getEdges( node ) ) {
-                    ContractNode target = graph.getOtherNode( edge, node );
+                    ContractNode target = edge.getOtherNode( node );
                     if ( nodeSet.contains( target ) ) {
                         node = node.mergeWith( target, nodeIdSupplier, edgeIdSupplier );
                         nodeSet.remove( target );
@@ -261,7 +260,7 @@ public class NaturalCutsFilter implements Filter {
         return node;
     }
 
-    private <N extends Node, E extends Edge> void fillMap( ContractGraph graph, Set<N> container ) {
+    private <N extends Node<N, E>, E extends Edge<N, E>> void fillMap( ContractGraph graph, Set<N> container ) {
         for ( N treeNode : container ) {
             ContractNode node = graph.createNode( treeNode.getId(), Arrays.asList( (Node) treeNode ) );
         }
@@ -284,13 +283,13 @@ public class NaturalCutsFilter implements Filter {
     /**
      * Performs s-t minimal cut and returns cut edges
      *
-     * @param graph graph
+     * @param graph     graph
      * @param treeNodes tree nodes without the core nodes
      * @param coreNodes core nodes of the tree
      * @param ringNodes ring nodes
      * @return cut edges
      */
-    private <N extends Node, E extends Edge> Collection<Edge> minimalCut( Graph<N, E> graph, Set<N> treeNodes, Set<N> coreNodes, Set<N> ringNodes ) {
+    private <N extends Node<N, E>, E extends Edge<N, E>> Collection<E> minimalCut( Graph<N, E> graph, Set<N> treeNodes, Set<N> coreNodes, Set<N> ringNodes ) {
         // create a temporary graph
         ContractGraph tmpGraph = new ContractGraph( EnumSet.of( Metric.SIZE ) );
         fillMap( tmpGraph, treeNodes );
@@ -300,7 +299,7 @@ public class NaturalCutsFilter implements Filter {
         fillMap( tmpGraph, treeNodes, coreNodes, ringNodes, coreNodes );
         fillMap( tmpGraph, treeNodes, coreNodes, ringNodes, ringNodes );
         for ( ContractEdge edge : tmpGraph.getEdges() ) {
-            tmpGraph.setLength( Metric.SIZE, edge, Distance.newInstance( edge.calculateWidth() ) );
+            edge.setLength( Metric.SIZE, Distance.newInstance( edge.calculateWidth() ) );
         }
 //        System.out.println( "tmpgraph [BEFORE]: " + tmpGraph );
 //        DisplayUtils.display( graph, Arrays.asList( treeNodes, coreNodes, ringNodes ) );
@@ -326,16 +325,18 @@ public class NaturalCutsFilter implements Filter {
         MinimalCutAlgorithm minimalCutAlgorithm = new FordFulkersonMinimalCut();
         MinimalCut<ContractEdge> cut = minimalCutAlgorithm.compute( tmpGraph, Metric.SIZE, core, ring );
         // map result back to the original graph
-        Set<Edge> cutEdges = new HashSet<>();
+        Set<E> cutEdges = new HashSet<>();
         for ( ContractEdge cutEdge : cut.getCutEdges() ) {
             ContractEdge e = cutEdge;
-            cutEdges.addAll( e.getEdges() );
+            for ( Edge ed : e.getEdges() ) {
+                cutEdges.add( (E) ed );
+            }
         }
         // return cut edges
         return cutEdges;
     }
 
-    private <N extends Node, E extends Edge> SplitGraphMessenger splitGraph( Graph<N, E> graph, Set<E> cutEdges ) {
+    private <N extends Node<N, E>, E extends Edge<N, E>> SplitGraphMessenger splitGraph( Graph<N, E> graph, Set<E> cutEdges ) {
 //        System.out.println( "Splitting graph" );
         Queue<N> nodeQueue = new LinkedList<>();
 //        System.out.println( "initializing" );
@@ -351,7 +352,7 @@ public class NaturalCutsFilter implements Filter {
         List<N> fragmentCenterMap = new ArrayList<>();
         List<Set<N>> fragmentOrigNodes = new ArrayList<>();
         Set<N> nodeContainer = new HashSet<>();
-        for ( N node: graph.getNodes() ) {
+        for ( N node : graph.getNodes() ) {
             nodeContainer.add( node );
         }
         TIntList sizeMap = new TIntArrayList();
@@ -374,7 +375,7 @@ public class NaturalCutsFilter implements Filter {
                 // -- repeat for all its neighbors, do not consider cut edges
                 for ( E edge : graph.getEdges( node ) ) {
                     if ( !cutEdges.contains( edge ) ) {
-                        N target = graph.getOtherNode( edge, node );
+                        N target = edge.getOtherNode( node );
                         if ( !fragmentMap.containsKey( target ) ) {
 //                            System.out.println( "adding to queue: #" + target.getId() );
                             nodeQueue.add( target );
@@ -404,7 +405,7 @@ public class NaturalCutsFilter implements Filter {
                 visitedNodes.add( node );
                 // -- for all neighbors, if they are connected via regular edge, repeat for them, if via cut edge, add fragment neighbor
                 for ( E edge : graph.getEdges( node ) ) {
-                    N target = graph.getOtherNode( edge, node );
+                    N target = edge.getOtherNode( node );
                     if ( !cutEdges.contains( edge ) ) { // continue searching
                         if ( !visitedNodes.contains( target ) ) {
                             nodeQueue.add( target );
@@ -420,7 +421,7 @@ public class NaturalCutsFilter implements Filter {
         return new SplitGraphMessenger<N, E>( fragmentOrigNodes, origEdgesMapList );
     }
 
-    private <N extends Node, E extends Edge> ContractGraph buildFilteredGraph( List<Set<N>> fragmentOrigNodes, List<Map<Integer, Set<E>>> origEdgesMapList ) {
+    private <N extends Node<N, E>, E extends Edge<N, E>> ContractGraph buildFilteredGraph( List<Set<N>> fragmentOrigNodes, List<Map<Integer, Set<E>>> origEdgesMapList ) {
 //        Map<Node, Set<Node>> origNodes = new HashMap<>();
 //        Map<Edge, Set<Edge>> origEdges = new HashMap<>();
         List<ContractNode> nodes = new ArrayList<>();
@@ -428,7 +429,7 @@ public class NaturalCutsFilter implements Filter {
         ContractGraph graph = new ContractGraph( EnumSet.of( Metric.SIZE ) );
         int nodeCounter = 0;
         for ( Set<N> fragmentOrigNode : fragmentOrigNodes ) {
-            ContractNode node = graph.createNode( nodeCounter++, (Collection<Node>) fragmentOrigNode );
+            ContractNode node = graph.createNode( nodeCounter++, fragmentOrigNode );
             nodes.add( node );
         }
         int fragmentCounter = 0;
@@ -443,7 +444,7 @@ public class NaturalCutsFilter implements Filter {
                     ContractNode source = nodes.get( fragmentCounter );
                     ContractNode target = nodes.get( targetFragment );
 //                    System.out.println( "edge: #" + source.getId() + " -> #" + target.getId() );
-                    ContractEdge edge = graph.createEdge( edgeCounter++, false, source, target, (Collection<Edge>) entry.getValue(),
+                    ContractEdge edge = graph.createEdge( edgeCounter++, false, source, target, entry.getValue(),
                             new Pair<>( Metric.SIZE, Distance.newInstance( entry.getValue().size() ) ) );
 //                    origEdges.put( edge, new HashSet<>( entry.getValue() ) );
                 }
@@ -486,14 +487,14 @@ public class NaturalCutsFilter implements Filter {
         this.maxCellSize = maxCellSize;
     }
 
-//    private int getEdgeInitSize( SimpleEdge edge ) {
+    //    private int getEdgeInitSize( SimpleEdge edge ) {
 //        if ( edge.isOneWay() ) {
 //            return EDGE_INIT_SIZE;
 //        } else {
 //            return 2 * EDGE_INIT_SIZE;
 //        }
 //    }
-    private static class SplitGraphMessenger<N extends Node, E extends Edge> {
+    private static class SplitGraphMessenger<N extends Node<N, E>, E extends Edge<N, E>> {
 
         private final List<Set<N>> fragmentOrigNodes;
         private final List<Map<Integer, Set<E>>> origEdgesMapList;

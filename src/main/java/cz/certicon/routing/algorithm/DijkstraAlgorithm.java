@@ -17,18 +17,19 @@ import cz.certicon.routing.model.graph.Metric;
 import cz.certicon.routing.model.graph.Node;
 import cz.certicon.routing.model.graph.State;
 import cz.certicon.routing.model.queue.FibonacciHeap;
+
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.Set;
+
 import java8.util.Optional;
 
 /**
- *
- * @author Michael Blaha {@literal <michael.blaha@certicon.cz>}
  * @param <N> node type
  * @param <E> edge type
+ * @author Michael Blaha {@literal <michael.blaha@certicon.cz>}
  */
 public class DijkstraAlgorithm<N extends Node<N, E>, E extends Edge<N, E>> implements RoutingAlgorithm<N, E> {
 
@@ -90,11 +91,11 @@ public class DijkstraAlgorithm<N extends Node<N, E>, E extends Edge<N, E>> imple
                 break;
             }
             for ( E edge : graph.getOutgoingEdges( state.getNode() ) ) {
-                N targetNode = graph.getOtherNode( edge, state.getNode() );
+                N targetNode = edge.getOtherNode( state.getNode() );
                 State targetState = new State( targetNode, edge );
                 if ( !closedStates.contains( targetState ) ) {
                     Distance targetDistance = ( nodeDistanceMap.containsKey( targetState ) ) ? nodeDistanceMap.get( targetState ) : Distance.newInfinityInstance();
-                    Distance alternativeDistance = distance.add( graph.getLength( metric, edge ) ).add( state.isFirst() ? Distance.newInstance( 0 ) : graph.getTurnCost( state.getNode(), state.getEdge(), edge ) );
+                    Distance alternativeDistance = distance.add( edge.getLength( metric ) ).add( state.isFirst() ? Distance.newInstance( 0 ) : state.getNode().getTurnDistance( state.getEdge(), edge ) );
                     if ( alternativeDistance.isLowerThan( targetDistance ) ) {
                         putNodeDistance( nodeDistanceMap, pqueue, targetState, alternativeDistance );
                         predecessorMap.put( targetState, state );
@@ -150,13 +151,13 @@ public class DijkstraAlgorithm<N extends Node<N, E>, E extends Edge<N, E>> imple
         @Override
         public Pair<State<N, E>, Distance> update( State<N, E> currentFinalState, Distance currentUpperBound, State<N, E> currentState, Distance currentDistance ) {
             if ( currentState.getNode().equals( destination.getSource() ) ) {
-                Distance completeDistance = currentDistance.add( toDestinationStart ).add( graph.getTurnCost( currentState.getNode(), currentState.getEdge(), destination ) );
+                Distance completeDistance = currentDistance.add( toDestinationStart ).add( currentState.getNode().getTurnDistance( currentState.getEdge(), destination ) );
                 if ( completeDistance.isLowerThan( currentUpperBound ) ) {
                     return new Pair<>( currentState, completeDistance );
                 }
             }
             if ( !destination.isOneWay() && currentState.getNode().equals( destination.getTarget() ) ) {
-                Distance completeDistance = currentDistance.add( toDestinationEnd ).add( graph.getTurnCost( currentState.getNode(), currentState.getEdge(), destination ) );
+                Distance completeDistance = currentDistance.add( toDestinationEnd ).add( currentState.getNode().getTurnDistance( currentState.getEdge(), destination ) );
                 if ( completeDistance.isLowerThan( currentUpperBound ) ) {
                     return new Pair<>( currentState, completeDistance );
                 }
