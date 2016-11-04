@@ -226,10 +226,7 @@ public class Validation {
             if ( !Objects.equals( this.orValiditors, other.orValiditors ) ) {
                 return false;
             }
-            if ( !Objects.equals( this.parameterNameMap, other.parameterNameMap ) ) {
-                return false;
-            }
-            return true;
+            return Objects.equals( this.parameterNameMap, other.parameterNameMap );
         }
 
     }

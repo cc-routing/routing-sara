@@ -159,10 +159,7 @@ public abstract class AbstractEdge<N extends Node, E extends Edge> implements Ed
             return false;
         }
         final AbstractEdge<?, ?> other = (AbstractEdge<?, ?>) obj;
-        if ( this.id != other.id ) {
-            return false;
-        }
-        return true;
+        return this.id == other.id;
     }
 
     protected Graph<N, E> getGraph() {

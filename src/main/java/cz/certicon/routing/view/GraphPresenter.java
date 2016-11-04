@@ -20,5 +20,5 @@ public interface GraphPresenter {
      *
      * @param graph an instance of {@link Graph} to be displayed
      */
-    public void displayGraph( Graph graph );
+    void displayGraph( Graph graph );
 }

@@ -6,9 +6,8 @@
 package cz.certicon.routing.utils.collections;
 
 /**
- *
- * @author Michael Blaha {@literal <michael.blaha@gmail.com>}
  * @param <T>
+ * @author Michael Blaha {@literal <michael.blaha@gmail.com>}
  */
 public class ArrayIterator<T> implements Iterator<T> {
 
@@ -27,6 +26,11 @@ public class ArrayIterator<T> implements Iterator<T> {
     @Override
     public T next() {
         return array[++position];
+    }
+
+    @Override
+    public void remove() {
+        throw new UnsupportedOperationException( "Remove not supported" );
     }
 
     @Override

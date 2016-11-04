@@ -52,7 +52,7 @@ public class StatsLogger {
         /**
          * Increment given counter
          */
-        public static final Command INCREMENT = new Command() {
+        Command INCREMENT = new Command() {
             @Override
             public int execute( int input ) {
                 return input + 1;
@@ -62,7 +62,7 @@ public class StatsLogger {
         /**
          * Reset given counter
          */
-        public static final Command RESET = new Command() {
+        Command RESET = new Command() {
             @Override
             public int execute( int input ) {
                 return 0;
@@ -72,7 +72,7 @@ public class StatsLogger {
         /**
          * Decrement given counter
          */
-        public static final Command DECREMENT = new Command() {
+        Command DECREMENT = new Command() {
             @Override
             public int execute( int input ) {
                 return input - 1;
@@ -83,7 +83,7 @@ public class StatsLogger {
     /**
      * Available statistic data types
      */
-    public static enum Statistic {
+    public enum Statistic {
         /**
          * Amount of examined (visited) nodes during algorithm execution
          */
@@ -91,6 +91,6 @@ public class StatsLogger {
         /**
          * Amount of examined (visited) edges during algorithm execution
          */
-        EDGES_EXAMINED;
+        EDGES_EXAMINED
     }
 }

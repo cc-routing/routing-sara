@@ -16,7 +16,7 @@ public enum TimeUnits {
     private final long nanoDivisor;
     private final String unit;
 
-    private TimeUnits( long nanoDivisor, String unit ) {
+    TimeUnits( long nanoDivisor, String unit ) {
         this.nanoDivisor = nanoDivisor;
         this.unit = unit;
     }

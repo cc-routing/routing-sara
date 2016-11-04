@@ -21,14 +21,14 @@ public interface Writer<Out, OutData> {
      *
      * @throws IOException exception when opening
      */
-    public void open() throws IOException;
+    void open() throws IOException;
 
     /**
      * Closes the writer.
      *
      * @throws IOException exception when closing
      */
-    public void close() throws IOException;
+    void close() throws IOException;
 
     /**
      * Reads the input and returns the output
@@ -37,12 +37,12 @@ public interface Writer<Out, OutData> {
      * @param outData additional data
      * @throws IOException exception when writing
      */
-    public void write( Out out, OutData outData ) throws IOException;
+    void write( Out out, OutData outData ) throws IOException;
 
     /**
      * Returns true if the writer is open, false otherwise
      *
      * @return true or false
      */
-    public boolean isOpen();
+    boolean isOpen();
 }

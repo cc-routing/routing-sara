@@ -27,7 +27,6 @@ public class NodePainter implements Painter<JXMapViewer> {
     public static Color COLOR_DEFAULT = Color.GREEN;
 
     private Color color = COLOR_DEFAULT;
-    private boolean antiAlias = true;
     private static final int SIZE = 6;
 
     private GeoPosition position;
@@ -53,6 +52,7 @@ public class NodePainter implements Painter<JXMapViewer> {
         Rectangle rect = map.getViewportBounds();
         g.translate( -rect.x, -rect.y );
 
+        boolean antiAlias = true;
         if ( antiAlias ) {
             g.setRenderingHint( RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON );
         }

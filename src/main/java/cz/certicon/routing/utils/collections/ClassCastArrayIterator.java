@@ -6,7 +6,6 @@
 package cz.certicon.routing.utils.collections;
 
 /**
- *
  * @author Michael Blaha {@literal <michael.blaha@gmail.com>}
  */
 public class ClassCastArrayIterator<T> implements Iterator<T> {
@@ -34,8 +33,13 @@ public class ClassCastArrayIterator<T> implements Iterator<T> {
         return this;
     }
 
-    public static interface ClassCaster<T> {
+    public interface ClassCaster<T> {
 
-        public T cast( Object o );
+        T cast( Object o );
+    }
+
+    @Override
+    public void remove() {
+        throw new UnsupportedOperationException( "Remove not supported" );
     }
 }

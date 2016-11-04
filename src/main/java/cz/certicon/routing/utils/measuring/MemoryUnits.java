@@ -31,7 +31,7 @@ public enum MemoryUnits {
     private final long byteDivisor;
     private final String unit;
 
-    private MemoryUnits( long byteDivisor, String unit ) {
+    MemoryUnits( long byteDivisor, String unit ) {
         this.byteDivisor = byteDivisor;
         this.unit = unit;
     }

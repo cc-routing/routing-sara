@@ -172,10 +172,7 @@ public abstract class AbstractNode<N extends Node, E extends Edge> implements No
             return false;
         }
         final AbstractNode<?, ?> other = (AbstractNode<?, ?>) obj;
-        if ( this.id != other.id ) {
-            return false;
-        }
-        return true;
+        return this.id == other.id;
     }
 
     private void checkLock() {

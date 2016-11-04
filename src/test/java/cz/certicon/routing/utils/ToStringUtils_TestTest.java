@@ -54,7 +54,7 @@ public class ToStringUtils_TestTest {
     public void graphToStringReturnsCorrectlyOnTwoNodesAndOneEdgeGraph() {
         graph.createNode( 7 );
         graph.createNode( 4 );
-        graph.createEdge( 2, true, graph.getNodeById( 7 ), graph.getNodeById( 4 ), 0, 0, new Pair[]{} );
+        graph.createEdge( 2, true, graph.getNodeById( 7 ), graph.getNodeById( 4 ), 0, 0 );
         String toString = ToStringUtils_Test.toString( graph );
         assertThat( toString, equalTo( "cz.certicon.routing.model.graph.UndirectedGraph{nodes=[4,7],edges=[2{7->4}]}" ) );
     }
@@ -64,8 +64,8 @@ public class ToStringUtils_TestTest {
         graph.createNode( 7 );
         graph.createNode( 1 );
         graph.createNode( 4 );
-        graph.createEdge( 5, false, graph.getNodeById( 7 ), graph.getNodeById( 4 ), 0, 0, new Pair[]{} );
-        graph.createEdge( 2, true, graph.getNodeById( 1 ), graph.getNodeById( 4 ), 0, 0, new Pair[]{} );
+        graph.createEdge( 5, false, graph.getNodeById( 7 ), graph.getNodeById( 4 ), 0, 0 );
+        graph.createEdge( 2, true, graph.getNodeById( 1 ), graph.getNodeById( 4 ), 0, 0 );
         String toString = ToStringUtils_Test.toString( graph );
         assertThat( toString, equalTo( "cz.certicon.routing.model.graph.UndirectedGraph{nodes=[1,4,7],edges=[2{1->4},5{7<->4}]}" ) );
     }

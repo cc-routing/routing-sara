@@ -226,7 +226,7 @@ public class ToStringUtils_Test {
 
         @Override
         public SimpleEdge createEdge( UndirectedGraph graph, long id, boolean oneway, SimpleNode source, SimpleNode target ) {
-            return graph.createEdge( id, oneway, source, target, 0, 0, new Pair[]{} );
+            return graph.createEdge( id, oneway, source, target, 0, 0 );
         }
 
     }

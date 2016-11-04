@@ -21,7 +21,7 @@ public interface Reader<In, InData> {
      *
      * @throws IOException exception when opening
      */
-    public void open() throws IOException;
+    void open() throws IOException;
 
     /**
      * Reads the input and returns the output
@@ -30,19 +30,19 @@ public interface Reader<In, InData> {
      * @return read output
      * @throws IOException exception when reading
      */
-    public In read( InData in ) throws IOException;
+    In read( InData in ) throws IOException;
 
     /**
      * Closes the reader.
      *
      * @throws IOException exception when closing
      */
-    public void close() throws IOException;
+    void close() throws IOException;
 
     /**
      * Returns true if the reader is open, false otherwise
      *
      * @return true or false
      */
-    public boolean isOpen();
+    boolean isOpen();
 }

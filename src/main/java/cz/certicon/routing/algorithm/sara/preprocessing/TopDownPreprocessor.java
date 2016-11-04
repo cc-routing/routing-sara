@@ -104,7 +104,7 @@ public class TopDownPreprocessor implements Preprocessor {
                         while ( edges.hasNext() ) {
                             Edge e = (Edge) edges.next();
                             if ( newGraph.containsNode( e.getSource().getId() ) && newGraph.containsNode( e.getTarget().getId() ) ) {
-                                newGraph.createEdge( e.getId(), e.isOneWay(), newGraph.getNodeById( e.getSource().getId() ), newGraph.getNodeById( e.getTarget().getId() ), e.getSourcePosition(), e.getTargetPosition(), new Pair[]{} );
+                                newGraph.createEdge( e.getId(), e.isOneWay(), newGraph.getNodeById( e.getSource().getId() ), newGraph.getNodeById( e.getTarget().getId() ), e.getSourcePosition(), e.getTargetPosition() );
                             }
                         }
                     }

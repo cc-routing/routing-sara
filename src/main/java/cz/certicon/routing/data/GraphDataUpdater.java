@@ -13,5 +13,5 @@ import java.io.IOException;
  */
 public interface GraphDataUpdater {
 
-    public void deleteIsolatedAreas( GraphDeleteMessenger graphDeleteMessenger) throws IOException;
+    void deleteIsolatedAreas( GraphDeleteMessenger graphDeleteMessenger ) throws IOException;
 }

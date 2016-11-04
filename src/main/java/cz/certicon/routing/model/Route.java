@@ -64,6 +64,11 @@ public class Route<N extends Node, E extends Edge> {
             public java.util.Iterator<N> iterator() {
                 return this;
             }
+
+            @Override
+            public void remove() {
+                throw new UnsupportedOperationException( "Remove not supported" );
+            }
         };
     }
 

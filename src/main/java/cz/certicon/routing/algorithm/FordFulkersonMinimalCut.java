@@ -211,10 +211,8 @@ public class FordFulkersonMinimalCut implements MinimalCutAlgorithm {
 
     private void testPrintTable( int[][] table ) {
         System.out.println( "TABLE" );
-        for ( int i = 0; i < table.length; i++ ) {
-            int[] is = table[i];
-            for ( int j = 0; j < is.length; j++ ) {
-                int k = is[j];
+        for ( int[] is : table ) {
+            for ( int k : is ) {
                 System.out.print( k + " " );
             }
             System.out.println( "" );
@@ -223,8 +221,7 @@ public class FordFulkersonMinimalCut implements MinimalCutAlgorithm {
 
     private void testPrintArray( int[] array ) {
         System.out.println( "ARRAY" );
-        for ( int i = 0; i < array.length; i++ ) {
-            int j = array[i];
+        for ( int j : array ) {
             System.out.print( j + " " );
         }
         System.out.println( "" );
@@ -232,8 +229,8 @@ public class FordFulkersonMinimalCut implements MinimalCutAlgorithm {
 
     private void testPrintArray( boolean[] array ) {
         System.out.println( "ARRAY" );
-        for ( int i = 0; i < array.length; i++ ) {
-            System.out.print( ( array[i] ? 1 : 0 ) + " " );
+        for ( boolean anArray : array ) {
+            System.out.print( ( anArray ? 1 : 0 ) + " " );
         }
         System.out.println( "" );
     }

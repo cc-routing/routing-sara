@@ -26,7 +26,7 @@ public interface GraphDataDao {
     EdgeData loadEdgeData( long edgeId ) throws IOException;
 
     @Value
-    public static class NodeData {
+    class NodeData {
 
         Coordinate coordinate;
         long id;
@@ -38,7 +38,7 @@ public interface GraphDataDao {
     }
 
     @Value
-    public static class EdgeData {
+    class EdgeData {
 
         List<Coordinate> coordinates;
         long id;

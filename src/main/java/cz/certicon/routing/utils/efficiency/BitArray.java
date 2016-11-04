@@ -11,13 +11,13 @@ package cz.certicon.routing.utils.efficiency;
  */
 public interface BitArray {
 
-    public void init( int size );
+    void init( int size );
 
-    public void set( int index, boolean value );
+    void set( int index, boolean value );
 
-    public boolean get( int index );
+    boolean get( int index );
     
-    public int size();
+    int size();
 
-    public void clear();
+    void clear();
 }

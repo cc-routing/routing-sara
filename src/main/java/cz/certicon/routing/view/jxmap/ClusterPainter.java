@@ -24,9 +24,7 @@ import org.jdesktop.swingx.painter.Painter;
 public class ClusterPainter implements Painter<JXMapViewer> {
 
     private Color color = Color.RED;
-    private final boolean antiAlias = true;
     private final Collection<GeoPosition> cluster;
-    private final int RADIUS = 5;
 
     public ClusterPainter( Collection<GeoPosition> cluster ) {
         this.cluster = new HashSet<>( cluster );
@@ -40,6 +38,7 @@ public class ClusterPainter implements Painter<JXMapViewer> {
         Rectangle rect = map.getViewportBounds();
         g.translate( -rect.x, -rect.y );
 
+        boolean antiAlias = true;
         if ( antiAlias ) {
             g.setRenderingHint( RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON );
         }
@@ -71,7 +70,8 @@ public class ClusterPainter implements Painter<JXMapViewer> {
     private void drawPoint( Graphics2D g, JXMapViewer map, GeoPosition position ) {
         // convert geo-coordinate to world bitmap pixel
         Point2D pt = map.getTileFactory().geoToPixel( position, map.getZoom() );
-        g.drawOval( (int) pt.getX(), (int) pt.getY(), RADIUS, RADIUS );
+        int radius = 5;
+        g.drawOval( (int) pt.getX(), (int) pt.getY(), radius, radius );
     }
 
 }

@@ -21,7 +21,7 @@ public interface DataSource {
      * @return this instance
      * @throws IOException thrown when an error appears while opening
      */
-    public DataSource open() throws IOException;
+    DataSource open() throws IOException;
 
      /**
      * Reads data from the source.
@@ -29,7 +29,7 @@ public interface DataSource {
      * @return next byte
      * @throws IOException thrown when an error appears while reading
      */
-    public int read() throws IOException;
+     int read() throws IOException;
     
     /**
      * Returns input stream of this source
@@ -37,7 +37,7 @@ public interface DataSource {
      * @return an instance of {@link InputStream}
      * @throws IOException thrown when an error appears while obtaining input stream
      */
-    public InputStream getInputStream() throws IOException;
+    InputStream getInputStream() throws IOException;
     
     /**
      * Closing the channel.
@@ -45,5 +45,5 @@ public interface DataSource {
      * @return this instance
      * @throws IOException thrown when an error appears while closing
      */
-    public DataSource close() throws IOException;
+    DataSource close() throws IOException;
 }

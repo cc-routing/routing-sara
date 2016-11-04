@@ -45,10 +45,7 @@ public class Quaternion<A, B, C, D> extends Trinity<A, B, C> {
             return false;
         }
         final Quaternion<?, ?, ?, ?> other = (Quaternion<?, ?, ?, ?>) obj;
-        if ( !Objects.equals( this.d, other.d ) ) {
-            return false;
-        }
-        return true;
+        return Objects.equals( this.d, other.d );
     }
 
     @Override

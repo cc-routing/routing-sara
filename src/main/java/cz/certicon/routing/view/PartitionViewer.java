@@ -15,13 +15,13 @@ import java.util.Collection;
  */
 public interface PartitionViewer {
     
-    public void setNumberOfColors(int numberOfColors);
+    void setNumberOfColors( int numberOfColors );
 
-    public <E extends Edge> void addCutEdges( Collection<E> cutEdges );
+    <E extends Edge> void addCutEdges( Collection<E> cutEdges );
 
-    public <N extends Node> void addBorderNodes( Collection<N> borderNodes );
+    <N extends Node> void addBorderNodes( Collection<N> borderNodes );
 
-    public <N extends Node> void addNodeCluster( Collection<N> partition );
+    <N extends Node> void addNodeCluster( Collection<N> partition );
 
-    public void display();
+    void display();
 }

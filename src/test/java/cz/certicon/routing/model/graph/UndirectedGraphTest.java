@@ -36,7 +36,6 @@ public class UndirectedGraphTest {
     private Graph<Node, Edge> graph;
     private Map<Long, Node> nodeMap;
     private Map<Long, Edge> edgeMap;
-    private Map<TurnTable, TurnTable> turnTables;
     ToStringUtils_Test.UndirectedNodeCreator nc;
     ToStringUtils_Test.UndirectedEdgeCreator ec;
 
@@ -55,7 +54,7 @@ public class UndirectedGraphTest {
     public void setUp() {
         nodeMap = new HashMap<>();
         edgeMap = new HashMap<>();
-        turnTables = new HashMap<>();
+        Map<TurnTable, TurnTable> turnTables = new HashMap<>();
         graph = GraphGeneratorUtils.createGraph( EnumSet.of( Metric.LENGTH ), nodeMap, edgeMap, turnTables );
         nc = new ToStringUtils_Test.UndirectedNodeCreator();
         ec = new ToStringUtils_Test.UndirectedEdgeCreator();

@@ -110,7 +110,7 @@ public class TimeLogger {
     /**
      * Enumeration for event types
      */
-    public static enum Event {
+    public enum Event {
         ASSEMBLING,
         FILTERING,
         /**
@@ -140,13 +140,13 @@ public class TimeLogger {
         /**
          * Loading path data
          */
-        PATH_LOADING;
+        PATH_LOADING
     }
 
     /**
      * Interface for commands as well as wrapping class for predefined commands.
      */
-    public static enum Command {
+    public enum Command {
         /**
          * Start given time measurement
          */

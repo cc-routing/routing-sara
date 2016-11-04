@@ -123,10 +123,7 @@ public class Time implements Number<Time> {
         if ( this.nanoseconds != other.nanoseconds ) {
             return false;
         }
-        if ( this.timeUnits != other.timeUnits ) {
-            return false;
-        }
-        return true;
+        return this.timeUnits == other.timeUnits;
     }
 
     @Override

@@ -113,10 +113,7 @@ public class Length implements Number<Length> {
         if ( this.nanometers != other.nanometers ) {
             return false;
         }
-        if ( this.lengthUnits != other.lengthUnits ) {
-            return false;
-        }
-        return true;
+        return this.lengthUnits == other.lengthUnits;
     }
 
     @Override

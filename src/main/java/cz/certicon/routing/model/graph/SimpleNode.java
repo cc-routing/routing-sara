@@ -21,8 +21,7 @@ public class SimpleNode extends AbstractNode<SimpleNode, SimpleEdge> {
     private static String toString( List<SimpleEdge> list ) {
         StringBuilder sb = new StringBuilder();
         sb.append( "[" );
-        for ( int i = 0; i < list.size(); i++ ) {
-            SimpleEdge edge = list.get( i );
+        for ( SimpleEdge edge : list ) {
             sb.append( edge != null ? edge.getId() : "null" ).append( "," );
         }
         sb.replace( sb.length() - 1, sb.length(), "]" );

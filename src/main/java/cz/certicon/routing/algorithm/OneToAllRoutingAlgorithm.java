@@ -23,7 +23,7 @@ public interface OneToAllRoutingAlgorithm<N extends Node<N,E>, E extends Edge<N,
 
     Map<E, Optional<Route<N,E>>> route( Graph<N, E> graph, Metric metric, E sourceEdge, Direction sourceDirection, Map<E, Direction> targetEdges );
 
-    public static enum Direction {
-        FORWARD, BACKWARD;
+    enum Direction {
+        FORWARD, BACKWARD
     }
 }

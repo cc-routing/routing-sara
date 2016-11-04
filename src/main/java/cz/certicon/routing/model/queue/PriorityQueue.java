@@ -19,7 +19,7 @@ public interface PriorityQueue<T> {
      *
      * @return element with the minimal distance
      */
-    public T extractMin();
+    T extractMin();
 
     /**
      * Adds element to the structure.
@@ -27,14 +27,14 @@ public interface PriorityQueue<T> {
      * @param element element to be added
      * @param value value to be associated with the node
      */
-    public void add( T element, double value );
+    void add( T element, double value );
 
     /**
      * Removes element from the structure.
      *
      * @param element element to be removed
      */
-    public void remove( T element );
+    void remove( T element );
 
     /**
      * Notifies the structure about distance change (invoking so called
@@ -43,26 +43,26 @@ public interface PriorityQueue<T> {
      * @param node node to change
      * @param value value to be associated with the node
      */
-    public void decreaseKey( T node, double value );
+    void decreaseKey( T node, double value );
 
     /**
      * Wipes out the data from this structure.
      */
-    public void clear();
+    void clear();
 
     /**
      * Returns true or false whether this structure contains elements or not.
      *
      * @return boolean value
      */
-    public boolean isEmpty();
+    boolean isEmpty();
 
     /**
      * Returns amount of elements left in the structure.
      *
      * @return integer value
      */
-    public int size();
+    int size();
 
     /**
      * Returns true if the structure contains the given element.
@@ -70,19 +70,19 @@ public interface PriorityQueue<T> {
      * @param element element whose presence is to be tested
      * @return true if this structure contains the specified element
      */
-    public boolean contains( T element );
+    boolean contains( T element );
 
     /**
      * Returns element with the minimal value. Does not remove it.
      *
      * @return element with the minimal value
      */
-    public T findMin();
+    T findMin();
 
     /**
      * Returns the minimal value in this structure
      *
      * @return the minimal value
      */
-    public double minValue();
+    double minValue();
 }

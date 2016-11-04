@@ -11,17 +11,17 @@ package cz.certicon.routing.view;
  */
 public interface DebugViewer {
 
-    public void setStepByInput( boolean stepByInput );
+    void setStepByInput( boolean stepByInput );
 
-    public void blinkEdge( long edgeId );
+    void blinkEdge( long edgeId );
 
-    public void displayEdge( long edgeId );
+    void displayEdge( long edgeId );
 
-    public void removeEdge( long edgeId );
+    void removeEdge( long edgeId );
 
-    public void closeEdge( long edgeId );
+    void closeEdge( long edgeId );
 
-    public void displayNode( long nodeId );
+    void displayNode( long nodeId );
 
-    public void removeNode( long nodeId );
+    void removeNode( long nodeId );
 }

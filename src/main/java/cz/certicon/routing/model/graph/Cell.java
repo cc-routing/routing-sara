@@ -75,10 +75,7 @@ public class Cell implements Identifiable {
             return false;
         }
         final Cell other = (Cell) obj;
-        if ( this.id != other.id ) {
-            return false;
-        }
-        return true;
+        return this.id == other.id;
     }
 
 }

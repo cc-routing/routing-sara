@@ -214,7 +214,7 @@ public class NaturalCutsFilter implements Filter {
             }
 //            System.out.println( "adding minimal cut" );
             // mark edges from minimal cut as "cut edges"
-            cutEdges.addAll( (Collection<E>) minimalCut( graph, treeNodes, coreNodes, ringNodes ) );
+            cutEdges.addAll( minimalCut( graph, treeNodes, coreNodes, ringNodes ) );
 //            System.out.println( "core nodes: " + coreNodes.size() );
 //            System.out.println( "minimal cut done" );
             // remove all core nodes from the queue
@@ -418,7 +418,7 @@ public class NaturalCutsFilter implements Filter {
                 }
             }
         }
-        return new SplitGraphMessenger<N, E>( fragmentOrigNodes, origEdgesMapList );
+        return new SplitGraphMessenger<>( fragmentOrigNodes, origEdgesMapList );
     }
 
     private <N extends Node<N, E>, E extends Edge<N, E>> ContractGraph buildFilteredGraph( List<Set<N>> fragmentOrigNodes, List<Map<Integer, Set<E>>> origEdgesMapList ) {

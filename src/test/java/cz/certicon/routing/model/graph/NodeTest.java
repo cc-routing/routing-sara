@@ -29,16 +29,13 @@ import static org.junit.Assert.*;
  */
 public class NodeTest {
 
-    private final Graph<Node, Edge> graph;
     private final Map<Long, Node> nodeMap;
-    private final Map<Long, Edge> edgeMap;
-    private final Map<TurnTable, TurnTable> turnTables;
 
     public NodeTest() {
         this.nodeMap = new HashMap<>();
-        this.edgeMap = new HashMap<>();
-        this.turnTables = new HashMap<>();
-        this.graph = GraphGeneratorUtils.createGraph( EnumSet.of( Metric.LENGTH ), nodeMap, edgeMap, turnTables );
+        Map<Long, Edge> edgeMap = new HashMap<>();
+        Map<TurnTable, TurnTable> turnTables = new HashMap<>();
+        Graph<Node, Edge> graph = GraphGeneratorUtils.createGraph( EnumSet.of( Metric.LENGTH ), nodeMap, edgeMap, turnTables );
     }
 
     @BeforeClass

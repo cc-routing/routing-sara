@@ -51,7 +51,8 @@ public class ContractGraph extends AbstractUndirectedGraph<ContractNode, Contrac
         return node;
     }
 
-    public ContractEdge createEdge( long id, boolean oneway, ContractNode source, ContractNode target, Collection<? extends Edge> origEdges, Pair<Metric, Distance>... metrics ) {
+    @SafeVarargs
+    public final ContractEdge createEdge( long id, boolean oneway, ContractNode source, ContractNode target, Collection<? extends Edge> origEdges, Pair<Metric, Distance>... metrics ) {
         ContractEdge edge = new ContractEdge( this, id, oneway, source, target, origEdges );
         addEdge( edge );
         for ( Pair<Metric, Distance> metric : metrics ) {

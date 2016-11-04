@@ -83,8 +83,8 @@ public class PreprocessingInput {
                 .and( "numberOfAssemblyRuns", greaterThan( numberOfAssemblyRuns, 0 ) )
                 .and( "numberOfLayers", greaterThan( numberOfLayers, 0 ) )
         );
-        for ( int i = 0; i < cellSizes.length; i++ ) {
-            validateThat( valid().and( "cellSize[" + cellSizes[i] + "]", greaterThan( cellSizes[i], 0 ) ) );
+        for ( int cellSize : cellSizes ) {
+            validateThat( valid().and( "cellSize[" + cellSize + "]", greaterThan( cellSize, 0 ) ) );
         }
         this.cellSizes = cellSizes;
         this.cellRatio = cellRatio;

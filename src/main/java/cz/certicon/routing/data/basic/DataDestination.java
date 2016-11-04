@@ -21,7 +21,7 @@ public interface DataDestination {
      * @return this instance
      * @throws IOException thrown when an error appears while opening
      */
-    public DataDestination open() throws IOException;
+    DataDestination open() throws IOException;
 
     /**
      * Writes data into the destination.
@@ -30,7 +30,7 @@ public interface DataDestination {
      * @return this instance
      * @throws IOException thrown when an error appears while writing
      */
-    public DataDestination write( String str ) throws IOException;
+    DataDestination write( String str ) throws IOException;
 
     /**
      * Returns output stream of this destination
@@ -38,7 +38,7 @@ public interface DataDestination {
      * @return an instance of {@link OutputStream}
      * @throws IOException thrown when an error appears while obtaining output stream
      */
-    public OutputStream getOutputStream() throws IOException;
+    OutputStream getOutputStream() throws IOException;
 
     /**
      * Closing the channel.
@@ -46,7 +46,7 @@ public interface DataDestination {
      * @return this instance
      * @throws IOException thrown when an error appears while closing
      */
-    public DataDestination close() throws IOException;
+    DataDestination close() throws IOException;
 
     /**
      * Flushes the data into the destination, clears the channel.
@@ -54,5 +54,5 @@ public interface DataDestination {
      * @return this instance
      * @throws IOException thrown when an error appears while flushing
      */
-    public DataDestination flush() throws IOException;
+    DataDestination flush() throws IOException;
 }

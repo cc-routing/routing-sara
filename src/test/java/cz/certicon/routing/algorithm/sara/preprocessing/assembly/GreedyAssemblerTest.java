@@ -39,7 +39,6 @@ import static org.junit.Assert.*;
  */
 public class GreedyAssemblerTest {
 
-    private UndirectedGraph g;
     private ContractGraph graph;
     private final Map<Long, Node> nodeMap;
     private final Map<Long, Edge> edgeMap;
@@ -53,7 +52,7 @@ public class GreedyAssemblerTest {
     }
 
     private ContractGraph createNewGraph() {
-        g = GraphGeneratorUtils.generateGridGraph( EnumSet.allOf( Metric.class ), nodeMap, edgeMap, turnTables, 5, 5 );
+        UndirectedGraph g = GraphGeneratorUtils.generateGridGraph( EnumSet.allOf( Metric.class ), nodeMap, edgeMap, turnTables, 5, 5 );
         NaturalCutsFilter instance = new NaturalCutsFilter( 1, 4, CELL_SIZE );
         graph = instance.filter( g );
         return graph;

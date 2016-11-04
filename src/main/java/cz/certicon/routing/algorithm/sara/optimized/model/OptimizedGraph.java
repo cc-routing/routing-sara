@@ -107,7 +107,8 @@ public class OptimizedGraph {
         return idx;
     }
 
-    public int createEdge( long id, long source, long target, boolean oneway, int sourceTableIdx, int targetTableIdx, Pair<Metric, Float> firstDistance, Pair<Metric, Float>... distances ) {
+    @SafeVarargs
+    public final int createEdge( long id, long source, long target, boolean oneway, int sourceTableIdx, int targetTableIdx, Pair<Metric, Float> firstDistance, Pair<Metric, Float>... distances ) {
         List<Pair<Metric, Float>> distanceList = new ArrayList<>();
         distanceList.add( firstDistance );
         for ( Pair<Metric, Float> pair : distances ) {
@@ -135,7 +136,7 @@ public class OptimizedGraph {
         targetTableIndices[idx] = targetTableIdx;
         if ( distances != null ) {
             for ( Pair<Metric, Float> pair : distances ) {
-                lengths.get( pair.a )[idx] = pair.b.floatValue();
+                lengths.get( pair.a )[idx] = pair.b;
             }
         }
         return idx;

@@ -7,15 +7,13 @@ package cz.certicon.routing.utils;
 
 import cz.certicon.routing.model.values.CartesianCoords;
 import cz.certicon.routing.model.values.Coordinate;
+
 import java.awt.Dimension;
 import java.awt.Point;
-import java.util.LinkedList;
-import java.util.List;
+import java.util.*;
+
 import static java.lang.Math.*;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Comparator;
-import java.util.Iterator;
+
 import java.util.logging.Logger;
 
 /**
@@ -37,11 +35,12 @@ public class CoordinateUtils {
 //            throw new IllegalStateException( ex );
 //        }
 //    }
+
     /**
      * Calculates the geographical midpoint of the given coordinates.
      *
      * @param iterator iterator of coordinates to be accounted into the
-     * calculation
+     *                 calculation
      * @return geographical midpoint
      */
     public static <T> Coordinate calculateGeographicMidpoint( Iterator<Coordinate> iterator ) {
@@ -79,7 +78,7 @@ public class CoordinateUtils {
      * Calculates the geographical midpoint of the given coordinates.
      *
      * @param coordinates list of coordinates to be accounted into the
-     * calculation
+     *                    calculation
      * @return geographical midpoint
      */
     public static Coordinate calculateGeographicMidpoint( List<Coordinate> coordinates ) {
@@ -143,7 +142,7 @@ public class CoordinateUtils {
      * Divides path between two points into list of coordinates.
      *
      * @param start starting point in {@link Coordinate}
-     * @param end target point in {@link Coordinate}
+     * @param end   target point in {@link Coordinate}
      * @param count amount of required points in the path
      * @return list of {@link Coordinate} for the given path
      */
@@ -179,8 +178,8 @@ public class CoordinateUtils {
      * Converts WGS84 coordinates to point in the given container.
      *
      * @param container an instance of {@link Dimension} for the point to fit in
-     * (scaled)
-     * @param coords {@link Coordinate} in WGS84
+     *                  (scaled)
+     * @param coords    {@link Coordinate} in WGS84
      * @return scaled {@link Point} for the given container based on the given
      * coordinates
      */
@@ -196,8 +195,8 @@ public class CoordinateUtils {
      * Evaluates equality of the given coordinates with the given precision. For
      * example 1 and 1.99 are equal with precision of 1.0
      *
-     * @param a first coordinate
-     * @param b second coordinate
+     * @param a         first coordinate
+     * @param b         second coordinate
      * @param precision given precision
      * @return true if the coordinates are equal with the given precision, false
      * otherwise
@@ -217,7 +216,7 @@ public class CoordinateUtils {
             coordinateList.add( iterator.next() );
         }
         Coordinate center = calculateGeographicMidpoint( coordinateList );
-        coordinateList.sort( new ClockwiseComparator( center ) );
+        Collections.sort( coordinateList, new ClockwiseComparator( center ) );
         return coordinateList;
     }
 

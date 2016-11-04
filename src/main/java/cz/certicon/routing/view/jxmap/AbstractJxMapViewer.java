@@ -230,7 +230,7 @@ public abstract class AbstractJxMapViewer {
 
         void display( JPanel panel );
 
-        static class Comparison {
+        class Comparison {
 
             public static boolean inRange( int base, int compared ) {
                 return Math.abs( base - compared ) <= PRECISION;
@@ -247,7 +247,7 @@ public abstract class AbstractJxMapViewer {
             public static final int PRECISION = 5;
         }
 
-        static class Presentation {
+        class Presentation {
 
             public static void addRow( JPanel panel, String left, String right ) {
                 panel.add( new JLabel( " " + left ) );

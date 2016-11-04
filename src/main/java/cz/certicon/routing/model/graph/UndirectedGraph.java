@@ -33,7 +33,8 @@ public class UndirectedGraph extends AbstractUndirectedGraph<SimpleNode, SimpleE
         return node;
     }
 
-    public SimpleEdge createEdge( long id, boolean oneway, @NonNull SimpleNode source, @NonNull SimpleNode target, int sourceIndex, int targetIndex, Pair<Metric, Distance>... metrics ) {
+    @SafeVarargs
+    public final SimpleEdge createEdge( long id, boolean oneway, @NonNull SimpleNode source, @NonNull SimpleNode target, int sourceIndex, int targetIndex, Pair<Metric, Distance>... metrics ) {
         SimpleEdge edge = new SimpleEdge( this, id, oneway, source, target, sourceIndex, targetIndex );
         addEdge( edge );
         for ( Pair<Metric, Distance> metric : metrics ) {

@@ -15,7 +15,7 @@ public interface Identifiable {
 
     long getId();
 
-    public static class Comparators {
+    class Comparators {
 
         public static Comparator<Identifiable> createIdComparator() {
             return new Comparator<Identifiable>() {

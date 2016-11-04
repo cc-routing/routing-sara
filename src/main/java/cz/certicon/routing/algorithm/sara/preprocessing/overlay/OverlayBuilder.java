@@ -205,7 +205,7 @@ public class OverlayBuilder {
             if (twoWay) {
                 OverlayNode exitNode2 = overGraph.addNode(exitColumn2, targetTable.exitPoints, edge);
                 OverlayNode entryNode2 = overGraph.addNode(entryColumn2, sourceTable.entryPoints, edge);
-                overGraph.addEdge(-edge.getId(), exitNode2, entryNode2).setLink(edge);;
+                overGraph.addEdge(-edge.getId(), exitNode2, entryNode2).setLink(edge);
             }
 
             sourceCell = sourceCell.getParent();

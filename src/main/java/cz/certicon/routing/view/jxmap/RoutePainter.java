@@ -29,7 +29,6 @@ public class RoutePainter implements Painter<JXMapViewer> {
     public static Color COLOR_DEFAULT = Color.RED;
 
     private Color color = COLOR_DEFAULT;
-    private final boolean antiAlias = true;
     private final List<GeoPosition> track;
 
     /**
@@ -49,6 +48,7 @@ public class RoutePainter implements Painter<JXMapViewer> {
         Rectangle rect = map.getViewportBounds();
         g.translate( -rect.x, -rect.y );
 
+        boolean antiAlias = true;
         if ( antiAlias ) {
             g.setRenderingHint( RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON );
         }

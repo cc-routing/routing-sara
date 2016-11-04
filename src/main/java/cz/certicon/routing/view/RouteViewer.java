@@ -15,7 +15,7 @@ import cz.certicon.routing.model.graph.Node;
  */
 public interface RouteViewer {
 
-    public <N extends Node, E extends Edge> void addRoute( Route<N, E> route );
+    <N extends Node, E extends Edge> void addRoute( Route<N, E> route );
 
-    public void display();
+    void display();
 }

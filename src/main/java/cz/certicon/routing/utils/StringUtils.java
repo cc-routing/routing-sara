@@ -41,7 +41,7 @@ public class StringUtils {
         return replaceLast( sb, !items.isEmpty(), "]" ).toString();
     }
 
-    public static interface StringExtractor<T> {
+    public interface StringExtractor<T> {
 
         String toString( T item );
     }

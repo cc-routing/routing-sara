@@ -10,5 +10,5 @@ package cz.certicon.routing.model.graph;
  * @author Michael Blaha {@literal <michael.blaha@gmail.com>}
  */
 public enum Metric {
-    LENGTH, TIME, SIZE;
+    LENGTH, TIME, SIZE
 }

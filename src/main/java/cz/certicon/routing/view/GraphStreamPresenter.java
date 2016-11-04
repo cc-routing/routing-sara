@@ -25,8 +25,6 @@ public class GraphStreamPresenter implements GraphPresenter {
 
     private static final int MOVE = 15;
     private static final int NUM_COLORS = 20;
-//    private final List<Color> colorList;
-    private boolean displayNodes = true;
     private Graph displayGraph;
     private Map<Long, Node> nodeMap;
     private Map<Long, Edge> edgeMap;
@@ -64,6 +62,7 @@ public class GraphStreamPresenter implements GraphPresenter {
 //            System.out.println( "adding node #" + node.getId() );
             Node n = displayGraph.addNode( "" + node.getId() );
             nodeMap.put( node.getId(), n );
+            boolean displayNodes = true;
             if ( displayNodes ) {
                 n.setAttribute( "ui.label", "" + node.getId() );
             }

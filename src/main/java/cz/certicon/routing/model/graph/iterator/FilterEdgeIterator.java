@@ -92,4 +92,9 @@ public abstract class FilterEdgeIterator<N extends Node, E extends Edge> impleme
 
     abstract boolean isValid( N node, E edge );
 
+    @Override
+    public void remove() {
+        throw new UnsupportedOperationException( "Remove not supported" );
+    }
+
 }

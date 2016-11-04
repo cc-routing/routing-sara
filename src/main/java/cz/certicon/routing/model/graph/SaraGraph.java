@@ -34,7 +34,8 @@ public class SaraGraph extends AbstractUndirectedGraph<SaraNode, SaraEdge> {
         return node;
     }
 
-    public SaraEdge createEdge( long id, boolean oneway, SaraNode source, SaraNode target, int sourceIndex, int targetIndex, Pair<Metric, Distance>... metrics ) {
+    @SafeVarargs
+    public final SaraEdge createEdge( long id, boolean oneway, SaraNode source, SaraNode target, int sourceIndex, int targetIndex, Pair<Metric, Distance>... metrics ) {
         SaraEdge edge = new SaraEdge( this, id, oneway, source, target, sourceIndex, targetIndex );
         addEdge( edge );
         for ( Pair<Metric, Distance> metric : metrics ) {

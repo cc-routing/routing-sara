@@ -50,6 +50,17 @@ public class MultilevelDijkstra {
             for ( int edge : graph.getOutgoingEdges( state.node ) ) {
                 int targetNode = graph.getOtherNode( edge, state.node );
                 State targetState = new State( targetNode, edge );
+
+                // obtain level node - node at maximal level, where source, targetNode and target are in different cells
+                // if level node is found
+                // - state = level node and edge
+                // - travel in the given level
+                // => this leads to setting level and traveling in this level
+                // => what is level node?
+                // otherwise
+                // - travel in current level
+
+
                 if ( !closed.contains( targetState ) ) {
                     double currentDistance = distanceMap.containsKey( targetState ) ? distanceMap.get( targetState ) : Double.MAX_VALUE;
                     double alternativeDistance = distance + graph.getLength( edge, metric ) + ( state.isFirst() ? 0 : graph.getTurnDistance( state.node, state.edge, edge ) );
@@ -60,6 +71,17 @@ public class MultilevelDijkstra {
                     }
                 }
             }
+
+            // **overlay queue**
+            // graph = getGraph( level )
+            // foreach edge
+            // - obtain level node (see  above)
+            // - if level is found
+            // - - travel in level
+            // - otherwise
+            // - - travel in L0
+
+
         }
         if ( finalState != null ) {
             Route.Builder builder = Route.builder();

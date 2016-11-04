@@ -130,7 +130,7 @@ public class DijkstraAlgorithm<N extends Node<N, E>, E extends Edge<N, E>> imple
 
     private interface EndCondition<N extends Node, E extends Edge> {
 
-        public Pair<State<N, E>, Distance> update( State<N, E> currentFinalState, Distance currentUpperBound, State<N, E> currentState, Distance currentDistance );
+        Pair<State<N, E>, Distance> update( State<N, E> currentFinalState, Distance currentUpperBound, State<N, E> currentState, Distance currentDistance );
 
     }
 

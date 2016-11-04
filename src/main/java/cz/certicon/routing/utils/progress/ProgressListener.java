@@ -19,7 +19,7 @@ public interface ProgressListener {
      *
      * @return number of updates
      */
-    public int getNumOfUpdates();
+    int getNumOfUpdates();
 
     /**
      * Sets number of updates. Number of updates is the amount of steps taken
@@ -27,7 +27,7 @@ public interface ProgressListener {
      *
      * @param numOfUpdates number of updates
      */
-    public void setNumOfUpdates( int numOfUpdates );
+    void setNumOfUpdates( int numOfUpdates );
 
     /**
      * Initializes the progress listener. Can be called multiple times - sum of
@@ -39,14 +39,14 @@ public interface ProgressListener {
      * updates = 100, progress update is performed every 2 steps, since size 100
      * is related to only 50 updates (100 * 0.5).
      */
-    public void init( int size, double calculationRatio );
+    void init( int size, double calculationRatio );
 
     /**
      * Method called when enough progress has been made to call an update.
      *
      * @param done ratio of finished operations to all the operations
      */
-    public void onProgressUpdate( double done );
+    void onProgressUpdate( double done );
 
     /**
      * Returns true when the progress update was called, false otherwise
@@ -54,5 +54,5 @@ public interface ProgressListener {
      * @return boolean value indicating, whether the progress update was called
      * or not
      */
-    public boolean nextStep();
+    boolean nextStep();
 }

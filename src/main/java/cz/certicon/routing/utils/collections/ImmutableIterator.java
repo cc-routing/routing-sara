@@ -39,4 +39,9 @@ public class ImmutableIterator<T> implements Iterator<T> {
         return this;
     }
 
+    @Override
+    public void remove() {
+        throw new UnsupportedOperationException( "Remove not supported" );
+    }
+
 }

@@ -70,7 +70,6 @@ import org.jdesktop.swingx.painter.Painter;
 public class JxDebugViewer<N extends Node, E extends Edge> extends AbstractJxMapViewer implements DebugViewer {
 
     private final GraphDataDao graphDataDao;
-    private final Graph<N, E> graph;
     private final long delay;
     private final Map<Long, NodeData> nodeDataMap = new HashMap<>();
     private final Map<Long, EdgeData> edgeDataMap = new HashMap<>();
@@ -79,7 +78,7 @@ public class JxDebugViewer<N extends Node, E extends Edge> extends AbstractJxMap
 
     public JxDebugViewer( GraphDataDao graphDataDao, Graph<N, E> graph, long delayInMillis ) {
         this.graphDataDao = graphDataDao;
-        this.graph = graph;
+        Graph<N, E> graph1 = graph;
         this.delay = delayInMillis;
     }
 

@@ -17,7 +17,7 @@ public interface TemporaryMemory {
      * 
      * @return memory for runtime storage
      */
-    public DataDestination getMemoryAsDestination();
+    DataDestination getMemoryAsDestination();
 
-    public DataSource getMemoryAsSource();
+    DataSource getMemoryAsSource();
 }

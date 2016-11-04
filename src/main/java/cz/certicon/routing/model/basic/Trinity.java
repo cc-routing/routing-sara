@@ -44,10 +44,7 @@ public class Trinity<A, B, C> extends Pair<A, B> {
             return false;
         }
         final Trinity<?, ?, ?> other = (Trinity<?, ?, ?>) obj;
-        if ( !Objects.equals( this.c, other.c ) ) {
-            return false;
-        }
-        return true;
+        return Objects.equals( this.c, other.c );
     }
 
     @Override

@@ -25,10 +25,10 @@ public class CollectionUtils {
      * and returned. In other words, it ensures retrieval of a list for the
      * given key.
      *
-     * @param <Key> key type of the map
+     * @param <Key>   key type of the map
      * @param <Value> value type of the list (which acts as a value in the map)
-     * @param map key-value map, where value is of type {@link List}
-     * @param node key
+     * @param map     key-value map, where value is of type {@link List}
+     * @param node    key
      * @return non-null {@link List} for the given key
      */
     public static <Key, Value> List<Value> getList( Map<Key, List<Value>> map, Key node ) {
@@ -46,10 +46,10 @@ public class CollectionUtils {
      * and returned. In other words, it ensures retrieval of a set for the given
      * key.
      *
-     * @param <Key> key type of the map
+     * @param <Key>   key type of the map
      * @param <Value> value type of the set (which acts as a value in the map)
-     * @param map key-value map, where value is of type {@link Set}
-     * @param node key
+     * @param map     key-value map, where value is of type {@link Set}
+     * @param node    key
      * @return non-null {@link Set} for the given key
      */
     public static <Key, Value> Set<Value> getSet( Map<Key, Set<Value>> map, Key node ) {
@@ -78,23 +78,66 @@ public class CollectionUtils {
     /**
      * Converts parameters into a set
      *
-     * @param <T> set element type
-     * @param values elements
+     * @param <T>   set element type
+     * @param value element
      * @return set containing the given elements
      */
-    public static <T> Set<T> asSet( T... values ) {
-        return new HashSet<>( Arrays.asList( values ) );
+    public static <T> Set<T> asSet( T value ) {
+        Set<T> set = new HashSet<>( 1 );
+        set.add( value );
+        return set;
     }
 
     /**
-     * Converts parameters into a list
+     * Converts parameters into a set
      *
-     * @param <T> list element type
-     * @param values elements
-     * @return list containing the given elements
+     * @param <T>    set element type
+     * @param first  element
+     * @param second element
+     * @return set containing the given elements
      */
-    public static <T> List<T> asList( T... values ) {
-        return Arrays.asList( values );
+    public static <T> Set<T> asSet( T first, T second ) {
+        Set<T> set = new HashSet<>( 2 );
+        set.add( first );
+        set.add( second );
+        return set;
+    }
+
+    /**
+     * Converts parameters into a set
+     *
+     * @param <T>    set element type
+     * @param first  element
+     * @param second element
+     * @param third  element
+     * @return set containing the given elements
+     */
+    public static <T> Set<T> asSet( T first, T second, T third ) {
+        Set<T> set = new HashSet<>( 3 );
+        set.add( first );
+        set.add( second );
+        set.add( third );
+        return set;
+    }
+
+
+    /**
+     * Converts parameters into a set
+     *
+     * @param <T>    set element type
+     * @param first  element
+     * @param second element
+     * @param third  element
+     * @param rest   elements
+     * @return set containing the given elements
+     */
+    @SafeVarargs
+    public static <T> Set<T> asSet( T first, T second, T third, T... rest ) {
+        Set<T> set = new HashSet<>( Arrays.asList( rest ) );
+        set.add( first );
+        set.add( second );
+        set.add( third );
+        return set;
     }
 
     public static <T> List<T> asList( Iterable<T> iterable ) {
