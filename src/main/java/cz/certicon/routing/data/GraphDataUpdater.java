@@ -8,10 +8,17 @@ package cz.certicon.routing.data;
 import java.io.IOException;
 
 /**
+ * An interface defining method for deletion of all the isolated areas in graph
  *
- * @author Michael Blaha {@literal <michael.blaha@gmail.com>}
+ * @author Michael Blaha {@literal <blahami2@gmail.com>}
  */
 public interface GraphDataUpdater {
 
+    /**
+     * Deletes all the nodes and edges contained in the {@link GraphDeleteMessenger}
+     *
+     * @param graphDeleteMessenger container for node  and edge ids
+     * @throws IOException thrown when an IO exception occurs
+     */
     void deleteIsolatedAreas( GraphDeleteMessenger graphDeleteMessenger ) throws IOException;
 }

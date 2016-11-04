@@ -19,7 +19,7 @@ import org.graphstream.ui.view.Viewer;
 /**
  * An implementation of {@link GraphPresenter} using a GraphStream library.
  *
- * @author Michael Blaha {@literal <michael.blaha@certicon.cz>}
+ * @author Michael Blaha {@literal <blahami2@gmail.com>}
  */
 public class GraphStreamPresenter implements GraphPresenter {
 

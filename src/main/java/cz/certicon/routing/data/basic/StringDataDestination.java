@@ -12,7 +12,7 @@ import java.io.OutputStream;
 /**
  * An implementation of {@link DataDestination} using a {@link String}. Obtain result via the {@link #getResult() getResult} method.
  *
- * @author Michael Blaha  {@literal <michael.blaha@certicon.cz>}
+ * @author Michael Blaha  {@literal <blahami2@gmail.com>}
  */
 public class StringDataDestination implements DataDestination {
 

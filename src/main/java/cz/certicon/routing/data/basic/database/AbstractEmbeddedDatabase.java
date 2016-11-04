@@ -19,7 +19,7 @@ import java.util.Properties;
  * controls the state before reading/writing and opens the connection if
  * necessary.
  *
- * @author Michael Blaha {@literal <michael.blaha@certicon.cz>}
+ * @author Michael Blaha {@literal <blahami2@gmail.com>}
  * @param <In> output of the reader (type to be read)
  * @param <InData> additional data for the reader (if it requires any)
  * @param <Out> type to be written

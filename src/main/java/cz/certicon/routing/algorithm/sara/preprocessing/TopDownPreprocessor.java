@@ -41,7 +41,7 @@ import java8.util.function.ToIntFunction;
  * Such strategy filters the bottom layer and assembles it into large areas. Then for each such area
  * it filters it and assembles into smaller areas, recursively, building it from the top.
  *
- * @author Michael Blaha {@literal <michael.blaha@gmail.com>}
+ * @author Michael Blaha {@literal <blahami2@gmail.com>}
  */
 public class TopDownPreprocessor implements Preprocessor {
 

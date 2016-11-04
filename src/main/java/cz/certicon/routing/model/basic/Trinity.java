@@ -10,7 +10,7 @@ import java.util.Objects;
 /**
  * A generic container class for three objects.
  *
- * @author Michael Blaha {@literal <michael.blaha@certicon.cz>}
+ * @author Michael Blaha {@literal <blahami2@gmail.com>}
  * @param <A> class of the first object
  * @param <B> class of the second object
  * @param <C> class of the third object

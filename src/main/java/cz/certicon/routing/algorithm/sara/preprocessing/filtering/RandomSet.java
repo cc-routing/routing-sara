@@ -12,7 +12,7 @@ import java.util.Set;
  * {@link Set} extension with random element polling.
  *
  * @param <E> element type
- * @author Michael Blaha {@literal <michael.blaha@certicon.cz>}
+ * @author Michael Blaha {@literal <blahami2@gmail.com>}
  */
 interface RandomSet<E> extends Set<E> {
 

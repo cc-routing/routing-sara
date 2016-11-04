@@ -36,7 +36,7 @@ import java8.util.function.ToIntFunction;
  * Such strategy filters the bottom layer once and then assembles the first layer into small areas.
  * From the first assembled layer, it then assembles the second layer into larger areas and so on, building it from the bottom.
  *
- * @author Michael Blaha {@literal <michael.blaha@gmail.com>}
+ * @author Michael Blaha {@literal <blahami2@gmail.com>}
  */
 public class BottomUpPreprocessor implements Preprocessor {
 

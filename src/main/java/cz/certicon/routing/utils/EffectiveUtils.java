@@ -11,7 +11,7 @@ import java.util.Arrays;
  * Utility class offering operations which require higher efficiency (execution
  * optimizations)
  *
- * @author Michael Blaha {@literal <michael.blaha@certicon.cz>}
+ * @author Michael Blaha {@literal <blahami2@gmail.com>}
  */
 public class EffectiveUtils {
 

@@ -13,7 +13,7 @@ import cz.certicon.routing.utils.collections.Iterator;
 /**
  * @param <N> node type
  * @param <E> edge type
- * @author Michael Blaha {@literal <michael.blaha@gmail.com>}
+ * @author Michael Blaha {@literal <blahami2@gmail.com>}
  */
 public interface Node<N extends Node, E extends Edge> extends Identifiable {
     /**

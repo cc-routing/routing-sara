@@ -11,7 +11,7 @@ import java.io.InputStream;
 /**
  * The root interface for data source.
  *
- * @author Michael Blaha {@literal <michael.blaha@certicon.cz>}
+ * @author Michael Blaha {@literal <blahami2@gmail.com>}
  */
 public interface DataSource {
 

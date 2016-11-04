@@ -7,7 +7,7 @@ package cz.certicon.routing.utils.collections;
 
 /**
  *
- * @author Michael Blaha {@literal <michael.blaha@gmail.com>}
+ * @author Michael Blaha {@literal <blahami2@gmail.com>}
  * @param <T> type
  */
 public interface Iterator<T> extends java.util.Iterator<T>, Iterable<T> {

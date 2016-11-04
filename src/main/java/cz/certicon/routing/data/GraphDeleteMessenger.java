@@ -10,8 +10,9 @@ import lombok.Builder;
 import lombok.Value;
 
 /**
+ * Messenger for node and edge ids
  *
- * @author Michael Blaha {@literal <michael.blaha@gmail.com>}
+ * @author Michael Blaha {@literal <blahami2@gmail.com>}
  */
 @Value
 public class GraphDeleteMessenger {

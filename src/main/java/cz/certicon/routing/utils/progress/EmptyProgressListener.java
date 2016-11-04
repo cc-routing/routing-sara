@@ -11,7 +11,7 @@ package cz.certicon.routing.utils.progress;
  * progress (this serves for the algorithm to call the progress listener anyway
  * and not do anything, if not required).
  *
- * @author Michael Blaha {@literal <michael.blaha@certicon.cz>}
+ * @author Michael Blaha {@literal <blahami2@gmail.com>}
  */
 public class EmptyProgressListener implements ProgressListener {
 

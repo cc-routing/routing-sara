@@ -29,7 +29,7 @@ import java.util.Random;
  * End While
  * Return partition, i.e. in which cell each vertex belongs
  *
- * @author Michael Blaha {@literal <michael.blaha@certicon.cz>}
+ * @author Michael Blaha {@literal <blahami2@gmail.com>}
  */
 public class GreedyAssembler implements Assembler {
 

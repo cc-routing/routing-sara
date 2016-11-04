@@ -8,7 +8,7 @@ package cz.certicon.routing.utils.measuring;
 /**
  * Enumeration for memory units. Supports conversion and string representation.
  *
- * @author Michael Blaha {@literal <michael.blaha@certicon.cz>}
+ * @author Michael Blaha {@literal <blahami2@gmail.com>}
  */
 public enum MemoryUnits {
     /**

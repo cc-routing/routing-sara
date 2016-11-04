@@ -20,7 +20,7 @@ import org.jdesktop.swingx.painter.Painter;
 
 /**
  *
- * @author Michael Blaha {@literal <michael.blaha@certicon.cz>}
+ * @author Michael Blaha {@literal <blahami2@gmail.com>}
  */
 public class NodePainter implements Painter<JXMapViewer> {
     

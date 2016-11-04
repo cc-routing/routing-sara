@@ -9,7 +9,7 @@ import gnu.trove.iterator.TIntIterator;
 
 /**
  *
- * @author Michael Blaha {@literal <michael.blaha@certicon.cz>}
+ * @author Michael Blaha {@literal <blahami2@gmail.com>}
  */
 public class IntLinkedList {
 

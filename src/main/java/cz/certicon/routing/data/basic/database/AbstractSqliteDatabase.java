@@ -5,7 +5,6 @@
  */
 package cz.certicon.routing.data.basic.database;
 
-import cz.certicon.routing.data.basic.database.AbstractEmbeddedDatabase;
 import java.io.IOException;
 import java.sql.SQLException;
 import java.util.Map;
@@ -17,7 +16,7 @@ import org.sqlite.SQLiteConfig;
  * Also adds support for the SpatiaLite extension - the provided Properties must
  * contain path to the spatialite library.
  *
- * @author Michael Blaha {@literal <michael.blaha@certicon.cz>}
+ * @author Michael Blaha {@literal <blahami2@gmail.com>}
  * @param <In> output of the reader (type to be read)
  * @param <InData> additional data for the reader (if it requires any)
  * @param <Out> type to be written

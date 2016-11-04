@@ -15,7 +15,7 @@ import cz.certicon.routing.utils.progress.ProgressListener;
 /**
  * Partitioning preprocessor interface.
  *
- * @author Michael Blaha {@literal <michael.blaha@gmail.com>}
+ * @author Michael Blaha {@literal <blahami2@gmail.com>}
  */
 public interface Preprocessor {
 

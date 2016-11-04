@@ -16,7 +16,7 @@ import java8.util.Optional;
 /**
  * Routing algorithm searching for routes to all the provided edges
  *
- * @author Michael Blaha {@literal <michael.blaha@gmail.com>}
+ * @author Michael Blaha {@literal <blahami2@gmail.com>}
  * @param <N> node type
  * @param <E> edge type
  */

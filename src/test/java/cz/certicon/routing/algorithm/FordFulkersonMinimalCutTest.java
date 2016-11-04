@@ -41,7 +41,7 @@ import static org.junit.Assert.*;
 
 /**
  *
- * @author Michael Blaha {@literal <michael.blaha@certicon.cz>}
+ * @author Michael Blaha {@literal <blahami2@gmail.com>}
  */
 public class FordFulkersonMinimalCutTest {
 

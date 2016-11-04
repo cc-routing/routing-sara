@@ -11,7 +11,7 @@ import cz.certicon.routing.model.graph.Graph;
 /**
  * An interface for a visual graph representation.
  *
- * @author Michael Blaha {@literal <michael.blaha@certicon.cz>}
+ * @author Michael Blaha {@literal <blahami2@gmail.com>}
  */
 public interface GraphPresenter {
 

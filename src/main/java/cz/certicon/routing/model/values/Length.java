@@ -11,7 +11,7 @@ import java.util.Objects;
  * Class representing the length of something. It supports unit conversion,
  * formatting and so on.
  *
- * @author Michael Blaha {@literal <michael.blaha@certicon.cz>}
+ * @author Michael Blaha {@literal <blahami2@gmail.com>}
  */
 public class Length implements Number<Length> {
 

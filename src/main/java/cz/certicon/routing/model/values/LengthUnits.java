@@ -8,7 +8,7 @@ package cz.certicon.routing.model.values;
 /**
  * Enumeration representing the possible length units.
  *
- * @author Michael Blaha {@literal <michael.blaha@certicon.cz>}
+ * @author Michael Blaha {@literal <blahami2@gmail.com>}
  */
 public enum LengthUnits {
     NANOMETERS( 1, "nm" ), MICROMETERS( NANOMETERS.getDivisor() * 1000, "mcm" ), MILLIMERERS( MICROMETERS.getDivisor() * 1000, "mm" ), METERS( MILLIMERERS.getDivisor() * 1000, "m" ), KILOMETERS( METERS.getDivisor() * 1000, "km" );

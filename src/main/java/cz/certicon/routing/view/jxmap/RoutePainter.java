@@ -22,7 +22,7 @@ import org.jdesktop.swingx.painter.Painter;
  * Paints a route
  *
  * @author Martin Steiger
- * @author Michael Blaha {@literal <michael.blaha@certicon.cz>}
+ * @author Michael Blaha {@literal <blahami2@gmail.com>}
  */
 public class RoutePainter implements Painter<JXMapViewer> {
     

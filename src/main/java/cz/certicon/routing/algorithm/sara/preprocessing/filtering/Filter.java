@@ -13,7 +13,7 @@ import cz.certicon.routing.model.graph.preprocessing.ContractGraph;
 /**
  * Reduces graph size while preserving overall structure.
  *
- * @author Michael Blaha {@literal <michael.blaha@certicon.cz>}
+ * @author Michael Blaha {@literal <blahami2@gmail.com>}
  */
 public interface Filter {
 

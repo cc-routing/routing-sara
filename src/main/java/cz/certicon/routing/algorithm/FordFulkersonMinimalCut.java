@@ -35,7 +35,7 @@ import java.util.Set;
 import java.util.Stack;
 
 /**
- * @author Michael Blaha {@literal <michael.blaha@certicon.cz>}
+ * @author Michael Blaha {@literal <blahami2@gmail.com>}
  */
 public class FordFulkersonMinimalCut implements MinimalCutAlgorithm {
 

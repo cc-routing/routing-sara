@@ -14,6 +14,7 @@ import cz.certicon.routing.utils.efficiency.BitArray;
 import cz.certicon.routing.utils.efficiency.LongBitArray;
 import gnu.trove.map.TIntObjectMap;
 import gnu.trove.map.hash.TIntObjectHashMap;
+
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashSet;
@@ -24,11 +25,20 @@ import java.util.Queue;
 import java.util.Set;
 
 /**
+ * Graph component searcher class. Finds the largest connected component. Searches for all the nodes and edges, that are not in this largest connected component.
  *
- * @author Michael Blaha {@literal <michael.blaha@gmail.com>}
+ * @author Michael Blaha {@literal <blahami2@gmail.com>}
  */
 public class GraphComponentSearcher {
 
+    /**
+     * Finds and returns all the nodes and edges that are not in the largest connected component
+     *
+     * @param graph given graph
+     * @param <N>   node type
+     * @param <E>   edge type
+     * @return delete messenger containing ids of all the nodes and edges not present in the largest connected component of the given graph
+     */
     public <N extends Node<N, E>, E extends Edge<N, E>> GraphDeleteMessenger findAllButLargest( Graph<N, E> graph ) {
         List<Collection<N>> componentList = new ArrayList<>();
         Set<N> nodes = new HashSet<>();

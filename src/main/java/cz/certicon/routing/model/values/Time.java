@@ -10,7 +10,7 @@ import java.util.Objects;
 /**
  * Class representation of time. Supports conversion, formatting, etc.
  *
- * @author Michael Blaha {@literal <michael.blaha@certicon.cz>}
+ * @author Michael Blaha {@literal <blahami2@gmail.com>}
  */
 public class Time implements Number<Time> {
 

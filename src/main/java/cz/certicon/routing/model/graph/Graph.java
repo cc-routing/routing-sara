@@ -17,7 +17,7 @@ import java.util.Set;
  *
  * @param <N>
  * @param <E>
- * @author Michael Blaha {@literal <michael.blaha@certicon.cz>}
+ * @author Michael Blaha {@literal <blahami2@gmail.com>}
  */
 public interface Graph<N extends Node, E extends Edge> {
 

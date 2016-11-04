@@ -17,7 +17,7 @@ import java.util.logging.Logger;
  * An extension to the {@link SimpleDatabase}, which is read-only and returns
  * {@link ResultSet} based on the given query (String).
  *
- * @author Michael Blaha {@literal <michael.blaha@certicon.cz>}
+ * @author Michael Blaha {@literal <blahami2@gmail.com>}
  */
 public class SimpleDatabase {
 

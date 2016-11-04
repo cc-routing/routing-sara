@@ -14,7 +14,7 @@ import java.util.Objects;
 
 /**
  *
- * @author Michael Blaha {@literal <michael.blaha@gmail.com>}
+ * @author Michael Blaha {@literal <blahami2@gmail.com>}
  */
 public class Validation {
 

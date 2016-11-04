@@ -12,7 +12,7 @@ import java.util.EnumMap;
 /**
  * @param <N> node type
  * @param <E> edge type
- * @author Michael Blaha {@literal <michael.blaha@gmail.com>}
+ * @author Michael Blaha {@literal <blahami2@gmail.com>}
  */
 public abstract class AbstractEdge<N extends Node, E extends Edge> implements Edge<N, E> {
 

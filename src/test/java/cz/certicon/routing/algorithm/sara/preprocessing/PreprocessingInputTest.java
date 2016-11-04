@@ -18,7 +18,7 @@ import org.junit.runners.Parameterized;
 
 /**
  *
- * @author Michael Blaha {@literal <michael.blaha@gmail.com>}
+ * @author Michael Blaha {@literal <blahami2@gmail.com>}
  */
 @RunWith( Parameterized.class )
 public class PreprocessingInputTest {

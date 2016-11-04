@@ -12,7 +12,7 @@ import cz.certicon.routing.model.graph.preprocessing.ContractGraph;
  * greedy algorithm, local search heuristics, evolutionary algorithm and
  * combinations.
  *
- * @author Michael Blaha {@literal <michael.blaha@certicon.cz>}
+ * @author Michael Blaha {@literal <blahami2@gmail.com>}
  */
 public interface Assembler {
 

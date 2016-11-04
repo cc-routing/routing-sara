@@ -6,14 +6,16 @@
 package cz.certicon.routing.data;
 
 import cz.certicon.routing.data.basic.database.SimpleDatabase;
+
 import java.io.IOException;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.util.Properties;
 
 /**
+ * Implementation of the {@link GraphDataUpdater} which can be used to reduce a graph and remove all the isolated areas
  *
- * @author Michael Blaha {@literal <michael.blaha@gmail.com>}
+ * @author Michael Blaha {@literal <blahami2@gmail.com>}
  */
 public class SqliteGraphDataUpdater implements GraphDataUpdater {
 
@@ -21,6 +23,10 @@ public class SqliteGraphDataUpdater implements GraphDataUpdater {
 
     private final SimpleDatabase database;
 
+    /**
+     * Constructor
+     * @param connectionProperties database connection properties
+     */
     public SqliteGraphDataUpdater( Properties connectionProperties ) {
         database = SimpleDatabase.newSqliteDatabase( connectionProperties );
     }

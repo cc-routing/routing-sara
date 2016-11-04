@@ -9,7 +9,7 @@ package cz.certicon.routing.model.queue;
  *
  * The root interface for priority queues.
  *
- * @author Michael Blaha {@literal <michael.blaha@certicon.cz>}
+ * @author Michael Blaha {@literal <blahami2@gmail.com>}
  * @param <T> element type
  */
 public interface PriorityQueue<T> {

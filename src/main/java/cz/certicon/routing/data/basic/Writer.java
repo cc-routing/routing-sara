@@ -10,7 +10,7 @@ import java.io.IOException;
 /**
  * A generic reader interface for additional consistency.
  *
- * @author Michael Blaha {@literal <michael.blaha@certicon.cz>}
+ * @author Michael Blaha {@literal <blahami2@gmail.com>}
  * @param <Out> type to be written
  * @param <OutData> additional data
  */

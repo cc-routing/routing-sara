@@ -18,7 +18,7 @@ import java.util.Random;
  * Implementation of the {@link RandomSet} interface using {@link List} and {@link Map}.
  *
  * @param <E> element type
- * @author Michael Blaha {@literal <michael.blaha@certicon.cz>}
+ * @author Michael Blaha {@literal <blahami2@gmail.com>}
  */
 class MixRandomSet<E> extends AbstractSet<E> implements RandomSet<E> {
 

@@ -29,6 +29,7 @@ import gnu.trove.map.hash.TIntObjectHashMap;
 import gnu.trove.map.hash.TLongObjectHashMap;
 import gnu.trove.set.TLongSet;
 import gnu.trove.set.hash.TLongHashSet;
+
 import java.io.IOException;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -43,8 +44,9 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 /**
+ * An implementation of the {@link GraphDAO} interface for accessing SQLite database
  *
- * @author Michael Blaha {@literal <michael.blaha@certicon.cz>}
+ * @author Michael Blaha {@literal <blahami2@gmail.com>}
  */
 public class SqliteGraphDAO implements GraphDAO {
 
@@ -52,6 +54,11 @@ public class SqliteGraphDAO implements GraphDAO {
 
     private final SimpleDatabase database;
 
+    /**
+     * Constructor
+     *
+     * @param connectionProperties SQLite database connection properties
+     */
     public SqliteGraphDAO( Properties connectionProperties ) {
         database = SimpleDatabase.newSqliteDatabase( connectionProperties );
     }

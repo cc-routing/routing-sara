@@ -13,7 +13,7 @@ import cz.certicon.routing.utils.DoubleComparator;
  * number of updates (number steps taken from 0 to number of updates) or size
  * and calculation ratio ({@link #init(int, double) init}).
  *
- * @author Michael Blaha {@literal <michael.blaha@certicon.cz>}
+ * @author Michael Blaha {@literal <blahami2@gmail.com>}
  */
 public abstract class SimpleProgressListener implements ProgressListener {
 

@@ -26,10 +26,20 @@ import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 
+/**
+ * An implementation of the {@link GraphDataDao} interface for accessing SQLite database
+ *
+ * @author Michael Blaha {@literal <blahami2@gmail.com>}
+ */
 public class SqliteRouteDAO implements RouteDataDAO {
 
     private final SimpleDatabase database;
 
+    /**
+     * Constructor
+     *
+     * @param connectionProperties SQLite database connection properties
+     */
     public SqliteRouteDAO( Properties connectionProperties ) {
         database = SimpleDatabase.newSqliteDatabase( connectionProperties );
     }

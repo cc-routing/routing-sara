@@ -12,7 +12,7 @@ import cz.certicon.routing.utils.DoubleComparator;
  * comparing coordinates, it uses {@link DoubleComparator} with precision of
  * 10E-15.
  *
- * @author Michael Blaha {@literal <michael.blaha@certicon.cz>}
+ * @author Michael Blaha {@literal <blahami2@gmail.com>}
  */
 public class Coordinate {
 

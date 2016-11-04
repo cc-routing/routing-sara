@@ -16,7 +16,7 @@ import java.util.List;
 
 /**
  *
- * @author Michael Blaha {@literal <michael.blaha@gmail.com>}
+ * @author Michael Blaha {@literal <blahami2@gmail.com>}
  */
 public class JxRouteViewer extends AbstractJxMapViewer implements RouteViewer {
 

@@ -14,7 +14,7 @@ import cz.certicon.routing.model.graph.Node;
 /**
  * Algorithm computing minimal cut in the given graph from source to target
  *
- * @author Michael Blaha {@literal <michael.blaha@certicon.cz>}
+ * @author Michael Blaha {@literal <blahami2@gmail.com>}
  */
 public interface MinimalCutAlgorithm {
 

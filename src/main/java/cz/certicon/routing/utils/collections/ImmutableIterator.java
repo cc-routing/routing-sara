@@ -9,7 +9,7 @@ import cz.certicon.routing.model.graph.Node;
 
 /**
  *
- * @author Michael Blaha {@literal <michael.blaha@certicon.cz>}
+ * @author Michael Blaha {@literal <blahami2@gmail.com>}
  * @param <T>
  */
 public class ImmutableIterator<T> implements Iterator<T> {

@@ -19,7 +19,7 @@ import org.jdesktop.swingx.painter.Painter;
 
 /**
  *
- * @author Michael Blaha {@literal <michael.blaha@gmail.com>}
+ * @author Michael Blaha {@literal <blahami2@gmail.com>}
  */
 public class ClusterPainter implements Painter<JXMapViewer> {
 

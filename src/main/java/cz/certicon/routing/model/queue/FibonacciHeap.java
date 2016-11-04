@@ -13,7 +13,7 @@ import org.jgrapht.util.FibonacciHeapNode;
  * Implementation of the {@link PriorityQueue} via jgrapht's library - the
  * Fibonacci heap implementation
  *
- * @author Michael Blaha {@literal <michael.blaha@certicon.cz>}
+ * @author Michael Blaha {@literal <blahami2@gmail.com>}
  * @param <T> element type
  */
 public class FibonacciHeap<T> implements PriorityQueue<T> {

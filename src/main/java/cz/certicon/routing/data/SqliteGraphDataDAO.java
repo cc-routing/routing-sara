@@ -23,6 +23,7 @@ import gnu.trove.list.TIntList;
 import gnu.trove.list.TLongList;
 import gnu.trove.list.array.TIntArrayList;
 import gnu.trove.list.array.TLongArrayList;
+
 import java.io.IOException;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -35,13 +36,19 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 /**
+ * An implementation of the {@link GraphDataDao} interface for accessing SQLite database
  *
- * @author Michael Blaha {@literal <michael.blaha@gmail.com>}
+ * @author Michael Blaha {@literal <blahami2@gmail.com>}
  */
 public class SqliteGraphDataDAO implements GraphDataDao {
 
     private final SimpleDatabase database;
 
+    /**
+     * Constructor
+     *
+     * @param connectionProperties SQLite database connection properties
+     */
     public SqliteGraphDataDAO( Properties connectionProperties ) {
         database = SimpleDatabase.newSqliteDatabase( connectionProperties );
     }

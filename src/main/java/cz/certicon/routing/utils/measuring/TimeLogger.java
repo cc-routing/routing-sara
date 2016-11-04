@@ -16,7 +16,7 @@ import java.util.Map;
  * {@link #getTimeMeasurement(cz.certicon.routing.utils.measuring.TimeLogger.Event) getTimeMeasurement(Event)}
  * method for elapsed time retrieval.
  *
- * @author Michael Blaha {@literal <michael.blaha@certicon.cz>}
+ * @author Michael Blaha {@literal <blahami2@gmail.com>}
  */
 public class TimeLogger {
 

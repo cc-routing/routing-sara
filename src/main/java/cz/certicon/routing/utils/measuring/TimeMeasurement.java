@@ -12,7 +12,7 @@ import cz.certicon.routing.model.values.TimeUnits;
  * Time measurement class. Uses {@link TimeUnits} to determine the time unit.
  * Default is NANOSECONDS.
  *
- * @author Michael Blaha {@literal <michael.blaha@certicon.cz>}
+ * @author Michael Blaha {@literal <blahami2@gmail.com>}
  */
 public class TimeMeasurement {
 

@@ -19,7 +19,7 @@ import java.util.logging.Logger;
 /**
  * Utilities for coordinates
  *
- * @author Michael Blaha {@literal <michael.blaha@certicon.cz>}
+ * @author Michael Blaha {@literal <blahami2@gmail.com>}
  */
 public class CoordinateUtils {
 

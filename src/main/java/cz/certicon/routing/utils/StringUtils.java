@@ -10,7 +10,7 @@ import java.util.Collection;
 
 /**
  *
- * @author Michael Blaha {@literal <michael.blaha@certicon.cz>}
+ * @author Michael Blaha {@literal <blahami2@gmail.com>}
  */
 public class StringUtils {
 

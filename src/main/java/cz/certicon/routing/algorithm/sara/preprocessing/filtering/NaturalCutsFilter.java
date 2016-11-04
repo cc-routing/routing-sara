@@ -59,7 +59,7 @@ import lombok.experimental.Wither;
  * Contract each component from GC=(V,E\C) on the origin graph G ***************
  * Return G ********************************************************************
  *
- * @author Michael Blaha {@literal <michael.blaha@certicon.cz>}
+ * @author Michael Blaha {@literal <blahami2@gmail.com>}
  */
 @Value
 public class NaturalCutsFilter implements Filter {

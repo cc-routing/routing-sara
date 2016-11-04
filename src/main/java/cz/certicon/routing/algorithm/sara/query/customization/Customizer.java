@@ -8,7 +8,7 @@ package cz.certicon.routing.algorithm.sara.query.customization;
 /**
  * Pre-computes data for the boundary edges for each cell (bottom-up) using
  *
- * @author Michael Blaha {@literal <michael.blaha@certicon.cz>}
+ * @author Michael Blaha {@literal <blahami2@gmail.com>}
  */
 public class Customizer {
     

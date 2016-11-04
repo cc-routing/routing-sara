@@ -14,7 +14,7 @@ import java.util.Scanner;
 /**
  * An implementation of {@link DataSource} using a {@link File}
  *
- * @author Michael Blaha {@literal <michael.blaha@certicon.cz>}
+ * @author Michael Blaha {@literal <blahami2@gmail.com>}
  */
 public class FileDataSource implements DataSource {
 

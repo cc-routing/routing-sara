@@ -7,7 +7,7 @@ package cz.certicon.routing.model.values;
 
 /**
  *
- * @author Michael Blaha {@literal <michael.blaha@certicon.cz>}
+ * @author Michael Blaha {@literal <blahami2@gmail.com>}
  * @param <T> number type
  */
 public interface Number<T extends Number> {

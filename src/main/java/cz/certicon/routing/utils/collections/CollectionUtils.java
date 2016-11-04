@@ -15,7 +15,7 @@ import java.util.Set;
 /**
  * Utility class for frequent operations with collections.
  *
- * @author Michael Blaha {@literal <michael.blaha@certicon.cz>}
+ * @author Michael Blaha {@literal <blahami2@gmail.com>}
  */
 public class CollectionUtils {
 
