@@ -6,6 +6,7 @@
 package cz.certicon.routing.model.graph.preprocessing;
 
 /**
+ * Container for the node pair - two nodes and the edge connecting them.
  *
  * @author Michael Blaha {@literal <blahami2@gmail.com>}
  */
@@ -15,6 +16,13 @@ public class NodePair {
     public final ContractNode nodeB;
     public final ContractEdge connectingEdge;
 
+    /**
+     * Constructor
+     *
+     * @param nodeA          source/target node
+     * @param nodeB          target/source node
+     * @param connectingEdge edge connecting nodeA and node B
+     */
     public NodePair( ContractNode nodeA, ContractNode nodeB, ContractEdge connectingEdge ) {
         this.nodeA = nodeA;
         this.nodeB = nodeB;
@@ -24,6 +32,12 @@ public class NodePair {
         }
     }
 
+    /**
+     * Returns the other node of this pair
+     *
+     * @param node not other node
+     * @return other node
+     */
     public ContractNode other( ContractNode node ) {
         if ( nodeA.equals( node ) ) {
             return nodeB;
@@ -34,14 +48,29 @@ public class NodePair {
         throw new IllegalArgumentException( "Unknown node: " + node );
     }
 
+    /**
+     * Returns size (number of nodes) of the nodeA
+     *
+     * @return size (number of nodes) of the nodeA
+     */
     public int getSizeA() {
         return nodeA.getNodes().size();
     }
 
+    /**
+     * Returns size (number of nodes) of the nodeB
+     *
+     * @return size (number of nodes) of the nodeB
+     */
     public int getSizeB() {
         return nodeB.getNodes().size();
     }
 
+    /**
+     * Returns size of this pair - both nodeA and nodeB
+     *
+     * @return size of this pair - both nodeA and nodeB
+     */
     public int getSize() {
         return getSizeA() + getSizeB();
     }

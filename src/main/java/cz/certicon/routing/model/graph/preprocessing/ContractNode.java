@@ -13,6 +13,7 @@ import cz.certicon.routing.model.graph.Metric;
 import cz.certicon.routing.model.graph.Node;
 import cz.certicon.routing.utils.StringUtils;
 import cz.certicon.routing.utils.collections.CollectionUtils;
+
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -20,6 +21,7 @@ import java.util.Map;
 import java.util.Set;
 
 /**
+ * Special implementation of the {@link Node} interface. ContractNode supports contractions - merging of multiple nodes into one. Such ContractNode contains all the original nodes.
  *
  * @author Michael Blaha {@literal <blahami2@gmail.com>}
  */
@@ -27,11 +29,26 @@ public class ContractNode extends AbstractNode<ContractNode, ContractEdge> {
 
     private final Collection<Node> nodes;
 
+    /**
+     * Constructor
+     *
+     * @param graph graph containing this node
+     * @param id    node id
+     * @param nodes original nodes
+     */
     ContractNode( Graph<ContractNode, ContractEdge> graph, long id, Collection<? extends Node> nodes ) {
         super( graph, id );
         this.nodes = new HashSet<>( nodes );
     }
 
+    /**
+     * Merges (contracts) this node with the given node, the new node gets id supplied by the nodeIdSupploer, all the new edges get ids supplied by the edgeIdSupplier
+     *
+     * @param node           other node to merge with
+     * @param nodeIdSupplier supplier for the new node's id
+     * @param edgeIdSupplier supplier for the new edges' ids
+     * @return new contracted edge
+     */
     public ContractNode mergeWith( ContractNode node, IdSupplier nodeIdSupplier, IdSupplier edgeIdSupplier ) {
 
 //        System.out.println( "N-MERGING: graph = " + graph );
@@ -89,6 +106,11 @@ public class ContractNode extends AbstractNode<ContractNode, ContractEdge> {
         return super.additionalToStringData() + ", nodes=" + StringUtils.toArray( nodes );
     }
 
+    /**
+     * Returns collection of original nodes contained by this node
+     *
+     * @return collection of original nodes contained by this node
+     */
     public Collection<Node> getNodes() {
         return nodes;
     }

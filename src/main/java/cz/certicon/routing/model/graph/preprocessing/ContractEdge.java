@@ -13,6 +13,7 @@ import cz.certicon.routing.model.graph.Metric;
 import cz.certicon.routing.model.graph.TurnTable;
 import cz.certicon.routing.model.values.Distance;
 import cz.certicon.routing.utils.StringUtils;
+
 import java.util.Collection;
 import java.util.EnumMap;
 import java.util.HashSet;
@@ -20,6 +21,7 @@ import java.util.Map;
 import java.util.Set;
 
 /**
+ * Special implementation of the {@link Edge} interface. ContractEdge supports contractions - merging of multiple edges into one. Such ContractEdge contains all the original edges.
  *
  * @author Michael Blaha {@literal <blahami2@gmail.com>}
  */
@@ -27,12 +29,29 @@ public class ContractEdge extends AbstractEdge<ContractNode, ContractEdge> {
 
     private final Collection<Edge> edges;
 
+    /**
+     * Constructor
+     *
+     * @param graph graph containing this edge
+     * @param id    edge id
+     * @param edges original edges
+     */
     public ContractEdge( Graph<ContractNode, ContractEdge> graph, long id, boolean oneway, ContractNode source, ContractNode target, Collection<? extends Edge> edges ) {
         super( graph, id, oneway, source, target, -1, -1 );
         this.edges = new HashSet<>( edges );
 //        System.out.println( "Creating edge: " + this  );
     }
 
+
+    /**
+     * Merges (contracts) this edge with the given edge, the new edge
+     *
+     * @param edge      other edge to merge with
+     * @param newSource new source
+     * @param newTarget new target
+     * @param id        new id
+     * @return new (contracted) edge
+     */
     public ContractEdge mergeWith( ContractEdge edge, ContractNode newSource, ContractNode newTarget, long id ) {
 //        if ( ( !getSource().equals( edge.getSource() ) || !getTarget().equals( edge.getTarget() ) ) && ( !getSource().equals( edge.getTarget() ) || !getTarget().equals( edge.getSource() ) ) ) {
 //            throw new IllegalArgumentException( "Cannot merge edges: this = " + this + ", other = " + edge );
@@ -51,10 +70,20 @@ public class ContractEdge extends AbstractEdge<ContractNode, ContractEdge> {
         return contractEdge;
     }
 
+    /**
+     * Returns collection of original edges contained by this edge
+     *
+     * @return collection of original edges contained by this edge
+     */
     public Collection<Edge> getEdges() {
         return edges;
     }
 
+    /**
+     * Calculates width of this edge - width is sum of all the original edges, where oneway edge has value of 1 and twoway edge has value of 2
+     *
+     * @return width of this edge
+     */
     public int calculateWidth() {
         int width = 0;
         for ( Edge edge : edges ) {
