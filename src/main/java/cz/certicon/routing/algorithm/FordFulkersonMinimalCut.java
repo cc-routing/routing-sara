@@ -202,7 +202,7 @@ public class FordFulkersonMinimalCut implements MinimalCutAlgorithm {
 //                System.out.println( "flows[" + predecessor + "][" + node + "] += " + pathFlow );
                 flows[predecessor][node] += pathFlow;
             } else {
-                // if backward, substract target's delta from flow in backward direction
+                // if backward, subtract target's delta from flow in backward direction
 //                System.out.println( "flows[" + node + "][" + predecessor + "] -= " + pathFlow );
                 flows[node][predecessor] -= pathFlow;
             }

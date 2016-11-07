@@ -21,7 +21,7 @@ public class Time implements Number<Time> {
      * Creates an instance via an amount and units
      *
      * @param timeUnits time units in which the length is provided
-     * @param time actual value
+     * @param time      actual value
      */
     public Time( TimeUnits timeUnits, long time ) {
         this.timeUnits = timeUnits;
@@ -126,6 +126,42 @@ public class Time implements Number<Time> {
         return this.timeUnits == other.timeUnits;
     }
 
+
+    public int compareTo( Time other ) {
+        return Long.compare( getValue(), other.getValue() );
+    }
+
+    @Override
+    public boolean isGreaterThan( Time other ) {
+        return compareTo( other ) > 0;
+    }
+
+    @Override
+    public boolean isGreaterOrEqualTo( Time other ) {
+        return compareTo( other ) >= 0;
+    }
+
+    @Override
+    public boolean isLowerThan( Time other ) {
+        return compareTo( other ) < 0;
+    }
+
+    @Override
+    public boolean isLowerOrEqualTo( Time other ) {
+        return compareTo( other ) <= 0;
+    }
+
+    @Override
+    public boolean isEqualTo( Time other ) {
+        return compareTo( other ) == 0;
+    }
+
+    @Override
+    public int compareTo( Number<Time> o ) {
+        return compareTo( o.identity() );
+    }
+
+
     @Override
     public boolean isPositive() {
         return nanoseconds > 0;
@@ -146,7 +182,7 @@ public class Time implements Number<Time> {
     }
 
     @Override
-    public Time substract( Time other ) {
+    public Time subtract( Time other ) {
         return new Time( timeUnits, timeUnits.fromNano( nanoseconds - other.nanoseconds ) );
     }
 
@@ -160,4 +196,8 @@ public class Time implements Number<Time> {
         return new Time( timeUnits, timeUnits.fromNano( nanoseconds * other.nanoseconds ) );
     }
 
+    @Override
+    public Time identity() {
+        return this;
+    }
 }

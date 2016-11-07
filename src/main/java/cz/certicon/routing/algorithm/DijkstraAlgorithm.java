@@ -6,9 +6,7 @@
 package cz.certicon.routing.algorithm;
 
 import cz.certicon.routing.model.values.Distance;
-import cz.certicon.routing.model.graph.SimpleEdge;
 import cz.certicon.routing.model.graph.Graph;
-import cz.certicon.routing.model.graph.SimpleNode;
 import cz.certicon.routing.model.queue.PriorityQueue;
 import cz.certicon.routing.model.Route;
 import cz.certicon.routing.model.basic.Pair;
@@ -20,7 +18,6 @@ import cz.certicon.routing.model.queue.FibonacciHeap;
 
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.Iterator;
 import java.util.Map;
 import java.util.Set;
 
@@ -44,7 +41,7 @@ public class DijkstraAlgorithm<N extends Node<N, E>, E extends Edge<N, E>> imple
 
     @Override
     public Optional<Route<N, E>> route( Graph<N, E> graph, Metric metric, E source, E destination ) {
-        return route( graph, metric, source, destination, new Distance( 0 ), new Distance( 0 ), new Distance( 0 ), new Distance( 0 ) );
+        return route( graph, metric, source, destination, Distance.newInstance( 0 ), Distance.newInstance( 0 ), Distance.newInstance( 0 ), Distance.newInstance( 0 ) );
     }
 
     @Override
@@ -55,7 +52,7 @@ public class DijkstraAlgorithm<N extends Node<N, E>, E extends Edge<N, E>> imple
         Distance upperBound = Distance.newInfinityInstance();
         E singleEdgePath = null;
         if ( source.equals( destination ) ) {
-            Distance substract = toSourceEnd.substract( toDestinationEnd );
+            Distance substract = toSourceEnd.subtract( toDestinationEnd );
             if ( source.isOneWay() ) {
                 // is positive or zero
                 if ( !substract.isNegative() ) {

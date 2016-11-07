@@ -5,6 +5,8 @@
  */
 package cz.certicon.routing.model.values;
 
+import cz.certicon.routing.utils.DoubleComparator;
+
 import java.util.Objects;
 
 /**
@@ -22,7 +24,7 @@ public class Length implements Number<Length> {
      * Creates an instance via an amount and units
      *
      * @param lengthUnits the length units in which the length is provided
-     * @param length actual value
+     * @param length      actual value
      */
     public Length( LengthUnits lengthUnits, long length ) {
         this.lengthUnits = lengthUnits;
@@ -116,6 +118,41 @@ public class Length implements Number<Length> {
         return this.lengthUnits == other.lengthUnits;
     }
 
+
+    public int compareTo( Length other ) {
+        return Long.compare( getValue(), other.getValue() );
+    }
+
+    @Override
+    public boolean isGreaterThan( Length other ) {
+        return compareTo( other ) > 0;
+    }
+
+    @Override
+    public boolean isGreaterOrEqualTo( Length other ) {
+        return compareTo( other ) >= 0;
+    }
+
+    @Override
+    public boolean isLowerThan( Length other ) {
+        return compareTo( other ) < 0;
+    }
+
+    @Override
+    public boolean isLowerOrEqualTo( Length other ) {
+        return compareTo( other ) <= 0;
+    }
+
+    @Override
+    public boolean isEqualTo( Length other ) {
+        return compareTo( other ) == 0;
+    }
+
+    @Override
+    public int compareTo( Number<Length> o ) {
+        return compareTo( o.identity() );
+    }
+
     @Override
     public boolean isPositive() {
         return nanometers > 0;
@@ -137,7 +174,7 @@ public class Length implements Number<Length> {
     }
 
     @Override
-    public Length substract( Length other ) {
+    public Length subtract( Length other ) {
         return new Length( lengthUnits, lengthUnits.fromNano( nanometers - other.nanometers ) );
     }
 
@@ -151,4 +188,8 @@ public class Length implements Number<Length> {
         return new Length( lengthUnits, lengthUnits.fromNano( nanometers * other.nanometers ) );
     }
 
+    @Override
+    public Length identity() {
+        return this;
+    }
 }

@@ -9,6 +9,7 @@ import cz.certicon.routing.utils.DoubleComparator;
 import lombok.Value;
 
 /**
+ * Representation of distance implementing the {@link Number} interface.
  *
  * @author Michael Blaha {@literal <blahami2@gmail.com>}
  */
@@ -23,6 +24,12 @@ public class Distance implements Number<Distance> {
     private static final Distance DISTANCE_TWO = new Distance( 2 );
     private static final Distance DISTANCE_INFINITY = new Distance( Double.MAX_VALUE );
 
+    /**
+     * Returns instance of {@link Distance} representing the provided double value. Returned instance does not have to be unique - 0,1,2 and infinity instances for example are premade.
+     *
+     * @param dist distance as double value
+     * @return new instnace of {@link Distance}
+     */
     public static Distance newInstance( double dist ) {
         if ( DoubleComparator.isEqualTo( dist, 0, EPS ) ) {
             return DISTANCE_ZERO;
@@ -39,38 +46,63 @@ public class Distance implements Number<Distance> {
         return new Distance( dist );
     }
 
+    /**
+     * Returns infinity instance
+     *
+     * @return infinity instance
+     */
     public static Distance newInfinityInstance() {
         return DISTANCE_INFINITY;
     }
 
-    public Distance( double dist ) {
+    /**
+     * Private constructor. Use newInstnace instead.
+     *
+     * @param dist double value
+     */
+    private Distance( double dist ) {
         this.value = dist;
-    }
-
-    public boolean isGreaterThan( Distance other ) {
-        return compareTo( other ) > 0;
-    }
-
-    public boolean isGreaterOrEqualTo( Distance other ) {
-        return compareTo( other ) >= 0;
-    }
-
-    public boolean isLowerThan( Distance other ) {
-        return compareTo( other ) < 0;
-    }
-
-    public boolean isLowerOrEqualTo( Distance other ) {
-        return compareTo( other ) <= 0;
-    }
-
-    public boolean isEqualTo( Distance other ) {
-        return compareTo( other ) == 0;
     }
 
     public int compareTo( Distance other ) {
         return DoubleComparator.compare( value, other.value, EPS );
     }
 
+    @Override
+    public boolean isGreaterThan( Distance other ) {
+        return compareTo( other ) > 0;
+    }
+
+    @Override
+    public boolean isGreaterOrEqualTo( Distance other ) {
+        return compareTo( other ) >= 0;
+    }
+
+    @Override
+    public boolean isLowerThan( Distance other ) {
+        return compareTo( other ) < 0;
+    }
+
+    @Override
+    public boolean isLowerOrEqualTo( Distance other ) {
+        return compareTo( other ) <= 0;
+    }
+
+    @Override
+    public boolean isEqualTo( Distance other ) {
+        return compareTo( other ) == 0;
+    }
+
+    @Override
+    public int compareTo( Number<Distance> o ) {
+        return compareTo( o.identity() );
+    }
+
+    /**
+     * Returns whether this number is infinite or not
+     *
+     * @return true if this number is infinite, false otherwise
+     */
     public boolean isInfinite() {
         return isGreaterOrEqualTo( DISTANCE_INFINITY );
     }
@@ -81,7 +113,7 @@ public class Distance implements Number<Distance> {
     }
 
     @Override
-    public Distance substract( Distance other ) {
+    public Distance subtract( Distance other ) {
         return new Distance( value - other.value );
     }
 
@@ -93,6 +125,11 @@ public class Distance implements Number<Distance> {
     @Override
     public Distance multiply( Distance other ) {
         return new Distance( value * other.value );
+    }
+
+    @Override
+    public Distance identity() {
+        return this;
     }
 
     @Override
@@ -112,5 +149,4 @@ public class Distance implements Number<Distance> {
         }
         return this;
     }
-
 }
