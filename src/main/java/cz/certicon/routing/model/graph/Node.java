@@ -54,19 +54,58 @@ public interface Node<N extends Node, E extends Edge> extends Identifiable {
      */
     Coordinate getCoordinate();
 
+    /**
+     * Returns degree of this node (number of edges connected to this node)
+     *
+     * @return degree of this node
+     */
     int getDegree();
 
+    /**
+     * Adds edge to this node
+     *
+     * @param edge added edge
+     */
     void addEdge( E edge );
 
+    /**
+     * Removes edge from this node
+     *
+     * @param edge removed edge
+     */
     void removeEdge( E edge );
 
+    /**
+     * Sets turn-table
+     *
+     * @param turnTable turn-table
+     */
     void setTurnTable( TurnTable turnTable );
 
+    /**
+     * Returns turn-table
+     *
+     * @return turn-table
+     */
     TurnTable getTurnTable();
 
+    /**
+     * Sets coordinates
+     *
+     * @param coordinate coordiantes
+     */
     void setCoordinate( Coordinate coordinate );
 
+    /**
+     * Locks this node. All the altering operations after lock is called are forbidden.
+     */
     void lock();
 
+    /**
+     * Creates a copy of this node into the new graph
+     *
+     * @param newGraph new graph
+     * @return copy of this node from the new graph
+     */
     N copy( Graph<N, E> newGraph );
 }

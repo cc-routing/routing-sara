@@ -6,6 +6,7 @@
 package cz.certicon.routing.model.graph;
 
 /**
+ * {@link Node} implementation for the {@link SaraGraph}.
  *
  * @author Michael Blaha {@literal <blahami2@gmail.com>}
  */
@@ -18,6 +19,11 @@ public class SaraNode extends AbstractNode<SaraNode, SaraEdge> {
         this.parent = parent;
     }
 
+    /**
+     * Returns parent cell
+     *
+     * @return parent cell
+     */
     public Cell getParent() {
         return parent;
     }

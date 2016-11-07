@@ -6,6 +6,7 @@
 package cz.certicon.routing.model.graph;
 
 /**
+ * {@link Edge} implementation for the {@link SaraGraph}.
  *
  * @author Michael Blaha {@literal <blahami2@gmail.com>}
  */

@@ -11,6 +11,7 @@ import lombok.Getter;
 import lombok.Value;
 
 /**
+ * Turn-table representation
  *
  * @author Michael Blaha {@literal <blahami2@gmail.com>}
  */
@@ -20,6 +21,13 @@ public class TurnTable {
     @Getter( AccessLevel.NONE )
     Distance[][] turnCosts;
 
+    /**
+     * Returns cost for the given indices
+     *
+     * @param from from index
+     * @param to   to index
+     * @return cost for the given indices
+     */
     public Distance getCost( int from, int to ) {
         return turnCosts[from][to];
     }

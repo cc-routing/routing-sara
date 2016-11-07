@@ -13,15 +13,17 @@ import cz.certicon.routing.model.values.Distance;
 import cz.certicon.routing.utils.StringUtils;
 import cz.certicon.routing.utils.collections.ImmutableIterator;
 import cz.certicon.routing.utils.collections.Iterator;
+
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
 /**
+ * Skeletal implementation of the {@link Node} interface
  *
- * @author Michael Blaha {@literal <blahami2@gmail.com>}
  * @param <N> node type
  * @param <E> edge type
+ * @author Michael Blaha {@literal <blahami2@gmail.com>}
  */
 public abstract class AbstractNode<N extends Node, E extends Edge> implements Node<N, E> {
 

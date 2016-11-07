@@ -9,6 +9,7 @@ import java.util.Comparator;
 import java.util.List;
 
 /**
+ * Basic implementation of the {@link Node} interface.
  *
  * @author Michael Blaha {@literal <blahami2@gmail.com>}
  */

@@ -6,6 +6,7 @@
 package cz.certicon.routing.model.graph;
 
 /**
+ * Metric enum.
  *
  * @author Michael Blaha {@literal <blahami2@gmail.com>}
  */

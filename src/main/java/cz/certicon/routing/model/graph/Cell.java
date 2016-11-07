@@ -11,6 +11,7 @@ import lombok.Getter;
 import lombok.Setter;
 
 /**
+ * Cell used for hierarchical sara graph.
  *
  * @author Michael Blaha {@literal <blahami2@gmail.com>}
  */
@@ -24,6 +25,11 @@ public class Cell implements Identifiable {
     @Setter
     public CellRouteTable routeTable;
 
+    /**
+     * Constructor
+     *
+     * @param id cell id
+     */
     public Cell( long id ) {
         this.id = id;
     }
@@ -33,19 +39,37 @@ public class Cell implements Identifiable {
         return id;
     }
 
+    /**
+     * Returns parent of this cell
+     *
+     * @return parent of this cell
+     */
     public Cell getParent() {
         return parent;
     }
 
+    /**
+     * Sets parent to this cell
+     *
+     * @param parent parent
+     */
     public void setParent( Cell parent ) {
         checkLock();
         this.parent = parent;
     }
 
+    /**
+     * Returns whether this cell has a parent
+     *
+     * @return true if this cell has a parent, false otherwise
+     */
     public boolean hasParent() {
         return parent != null;
     }
 
+    /**
+     * Locks this cell against modifications.
+     */
     public void lock() {
         locked = true;
     }

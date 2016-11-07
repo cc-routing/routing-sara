@@ -10,6 +10,8 @@ import cz.certicon.routing.model.values.Distance;
 import java.util.EnumMap;
 
 /**
+ * Skeletal implementation of the {@link Edge} interface.
+ *
  * @param <N> node type
  * @param <E> edge type
  * @author Michael Blaha {@literal <blahami2@gmail.com>}

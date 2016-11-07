@@ -7,13 +7,16 @@ package cz.certicon.routing.model.graph;
 
 import cz.certicon.routing.model.basic.Pair;
 import cz.certicon.routing.model.values.Distance;
+
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.Set;
+
 import lombok.NonNull;
 
 /**
+ * Basic undirected implementation of the {@link Graph} interface
  *
  * @author Michael Blaha {@literal <blahami2@gmail.com>}
  */
@@ -27,12 +30,31 @@ public class UndirectedGraph extends AbstractUndirectedGraph<SimpleNode, SimpleE
         super( metrics );
     }
 
+
+    /**
+     * Creates and returns new node for the given id
+     *
+     * @param id node's id
+     * @return new node
+     */
     public SimpleNode createNode( long id ) {
         SimpleNode node = new SimpleNode( this, id );
         addNode( node );
         return node;
     }
 
+    /**
+     * Creates and returns new edge for the given data
+     *
+     * @param id          edge's id
+     * @param oneway      whether the edge is oneway or twoway
+     * @param source      edge's source node
+     * @param target      edge's target node
+     * @param sourceIndex index to source's turn-table
+     * @param targetIndex index to target's turn-table
+     * @param metrics     array of distances and metrics
+     * @return new edge
+     */
     @SafeVarargs
     public final SimpleEdge createEdge( long id, boolean oneway, @NonNull SimpleNode source, @NonNull SimpleNode target, int sourceIndex, int targetIndex, Pair<Metric, Distance>... metrics ) {
         SimpleEdge edge = new SimpleEdge( this, id, oneway, source, target, sourceIndex, targetIndex );
@@ -43,6 +65,18 @@ public class UndirectedGraph extends AbstractUndirectedGraph<SimpleNode, SimpleE
         return edge;
     }
 
+    /**
+     * Creates and returns new edge for the given data
+     *
+     * @param id          edge's id
+     * @param oneway      whether the edge is oneway or twoway
+     * @param source      edge's source node
+     * @param target      edge's target node
+     * @param sourceIndex index to source's turn-table
+     * @param targetIndex index to target's turn-table
+     * @param metrics     collection of distances and metrics
+     * @return new edge
+     */
     public SimpleEdge createEdge( long id, boolean oneway, @NonNull SimpleNode source, @NonNull SimpleNode target, int sourceIndex, int targetIndex, Collection<Pair<Metric, Distance>> metrics ) {
         SimpleEdge edge = new SimpleEdge( this, id, oneway, source, target, sourceIndex, targetIndex );
         addEdge( edge );
@@ -57,6 +91,14 @@ public class UndirectedGraph extends AbstractUndirectedGraph<SimpleNode, SimpleE
         return new UndirectedGraph( metrics );
     }
 
+    /**
+     * Creates new instance of [@link {@link UndirectedGraph} from any given {@link Graph}
+     *
+     * @param graph given graph
+     * @param <N>   node type
+     * @param <E>   edge type
+     * @return new instance of {@link UndirectedGraph}
+     */
     public static <N extends Node, E extends Edge> UndirectedGraph fromGraph( Graph<N, E> graph ) {
         UndirectedGraph undirectedGraph = new UndirectedGraph( graph.getMetrics() );
         for ( N node : graph.getNodes() ) {

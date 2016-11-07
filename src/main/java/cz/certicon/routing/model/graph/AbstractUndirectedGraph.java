@@ -24,6 +24,8 @@ import java.util.Map;
 import java.util.Set;
 
 /**
+ * Skeletal implementation of the {@link Graph} interface implementing an undirected graph.
+ *
  * @param <N> node type
  * @param <E> edge type
  * @author Michael Blaha {@literal <blahami2@gmail.com>}

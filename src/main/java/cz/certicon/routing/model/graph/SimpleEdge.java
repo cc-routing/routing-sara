@@ -6,6 +6,7 @@
 package cz.certicon.routing.model.graph;
 
 /**
+ * Basic implementation of the {@link Edge} interface.
  *
  * @author Michael Blaha {@literal <blahami2@gmail.com>}
  */
