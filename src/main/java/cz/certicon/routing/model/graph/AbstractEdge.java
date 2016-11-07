@@ -127,8 +127,7 @@ public abstract class AbstractEdge<N extends Node, E extends Edge> implements Ed
 
     @Override
     public void lock() {
-        for ( Metric metric :
-                getGraph().getMetrics() ) {
+        for ( Metric metric : getGraph().getMetrics() ) {
             if ( !distanceMap.containsKey( metric ) ) {
                 throw new IllegalStateException( "Unable to lock edge{" + getId() + "}: metrics not filled: missing metric: " + metric.name() );
             }

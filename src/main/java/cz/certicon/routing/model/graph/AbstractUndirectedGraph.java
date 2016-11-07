@@ -34,7 +34,6 @@ public abstract class AbstractUndirectedGraph<N extends Node<N, E>, E extends Ed
 
     private final TLongObjectMap<N> nodes;
     private final TLongObjectMap<E> edges;
-    private final Map<Metric, Map<Edge, Distance>> metricMap;
     private final EnumSet<Metric> metrics;
     private boolean locked = false;
 //    @Getter( AccessLevel.NONE )
@@ -43,18 +42,13 @@ public abstract class AbstractUndirectedGraph<N extends Node<N, E>, E extends Ed
     public AbstractUndirectedGraph() {
         this.nodes = new TLongObjectHashMap<>();
         this.edges = new TLongObjectHashMap<>();
-        this.metricMap = new EnumMap<>( Metric.class );
         this.metrics = EnumSet.noneOf( Metric.class );
     }
 
     public AbstractUndirectedGraph( Collection<Metric> metrics ) {
         this.nodes = new TLongObjectHashMap<>();
         this.edges = new TLongObjectHashMap<>();
-        this.metricMap = new EnumMap<>( Metric.class );
         this.metrics = EnumSet.copyOf( metrics );
-        for ( Metric metric : metrics ) {
-            metricMap.put( metric, new HashMap<Edge, Distance>() );
-        }
     }
 
     @Override
@@ -118,9 +112,6 @@ public abstract class AbstractUndirectedGraph<N extends Node<N, E>, E extends Ed
     public void removeEdge( E edge ) {
         checkLock();
         edges.remove( edge.getId() );
-        for ( Map<Edge, Distance> value : metricMap.values() ) {
-            value.remove( edge );
-        }
         edge.getSource().removeEdge( edge );
         edge.getTarget().removeEdge( edge );
     }
@@ -130,16 +121,8 @@ public abstract class AbstractUndirectedGraph<N extends Node<N, E>, E extends Ed
         for ( N node : getNodes() ) {
             node.lock();
         }
-        for ( Metric metric : metrics ) {
-            if ( !metricMap.containsKey( metric ) ) {
-                throw new IllegalStateException( "Metric not set but required: " + metric );
-            }
-            Map<Edge, Distance> distanceMap = metricMap.get( metric );
-            for ( E edge : getEdges() ) {
-                if ( !distanceMap.containsKey( edge ) ) {
-                    throw new IllegalStateException( "Metric not set but required for: " + metric + " -> #" + edge );
-                }
-            }
+        for ( E edge : getEdges() ) {
+            edge.lock();
         }
         this.locked = true;
     }
