@@ -6,10 +6,10 @@
 package cz.certicon.routing.utils.efficiency;
 
 import cz.certicon.routing.utils.EffectiveUtils;
+
 import java.util.Arrays;
 
 /**
- *
  * @author Michael Blaha {@literal <blahami2@gmail.com>}
  */
 public class LongBitArray implements BitArray {
@@ -24,9 +24,17 @@ public class LongBitArray implements BitArray {
     private long[] resetArray;
     private int size;
 
+    /**
+     * Constructor. Call {@link #init(int)} before using this object.
+     */
     public LongBitArray() {
     }
 
+    /**
+     * Constructor. See {@link #init(int)}.
+     *
+     * @param size
+     */
     public LongBitArray( int size ) {
         init( size );
     }
@@ -70,14 +78,14 @@ public class LongBitArray implements BitArray {
     @Override
     public String toString() {
         StringBuilder sb = new StringBuilder();
-        sb.append( "[");
+        sb.append( "[" );
         for ( int i = 0; i < size; i++ ) {
-            sb.append( get(i) ? "1" : "0"  ).append( ", ");
+            sb.append( get( i ) ? "1" : "0" ).append( ", " );
         }
-        if(sb.length() > 3){
-            sb.replace( sb.length() - 2, sb.length(), "");
+        if ( sb.length() > 3 ) {
+            sb.replace( sb.length() - 2, sb.length(), "" );
         }
-        sb.append( "]");
+        sb.append( "]" );
         return sb.toString();
     }
 
