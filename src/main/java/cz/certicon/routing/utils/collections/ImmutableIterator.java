@@ -5,21 +5,30 @@
  */
 package cz.certicon.routing.utils.collections;
 
-import cz.certicon.routing.model.graph.Node;
-
 /**
+ * Immutable iterator (wraps modification methods and forbids them).
  *
- * @author Michael Blaha {@literal <blahami2@gmail.com>}
  * @param <T>
+ * @author Michael Blaha {@literal <blahami2@gmail.com>}
  */
 public class ImmutableIterator<T> implements Iterator<T> {
 
     private final java.util.Iterator<T> iterator;
 
+    /**
+     * Constructor for arrays
+     *
+     * @param iterator array iterator
+     */
     public ImmutableIterator( ArrayIterator<T> iterator ) {
         this.iterator = iterator;
     }
 
+    /**
+     * Constructor for regular iterators
+     *
+     * @param iterator iterator
+     */
     public ImmutableIterator( java.util.Iterator<T> iterator ) {
         this.iterator = iterator;
     }

@@ -6,9 +6,10 @@
 package cz.certicon.routing.utils.collections;
 
 /**
+ * Iterable iterator. Do not re-use. Convenience class for enhanced for-each loop. Once the for-each loop supports iterators, this class becomes deprecated.
  *
- * @author Michael Blaha {@literal <blahami2@gmail.com>}
  * @param <T> type
+ * @author Michael Blaha {@literal <blahami2@gmail.com>}
  */
 public interface Iterator<T> extends java.util.Iterator<T>, Iterable<T> {
 

@@ -140,6 +140,13 @@ public class CollectionUtils {
         return set;
     }
 
+    /**
+     * Returns iterated values as list
+     *
+     * @param iterable iterable to iterate on
+     * @param <T>      element type
+     * @return list containing iterated values
+     */
     public static <T> List<T> asList( Iterable<T> iterable ) {
         List<T> list = new ArrayList<>();
         for ( T t : iterable ) {

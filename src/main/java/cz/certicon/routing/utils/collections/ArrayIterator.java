@@ -6,7 +6,9 @@
 package cz.certicon.routing.utils.collections;
 
 /**
- * @param <T>
+ * Iterator for array.
+ *
+ * @param <T> type
  * @author Michael Blaha {@literal <blahami2@gmail.com>}
  */
 public class ArrayIterator<T> implements Iterator<T> {
@@ -14,6 +16,11 @@ public class ArrayIterator<T> implements Iterator<T> {
     private final T[] array;
     private int position = -1;
 
+    /**
+     * Constructor
+     *
+     * @param array array to iterate on
+     */
     public ArrayIterator( T[] array ) {
         this.array = array;
     }
