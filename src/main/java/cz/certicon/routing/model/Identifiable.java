@@ -8,15 +8,29 @@ package cz.certicon.routing.model;
 import java.util.Comparator;
 
 /**
+ * Identifiable interface supporting getId and comparison via predefined comparators.
  *
  * @author Michael Blaha {@literal <blahami2@gmail.com>}
  */
 public interface Identifiable {
 
+    /**
+     * Returns id of this element
+     *
+     * @return id of this element
+     */
     long getId();
 
+    /**
+     * Predefined comparators
+     */
     class Comparators {
 
+        /**
+         * Returns ascending ID comparator
+         *
+         * @return ascending id comparator
+         */
         public static Comparator<Identifiable> createIdComparator() {
             return new Comparator<Identifiable>() {
                 @Override
@@ -26,6 +40,11 @@ public interface Identifiable {
             };
         }
 
+        /**
+         * Returns descending ID comparator
+         *
+         * @return descending id comparator
+         */
         public static Comparator<Identifiable> createIdComparatorDesc() {
             return new Comparator<Identifiable>() {
                 @Override

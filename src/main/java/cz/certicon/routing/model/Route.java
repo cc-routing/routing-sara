@@ -14,18 +14,21 @@ import cz.certicon.routing.model.graph.SimpleEdge;
 import cz.certicon.routing.model.values.Distance;
 import cz.certicon.routing.utils.collections.ImmutableIterator;
 import cz.certicon.routing.utils.collections.Iterator;
+
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
+
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.Value;
 
 /**
+ * Representation of route (result of the {@link cz.certicon.routing.algorithm.RoutingAlgorithm})
  *
+ * @param <N> node type
+ * @param <E> edge type
  * @author Michael Blaha {@literal <blahami2@gmail.com>}
- * @param <N>
- * @param <E>
  */
 @Value
 public class Route<N extends Node, E extends Edge> {
@@ -35,14 +38,29 @@ public class Route<N extends Node, E extends Edge> {
     N source;
     N target;
 
+    /**
+     * Returns list of edges in the route
+     *
+     * @return list of edges in the route
+     */
     public List<E> getEdgeList() {
         return new ArrayList<>( edges );
     }
 
+    /**
+     * Returns iterator for the list of edges in the route
+     *
+     * @return iterator for the list of edges in the route
+     */
     public Iterator<E> getEdges() {
         return new ImmutableIterator<>( edges.iterator() );
     }
 
+    /**
+     * Returns iterator for the list of nodes in the route
+     *
+     * @return iterator for the list of nodes in the route
+     */
     public Iterator<N> getNodes() {
         return new Iterator<N>() {
             private final java.util.Iterator<E> edgeIterator = edges.iterator();
@@ -72,6 +90,12 @@ public class Route<N extends Node, E extends Edge> {
         };
     }
 
+    /**
+     * Calculates and returns length of this route for the given metric
+     *
+     * @param metric given metric
+     * @return length of this route for the given metric
+     */
     public Distance calculateDistance( Metric metric ) {
         Distance dist = Distance.newInstance( 0 );
         for ( E edge : edges ) {
@@ -80,10 +104,23 @@ public class Route<N extends Node, E extends Edge> {
         return dist;
     }
 
+    /**
+     * Returns builder
+     *
+     * @param <N> node type
+     * @param <E> edge type
+     * @return builder
+     */
     public static <N extends Node<N, E>, E extends Edge<N, E>> RouteBuilder builder() {
         return new RouteBuilder<>();
     }
 
+    /**
+     * {@link Route} builder.
+     *
+     * @param <N> node type
+     * @param <E> edge type
+     */
     public static class RouteBuilder<N extends Node, E extends Edge> {
 
         private Node source;
@@ -92,9 +129,18 @@ public class Route<N extends Node, E extends Edge> {
         private boolean uturn = false;
         private boolean fixedStart = false;
 
+        /**
+         * Constructor
+         */
         public RouteBuilder() {
         }
 
+        /**
+         * Sets source of the route
+         *
+         * @param source source of the route
+         * @return this builder
+         */
         public RouteBuilder setSource( N source ) {
             this.source = source;
             this.target = source;
@@ -102,6 +148,12 @@ public class Route<N extends Node, E extends Edge> {
             return this;
         }
 
+        /**
+         * Sets target of the route
+         *
+         * @param target target of the route
+         * @return this builder
+         */
         public RouteBuilder setTarget( N target ) {
             this.source = target;
             this.target = target;
@@ -109,6 +161,12 @@ public class Route<N extends Node, E extends Edge> {
             return this;
         }
 
+        /**
+         * Adds edge as last (in the sequence)
+         *
+         * @param edge edge
+         * @return this builder
+         */
         public RouteBuilder addAsLast( E edge ) {
             if ( source == null ) {
                 source = edge.getSource();
@@ -163,6 +221,12 @@ public class Route<N extends Node, E extends Edge> {
             return this;
         }
 
+        /**
+         * Adds edge as first (in the sequence)
+         *
+         * @param edge edge
+         * @return this builder
+         */
         public RouteBuilder addAsFirst( E edge ) {
             if ( source == null ) {
                 source = edge.getSource();
@@ -217,6 +281,11 @@ public class Route<N extends Node, E extends Edge> {
             return this;
         }
 
+        /**
+         * Builds the route
+         *
+         * @return built route
+         */
         public Route<N, E> build() {
             return new Route( new ArrayList<>( edges ), source, target );
         }
