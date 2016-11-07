@@ -152,41 +152,90 @@ public class EffectiveUtils {
     }
 
 
+    /**
+     * Enlarges the orig array by the sizeBy
+     *
+     * @param orig   original array
+     * @param sizeBy size by which the array should be enlarged
+     * @return new array containing values from orig and having size of orig.length + sizeBy
+     */
     public static long[] enlarge( long[] orig, int sizeBy ) {
         long[] newArray = new long[orig.length + sizeBy];
         copyArray( orig, newArray );
         return newArray;
     }
 
+    /**
+     * Enlarges the orig array by the sizeBy
+     *
+     * @param orig   original array
+     * @param sizeBy size by which the array should be enlarged
+     * @return new array containing values from orig and having size of orig.length + sizeBy
+     */
     public static int[] enlarge( int[] orig, int sizeBy ) {
         int[] newArray = new int[orig.length + sizeBy];
         copyArray( orig, newArray );
         return newArray;
     }
 
+    /**
+     * Enlarges the orig array by the sizeBy
+     *
+     * @param orig   original array
+     * @param sizeBy size by which the array should be enlarged
+     * @return new array containing values from orig and having size of orig.length + sizeBy
+     */
     public static boolean[] enlarge( boolean[] orig, int sizeBy ) {
         boolean[] newArray = new boolean[orig.length + sizeBy];
         copyArray( orig, newArray );
         return newArray;
     }
 
+    /**
+     * Enlarges the orig array by the sizeBy
+     *
+     * @param orig   original array
+     * @param sizeBy size by which the array should be enlarged
+     * @return new array containing values from orig and having size of orig.length + sizeBy
+     */
     public static float[] enlarge( float[] orig, int sizeBy ) {
         float[] newArray = new float[orig.length + sizeBy];
         copyArray( orig, newArray );
         return newArray;
     }
 
+    /**
+     * Enlarges the orig array by the sizeBy
+     *
+     * @param orig   original array
+     * @param sizeBy size by which the array should be enlarged
+     * @return new array containing values from orig and having size of orig.length + sizeBy
+     */
     public static double[] enlarge( double[] orig, int sizeBy ) {
         double[] newArray = new double[orig.length + sizeBy];
         copyArray( orig, newArray );
         return newArray;
     }
 
+    /**
+     * Enlarges the orig array by the sizeBy
+     *
+     * @param orig   original array
+     * @param sizeBy size by which the array should be enlarged
+     * @return new array containing values from orig and having size of orig.length + sizeBy
+     */
     public static int[][] enlarge( int[][] orig, int sizeBy ) {
         int[][] newArray = Arrays.copyOf( orig, orig.length + sizeBy );
         return newArray;
     }
 
+    /**
+     * Enlarges the orig array by the sizeBy
+     *
+     * @param orig   original array
+     * @param sizeBy size by which the array should be enlarged
+     * @return new array containing values from orig and having size of orig.length + sizeBy
+     */
     public static float[][][] enlarge( float[][][] orig, int sizeBy ) {
         float[][][] newArray = Arrays.copyOf( orig, orig.length + sizeBy );
         return newArray;

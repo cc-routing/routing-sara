@@ -206,10 +206,22 @@ public class CoordinateUtils {
                 && DoubleComparator.isEqualTo( a.getLongitude(), b.getLongitude(), precision ) );
     }
 
+    /**
+     * Sorts coordinates in a clockwise order
+     *
+     * @param coords collection of coordinates
+     * @return coordinates sorted in a clockwise order
+     */
     public static List<Coordinate> sortClockwise( Collection<Coordinate> coords ) {
         return sortClockwise( coords.iterator() );
     }
 
+    /**
+     * Sorts coordinates provided by the iterator in a clockwise order
+     *
+     * @param iterator iterator supplying coordinates
+     * @return coordinates sorted in a clockwise order
+     */
     public static List<Coordinate> sortClockwise( Iterator<Coordinate> iterator ) {
         List<Coordinate> coordinateList = new ArrayList<>();
         while ( iterator.hasNext() ) {

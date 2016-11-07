@@ -30,11 +30,17 @@ import java.util.List;
 import java.util.Map;
 
 /**
+ * Utilities for presentation and debugging
  *
  * @author Michael Blaha {@literal <blahami2@gmail.com>}
  */
 public class DisplayUtils {
 
+    /**
+     * Displays given sara graph (displays cells of L1)
+     *
+     * @param graph given sara graph
+     */
     public static void display( SaraGraph graph ) {
         int layers = 1;
         Cell cell = graph.getNodes().next().getParent();
@@ -61,6 +67,14 @@ public class DisplayUtils {
         }
     }
 
+    /**
+     * Displays graph divided into given node groups
+     *
+     * @param graph      graph
+     * @param nodeGroups node groups
+     * @param <N>        node type
+     * @param <E>        edge type
+     */
     public static <N extends Node, E extends Edge> void display( Graph<N, E> graph, Collection<Collection<N>> nodeGroups ) {
         UndirectedGraph g = new UndirectedGraph();
         for ( Collection<N> nodeGroup : nodeGroups ) {
@@ -93,6 +107,13 @@ public class DisplayUtils {
         presenter.display();
     }
 
+    /**
+     * Displayes given contract graph (as clusters)
+     *
+     * @param graph given graph
+     * @param <N>   node type
+     * @param <E>   edge type
+     */
     public static <N extends Node, E extends Edge> void display( ContractGraph graph ) {
         PartitionViewer viewer = new JxPartitionViewer();
         for ( ContractNode node : graph.getNodes() ) {

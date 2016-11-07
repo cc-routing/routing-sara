@@ -7,6 +7,7 @@ package cz.certicon.routing.utils;
 
 import cz.certicon.routing.model.values.CartesianCoords;
 import cz.certicon.routing.model.values.Coordinate;
+
 import java.awt.Dimension;
 import java.awt.Point;
 import java.util.ArrayList;
@@ -35,9 +36,9 @@ public class GeometryUtils {
      * is maximum and the target dimension is 200x200: 1000 would be at x=0,
      * 9000 would be at x=199 and 45646 would be at x=100
      *
-     * @param min minimal value in the source set of points
-     * @param max maximal value in the source set of points
-     * @param actual actual {@link Point} to be computed (placed)
+     * @param min             minimal value in the source set of points
+     * @param max             maximal value in the source set of points
+     * @param actual          actual {@link Point} to be computed (placed)
      * @param targetDimension {@link Dimension} the point must be scaled into
      * @return scaled {@link Point}
      */
@@ -127,7 +128,18 @@ public class GeometryUtils {
         return sb.toString();
     }
 
-    public static double pointToLineDistance( int ax, int ay, int bx, int by, int x, int y ) {
+    /**
+     * Calculates distance from a given line (defined by two points A and B) to the given point (defined by x, y)
+     *
+     * @param ax x coordinate of the point A defining the line
+     * @param ay y coordinate of the point A defining the line
+     * @param bx x coordinate of the point B defining the line
+     * @param by y coordinate of the point B defining the line
+     * @param x  x coordinate of the point
+     * @param y  y coordinate of the point
+     * @return distance between the line and the point
+     */
+    public static double lineToPointDistance( int ax, int ay, int bx, int by, int x, int y ) {
 
 //        System.out.println( "first result = " + first);
         float dx = bx - ax;

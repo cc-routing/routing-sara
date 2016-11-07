@@ -242,7 +242,7 @@ public abstract class AbstractJxMapViewer {
             }
 
             public static boolean inLineRange( int ax, int ay, int bx, int by, int x, int y ) {
-                return GeometryUtils.pointToLineDistance( ax, ay, bx, by, x, y ) <= PRECISION;
+                return GeometryUtils.lineToPointDistance( ax, ay, bx, by, x, y ) <= PRECISION;
             }
             public static final int PRECISION = 5;
         }
