@@ -9,11 +9,15 @@ import cz.certicon.routing.model.Identifiable;
 import java8.util.function.Function;
 
 /**
+ * Container for frequently used mappers
  *
  * @author Michael Blaha {@literal <blahami2@gmail.com>}
  */
 public class Mappers {
 
+    /**
+     * Maps {@link Object} to {@link String} via {@link Object#toString()}
+     */
     public static final Function<Object, String> objectToString = new Function<Object, String>() {
         @Override
         public String apply( Object t ) {
@@ -21,6 +25,9 @@ public class Mappers {
         }
     };
 
+    /**
+     * Maps {@link Identifiable} to {@link String} via id to string conversion
+     */
     public static final Function<Identifiable, String> identifiableToString = new Function<Identifiable, String>() {
         @Override
         public String apply( Identifiable t ) {
