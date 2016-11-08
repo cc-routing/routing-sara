@@ -10,6 +10,7 @@ import cz.certicon.routing.utils.EffectiveUtils;
 import gnu.trove.map.TObjectDoubleMap;
 import gnu.trove.map.hash.TObjectDoubleHashMap;
 import java8.util.Optional;
+import java8.util.function.Supplier;
 
 import java.util.HashMap;
 import java.util.HashSet;
@@ -21,10 +22,25 @@ import java.util.Set;
  */
 public class MultilevelDijkstra {
 
+    private final Supplier<PriorityQueue<State>> queueSupplier;
+
+    public MultilevelDijkstra() {
+        this.queueSupplier = new Supplier<PriorityQueue<State>>() {
+            @Override
+            public PriorityQueue<State> get() {
+                return new FibonacciHeap<>();
+            }
+        };
+    }
+
+    public MultilevelDijkstra( Supplier<PriorityQueue<State>> queueSupplier ) {
+        this.queueSupplier = queueSupplier;
+    }
+
     public Optional<Route> route( OptimizedGraph graph, long source, long target, Metric metric ) {
         int sourceIdx = graph.getNodeById( source );
         int targetIdx = graph.getNodeById( target );
-        PriorityQueue<State> queue = new FibonacciHeap<>();
+        PriorityQueue<State> queue = queueSupplier.get();
         TObjectDoubleMap<State> distanceMap = new TObjectDoubleHashMap<>();
         Map<State, State> predecessorMap = new HashMap<>();
         Set<State> closed = new HashSet<>();
