@@ -5,6 +5,7 @@
  */
 package cz.certicon.routing.algorithm.sara.preprocessing;
 
+import cz.certicon.routing.utils.EffectiveUtils;
 import lombok.Value;
 import lombok.experimental.Wither;
 
@@ -75,7 +76,7 @@ public class PreprocessingInput {
     public PreprocessingInput( int[] cellSizes, double cellRatio, double coreRatio, double lowIntervalProbability, double lowIntervalLimit, int numberOfAssemblyRuns, int numberOfLayers ) {
         // validate input
         validateThat( valid()
-                .and( "cellSizes", equalTo( cellSizes.length, numberOfLayers ) )
+                .and( "cellSizes", greaterThan( cellSizes.length, 0 ) )
                 .and( "cellRatio", greaterThan( cellRatio, 0 ).and( smallerOrEqualTo( cellRatio, 1 ) ) )
                 .and( "coreRatio", greaterThan( coreRatio, 0 ).and( smallerOrEqualTo( coreRatio, 1 ) ) )
                 .and( "lowIntervalProbability", greaterOrEqualTo( lowIntervalProbability, 0 ).and( smallerOrEqualTo( lowIntervalProbability, 1 ) ) )
@@ -85,6 +86,13 @@ public class PreprocessingInput {
         );
         for ( int cellSize : cellSizes ) {
             validateThat( valid().and( "cellSize[" + cellSize + "]", greaterThan( cellSize, 0 ) ) );
+        }
+        int cellSizeLen = cellSizes.length;
+        if ( cellSizeLen < numberOfLayers ) {
+            cellSizes = EffectiveUtils.enlarge( cellSizes, numberOfLayers - cellSizeLen );
+        }
+        for ( int i = cellSizeLen; i < cellSizes.length; i++ ) {
+            cellSizes[i] = cellSizes[cellSizeLen - 1];
         }
         this.cellSizes = cellSizes;
         this.cellRatio = cellRatio;

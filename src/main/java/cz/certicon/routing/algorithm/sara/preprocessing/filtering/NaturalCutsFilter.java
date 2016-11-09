@@ -160,6 +160,20 @@ public class NaturalCutsFilter implements Filter {
 //            }
             nodeSizeContainer.put( node, NODE_INIT_SIZE );
         }
+
+        // - find new ids
+        long maxEdgeId = 0;
+        Iterator<E> graphEdges = graph.getEdges();
+        while ( graphEdges.hasNext() ) {
+            maxEdgeId = Math.max( maxEdgeId, graphEdges.next().getId() );
+        }
+        IdSupplier edgeIdSupplier = new IdSupplier( maxEdgeId );
+        long maxNodeId = 0;
+        Iterator<N> graphNodes = graph.getNodes();
+        while ( graphNodes.hasNext() ) {
+            maxNodeId = Math.max( maxNodeId, graphNodes.next().getId() );
+        }
+        IdSupplier nodeIdSupplier = new IdSupplier( maxNodeId );
         Random random = RandomUtils.createRandom();
         // until there are no nodes left
 //        System.out.println( "starting cycle" );
@@ -202,7 +216,7 @@ public class NaturalCutsFilter implements Filter {
             }
 //            System.out.println( "adding minimal cut" );
             // mark edges from minimal cut as "cut edges"
-            cutEdges.addAll( minimalCut( graph, treeNodes, coreNodes, ringNodes ) );
+            cutEdges.addAll( minimalCut( graph, treeNodes, coreNodes, ringNodes, nodeIdSupplier, edgeIdSupplier ) );
 //            System.out.println( "core nodes: " + coreNodes.size() );
 //            System.out.println( "minimal cut done" );
             // remove all core nodes from the queue
@@ -277,7 +291,7 @@ public class NaturalCutsFilter implements Filter {
      * @param ringNodes ring nodes
      * @return cut edges
      */
-    private <N extends Node<N, E>, E extends Edge<N, E>> Collection<E> minimalCut( Graph<N, E> graph, Set<N> treeNodes, Set<N> coreNodes, Set<N> ringNodes ) {
+    private <N extends Node<N, E>, E extends Edge<N, E>> Collection<E> minimalCut( Graph<N, E> graph, Set<N> treeNodes, Set<N> coreNodes, Set<N> ringNodes, IdSupplier nodeIdSupplier, IdSupplier edgeIdSupplier ) {
         // create a temporary graph
         ContractGraph tmpGraph = new ContractGraph( EnumSet.of( Metric.SIZE ) );
         fillMap( tmpGraph, treeNodes );
@@ -292,19 +306,6 @@ public class NaturalCutsFilter implements Filter {
 //        System.out.println( "tmpgraph [BEFORE]: " + tmpGraph );
 //        DisplayUtils.display( graph, Arrays.asList( treeNodes, coreNodes, ringNodes ) );
         // contract core nodes and ring nodes
-        // - find new ids
-        long maxEdgeId = 0;
-        Iterator<E> graphEdges = graph.getEdges();
-        while ( graphEdges.hasNext() ) {
-            maxEdgeId = Math.max( maxEdgeId, graphEdges.next().getId() );
-        }
-        IdSupplier edgeIdSupplier = new IdSupplier( maxEdgeId );
-        long maxNodeId = 0;
-        Iterator<N> graphNodes = graph.getNodes();
-        while ( graphNodes.hasNext() ) {
-            maxNodeId = Math.max( maxNodeId, graphNodes.next().getId() );
-        }
-        IdSupplier nodeIdSupplier = new IdSupplier( maxNodeId );
         // - contract core
         ContractNode core = contractNode( tmpGraph, coreNodes, nodeIdSupplier, edgeIdSupplier );
         // - contract ring
