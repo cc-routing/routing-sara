@@ -147,7 +147,7 @@ public class MultilevelDijkstraAlgorithm<N extends Node, E extends Edge> impleme
 
                     //use traverse edge to the next cell
                     OverlayEdge traverseEdge = transferNode.getOutgoingEdges().next();//exactly one border edge must exist
-                    OverlayNode traverseNode = transferEdge.getOtherNode( transferNode );
+                    OverlayNode traverseNode = traverseEdge.getOtherNode( transferNode );
 
                     //find OverlayNode at maximal level, where three of nodes are still in different cells
                     OverlayNode levelNode = overlayGraph.getMaxOverlayNode( traverseNode.getColumn().getNode(), traverseNode.getColumn().getEdge(), source, target );
