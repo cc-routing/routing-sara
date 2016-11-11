@@ -198,7 +198,7 @@ public class OptimizedGraph {
         lengths.get( metric )[edgeIdx] = length;
     }
 
-    public float getLength( int edgeIdx, Metric metric ) {
+    public float getDistance( int edgeIdx, Metric metric ) {
         return lengths.get( metric )[edgeIdx];
     }
 

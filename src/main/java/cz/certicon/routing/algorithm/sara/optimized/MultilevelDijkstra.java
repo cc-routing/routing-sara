@@ -6,7 +6,6 @@ import cz.certicon.routing.algorithm.sara.optimized.model.State;
 import cz.certicon.routing.model.graph.Metric;
 import cz.certicon.routing.model.queue.FibonacciHeap;
 import cz.certicon.routing.model.queue.PriorityQueue;
-import cz.certicon.routing.utils.EffectiveUtils;
 import gnu.trove.map.TObjectDoubleMap;
 import gnu.trove.map.hash.TObjectDoubleHashMap;
 import java8.util.Optional;
@@ -79,7 +78,7 @@ public class MultilevelDijkstra {
 
                 if ( !closed.contains( targetState ) ) {
                     double currentDistance = distanceMap.containsKey( targetState ) ? distanceMap.get( targetState ) : Double.MAX_VALUE;
-                    double alternativeDistance = distance + graph.getLength( edge, metric ) + ( state.isFirst() ? 0 : graph.getTurnDistance( state.node, state.edge, edge ) );
+                    double alternativeDistance = distance + graph.getDistance( edge, metric ) + ( state.isFirst() ? 0 : graph.getTurnDistance( state.node, state.edge, edge ) );
                     if ( alternativeDistance < currentDistance ) {
                         distanceMap.put( targetState, alternativeDistance );
                         queue.decreaseKey( targetState, alternativeDistance );

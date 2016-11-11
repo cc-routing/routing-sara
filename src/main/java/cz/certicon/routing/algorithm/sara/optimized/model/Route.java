@@ -1,10 +1,9 @@
 package cz.certicon.routing.algorithm.sara.optimized.model;
 
 
+import cz.certicon.routing.model.graph.Metric;
 import gnu.trove.list.array.TLongArrayList;
-import lombok.Builder;
-
-import java.util.Arrays;
+import java8.util.function.LongToDoubleFunction;
 
 /**
  * Created by blaha on 26.10.2016.
@@ -19,6 +18,17 @@ public class Route {
 
     public long[] getEdges() {
         return edges;
+    }
+
+    public double calculateDistance( final OptimizedGraph graph, final Metric metric ) {
+        return java8.util.J8Arrays.stream( getEdges() ).mapToDouble(
+                new LongToDoubleFunction() {
+                    @Override
+                    public double applyAsDouble( long edgeId ) {
+                        return graph.getDistance( graph.getEdgeById( edgeId ), metric );
+                    }
+                }
+        ).sum();
     }
 
     public static Builder builder() {
