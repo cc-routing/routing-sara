@@ -25,14 +25,13 @@ public interface OneToAllRoutingAlgorithm<N extends Node<N,E>, E extends Edge<N,
     /**
      * Routes to all the provided edges (if the route exists).
      *
-     * @param graph given graph
      * @param metric route metric
      * @param sourceEdge source edge
      * @param sourceDirection in which direction should the route start
      * @param targetEdges target edges
      * @return
      */
-    Map<E, Optional<Route<N,E>>> route( Graph<N, E> graph, Metric metric, E sourceEdge, Direction sourceDirection, Map<E, Direction> targetEdges );
+    Map<E, Optional<Route<N,E>>> route( Metric metric, E sourceEdge, Direction sourceDirection, Map<E, Direction> targetEdges );
 
     enum Direction {
         FORWARD, BACKWARD

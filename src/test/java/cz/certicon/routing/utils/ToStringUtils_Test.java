@@ -12,7 +12,6 @@ import static cz.certicon.routing.model.Identifiable.Comparators.*;
 
 import cz.certicon.routing.model.MinimalCut;
 import cz.certicon.routing.model.Route;
-import cz.certicon.routing.model.basic.Pair;
 import cz.certicon.routing.model.graph.*;
 import cz.certicon.routing.model.graph.preprocessing.ContractEdge;
 import cz.certicon.routing.model.graph.preprocessing.ContractNode;
@@ -258,7 +257,7 @@ public class ToStringUtils_Test {
                                         J8Arrays.stream( Metric.values() ).mapToDouble( new ToDoubleFunction<Metric>() {
                                             @Override
                                             public double applyAsDouble( Metric metric ) {
-                                                return graph.getLength( e, metric );
+                                                return graph.getDistance( e, metric );
                                             }
                                         } ).filter( new DoublePredicate() {
                                             @Override

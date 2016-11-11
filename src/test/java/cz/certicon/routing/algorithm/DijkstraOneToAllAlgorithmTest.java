@@ -78,7 +78,7 @@ public class DijkstraOneToAllAlgorithmTest {
         targetMap.put( edgeMap.get( 4L ), OneToAllRoutingAlgorithm.Direction.FORWARD );
         targetMap.put( edgeMap.get( 5L ), OneToAllRoutingAlgorithm.Direction.BACKWARD );
         targetMap.put( edgeMap.get( 6L ), OneToAllRoutingAlgorithm.Direction.FORWARD );
-        Map<Edge, Optional<Route<Node, Edge>>> result = instance.route( graph, Metric.LENGTH, sourceEdge, sourceDirection, targetMap );
+        Map<Edge, Optional<Route<Node, Edge>>> result = instance.route( Metric.LENGTH, sourceEdge, sourceDirection, targetMap );
 
         assertEquals( targetMap.size(), result.size() );
         assertTrue( result.containsKey( edgeMap.get( 0L ) ) );

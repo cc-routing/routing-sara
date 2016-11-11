@@ -25,7 +25,7 @@ import java8.util.Optional;
 public class DijkstraOneToAllAlgorithm<N extends Node<N, E>, E extends Edge<N, E>> implements OneToAllRoutingAlgorithm<N, E> {
 
     @Override
-    public Map<E, Optional<Route<N, E>>> route( Graph<N, E> graph, Metric metric, E sourceEdge, Direction sourceDirection, Map<E, Direction> targetEdges ) {
+    public Map<E, Optional<Route<N, E>>> route( Metric metric, E sourceEdge, Direction sourceDirection, Map<E, Direction> targetEdges ) {
         Map<State<N, E>, Distance> nodeDistanceMap = new HashMap<>();
         PriorityQueue<State<N, E>> pqueue = new FibonacciHeap<>();
         putNodeDistance( nodeDistanceMap, pqueue, new State( sourceDirection.equals( Direction.FORWARD ) ? sourceEdge.getTarget() : sourceEdge.getSource(), sourceEdge ), Distance.newInstance( 0 ) );

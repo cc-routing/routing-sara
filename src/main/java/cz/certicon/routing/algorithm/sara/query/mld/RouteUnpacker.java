@@ -23,5 +23,5 @@ import java.util.Map;
  */
 public interface RouteUnpacker<N extends Node, E extends Edge> {
 
-    Optional<Route<N, E>> unpack(Graph<N, E> graph, OverlayBuilder overlayGraph, Metric metric, State<N, E> endPoint, Map<State<N, E>, State<N, E>> predecessors);
+    Optional<Route<N, E>> unpack( OverlayBuilder overlayGraph, Metric metric, State<N, E> endPoint, Map<State<N, E>, State<N, E>> predecessors);
 }

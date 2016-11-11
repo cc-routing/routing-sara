@@ -31,21 +31,21 @@ import java8.util.Optional;
 public class DijkstraAlgorithm<N extends Node<N, E>, E extends Edge<N, E>> implements RoutingAlgorithm<N, E> {
 
     @Override
-    public Optional<Route<N, E>> route( Graph<N, E> graph, Metric metric, N source, N destination ) {
+    public Optional<Route<N, E>> route( Metric metric, N source, N destination ) {
         Map<State<N, E>, Distance> nodeDistanceMap = new HashMap<>();
         PriorityQueue<State<N, E>> pqueue = new FibonacciHeap<>();
         Distance upperBound = Distance.newInfinityInstance();
         putNodeDistance( nodeDistanceMap, pqueue, new State<N, E>( source, null ), Distance.newInstance( 0 ) );
-        return route( graph, metric, nodeDistanceMap, pqueue, upperBound, new NodeEndCondition( destination ), null, null );
+        return route( metric, nodeDistanceMap, pqueue, upperBound, new NodeEndCondition( destination ), null, null );
     }
 
     @Override
-    public Optional<Route<N, E>> route( Graph<N, E> graph, Metric metric, E source, E destination ) {
-        return route( graph, metric, source, destination, Distance.newInstance( 0 ), Distance.newInstance( 0 ), Distance.newInstance( 0 ), Distance.newInstance( 0 ) );
+    public Optional<Route<N, E>> route( Metric metric, E source, E destination ) {
+        return route( metric, source, destination, Distance.newInstance( 0 ), Distance.newInstance( 0 ), Distance.newInstance( 0 ), Distance.newInstance( 0 ) );
     }
 
     @Override
-    public Optional<Route<N, E>> route( Graph<N, E> graph, Metric metric, E source, E destination, Distance toSourceStart, Distance toSourceEnd, Distance toDestinationStart, Distance toDestinationEnd ) {
+    public Optional<Route<N, E>> route( Metric metric, E source, E destination, Distance toSourceStart, Distance toSourceEnd, Distance toDestinationStart, Distance toDestinationEnd ) {
         Map<State<N, E>, Distance> nodeDistanceMap = new HashMap<>();
         PriorityQueue<State<N, E>> pqueue = new FibonacciHeap<>();
         // create upper bound if the edges are equal and mark it
@@ -68,10 +68,10 @@ public class DijkstraAlgorithm<N extends Node<N, E>, E extends Edge<N, E>> imple
         if ( !source.isOneWay() ) {
             putNodeDistance( nodeDistanceMap, pqueue, new State( source.getSource(), source ), toSourceStart );
         }
-        return route( graph, metric, nodeDistanceMap, pqueue, upperBound, new EdgeEndCondition( graph, destination, toDestinationStart, toDestinationEnd ), singleEdgePath, destination );
+        return route( metric, nodeDistanceMap, pqueue, upperBound, new EdgeEndCondition( destination, toDestinationStart, toDestinationEnd ), singleEdgePath, destination );
     }
 
-    private Optional<Route<N, E>> route( Graph<N, E> graph, Metric metric, Map<State<N, E>, Distance> nodeDistanceMap, PriorityQueue<State<N, E>> pqueue, Distance upperBound, EndCondition<N, E> endCondition, E singleEdgePath, E endEdge ) {
+    private Optional<Route<N, E>> route( Metric metric, Map<State<N, E>, Distance> nodeDistanceMap, PriorityQueue<State<N, E>> pqueue, Distance upperBound, EndCondition<N, E> endCondition, E singleEdgePath, E endEdge ) {
         Map<State, State> predecessorMap = new HashMap<>();
         Set<State> closedStates = new HashSet<>();
         State finalState = null;
@@ -133,13 +133,11 @@ public class DijkstraAlgorithm<N extends Node<N, E>, E extends Edge<N, E>> imple
 
     private static class EdgeEndCondition<N extends Node, E extends Edge> implements EndCondition<N, E> {
 
-        private final Graph<N, E> graph;
         private final E destination;
         private final Distance toDestinationStart;
         private final Distance toDestinationEnd;
 
-        public EdgeEndCondition( Graph<N, E> graph, E destination, Distance toDestinationStart, Distance toDestinationEnd ) {
-            this.graph = graph;
+        public EdgeEndCondition( E destination, Distance toDestinationStart, Distance toDestinationEnd ) {
             this.destination = destination;
             this.toDestinationStart = toDestinationStart;
             this.toDestinationEnd = toDestinationEnd;

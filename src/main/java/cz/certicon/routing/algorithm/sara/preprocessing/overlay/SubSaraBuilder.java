@@ -129,7 +129,7 @@ public class SubSaraBuilder extends BaseSubBuilder {
         SaraNode source = this.subNodes.get( sourceNodeId );
         SaraNode target = this.subNodes.get( targetNodeId );
 
-        Optional<Route<SaraNode, SaraEdge>> route = this.builder.oneToOne.route( this.subGraph, metric, source, target );
+        Optional<Route<SaraNode, SaraEdge>> route = this.builder.oneToOne.route( metric, source, target );
 
         return route;
     }

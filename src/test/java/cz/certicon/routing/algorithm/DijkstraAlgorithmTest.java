@@ -75,7 +75,7 @@ public class DijkstraAlgorithmTest {
         Node destination = nodeMap.get( 3L );
         DijkstraAlgorithm instance = new DijkstraAlgorithm();
         Route<Node, Edge> expResult = Route.builder().addAsLast( edgeMap.get( 0L ) ).addAsLast( edgeMap.get( 4L ) ).addAsLast( edgeMap.get( 6L ) ).addAsLast( edgeMap.get( 5L ) ).build();
-        Optional<Route<Node, Edge>> result = instance.route( graph, Metric.LENGTH, source, destination );
+        Optional<Route<Node, Edge>> result = instance.route( Metric.LENGTH, source, destination );
         assertEquals(ToStringUtils_Test.toString( expResult ),  ToStringUtils_Test.toString( result.get() ) );
     }
 
@@ -89,7 +89,7 @@ public class DijkstraAlgorithmTest {
         Edge destination = edgeMap.get( 5L );
         DijkstraAlgorithm instance = new DijkstraAlgorithm();
         Route<Node, Edge> expResult = Route.builder().addAsLast( edgeMap.get( 1L ) ).addAsLast( edgeMap.get( 0L ) ).addAsLast( edgeMap.get( 4L ) ).addAsLast( edgeMap.get( 6L ) ).addAsLast( edgeMap.get( 5L ) ).build();
-        Optional<Route<Node, Edge>> result = instance.route( graph, Metric.LENGTH, source, destination );
+        Optional<Route<Node, Edge>> result = instance.route( Metric.LENGTH, source, destination );
         assertEquals(ToStringUtils_Test.toString( expResult ),  ToStringUtils_Test.toString( result.get() ) );
     }
 
@@ -107,7 +107,7 @@ public class DijkstraAlgorithmTest {
         Distance toDestinationEnd = Distance.newInstance( 10 );
         DijkstraAlgorithm instance = new DijkstraAlgorithm();
         Route<Node, Edge> expResult = Route.builder().addAsLast( edgeMap.get( 1L ) ).addAsLast( edgeMap.get( 0L ) ).addAsLast( edgeMap.get( 4L ) ).addAsLast( edgeMap.get( 6L ) ).addAsLast( edgeMap.get( 5L ) ).addAsLast( edgeMap.get( 2L ) ).build();
-        Optional<Route<Node, Edge>> result = instance.route( graph, Metric.LENGTH, source, destination, toSourceStart, toSourceEnd, toDestinationStart, toDestinationEnd );
+        Optional<Route<Node, Edge>> result = instance.route( Metric.LENGTH, source, destination, toSourceStart, toSourceEnd, toDestinationStart, toDestinationEnd );
         assertEquals(ToStringUtils_Test.toString( expResult ),  ToStringUtils_Test.toString( result.get() ) );
     }
 

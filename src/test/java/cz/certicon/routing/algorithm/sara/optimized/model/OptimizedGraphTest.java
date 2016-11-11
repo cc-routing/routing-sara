@@ -113,7 +113,7 @@ public class OptimizedGraphTest {
     @Test
     public void getLength_after_setLength_5_returns_5() throws Exception {
         graph.setLength( 1, Metric.LENGTH, 5f );
-        assertThat( graph.getLength( 1, Metric.LENGTH ), equalTo( 5f ) );
+        assertThat( graph.getDistance( 1, Metric.LENGTH ), equalTo( 5f ) );
     }
 
     @Test

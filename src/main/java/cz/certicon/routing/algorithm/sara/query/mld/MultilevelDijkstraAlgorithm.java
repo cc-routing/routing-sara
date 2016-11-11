@@ -36,27 +36,27 @@ import java.util.Set;
  */
 public class MultilevelDijkstraAlgorithm<N extends Node, E extends Edge> implements RoutingAlgorithm<N, E> {
 
-    public Optional<Route<N, E>> route( Graph<SaraNode, SaraEdge> graph, OverlayBuilder overlayGraph, Metric metric, SaraNode source, SaraNode destination, RouteUnpacker unpacker ) {
+    public Optional<Route<N, E>> route( OverlayBuilder overlayGraph, Metric metric, SaraNode source, SaraNode destination, RouteUnpacker unpacker ) {
         Map<State<SaraNode, SaraEdge>, Distance> nodeDistanceMap = new HashMap<>();
         PriorityQueue<State<SaraNode, SaraEdge>> pqueue = new FibonacciHeap<>();
         Map<State<OverlayNode, SaraEdge>, Distance> overlayNodeDistanceMap = new HashMap<>();
         PriorityQueue<State<OverlayNode, SaraEdge>> overlayPqueue = new FibonacciHeap<>();
         putNodeDistance( nodeDistanceMap, pqueue, new State<SaraNode, SaraEdge>( source, null ), Distance.newInstance( 0 ) );
-        return route( graph, overlayGraph, metric, nodeDistanceMap, pqueue, overlayNodeDistanceMap, overlayPqueue, source, destination, unpacker );
+        return route( overlayGraph, metric, nodeDistanceMap, pqueue, overlayNodeDistanceMap, overlayPqueue, source, destination, unpacker );
     }
 
     @Override
-    public Optional<Route<N, E>> route( Graph<N, E> graph, Metric metric, N source, N destination ) {
+    public Optional<Route<N, E>> route( Metric metric, N source, N destination ) {
         throw new UnsupportedOperationException( "Not supported yet." ); //To change body of generated methods, choose Tools | Templates.
     }
 
     @Override
-    public Optional<Route<N, E>> route( Graph<N, E> graph, Metric metric, E source, E destination ) {
+    public Optional<Route<N, E>> route( Metric metric, E source, E destination ) {
         throw new UnsupportedOperationException( "Not supported yet." ); //To change body of generated methods, choose Tools | Templates.
     }
 
     @Override
-    public Optional<Route<N, E>> route( Graph<N, E> graph, Metric metric, E source, E destination, Distance toSourceStart, Distance toSourceEnd, Distance toDestinationStart, Distance toDestinationEnd ) {
+    public Optional<Route<N, E>> route( Metric metric, E source, E destination, Distance toSourceStart, Distance toSourceEnd, Distance toDestinationStart, Distance toDestinationEnd ) {
         throw new UnsupportedOperationException( "Not supported yet." ); //To change body of generated methods, choose Tools | Templates.
     }
 
@@ -66,7 +66,7 @@ public class MultilevelDijkstraAlgorithm<N extends Node, E extends Edge> impleme
     // 3) bidirectional MLD
     // 4) should we deal with (distance, closed state, ..) transfer node in overlayGraph?
     // 5) should closed states and distances for SaraNode and OverlayNode have separated variables?
-    private Optional<Route<N, E>> route( Graph<SaraNode, SaraEdge> graph, OverlayBuilder overlayGraph, Metric metric, Map<State<SaraNode, SaraEdge>, Distance> nodeDistanceMap, PriorityQueue<State<SaraNode, SaraEdge>> pqueue, Map<State<OverlayNode, SaraEdge>, Distance> overlayNodeDistanceMap, PriorityQueue<State<OverlayNode, SaraEdge>> overlayPqueue, SaraNode source, SaraNode target, RouteUnpacker unpacker ) {
+    private Optional<Route<N, E>> route( OverlayBuilder overlayGraph, Metric metric, Map<State<SaraNode, SaraEdge>, Distance> nodeDistanceMap, PriorityQueue<State<SaraNode, SaraEdge>> pqueue, Map<State<OverlayNode, SaraEdge>, Distance> overlayNodeDistanceMap, PriorityQueue<State<OverlayNode, SaraEdge>> overlayPqueue, SaraNode source, SaraNode target, RouteUnpacker unpacker ) {
         Set<State> closedStates = new HashSet<>();
         Set<State> closedOverlayStates = new HashSet<>();
         Map<State, State> predecessorMap = new HashMap<>();
@@ -184,7 +184,7 @@ public class MultilevelDijkstraAlgorithm<N extends Node, E extends Edge> impleme
         }
 
         //path unpacking
-        return unpacker.unpack( graph, overlayGraph, metric, finalState, predecessorMap );
+        return unpacker.unpack( overlayGraph, metric, finalState, predecessorMap );
     }
 
     private void putNodeDistance( Map<State<SaraNode, SaraEdge>, Distance> nodeDistanceMap, PriorityQueue<State<SaraNode, SaraEdge>> pqueue, State<SaraNode, SaraEdge> node, Distance distance ) {

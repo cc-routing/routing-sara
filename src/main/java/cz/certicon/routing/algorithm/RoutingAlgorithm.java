@@ -25,29 +25,26 @@ public interface RoutingAlgorithm<N extends Node, E extends Edge> {
     /**
      * Returns route between source and target using the given metric as a distance metric
      *
-     * @param graph       graph
      * @param metric      metric
      * @param source      source node
      * @param destination target node
      * @return optional route (empty if the route was not found)
      */
-    Optional<Route<N, E>> route( Graph<N, E> graph, Metric metric, N source, N destination );
+    Optional<Route<N, E>> route( Metric metric, N source, N destination );
 
     /**
      * Returns route between source and target using the given metric as a distance metric
      *
-     * @param graph       graph
      * @param metric      metric
      * @param source      source edge
      * @param destination target edge
      * @return optional route (empty if the route was not found)
      */
-    Optional<Route<N, E>> route( Graph<N, E> graph, Metric metric, E source, E destination );
+    Optional<Route<N, E>> route( Metric metric, E source, E destination );
 
     /**
      * Returns route between source and target using the given metric as a distance metric. Use this methods for points that lie on some edge between its start and end.
      *
-     * @param graph              graph
      * @param metric             metric
      * @param source             source edge
      * @param destination        target edge
@@ -57,5 +54,5 @@ public interface RoutingAlgorithm<N extends Node, E extends Edge> {
      * @param toDestinationEnd   distance from target coordinates to the end of the target edge
      * @return optional route (empty if the route was not found)
      */
-    Optional<Route<N, E>> route( Graph<N, E> graph, Metric metric, E source, E destination, Distance toSourceStart, Distance toSourceEnd, Distance toDestinationStart, Distance toDestinationEnd );
+    Optional<Route<N, E>> route( Metric metric, E source, E destination, Distance toSourceStart, Distance toSourceEnd, Distance toDestinationStart, Distance toDestinationEnd );
 }

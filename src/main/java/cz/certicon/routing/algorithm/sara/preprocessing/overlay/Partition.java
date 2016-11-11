@@ -210,7 +210,7 @@ public class Partition {
                     OverlayNode exitNode = cellEdge.getTarget();
                     OverlayColumn endCol = exitNode.column.other;
 
-                    if (begCol.node.getId() == endCol.node.getId()) {
+                    if (begCol.edge.getId() == endCol.edge.getId()) {
                         // two-way L0 SaraEdge is split in two L1 OverlayEdges
                         // U-turn in this case is forbidden
                         forbiddenRoutes++;
@@ -228,7 +228,7 @@ public class Partition {
                 }
 
                 Map<SaraEdge, Optional<Route<SaraNode, SaraEdge>>> routeMap
-                        = this.parent.oneToAll.route(subGraph, metric, begEdge, begDir, targets);
+                        = this.parent.oneToAll.route( metric, begEdge, begDir, targets);
 
                 for (Entry<SaraEdge, Optional<Route<SaraNode, SaraEdge>>> entry : routeMap.entrySet()) {
 
@@ -296,7 +296,7 @@ public class Partition {
                 }
 
                 Map<OverlayEdge, Optional<Route<OverlayNode, OverlayEdge>>> routeMap
-                        = this.parent.oneToAll.route(subGraph, metric, begEdge, begDir, targets);
+                        = this.parent.oneToAll.route( metric, begEdge, begDir, targets);
 
                 for (Entry<OverlayEdge, Optional<Route<OverlayNode, OverlayEdge>>> entry : routeMap.entrySet()) {
 
