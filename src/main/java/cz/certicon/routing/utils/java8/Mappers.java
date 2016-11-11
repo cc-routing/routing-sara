@@ -7,6 +7,7 @@ package cz.certicon.routing.utils.java8;
 
 import cz.certicon.routing.model.Identifiable;
 import java8.util.function.Function;
+import java8.util.function.ToLongFunction;
 
 /**
  * Container for frequently used mappers
@@ -32,6 +33,16 @@ public class Mappers {
         @Override
         public String apply( Identifiable t ) {
             return Long.toString( t.getId() );
+        }
+    };
+
+    /**
+     * Maps {@link Identifiable} to its long id
+     */
+    public static final ToLongFunction<Identifiable> identifiableToLong = new ToLongFunction<Identifiable>() {
+        @Override
+        public long applyAsLong( Identifiable value ) {
+            return value.getId();
         }
     };
 }

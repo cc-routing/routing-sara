@@ -4,6 +4,8 @@ import cz.certicon.routing.model.graph.Metric;
 import org.junit.Before;
 import org.junit.Test;
 
+import java.util.Arrays;
+
 import static org.junit.Assert.*;
 import static org.hamcrest.CoreMatchers.*;
 
@@ -20,11 +22,6 @@ public class OptimizedGraphTest {
     @Before
     public void setUp() throws Exception {
         graph = new OptimizedGraph( 10, 10 );
-        graph.createNode( 1 );
-        graph.createNode( 2 );
-        graph.createNode( 3 );
-        graph.createEdge( 1, 1, 2, true, 0, 0 );
-        graph.createEdge( 2, 1, 3, true, 1, 0 );
     }
 
     @Test
@@ -40,6 +37,8 @@ public class OptimizedGraphTest {
 
     @Test
     public void after_createEdge_5_graph_contains_edge_5_() throws Exception {
+        graph.createNode( 1 );
+        graph.createNode( 2 );
         graph.createEdge( 5, 1, 2, true, 2, 1 );
         assertThat( graph.containsEdgeId( 5 ), equalTo( true ) );
     }
@@ -51,6 +50,11 @@ public class OptimizedGraphTest {
 
     @Test
     public void getEdges_after_adding_2_edges_returns_array_of_two() throws Exception {
+        graph.createNode( 1 );
+        graph.createNode( 2 );
+        graph.createNode( 3 );
+        graph.createEdge( 1, 1, 2, true, 0, 0 );
+        graph.createEdge( 2, 1, 3, true, 1, 0 );
         assertThat( graph.getEdgeIds(), either( equalTo( new long[]{ 2, 1 } ) ).or( equalTo( new long[]{ 1, 2 } ) ) );
     }
 
@@ -76,9 +80,12 @@ public class OptimizedGraphTest {
 
     @Test
     public void getEdgeId_returns_correct_id() throws Exception {
-        int e7 = graph.createEdge( 7, 5, 1, true, 0, 2 );
-        int e11 = graph.createEdge( 11, 5, 1, true, 1, 3 );
-        int e5 = graph.createEdge( 5, 5, 1, true, 2, 4 );
+        int n7 = graph.createNode( 7 );
+        int n11 = graph.createNode( 11 );
+        int n5 = graph.createNode( 5 );
+        int e7 = graph.createEdge( 7, 5, 11, true, 0, 2 );
+        int e11 = graph.createEdge( 11, 5, 11, true, 1, 3 );
+        int e5 = graph.createEdge( 5, 5, 11, true, 2, 4 );
         assertThat( graph.getEdgeId( e7 ), equalTo( 7L ) );
         assertThat( graph.getEdgeId( e11 ), equalTo( 11L ) );
         assertThat( graph.getEdgeId( e5 ), equalTo( 5L ) );
@@ -86,6 +93,7 @@ public class OptimizedGraphTest {
 
     @Test
     public void getSource_returns_correct_source() throws Exception {
+        int n1 = graph.createNode( 1 );
         int n5 = graph.createNode( 5 );
         int e1 = graph.createEdge( 3, 5, 1, true, 0, 2 );
         assertThat( graph.getSource( e1 ), equalTo( n5 ) );
@@ -93,6 +101,7 @@ public class OptimizedGraphTest {
 
     @Test
     public void getTarget_returns_correct_target() throws Exception {
+        int n1 = graph.createNode( 1 );
         int n7 = graph.createNode( 7 );
         int e1 = graph.createEdge( 3, 1, 7, true, 2, 0 );
         assertThat( graph.getTarget( e1 ), equalTo( n7 ) );
@@ -100,24 +109,33 @@ public class OptimizedGraphTest {
 
     @Test
     public void isOneway_returns_true() throws Exception {
+        int n1 = graph.createNode( 1 );
+        int n2 = graph.createNode( 2 );
         int e1 = graph.createEdge( 3, 1, 2, true, 2, 1 );
         assertThat( graph.isOneway( e1 ), equalTo( true ) );
     }
 
     @Test
     public void isOneway_returns_false() throws Exception {
+        int n1 = graph.createNode( 1 );
+        int n2 = graph.createNode( 2 );
         int e1 = graph.createEdge( 3, 1, 2, false, 2, 1 );
         assertThat( graph.isOneway( e1 ), equalTo( false ) );
     }
 
     @Test
     public void getLength_after_setLength_5_returns_5() throws Exception {
+        int n1 = graph.createNode( 1 );
+        int n2 = graph.createNode( 2 );
+        int e1 = graph.createEdge( 1, 1, 2, true, 0, 0 );
         graph.setLength( 1, Metric.LENGTH, 5f );
         assertThat( graph.getDistance( 1, Metric.LENGTH ), equalTo( 5f ) );
     }
 
     @Test
     public void getOtherNode_for_edge_3_node_1_returns_2_and_the_other_way_around() throws Exception {
+        int n1 = graph.createNode( 1 );
+        int n2 = graph.createNode( 2 );
         int edge = graph.createEdge( 3, 1, 2, false, 2, 1 );
         int source = graph.getSource( edge );
         int target = graph.getTarget( edge );
@@ -127,29 +145,44 @@ public class OptimizedGraphTest {
 
     @Test
     public void getOutgoingEdges_for_node_0_returns_array_0_and_1() throws Exception {
-        assertThat( graph.getOutgoingEdges( 0 ), equalTo( new int[]{ 0, 1 } ) );
+        graph.createNode( 1 );
+        graph.createNode( 2 );
+        graph.createNode( 3 );
+        graph.createEdge( 1, 1, 2, true, 0, 0 );
+        graph.createEdge( 2, 1, 3, true, 1, 0 );
+        assertThat( graph.getEdges( 0 ), equalTo( new int[]{ 0, 1 } ) );
     }
 
 
     @Test
     public void getOutgoingEdges_for_node_1_returns_array_empty() throws Exception {
-        assertThat( graph.getOutgoingEdges( 1 ), equalTo( new int[]{} ) );
+        int n1 = graph.createNode( 1, new float[2][2] );
+        int n2 = graph.createNode( 2, new float[2][2] );
+        int n3 = graph.createNode( 3, new float[2][2] );
+        int e1 = graph.createEdge( 1, 1, 2, false, 0, 0 );
+        int e2 = graph.createEdge( 2, 1, 3, true, 1, 0 );
+        int e3 = graph.createEdge( 3, 2, 3, false, 1, 1 );
+        assertThat( graph.getEdges( n1 ), equalTo( new int[]{ e1, e2 } ) );
+        assertThat( graph.getEdges( n2 ), equalTo( new int[]{ e1, e3 } ) );
+        assertThat( graph.getEdges( n3 ), equalTo( new int[]{ e2, e3 } ) );
+
+        assertThat( graph.getTurnDistance( n3, e2, e3 ), equalTo( 0f ) );
     }
 
-    @Test
-    public void getIncomingEdges_for_node_0_returns_array_empty() throws Exception {
-        assertThat( graph.getIncomingEdges( 0 ), equalTo( new int[]{} ) );
-    }
-
-    @Test
-    public void getIncomingEdges_for_node_1_returns_array_of_0() throws Exception {
-        assertThat( graph.getIncomingEdges( 1 ), equalTo( new int[]{ 0 } ) );
-    }
-
-    @Test
-    public void getIncomingEdges_for_node_2_returns_array_of_1() throws Exception {
-        assertThat( graph.getIncomingEdges( 2 ), equalTo( new int[]{ 1 } ) );
-    }
+//    @Test
+//    public void getIncomingEdges_for_node_0_returns_array_empty() throws Exception {
+//        assertThat( graph.getEdges( 0 ), equalTo( new int[]{} ) );
+//    }
+//
+//    @Test
+//    public void getIncomingEdges_for_node_1_returns_array_of_0() throws Exception {
+//        assertThat( graph.getEdges( 1 ), equalTo( new int[]{ 0 } ) );
+//    }
+//
+//    @Test
+//    public void getIncomingEdges_for_node_2_returns_array_of_1() throws Exception {
+//        assertThat( graph.getEdges( 2 ), equalTo( new int[]{ 1 } ) );
+//    }
 
     @Test
     public void getTurnDistance_for_1_return_1() throws Exception {

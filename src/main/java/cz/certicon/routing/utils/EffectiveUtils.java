@@ -153,6 +153,19 @@ public class EffectiveUtils {
 
 
     /**
+     * Copy values from source array to target array
+     *
+     * @param source source array
+     * @param target target (destination) array
+     */
+    public static void copyArray( float[][] source, float[][] target ) {
+        for ( int i = 0; i < source.length; i++ ) {
+            copyArray( source[i], target[i] );
+        }
+    }
+
+
+    /**
      * Enlarges the orig array by the sizeBy
      *
      * @param orig   original array

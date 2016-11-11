@@ -2,6 +2,7 @@ package cz.certicon.routing.algorithm.sara.optimized.model;
 
 import cz.certicon.routing.model.basic.Pair;
 import cz.certicon.routing.model.graph.Metric;
+import cz.certicon.routing.utils.EffectiveUtils;
 import gnu.trove.map.TLongIntMap;
 import gnu.trove.map.hash.TLongIntHashMap;
 import lombok.ToString;
@@ -30,8 +31,7 @@ public class OptimizedGraph {
             put( metric, new float[0] );
         }
     }};
-    private int[][] outgoingEdges = new int[0][0];
-    private int[][] incomingEdges = new int[0][0];
+    private int[][] edges = new int[0][0];
 
     private int[] sourceTableIndices = new int[0];
     private int[] targetTableIndices = new int[0];
@@ -48,8 +48,7 @@ public class OptimizedGraph {
 
     public final void enlargeNodeCapacityBy( int size ) {
         nodeIds = enlarge( nodeIds, size );
-        outgoingEdges = enlarge( outgoingEdges, size );
-        incomingEdges = enlarge( incomingEdges, size );
+        edges = enlarge( edges, size );
         turnTables = enlarge( turnTables, size );
     }
 
@@ -74,8 +73,7 @@ public class OptimizedGraph {
         int idx = nodeMap.size();
         nodeIds[idx] = id;
         nodeMap.put( id, idx );
-        outgoingEdges[idx] = new int[0];
-        incomingEdges[idx] = new int[0];
+        edges[idx] = new int[0];
         turnTables[idx] = turnTable;
         return idx;
     }
@@ -128,10 +126,19 @@ public class OptimizedGraph {
         int targetIdx = getNodeById( target );
         targets[idx] = targetIdx;
         oneways[idx] = oneway;
-        outgoingEdges[sourceIdx] = enlargeToIndex( outgoingEdges[sourceIdx], sourceTableIdx );
-        outgoingEdges[sourceIdx][sourceTableIdx] = idx;
-        incomingEdges[targetIdx] = enlargeToIndex( incomingEdges[targetIdx], targetTableIdx );
-        incomingEdges[targetIdx][targetTableIdx] = idx;
+        edges[sourceIdx] = enlargeToIndex( edges[sourceIdx], sourceTableIdx );
+        edges[sourceIdx][sourceTableIdx] = idx;
+        edges[targetIdx] = enlargeToIndex( edges[targetIdx], targetTableIdx );
+        edges[targetIdx][targetTableIdx] = idx;
+//        if ( oneway && turnTables[targetIdx] != null ) {
+//            float[][] newTable = new float[turnTables[targetIdx].length][turnTables[targetIdx].length];
+//            EffectiveUtils.copyArray( turnTables[targetIdx], newTable );
+//            for ( int i = 0; i < newTable.length; i++ ) {
+//                newTable[i][targetTableIdx] = Float.POSITIVE_INFINITY;
+//            }
+//            turnTables[targetIdx] = newTable;
+//            System.out.println( "new tables created: " + ++tblChangeCounter );
+//        }
         sourceTableIndices[idx] = sourceTableIdx;
         targetTableIndices[idx] = targetTableIdx;
         if ( distances != null ) {
@@ -175,11 +182,19 @@ public class OptimizedGraph {
     }
 
     public int getNodeById( long id ) {
-        return nodeMap.get( id );
+        if ( nodeMap.containsKey( id ) ) {
+            return nodeMap.get( id );
+        } else {
+            throw new IllegalArgumentException( "Unknown node id: " + id );
+        }
     }
 
     public int getEdgeById( long id ) {
-        return edgeMap.get( id );
+        if ( edgeMap.containsKey( id ) ) {
+            return edgeMap.get( id );
+        } else {
+            throw new IllegalArgumentException( "Unknown edge id: " + id );
+        }
     }
 
     public long getNodeId( int nodeIdx ) {
@@ -202,12 +217,8 @@ public class OptimizedGraph {
         return lengths.get( metric )[edgeIdx];
     }
 
-    public int[] getOutgoingEdges( int nodeIdx ) {
-        return outgoingEdges[nodeIdx];
-    }
-
-    public int[] getIncomingEdges( int nodeIdx ) {
-        return incomingEdges[nodeIdx];
+    public int[] getEdges( int nodeIdx ) {
+        return edges[nodeIdx];
     }
 
     public int getOtherNode( int edgeIdx, int nodeIdx ) {
@@ -223,9 +234,17 @@ public class OptimizedGraph {
         if ( turnTables[nodeIdx] == null ) {
             return 0;
         }
+        if ( edgeFromIdx < 0 ) {
+            // if oneway and i'm the target, then return infinity, otherwise return 0
+            return ( oneways[edgeToIdx] && targets[edgeToIdx] == nodeIdx ) ? Float.MAX_VALUE : 0;
+        }
         // sourceTableIndices contains index of the edge on its source, both enter and exit
         int sourceIdx = ( nodeIdx == sources[edgeFromIdx] ) ? sourceTableIndices[edgeFromIdx] : targetTableIndices[edgeFromIdx];
         int targetIdx = ( nodeIdx == sources[edgeToIdx] ) ? sourceTableIndices[edgeToIdx] : targetTableIndices[edgeToIdx];
         return turnTables[nodeIdx][sourceIdx][targetIdx];
+    }
+
+    public float[][] getTurnTable( int nodeIdx ) {
+        return turnTables[nodeIdx];
     }
 }

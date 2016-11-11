@@ -31,4 +31,8 @@ public class TurnTable {
     public Distance getCost( int from, int to ) {
         return turnCosts[from][to];
     }
+
+    public int getSize() {
+        return turnCosts.length;
+    }
 }

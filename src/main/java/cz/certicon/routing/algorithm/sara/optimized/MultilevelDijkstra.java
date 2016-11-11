@@ -62,7 +62,7 @@ public class MultilevelDijkstra {
                 finalState = state;
                 finalDistance = distance;
             }
-            for ( int edge : graph.getOutgoingEdges( state.node ) ) {
+            for ( int edge : graph.getEdges( state.node ) ) {
                 int targetNode = graph.getOtherNode( edge, state.node );
                 State targetState = new State( targetNode, edge );
 
@@ -78,7 +78,7 @@ public class MultilevelDijkstra {
 
                 if ( !closed.contains( targetState ) ) {
                     double currentDistance = distanceMap.containsKey( targetState ) ? distanceMap.get( targetState ) : Double.MAX_VALUE;
-                    double alternativeDistance = distance + graph.getDistance( edge, metric ) + ( state.isFirst() ? 0 : graph.getTurnDistance( state.node, state.edge, edge ) );
+                    double alternativeDistance = distance + graph.getDistance( edge, metric ) + graph.getTurnDistance( state.node, state.edge, edge );
                     if ( alternativeDistance < currentDistance ) {
                         distanceMap.put( targetState, alternativeDistance );
                         queue.decreaseKey( targetState, alternativeDistance );
