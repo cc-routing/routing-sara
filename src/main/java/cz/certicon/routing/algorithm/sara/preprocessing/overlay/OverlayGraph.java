@@ -22,9 +22,12 @@ public class OverlayGraph extends AbstractUndirectedGraph<OverlayNode, OverlayEd
      * adding edges with id is locked
      */
     private boolean lockEdgesById = false;
+    
+    public OverlayBuilder builder;
 
     public OverlayGraph(OverlayBuilder builder) {
         super(builder.metrics);
+        this.builder=builder;
     }
 
     public OverlayNode addNode(OverlayColumn column, BorderNodeMap map, SaraEdge edge) {

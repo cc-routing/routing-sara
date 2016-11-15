@@ -83,7 +83,7 @@ public class MultilevelDijkstraAlgorithm<N extends Node, E extends Edge> impleme
 
                 //end condition - it has to be checked only in L0 graph. Once the target node is closed, its tentative distance cannot be improved.
                 if (state.getNode().getId() == target.getId()) {
-                    //System.out.println("MLD - final state >>> " + nodeDistanceMap.get(state));
+                    System.out.println("MLD - final state >>> " + nodeDistanceMap.get(state));
                     finalState = state;
                     break;
                 }
@@ -95,7 +95,7 @@ public class MultilevelDijkstraAlgorithm<N extends Node, E extends Edge> impleme
                     SaraNode transferNode = graph.getOtherNode(transferEdge, state.getNode());
 
                     //find OverlayNode at maximal level, where three of nodes are still in different cells
-                    OverlayNode levelNode = overlayGraph.getMaxOverlayNode(transferNode, transferEdge, source, target);
+                    OverlayNode levelNode = overlayGraph.getMaxEntryNode(transferNode, transferEdge, source, target);
 
                     // upper levels can be used further
                     if (levelNode != null) {
@@ -150,7 +150,7 @@ public class MultilevelDijkstraAlgorithm<N extends Node, E extends Edge> impleme
                     OverlayNode traverseNode = oGraph.getOtherNode(traverseEdge, transferNode);
 
                     //find OverlayNode at maximal level, where three of nodes are still in different cells
-                    OverlayNode levelNode = overlayGraph.getMaxOverlayNode(traverseNode.getColumn().getNode(), traverseNode.getColumn().getEdge(), source, target);
+                    OverlayNode levelNode = overlayGraph.getMaxEntryNode(traverseNode.getColumn().getNode(), traverseNode.getColumn().getEdge(), source, target);
 
                     // upper levels can be used further
                     if (levelNode != null) {

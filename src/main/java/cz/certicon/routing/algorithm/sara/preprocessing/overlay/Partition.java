@@ -210,7 +210,8 @@ public class Partition {
                     OverlayNode exitNode = cellEdge.getTarget();
                     OverlayColumn endCol = exitNode.column.other;
 
-                    if (begCol.node.getId() == endCol.node.getId()) {
+                    //if (begCol.edge.getId() == endCol.edge.getId()) {
+                    if(false) {
                         // two-way L0 SaraEdge is split in two L1 OverlayEdges
                         // U-turn in this case is forbidden
                         forbiddenRoutes++;
