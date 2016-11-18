@@ -53,6 +53,7 @@ public class SqliteGraphDAO implements GraphDAO {
     private static final int BATCH_SIZE = 200;
 
     private final SimpleDatabase database;
+    private final boolean rewrite;
 
     /**
      * Constructor
@@ -61,6 +62,18 @@ public class SqliteGraphDAO implements GraphDAO {
      */
     public SqliteGraphDAO( Properties connectionProperties ) {
         database = SimpleDatabase.newSqliteDatabase( connectionProperties );
+        this.rewrite = true;
+    }
+
+    /**
+     * Constructor
+     *
+     * @param connectionProperties SQLite database connection properties
+     * @param rewrite              rewrite database on save
+     */
+    public SqliteGraphDAO( Properties connectionProperties, boolean rewrite ) {
+        database = SimpleDatabase.newSqliteDatabase( connectionProperties );
+        this.rewrite = rewrite;
     }
 
     @Override
@@ -73,11 +86,14 @@ public class SqliteGraphDAO implements GraphDAO {
         if ( !DatabaseUtils.columnExists( database, "nodes", "cell_id" ) ) {
             database.write( "ALTER TABLE nodes ADD cell_id INTEGER DEFAULT(-1)" );
         }
-        if ( DatabaseUtils.tableExists( database, "cells" ) ) {
+        boolean tableExists = DatabaseUtils.tableExists( database, "cells" );
+        if ( rewrite && tableExists ) {
             database.write( "DROP TABLE IF EXISTS cells" );
             database.write( "DROP INDEX IF EXISTS `idx_id_cells`" );
         }
-        database.write( "CREATE TABLE cells (id INTEGER, parent INTEGER)" );
+        if ( rewrite || !tableExists ) {
+            database.write( "CREATE TABLE cells (id INTEGER, parent INTEGER)" );
+        }
         try {
             PreparedStatement nodeStatement = database.preparedStatement( "UPDATE nodes SET cell_id = ? WHERE id = ?" );
             PreparedStatement cellStatement = database.preparedStatement( "INSERT INTO cells (id,parent) VALUES (?,?)" );
