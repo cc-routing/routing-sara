@@ -12,7 +12,7 @@ import java.util.*;
 import static cz.certicon.routing.utils.EffectiveUtils.*;
 
 /**
- * Created by blaha on 26.10.2016.
+ * @author Michael Blaha {@literal <blahami2@gmail.com>}
  */
 @ToString
 public class OptimizedGraph {

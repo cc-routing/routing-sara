@@ -20,7 +20,7 @@ import static org.junit.Assert.*;
 import static org.hamcrest.CoreMatchers.*;
 
 /**
- * Created by blaha on 26.10.2016.
+ * @author Michael Blaha {@literal <blahami2@gmail.com>}
  */
 public class MultilevelDijkstraTest {
     MultilevelDijkstra multilevelDijkstra;

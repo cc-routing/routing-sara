@@ -1,7 +1,7 @@
 package cz.certicon.routing.algorithm.sara.optimized.model;
 
 /**
- * Created by blaha on 27.10.2016.
+ * @author Michael Blaha {@literal <blahami2@gmail.com>}
  */
 public class State {
     public final int node;

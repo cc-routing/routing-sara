@@ -25,7 +25,7 @@ import static org.junit.Assert.*;
 import static org.hamcrest.CoreMatchers.*;
 
 /**
- * Created by blaha on 11.11.2016.
+ * @author Michael Blaha {@literal <blahami2@gmail.com>}
  */
 public class OptimizedGraphDAOTest {
 

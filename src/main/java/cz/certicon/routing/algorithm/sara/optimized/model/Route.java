@@ -6,7 +6,7 @@ import gnu.trove.list.array.TLongArrayList;
 import java8.util.function.LongToDoubleFunction;
 
 /**
- * Created by blaha on 26.10.2016.
+ * @author Michael Blaha {@literal <blahami2@gmail.com>}
  */
 public class Route {
 

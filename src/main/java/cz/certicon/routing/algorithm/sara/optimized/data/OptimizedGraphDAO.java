@@ -13,7 +13,7 @@ import java.sql.SQLException;
 import java.util.Properties;
 
 /**
- * Created by blaha on 07.11.2016.
+ * @author Michael Blaha {@literal <blahami2@gmail.com>}
  */
 public class OptimizedGraphDAO {
     private final SimpleDatabase database;
