@@ -203,4 +203,8 @@ public abstract class AbstractNode<N extends Node, E extends Edge> implements No
     protected Graph<N, E> getGraph() {
         return graph;
     }
+
+    public int getEdgesCount() {
+        return this.edges.size();
+    }
 }
