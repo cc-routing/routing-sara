@@ -131,9 +131,6 @@ public class MultilevelDijkstraAlgorithm<N extends Node, E extends Edge> impleme
                 Distance distance = overlayNodeDistanceMap.get( overlayState );
                 closedOverlayStates.add( overlayState );
 
-                //get the overlay graph from the level of OverlayNode
-                OverlayGraph oGraph = overlayGraph.getPartitions().get( overlayState.getNode().level() ).getOverlayGraph();
-
                 //relax neighboring nodes, i.e. exit points in the particular cell + corresponding border edge
                 Iterator<OverlayEdge> edges = overlayState.getNode().getOutgoingEdges();
                 while ( edges.hasNext() ) {

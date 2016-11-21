@@ -46,7 +46,7 @@ public class MLDRecursiveRouteUnpacker<N extends Node<N, E>, E extends Edge<N, E
                     }
                     OverlayNode oFrom = (OverlayNode) currentState.getNode();
 
-                    unpackHighLevels(dijkstra, oTo.level(), overlayGraph, metric, (E) oFrom.getIncomingEdges().next(), (E) oTo.getOutgoingEdges().next(), builder);
+                    unpackHighLevels(dijkstra, oTo.getLevel(), overlayGraph, metric, (E) oFrom.getIncomingEdges().next(), (E) oTo.getOutgoingEdges().next(), builder);
                 }
                 currentState = predecessors.get(currentState);
             }
@@ -62,7 +62,6 @@ public class MLDRecursiveRouteUnpacker<N extends Node<N, E>, E extends Edge<N, E
         if (level == 1) {
             unpackLowestLevel(router, metric, fromEdge, toEdge, builder);
         } else {
-            OverlayGraph oGraph = overlayGraph.getPartitions().get(level - 1).getOverlayGraph();
             Optional<Route<N, E>> subResult = router.route( metric, getOverlayEdgeBelow((OverlayEdge) fromEdge), getOverlayEdgeBelow((OverlayEdge) toEdge));
             Route<N, E> subRoute = subResult.get();
             for (int i = subRoute.getEdgeList().size() - 1; i >= 0; i -= 2) {
@@ -77,7 +76,7 @@ public class MLDRecursiveRouteUnpacker<N extends Node<N, E>, E extends Edge<N, E
     private void unpackLowestLevel(RoutingAlgorithm router, Metric metric, E fromEdge, E toEdge, Route.RouteBuilder<N, E> builder) {
         OverlayEdge fromOverlayEdge = (OverlayEdge) fromEdge;
         OverlayEdge toOverlayEdge = (OverlayEdge) toEdge;
-        Optional<Route<N, E>> subResult = router.route( metric, fromOverlayEdge.getSaraEdge(), toOverlayEdge.getSaraEdge());
+        Optional<Route<N, E>> subResult = router.route( metric, fromOverlayEdge.getZeroEdge(), toOverlayEdge.getZeroEdge());
         Route<N, E> subRoute = subResult.get();
         for (int i = subRoute.getEdgeList().size() - 2; i >= 0; i--) {
             builder.addAsFirst(subRoute.getEdgeList().get(i));
