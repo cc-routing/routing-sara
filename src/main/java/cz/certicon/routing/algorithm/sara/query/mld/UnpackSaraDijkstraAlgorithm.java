@@ -22,7 +22,6 @@ import cz.certicon.routing.model.graph.SaraEdge;
 import cz.certicon.routing.model.graph.SaraNode;
 import cz.certicon.routing.model.graph.State;
 import cz.certicon.routing.model.queue.FibonacciHeap;
-import cz.certicon.routing.utils.java8.Optional;
 import cz.certicon.routing.view.DebugViewer;
 import cz.certicon.routing.view.JxDebugViewer;
 import java.util.HashMap;
@@ -31,6 +30,7 @@ import java.util.Iterator;
 import java.util.Map;
 import java.util.Properties;
 import java.util.Set;
+import java8.util.Optional;
 
 /**
  *
@@ -41,17 +41,17 @@ import java.util.Set;
  */
 public class UnpackSaraDijkstraAlgorithm<N extends SaraNode, E extends SaraEdge> implements RoutingAlgorithm<N, E> {
     @Override
-    public Optional<Route<N, E>> route(Graph<N, E> graph, Metric metric, N source, N destination) {
+    public Optional<Route<N, E>> route(Metric metric, N source, N destination) {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 
     @Override
-    public Optional<Route<N, E>> route(Graph<N, E> graph, Metric metric, E source, E destination) {
-        return route(graph, metric, source, destination, new Distance(0), new Distance(0), new Distance(0), new Distance(0));
+    public Optional<Route<N, E>> route(Metric metric, E source, E destination) {
+        return route(metric, source, destination, Distance.newInstance(0), Distance.newInstance(0), Distance.newInstance(0), Distance.newInstance(0));
     }
 
     @Override
-    public Optional<Route<N, E>> route(Graph<N, E> graph, Metric metric, E source, E destination, Distance toSourceStart, Distance toSourceEnd, Distance toDestinationStart, Distance toDestinationEnd) {
+    public Optional<Route<N, E>> route(Metric metric, E source, E destination, Distance toSourceStart, Distance toSourceEnd, Distance toDestinationStart, Distance toDestinationEnd) {
         Map<State<N, E>, Distance> nodeDistanceMap = new HashMap<>();
         PriorityQueue<State<N, E>> pqueue = new FibonacciHeap<>();
         // create upper bound if the edges are equal and mark it
@@ -63,10 +63,10 @@ public class UnpackSaraDijkstraAlgorithm<N extends SaraNode, E extends SaraEdge>
             putNodeDistance(nodeDistanceMap, pqueue, new State(source.getSource(), source), toSourceStart);
         }
 
-        return route(graph, metric, nodeDistanceMap, pqueue, upperBound, new EdgeEndCondition(graph, destination, toDestinationStart, toDestinationEnd), singleEdgePath, destination);
+        return route(metric, nodeDistanceMap, pqueue, upperBound, new EdgeEndCondition(destination, toDestinationStart, toDestinationEnd), singleEdgePath, destination);
     }
 
-    private Optional<Route<N, E>> route(Graph<N, E> graph, Metric metric, Map<State<N, E>, Distance> nodeDistanceMap, PriorityQueue<State<N, E>> pqueue, Distance upperBound, EndCondition<N, E> endCondition, E singleEdgePath, E endEdge) {
+    private Optional<Route<N, E>> route(Metric metric, Map<State<N, E>, Distance> nodeDistanceMap, PriorityQueue<State<N, E>> pqueue, Distance upperBound, EndCondition<N, E> endCondition, E singleEdgePath, E endEdge) {
         Map<State, State> predecessorMap = new HashMap<>();
         Set<State> closedStates = new HashSet<>();
         State finalState = null;
@@ -83,13 +83,13 @@ public class UnpackSaraDijkstraAlgorithm<N extends SaraNode, E extends SaraEdge>
                 pqueue.clear();
                 break;
             }
-            for (E edge : graph.getOutgoingEdges(state.getNode())) {
-                N targetNode = graph.getOtherNode(edge, state.getNode());
+            for (SaraEdge edge : state.getNode().getOutgoingEdges()) {
+                SaraNode targetNode = edge.getOtherNode(state.getNode());
                 State<N, E> targetState = new State(targetNode, edge);
 
                 if (!closedStates.contains(targetState) && state.getNode().getParent().getId() == targetState.getNode().getParent().getId()) {
                     Distance targetDistance = (nodeDistanceMap.containsKey(targetState)) ? nodeDistanceMap.get(targetState) : Distance.newInfinityInstance();
-                    Distance alternativeDistance = distance.add(graph.getLength(metric, edge)).add(state.isFirst() ? Distance.newInstance(0) : graph.getTurnCost(state.getNode(), state.getEdge(), edge));
+                    Distance alternativeDistance = distance.add(edge.getLength(metric)).add(state.isFirst() ? Distance.newInstance(0) : state.getNode().getTurnDistance(state.getEdge(), edge));
                     if (alternativeDistance.isLowerThan(targetDistance)) {
                         putNodeDistance(nodeDistanceMap, pqueue, targetState, alternativeDistance);
                         predecessorMap.put(targetState, state);
@@ -130,13 +130,11 @@ public class UnpackSaraDijkstraAlgorithm<N extends SaraNode, E extends SaraEdge>
 
     private static class EdgeEndCondition<N extends Node, E extends Edge> implements EndCondition<N, E> {
 
-        private final Graph<N, E> graph;
         private final E destination;
         private final Distance toDestinationStart;
         private final Distance toDestinationEnd;
 
-        public EdgeEndCondition(Graph<N, E> graph, E destination, Distance toDestinationStart, Distance toDestinationEnd) {
-            this.graph = graph;
+        public EdgeEndCondition(E destination, Distance toDestinationStart, Distance toDestinationEnd) {
             this.destination = destination;
             this.toDestinationStart = toDestinationStart;
             this.toDestinationEnd = toDestinationEnd;
@@ -145,13 +143,13 @@ public class UnpackSaraDijkstraAlgorithm<N extends SaraNode, E extends SaraEdge>
         @Override
         public Pair<State<N, E>, Distance> update(State<N, E> currentFinalState, Distance currentUpperBound, State<N, E> currentState, Distance currentDistance) {
             if (currentState.getNode().equals(destination.getSource())) {
-                Distance completeDistance = currentDistance.add(toDestinationStart).add(graph.getTurnCost(currentState.getNode(), currentState.getEdge(), destination));
+                Distance completeDistance = currentDistance.add(toDestinationStart).add(currentState.getNode().getTurnDistance(currentState.getEdge(), destination));
                 if (completeDistance.isLowerThan(currentUpperBound)) {
                     return new Pair<>(currentState, completeDistance);
                 }
             }
             if (!destination.isOneWay() && currentState.getNode().equals(destination.getTarget())) {
-                Distance completeDistance = currentDistance.add(toDestinationEnd).add(graph.getTurnCost(currentState.getNode(), currentState.getEdge(), destination));
+                Distance completeDistance = currentDistance.add(toDestinationEnd).add(currentState.getNode().getTurnDistance(currentState.getEdge(), destination));
                 if (completeDistance.isLowerThan(currentUpperBound)) {
                     return new Pair<>(currentState, completeDistance);
                 }

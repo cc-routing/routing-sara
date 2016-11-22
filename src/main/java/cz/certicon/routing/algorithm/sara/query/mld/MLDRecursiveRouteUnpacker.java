@@ -16,8 +16,8 @@ import cz.certicon.routing.model.graph.Graph;
 import cz.certicon.routing.model.graph.Metric;
 import cz.certicon.routing.model.graph.Node;
 import cz.certicon.routing.model.graph.State;
-import cz.certicon.routing.utils.java8.Optional;
 import java.util.Map;
+import java8.util.Optional;
 
 /**
  *
@@ -38,7 +38,7 @@ public class MLDRecursiveRouteUnpacker<N extends Node<N, E>, E extends Edge<N, E
     }
 
     @Override
-    public Optional<Route<N, E>> unpack(Graph<N, E> graph, OverlayBuilder overlayGraph, Metric metric, State<N, E> endPoint, Map<State<N, E>, State<N, E>> predecessors) {
+    public Optional<Route<N, E>> unpack(OverlayBuilder overlayGraph, Metric metric, State<N, E> endPoint, Map<State<N, E>, State<N, E>> predecessors) {
         if (endPoint != null) {
             State<N, E> currentState = endPoint;
 
@@ -52,7 +52,7 @@ public class MLDRecursiveRouteUnpacker<N extends Node<N, E>, E extends Edge<N, E
                         throw new IllegalStateException("OverlayNode not found. Something is wrong.");
                     }
                     OverlayNode oFrom = (OverlayNode) currentState.getNode();
-                    unpackHighLevels(oTo.level(), graph, overlayGraph, metric, (E) oFrom.getIncomingEdges().next(), (E) oTo.getOutgoingEdges().next());
+                    unpackHighLevels(oTo.getLevel(), overlayGraph, metric, (E) oFrom.getIncomingEdges().next(), (E) oTo.getOutgoingEdges().next());
                 }
                 currentState = predecessors.get(currentState);
             }
@@ -64,26 +64,25 @@ public class MLDRecursiveRouteUnpacker<N extends Node<N, E>, E extends Edge<N, E
         }
     }
 
-    private void unpackHighLevels(int level, Graph<N, E> graph, OverlayBuilder overlayGraph, Metric metric, E fromEdge, E toEdge) {
+    private void unpackHighLevels(int level, OverlayBuilder overlayGraph, Metric metric, E fromEdge, E toEdge) {
         if (level == 1) {
-            unpackLowestLevel(graph, metric, fromEdge, toEdge);
+            unpackLowestLevel(metric, fromEdge, toEdge);
         } else {
-            OverlayGraph oGraph = overlayGraph.getPartitions().get(level - 1).getOverlayGraph();
-            Optional<Route<N, E>> subResult = overlayDijkstra.route(oGraph, metric, getOverlayEdgeBelow((OverlayEdge) fromEdge), getOverlayEdgeBelow((OverlayEdge) toEdge));
+            Optional<Route<N, E>> subResult = overlayDijkstra.route(metric, getOverlayEdgeBelow((OverlayEdge) fromEdge), getOverlayEdgeBelow((OverlayEdge) toEdge));
             Route<N, E> subRoute = subResult.get();
             for (int i = subRoute.getEdgeList().size() - 1; i >= 0; i -= 2) {
                 if (i == 0) {
                     break;
                 }
-                unpackHighLevels(level - 1, graph, overlayGraph, metric, subRoute.getEdgeList().get(i - 2), subRoute.getEdgeList().get(i));
+                unpackHighLevels(level - 1, overlayGraph, metric, subRoute.getEdgeList().get(i - 2), subRoute.getEdgeList().get(i));
             }
         }
     }
 
-    private void unpackLowestLevel(Graph<N, E> graph, Metric metric, E fromEdge, E toEdge) {
+    private void unpackLowestLevel(Metric metric, E fromEdge, E toEdge) {
         OverlayEdge fromOverlayEdge = (OverlayEdge) fromEdge;
         OverlayEdge toOverlayEdge = (OverlayEdge) toEdge;
-        Optional<Route<N, E>> subResult = saraDijkstra.route(graph, metric, fromOverlayEdge.getSaraEdge(), toOverlayEdge.getSaraEdge());
+        Optional<Route<N, E>> subResult = saraDijkstra.route(metric, fromOverlayEdge.getZeroEdge(), toOverlayEdge.getZeroEdge());
         Route<N, E> subRoute = subResult.get();
         for (int i = subRoute.getEdgeList().size() - 2; i >= 0; i--) {
             builder.addAsFirst(subRoute.getEdgeList().get(i));

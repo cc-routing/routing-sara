@@ -10,6 +10,7 @@ import cz.certicon.routing.algorithm.sara.preprocessing.overlay.OverlayBuilder;
 import cz.certicon.routing.algorithm.sara.preprocessing.overlay.OverlayEdge;
 import cz.certicon.routing.algorithm.sara.preprocessing.overlay.OverlayGraph;
 import cz.certicon.routing.algorithm.sara.preprocessing.overlay.OverlayNode;
+import cz.certicon.routing.algorithm.sara.preprocessing.overlay.ZeroEdge;
 import cz.certicon.routing.model.Route;
 import cz.certicon.routing.model.graph.Edge;
 import cz.certicon.routing.model.graph.Graph;
@@ -21,12 +22,12 @@ import cz.certicon.routing.model.graph.State;
 import cz.certicon.routing.model.queue.FibonacciHeap;
 import cz.certicon.routing.model.queue.PriorityQueue;
 import cz.certicon.routing.model.values.Distance;
-import cz.certicon.routing.utils.java8.Optional;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.Set;
+import java8.util.Optional;
 
 /**
  *
@@ -36,27 +37,27 @@ import java.util.Set;
  */
 public class MultilevelDijkstraAlgorithm<N extends Node, E extends Edge> implements RoutingAlgorithm<N, E> {
 
-    public Optional<Route<N, E>> route(Graph<SaraNode, SaraEdge> graph, OverlayBuilder overlayGraph, Metric metric, SaraNode source, SaraNode destination, RouteUnpacker unpacker) {
+    public Optional<Route<N, E>> route(OverlayBuilder overlayGraph, Metric metric, SaraNode source, SaraNode destination, RouteUnpacker unpacker) {
         Map<State<SaraNode, SaraEdge>, Distance> nodeDistanceMap = new HashMap<>();
         PriorityQueue<State<SaraNode, SaraEdge>> pqueue = new FibonacciHeap<>();
         Map<State<OverlayNode, SaraEdge>, Distance> overlayNodeDistanceMap = new HashMap<>();
         PriorityQueue<State<OverlayNode, SaraEdge>> overlayPqueue = new FibonacciHeap<>();
         putNodeDistance(nodeDistanceMap, pqueue, new State<SaraNode, SaraEdge>(source, null), Distance.newInstance(0));
-        return route(graph, overlayGraph, metric, nodeDistanceMap, pqueue, overlayNodeDistanceMap, overlayPqueue, source, destination, unpacker);
+        return route(overlayGraph, metric, nodeDistanceMap, pqueue, overlayNodeDistanceMap, overlayPqueue, source, destination, unpacker);
     }
 
     @Override
-    public Optional<Route<N, E>> route(Graph<N, E> graph, Metric metric, N source, N destination) {
+    public Optional<Route<N, E>> route(Metric metric, N source, N destination) {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 
     @Override
-    public Optional<Route<N, E>> route(Graph<N, E> graph, Metric metric, E source, E destination) {
+    public Optional<Route<N, E>> route(Metric metric, E source, E destination) {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 
     @Override
-    public Optional<Route<N, E>> route(Graph<N, E> graph, Metric metric, E source, E destination, Distance toSourceStart, Distance toSourceEnd, Distance toDestinationStart, Distance toDestinationEnd) {
+    public Optional<Route<N, E>> route(Metric metric, E source, E destination, Distance toSourceStart, Distance toSourceEnd, Distance toDestinationStart, Distance toDestinationEnd) {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 
@@ -66,7 +67,7 @@ public class MultilevelDijkstraAlgorithm<N extends Node, E extends Edge> impleme
     // 3) bidirectional MLD
     // 4) should we deal with (distance, closed state, ..) transfer node in overlayGraph?
     // 5) should closed states and distances for SaraNode and OverlayNode have separated variables?
-    private Optional<Route<N, E>> route(Graph<SaraNode, SaraEdge> graph, OverlayBuilder overlayGraph, Metric metric, Map<State<SaraNode, SaraEdge>, Distance> nodeDistanceMap, PriorityQueue<State<SaraNode, SaraEdge>> pqueue, Map<State<OverlayNode, SaraEdge>, Distance> overlayNodeDistanceMap, PriorityQueue<State<OverlayNode, SaraEdge>> overlayPqueue, SaraNode source, SaraNode target, RouteUnpacker unpacker) {
+    private Optional<Route<N, E>> route(OverlayBuilder overlayGraph, Metric metric, Map<State<SaraNode, SaraEdge>, Distance> nodeDistanceMap, PriorityQueue<State<SaraNode, SaraEdge>> pqueue, Map<State<OverlayNode, SaraEdge>, Distance> overlayNodeDistanceMap, PriorityQueue<State<OverlayNode, SaraEdge>> overlayPqueue, SaraNode source, SaraNode target, RouteUnpacker unpacker) {
         Set<State> closedStates = new HashSet<>();
         Set<State> closedOverlayStates = new HashSet<>();
         Map<State, State> predecessorMap = new HashMap<>();
@@ -89,20 +90,20 @@ public class MultilevelDijkstraAlgorithm<N extends Node, E extends Edge> impleme
                 }
 
                 //relax neighboring nodes
-                Iterator<SaraEdge> edges = graph.getOutgoingEdges(state.getNode());
+                Iterator<SaraEdge> edges = state.getNode().getOutgoingEdges();
                 while (edges.hasNext()) {
                     SaraEdge transferEdge = edges.next();
-                    SaraNode transferNode = graph.getOtherNode(transferEdge, state.getNode());
+                    SaraNode transferNode = transferEdge.getOtherNode(state.getNode());
 
                     //find OverlayNode at maximal level, where three of nodes are still in different cells
-                    OverlayNode levelNode = overlayGraph.getMaxEntryNode(transferNode, transferEdge, source, target);
+                    OverlayNode levelNode = overlayGraph.getMaxEntryNode(transferNode, (ZeroEdge)transferEdge, source, target);
 
                     // upper levels can be used further
                     if (levelNode != null) {
                         State transferState = new State(levelNode, transferEdge);
                         if (!closedOverlayStates.contains(transferState)) {
                             Distance transferDistance = (overlayNodeDistanceMap.containsKey(transferState)) ? overlayNodeDistanceMap.get(transferState) : Distance.newInfinityInstance();
-                            Distance alternativeDistance = distance.add(graph.getLength(metric, transferEdge)).add(state.isFirst() ? Distance.newInstance(0) : graph.getTurnCost(state.getNode(), state.getEdge(), transferEdge));
+                            Distance alternativeDistance = distance.add(transferEdge.getLength(metric)).add(state.isFirst() ? Distance.newInstance(0) : state.getNode().getTurnDistance(state.getEdge(), transferEdge));
 
                             if (alternativeDistance.isLowerThan(transferDistance)) {
                                 putOverlayNodeDistance(overlayNodeDistanceMap, overlayPqueue, transferState, alternativeDistance);
@@ -114,7 +115,7 @@ public class MultilevelDijkstraAlgorithm<N extends Node, E extends Edge> impleme
                         State transferState = new State(transferNode, transferEdge);
                         if (!closedStates.contains(transferState)) {
                             Distance transferDistance = (nodeDistanceMap.containsKey(transferState)) ? nodeDistanceMap.get(transferState) : Distance.newInfinityInstance();
-                            Distance alternativeDistance = distance.add(graph.getLength(metric, transferEdge)).add(state.isFirst() ? Distance.newInstance(0) : graph.getTurnCost(state.getNode(), state.getEdge(), transferEdge));
+                            Distance alternativeDistance = distance.add(transferEdge.getLength(metric)).add(state.isFirst() ? Distance.newInstance(0) : state.getNode().getTurnDistance(state.getEdge(), transferEdge));
 
                             if (alternativeDistance.isLowerThan(transferDistance)) {
                                 putNodeDistance(nodeDistanceMap, pqueue, transferState, alternativeDistance);
@@ -131,23 +132,21 @@ public class MultilevelDijkstraAlgorithm<N extends Node, E extends Edge> impleme
                 Distance distance = overlayNodeDistanceMap.get(overlayState);
                 closedOverlayStates.add(overlayState);
 
-                //get the overlay graph from the level of OverlayNode
-                OverlayGraph oGraph = overlayGraph.getPartitions().get(overlayState.getNode().level()).getOverlayGraph();
 
                 //relax neighboring nodes, i.e. exit points in the particular cell + corresponding border edge
-                Iterator<OverlayEdge> edges = oGraph.getOutgoingEdges(overlayState.getNode());
+                Iterator<OverlayEdge> edges = overlayState.getNode().getOutgoingEdges();
                 while (edges.hasNext()) {
                     OverlayEdge transferEdge = edges.next();
-                    OverlayNode transferNode = oGraph.getOtherNode(transferEdge, overlayState.getNode());
+                    OverlayNode transferNode = transferEdge.getOtherNode(overlayState.getNode());
                     State transferState = new State(transferNode, transferEdge);
 
                     //make a move inside the cell through the shortcut
                     //transfer node is not store anywhere since we are interested in traverse node only
-                    Distance alternativeDistance = distance.add(oGraph.getLength(metric, transferEdge));
+                    Distance alternativeDistance = distance.add(transferEdge.getLength(metric));
 
                     //use traverse edge to the next cell
-                    OverlayEdge traverseEdge = oGraph.getOutgoingEdges(transferNode).next();//exactly one border edge must exist
-                    OverlayNode traverseNode = oGraph.getOtherNode(traverseEdge, transferNode);
+                    OverlayEdge traverseEdge = transferNode.getOutgoingEdges().next();//exactly one border edge must exist
+                    OverlayNode traverseNode = traverseEdge.getOtherNode(transferNode);
 
                     //find OverlayNode at maximal level, where three of nodes are still in different cells
                     OverlayNode levelNode = overlayGraph.getMaxEntryNode(traverseNode.getColumn().getNode(), traverseNode.getColumn().getEdge(), source, target);
@@ -157,7 +156,7 @@ public class MultilevelDijkstraAlgorithm<N extends Node, E extends Edge> impleme
                         State traverseState = new State(levelNode, traverseNode.getColumn().getEdge());
                         if (!closedOverlayStates.contains(traverseState)) {
                             Distance traverseDistance = (overlayNodeDistanceMap.containsKey(traverseState)) ? overlayNodeDistanceMap.get(traverseState) : Distance.newInfinityInstance();
-                            Distance newDistance = alternativeDistance.add(graph.getLength(metric, traverseNode.getColumn().getEdge()));
+                            Distance newDistance = alternativeDistance.add(traverseNode.getColumn().getEdge().getLength(metric));
 
                             if (newDistance.isLowerThan(traverseDistance)) {
                                 putOverlayNodeDistance(overlayNodeDistanceMap, overlayPqueue, traverseState, newDistance);
@@ -170,7 +169,7 @@ public class MultilevelDijkstraAlgorithm<N extends Node, E extends Edge> impleme
                         State traverseState = new State(traverseNode.getColumn().getNode(), traverseNode.getColumn().getEdge());
                         if (!closedStates.contains(traverseState)) {
                             Distance traverseDistance = (nodeDistanceMap.containsKey(traverseState)) ? nodeDistanceMap.get(traverseState) : Distance.newInfinityInstance();
-                            Distance newDistance = alternativeDistance.add(graph.getLength(metric, traverseNode.getColumn().getEdge()));
+                            Distance newDistance = alternativeDistance.add(traverseNode.getColumn().getEdge().getLength(metric));
 
                             if (newDistance.isLowerThan(traverseDistance)) {
                                 putNodeDistance(nodeDistanceMap, pqueue, traverseState, newDistance);
@@ -184,7 +183,7 @@ public class MultilevelDijkstraAlgorithm<N extends Node, E extends Edge> impleme
         }
 
         //path unpacking
-        return unpacker.unpack(graph, overlayGraph, metric, finalState, predecessorMap);
+        return unpacker.unpack(overlayGraph, metric, finalState, predecessorMap);
     }
 
     private void putNodeDistance(Map<State<SaraNode, SaraEdge>, Distance> nodeDistanceMap, PriorityQueue<State<SaraNode, SaraEdge>> pqueue, State<SaraNode, SaraEdge> node, Distance distance) {

@@ -14,8 +14,8 @@ import cz.certicon.routing.model.graph.Graph;
 import cz.certicon.routing.model.graph.Metric;
 import cz.certicon.routing.model.graph.Node;
 import cz.certicon.routing.model.graph.State;
-import cz.certicon.routing.utils.java8.Optional;
 import java.util.Map;
+import java8.util.Optional;
 
 /**
  *
@@ -26,7 +26,7 @@ import java.util.Map;
 public class MLDReverseTrivialRouteUnpacker<N extends Node<N, E>, E extends Edge<N, E>> implements RouteUnpacker<N, E> {
 
     @Override
-    public Optional<Route<N, E>> unpack(Graph<N, E> graph, OverlayBuilder overlayGraph, Metric metric, State<N, E> endPoint, Map<State<N, E>, State<N, E>> predecessors) {
+    public Optional<Route<N, E>> unpack(OverlayBuilder overlayGraph, Metric metric, State<N, E> endPoint, Map<State<N, E>, State<N, E>> predecessors) {
         if (endPoint != null) {
             DijkstraAlgorithm dijkstra = new DijkstraAlgorithm();
             Route.RouteBuilder<N, E> builder = Route.<N, E>builder();
@@ -42,8 +42,8 @@ public class MLDReverseTrivialRouteUnpacker<N extends Node<N, E>, E extends Edge
                     if (!(currentState.getNode() instanceof OverlayNode)) {
                         throw new IllegalStateException("OverlayNode not found. Something is wrong.");
                     }
-                    System.out.println("OVERLAY lvl " + oTo.level() + " from edge " + oTo.getColumn().getEdge().getId() + " to edge " + currentState.getEdge().getId());
-                    Optional<Route<N, E>> subResult = dijkstra.route(graph, metric, oTo.getColumn().getEdge(), currentState.getEdge());
+                    System.out.println("OVERLAY lvl " + oTo.getLevel() + " from edge " + oTo.getColumn().getEdge().getId() + " to edge " + currentState.getEdge().getId());
+                    Optional<Route<N, E>> subResult = dijkstra.route(metric, oTo.getColumn().getEdge(), currentState.getEdge());
                     Route<N, E> subRoute = subResult.get();
                     for (int i = subRoute.getEdgeList().size() - 2; i >= 0; i--) {
                         System.out.println(subRoute.getEdgeList().get(i).getId());
