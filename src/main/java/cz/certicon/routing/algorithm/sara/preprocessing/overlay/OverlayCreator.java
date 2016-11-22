@@ -13,7 +13,6 @@ import cz.certicon.routing.model.basic.IdSupplier;
 import cz.certicon.routing.model.graph.Graph;
 import cz.certicon.routing.model.graph.SaraGraph;
 import cz.certicon.routing.utils.RandomUtils;
-
 import java.util.Properties;
 import lombok.Getter;
 import lombok.Setter;
@@ -43,14 +42,14 @@ public class OverlayCreator {
     }
 
     @Getter
-    SaraSetup setup;
-
-    public OverlayCreator() {
-        setup = new SaraSetup();
-    }
+    private final SaraSetup setup;
 
     public OverlayCreator(SaraSetup setup) {
         this.setup = setup;
+    }
+
+    public OverlayCreator() {
+        this.setup = new SaraSetup();
     }
 
     public SaraGraph getSaraGraph() {
@@ -96,7 +95,7 @@ public class OverlayCreator {
             return sara;
 
         } catch (Exception ex) {
-            return null;
+            throw new IllegalStateException(ex);
         }
     }
 

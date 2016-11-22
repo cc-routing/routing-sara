@@ -19,13 +19,15 @@ import lombok.Getter;
  * @author Blahoslav Potoček <potocek@merica.cz> Edge for the OverlayGraph.
  * Always directed, no turn constrains.
  */
-public class OverlayEdge extends AbstractEdge<OverlayNode, OverlayEdge> {
+public class OverlayEdge extends AbstractEdge<OverlayNode, OverlayEdge> implements BorderEdge<OverlayNode, OverlayEdge> {
 
     /**
      * underlaying border SaraEdge
      */
     @Getter
-    SaraEdge saraEdge = null;
+    private ZeroEdge zeroEdge = null;
+
+    private OverlayBorder oBorder;
 
     /**
      * devel: in memory storage (in L1) of the caluclated shortcut in L0
@@ -41,24 +43,17 @@ public class OverlayEdge extends AbstractEdge<OverlayNode, OverlayEdge> {
         super(graph, id, true, source, target, -1, -1);
     }
 
-    public OverlayEdge(OverlayGraph graph, OverlayEdge edge) {
-        this(graph, edge.getId(), graph.getNodeById(edge.getSource().getId()), graph.getNodeById(edge.getTarget().getId()));
-        if (edge.saraEdge != null) {
-            this.setLink(edge.saraEdge);
-        }
-    }
+    public OverlayEdge(OverlayGraph graph, OverlayLift lift, OverlayNode source, OverlayNode target) {
+        this(graph, lift.getEdgeId(), source, target);
 
-    /**
-     * sets the link to the underlying SaraEdge
-     *
-     * @param edge
-     */
-    public void setLink(SaraEdge edge) {
-        this.saraEdge = edge;
+        graph.getLayer().checkEdgeId(this.getId());
+
+        this.zeroEdge = lift.getEdge();
         for (Metric metric : this.getGraph().getMetrics()) {
-            Distance distance = edge.getLength(metric);
+            Distance distance = lift.getEdge().getLength(metric);
             this.setLength(metric, distance);
         }
+
     }
 
     @Override
@@ -69,5 +64,20 @@ public class OverlayEdge extends AbstractEdge<OverlayNode, OverlayEdge> {
     @Override
     protected OverlayEdge newInstance(Graph<OverlayNode, OverlayEdge> newGraph, long id, boolean oneway, OverlayNode newSource, OverlayNode newTarget, int sourceIndex, int targetIndex) {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+
+
+    @Override
+    public BorderData<OverlayNode, OverlayEdge> getBorder() {
+        return this.oBorder;
+    }
+
+    @Override
+    public void setBorder(BorderData<OverlayNode, OverlayEdge> border) {
+        this.oBorder = (OverlayBorder) border;
+    }
+
+    public OverlayBorder border() {
+        return this.oBorder;
     }
 }
