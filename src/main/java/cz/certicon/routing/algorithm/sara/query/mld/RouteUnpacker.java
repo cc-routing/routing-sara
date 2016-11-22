@@ -12,7 +12,7 @@ import cz.certicon.routing.model.graph.Graph;
 import cz.certicon.routing.model.graph.Metric;
 import cz.certicon.routing.model.graph.Node;
 import cz.certicon.routing.model.graph.State;
-import java8.util.Optional;
+import cz.certicon.routing.utils.java8.Optional;
 import java.util.Map;
 
 /**
@@ -23,5 +23,5 @@ import java.util.Map;
  */
 public interface RouteUnpacker<N extends Node, E extends Edge> {
 
-    Optional<Route<N, E>> unpack( OverlayBuilder overlayGraph, Metric metric, State<N, E> endPoint, Map<State<N, E>, State<N, E>> predecessors);
+    Optional<Route<N, E>> unpack(Graph<N, E> graph, OverlayBuilder overlayGraph, Metric metric, State<N, E> endPoint, Map<State<N, E>, State<N, E>> predecessors);
 }
