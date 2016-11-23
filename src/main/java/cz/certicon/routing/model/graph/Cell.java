@@ -5,7 +5,7 @@
  */
 package cz.certicon.routing.model.graph;
 
-import cz.certicon.routing.algorithm.sara.preprocessing.overlay.CellRouteTable;
+import cz.certicon.routing.algorithm.sara.preprocessing.overlay.OverlayCell;
 import cz.certicon.routing.model.Identifiable;
 import lombok.Getter;
 import lombok.Setter;
@@ -20,10 +20,6 @@ public class Cell implements Identifiable {
     private final long id;
     private Cell parent = null;
     private boolean locked = false;
-
-    @Getter
-    @Setter
-    public CellRouteTable routeTable;
 
     /**
      * Constructor

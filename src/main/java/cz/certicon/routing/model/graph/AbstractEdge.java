@@ -20,10 +20,10 @@ public abstract class AbstractEdge<N extends Node, E extends Edge> implements Ed
 
     private final long id;
     private final boolean oneway;
-    private final N source;
-    private final N target;
-    private final int sourceIndex;
-    private final int targetIndex;
+    private N source;
+    private N target;
+    private int sourceIndex;
+    private int targetIndex;
     private final Graph<N, E> graph;
     private final EnumMap<Metric, Distance> distanceMap = new EnumMap<>( Metric.class );
     private boolean locked = false;
@@ -177,6 +177,18 @@ public abstract class AbstractEdge<N extends Node, E extends Edge> implements Ed
             throw new IllegalArgumentException( "Edge does not contain given node: edge = " + this + ", node = " + node.getId() );
         }
         return idx;
+
     }
 
+    @Override
+    public void setSource(N s, int idx) {
+        this.source = s;
+        this.sourceIndex = idx;
+    }
+
+    @Override
+    public void setTarget(N t, int idx) {
+        this.target = t;
+        this.targetIndex = idx;
+    }
 }

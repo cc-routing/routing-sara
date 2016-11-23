@@ -8,7 +8,6 @@ package cz.certicon.routing.algorithm.sara.preprocessing.overlay;
 import cz.certicon.routing.model.graph.AbstractNode;
 import cz.certicon.routing.model.graph.Cell;
 import cz.certicon.routing.model.graph.Graph;
-import cz.certicon.routing.model.graph.SaraEdge;
 import cz.certicon.routing.model.values.Distance;
 import lombok.Getter;
 
@@ -22,41 +21,31 @@ import lombok.Getter;
 public class OverlayNode extends AbstractNode<OverlayNode, OverlayEdge> {
 
     /**
-     * related borderMap
-     */
-    @Getter
-    BorderNodeMap borderMap;
-
-    /**
-     * index of this instance in exit this borderMap
-     */
-    @Getter
-    int borderIndex;
-
-    /**
      * related "vertical" column
      */
     @Getter
-    OverlayColumn column;
+    private final OverlayLift lift;
+
+    @Getter
+    private final OverlayCell cell;
 
     /**
      *
-     * @param column related overlay column
+     * @param lift related overlay column
      * @param map relatedCell entry or exit nodes map
      * @param edge related border edge
      */
-    OverlayNode(OverlayGraph graph, OverlayColumn column, BorderNodeMap map, SaraEdge edge) {
-        super(graph, graph.getNodesCount() + 1);
+    OverlayNode(OverlayGraph graph, OverlayLift lift, OverlayCell cell) {
+        super(graph, graph.getLayer().getNextNodeId());
 
-        this.column = column;
-        this.borderMap = map;
-        this.borderIndex = map.size();
-        this.borderMap.put(edge, this);
-        column.nodes.add(this);
-    }
+        this.lift = lift;
 
-    OverlayNode(OverlayGraph graph, long id) {
-        super(graph, id);
+        if (cell == null) {
+            this.cell = graph.getCell();
+            lift.addNode(this);
+        } else {
+            this.cell = cell;
+        }
     }
 
     @Override
@@ -68,15 +57,8 @@ public class OverlayNode extends AbstractNode<OverlayNode, OverlayEdge> {
      *
      * @return partition level
      */
-    public int level() {
-        return this.borderMap.cellTable.partition.level;
-    }
-
-    /**
-     * @return related Cell
-     */
-    public Cell getCell() {
-        return this.borderMap.cellTable.cell;
+    public int getLevel() {
+        return this.cell.getLayer().getLevel();
     }
 
     /**
@@ -86,13 +68,9 @@ public class OverlayNode extends AbstractNode<OverlayNode, OverlayEdge> {
      * @return true/false for the same cells partitions, null for different
      * cells partitions
      */
-    public Boolean isMyCell(Cell cell) {
-        Cell myCell = this.getCell();
-        if (myCell.getRouteTable().partition == cell.getRouteTable().partition) {
-            return cell.getId() == myCell.getId();
-        } else {
-            return null;
-        }
+    public boolean isMyCell(Cell cell) {
+        return cell.getId() == this.cell.getId();
+        //return cell.uid == this.data.getUid();
     }
 
     /**
@@ -101,10 +79,10 @@ public class OverlayNode extends AbstractNode<OverlayNode, OverlayEdge> {
      */
     public OverlayNode getUpperNode() {
 
-        int level = this.level();
+        int level = this.getLevel();
 
-        if (level < this.column.nodes.size() - 1) {
-            return this.column.nodes.get(level + 1);
+        if (level < this.lift.nodeCount()) {
+            return this.lift.getNode(level + 1);
         } else {
             return null;
         }
@@ -117,10 +95,10 @@ public class OverlayNode extends AbstractNode<OverlayNode, OverlayEdge> {
      */
     public OverlayNode getLowerNode() {
 
-        int level = this.level();
+        int level = this.getLevel();
 
         if (level > 1) {
-            return this.column.nodes.get(level - 1);
+            return this.lift.getNode(level - 1);
         } else {
             return null;
         }
@@ -129,5 +107,9 @@ public class OverlayNode extends AbstractNode<OverlayNode, OverlayEdge> {
     @Override
     protected OverlayNode newInstance(Graph<OverlayNode, OverlayEdge> newGraph, long id) {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+
+    public OverlayLift getColumn() {
+        return this.lift;
     }
 }

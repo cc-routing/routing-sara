@@ -114,4 +114,8 @@ public interface Edge<N extends Node, E extends Edge> extends Identifiable {
      * Locks this edge. All the altering operations after lock is called are forbidden.
      */
     void lock();
+
+    void setSource(N s, int idx);
+
+    void setTarget(N t, int idx);
 }

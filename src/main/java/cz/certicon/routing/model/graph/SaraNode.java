@@ -14,7 +14,7 @@ public class SaraNode extends AbstractNode<SaraNode, SaraEdge> {
 
     private final Cell parent;
 
-    SaraNode( Graph<SaraNode, SaraEdge> graph, long id, Cell parent ) {
+    protected SaraNode(Graph<SaraNode, SaraEdge> graph, long id, Cell parent) {
         super( graph, id );
         this.parent = parent;
     }

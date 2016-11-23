@@ -23,7 +23,7 @@ import java8.util.Optional;
  * @param <N> node type
  * @param <E> edge type
  */
-public class MLDTrivialRouteUnpacker<N extends Node<N, E>, E extends Edge<N, E>> implements RouteUnpacker<N, E> {
+public class MLDReverseTrivialRouteUnpacker<N extends Node<N, E>, E extends Edge<N, E>> implements RouteUnpacker<N, E> {
 
     @Override
     public Optional<Route<N, E>> unpack(OverlayBuilder overlayGraph, Metric metric, State<N, E> endPoint, Map<State<N, E>, State<N, E>> predecessors) {
@@ -34,18 +34,20 @@ public class MLDTrivialRouteUnpacker<N extends Node<N, E>, E extends Edge<N, E>>
 
             while (currentState != null && !currentState.isFirst()) {
                 if (!(currentState.getNode() instanceof OverlayNode)) {
-                    builder.addAsFirst(currentState.getEdge());
+                    System.out.println(currentState.getEdge().getId());
+                    builder.addAsLast(currentState.getEdge());
                 } else {
                     OverlayNode oTo = (OverlayNode) currentState.getNode();
                     currentState = predecessors.get(currentState);
                     if (!(currentState.getNode() instanceof OverlayNode)) {
                         throw new IllegalStateException("OverlayNode not found. Something is wrong.");
                     }
-
-                    Optional<Route<N, E>> subResult = dijkstra.route(metric, currentState.getEdge(), oTo.getColumn().getEdge());
+                    System.out.println("OVERLAY lvl " + oTo.getLevel() + " from edge " + oTo.getColumn().getEdge().getId() + " to edge " + currentState.getEdge().getId());
+                    Optional<Route<N, E>> subResult = dijkstra.route(metric, oTo.getColumn().getEdge(), currentState.getEdge());
                     Route<N, E> subRoute = subResult.get();
                     for (int i = subRoute.getEdgeList().size() - 2; i >= 0; i--) {
-                        builder.addAsFirst(subRoute.getEdgeList().get(i));
+                        System.out.println(subRoute.getEdgeList().get(i).getId());
+                        builder.addAsLast(subRoute.getEdgeList().get(i));
                     }
                 }
                 currentState = predecessors.get(currentState);

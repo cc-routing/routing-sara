@@ -12,7 +12,7 @@ package cz.certicon.routing.model.graph;
  */
 public class SaraEdge extends AbstractEdge<SaraNode, SaraEdge> {
 
-    SaraEdge( Graph<SaraNode, SaraEdge> graph, long id, boolean oneway, SaraNode source, SaraNode target, int sourceIndex, int targetIndex ) {
+    protected SaraEdge(Graph<SaraNode, SaraEdge> graph, long id, boolean oneway, SaraNode source, SaraNode target, int sourceIndex, int targetIndex) {
         super( graph, id, oneway, source, target, sourceIndex, targetIndex );
     }
 
