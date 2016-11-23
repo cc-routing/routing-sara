@@ -45,12 +45,15 @@ public class DisplayUtils {
         int layers = 1;
         Cell cell = graph.getNodes().next().getParent();
         while ( cell != null ) {
-//            System.out.println( "- Layer #" + layers + ", " + "parenting: 1 to " + layers  );
+            System.out.println( "- Layer #" + layers + ", " + "parenting: 1 to " + layers  );
             PartitionViewer viewer = new JxPartitionViewer();
             Map<Cell, List<Node>> cellMap = new HashMap<>();
             for ( SaraNode node : graph.getNodes() ) {
                 Cell parent = node.getParent();
                 for ( int i = 1; i < layers; i++ ) {
+                    if(parent.getParent() == null){
+                        throw new IllegalStateException( "Cell#" + parent.getId() + " does not have a parent" );
+                    }
                     parent = parent.getParent();
                 }
                 CollectionUtils.getList( cellMap, parent ).add( node );

@@ -127,7 +127,9 @@ public class SqliteGraphDAO implements GraphDAO {
             }
             nodeStatement.executeBatch();
             cellStatement.executeBatch();
-            database.write( "CREATE UNIQUE INDEX `idx_id_cells` ON `cells` (`id` DESC)" );
+            if ( rewrite || !tableExists ) {
+                database.write( "CREATE UNIQUE INDEX `idx_id_cells` ON `cells` (`id` DESC)" );
+            }
             database.close();
         } catch ( SQLException ex ) {
             throw new IOException( ex );
