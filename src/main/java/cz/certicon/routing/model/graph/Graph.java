@@ -7,7 +7,6 @@ package cz.certicon.routing.model.graph;
 
 import cz.certicon.routing.utils.collections.Iterator;
 
-import java.util.Collection;
 import java.util.Set;
 
 /**
@@ -101,9 +100,9 @@ public interface Graph<N extends Node, E extends Edge> {
     /**
      * Returns available metrics of this graph. All edges must contain data for each of these metrics
      *
-     * @return
+     * @return metics
      */
-    Collection<Metric> getMetrics();
+    Set<Metric> getMetrics();
 
     /**
      * Returns true if the graph contains the given metric

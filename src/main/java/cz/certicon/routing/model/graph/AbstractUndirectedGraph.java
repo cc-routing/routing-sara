@@ -128,7 +128,7 @@ public abstract class AbstractUndirectedGraph<N extends Node<N, E>, E extends Ed
     }
 
     @Override
-    public Collection<Metric> getMetrics() {
+    public Set<Metric> getMetrics() {
         return metrics.clone();
     }
 

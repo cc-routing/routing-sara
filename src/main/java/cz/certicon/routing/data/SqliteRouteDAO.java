@@ -17,6 +17,7 @@ import cz.certicon.routing.model.values.Coordinate;
 import cz.certicon.routing.model.values.Time;
 import cz.certicon.routing.model.values.TimeUnits;
 import cz.certicon.routing.utils.GeometryUtils;
+
 import java.io.IOException;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -25,6 +26,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  * An implementation of the {@link GraphDataDao} interface for accessing SQLite database
@@ -55,25 +58,19 @@ public class SqliteRouteDAO implements RouteDataDAO {
         Length length = new Length( LengthUnits.METERS, 0 );
         Time time = new Time( TimeUnits.SECONDS, 0 );
         ResultSet rs;
-        N node = route.getSource();
         for ( E edge : route.getEdges() ) {
             try {
                 rs = database.read( "SELECT ST_AsText(geom) AS geom, metric_length, metric_speed_forward FROM edges WHERE id = " + edge.getId() + ";" );
                 if ( rs.next() ) {
                     List<Coordinate> coordinates = GeometryUtils.toCoordinatesFromWktLinestring( rs.getString( "geom" ) );
-                    if ( node.equals( edge.getTarget() ) ) {
-                        Collections.reverse( coordinates );
-                        node = (N) edge.getSource();
-                    } else {
-                        node = (N) edge.getTarget();
-                    }
                     coordinateMap.put( edge, coordinates );
                     // length in meters, speed in kmph, CAUTION - convert here
                     double len = rs.getDouble( "metric_length" );
                     double speedFw = rs.getDouble( "metric_speed_forward" );// todo take into consideration direction
                     double ti = len / ( speedFw / 3.6 );
-                    length.add( new Length( LengthUnits.METERS, (long) len ) );
-                    time.add( new Time( TimeUnits.SECONDS, (long) ti ) );
+//                    Logger.getLogger( getClass().getName() ).log( Level.INFO, "Adding length = " + len + "{" + new Length( LengthUnits.METERS, (long) len ) + "}" + ", time = " + ti + "{" + new Time( TimeUnits.SECONDS, (long) ti ) + "}" );
+                    length = length.add( new Length( LengthUnits.METERS, (long) len ) );
+                    time = time.add( new Time( TimeUnits.SECONDS, (long) ti ) );
                 }
             } catch ( SQLException ex ) {
                 throw new IOException( ex );

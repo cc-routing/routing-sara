@@ -258,9 +258,8 @@ public class SqliteGraphDAO implements GraphDAO {
             }
             // read edges
             Map<Metric, Map<Edge, Distance>> metricMap = new HashMap<>();
-            for ( Metric value : Metric.values() ) {
-                metricMap.put( value, new HashMap<Edge, Distance>() );
-            }
+            metricMap.put( Metric.LENGTH, new HashMap<Edge, Distance>() );
+            metricMap.put( Metric.TIME, new HashMap<Edge, Distance>() );
             rs = database.read( "SELECT * FROM edges e;" );
             while ( rs.next() ) {
                 SaraNode source = graph.getNodeById( rs.getLong( "source" ) );

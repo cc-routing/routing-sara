@@ -74,9 +74,9 @@ public class OverlayBuilder {
     public OverlayBuilder(SaraGraph graph) {
         this.saraGraph = graph;
 
-        //this.metrics = graph.getMetrics();
-        this.metrics = new HashSet<>();
-        this.metrics.add(Metric.LENGTH);
+        this.metrics = graph.getMetrics();
+//        this.metrics = new HashSet<>();
+//        this.metrics.add(Metric.LENGTH);
 
         this.layers = new ArrayList<>();
 
