@@ -124,6 +124,20 @@ public class OverlayBuilder {
         }
     }
 
+    public List<SaraEdge> mapRoute(List<SaraEdge> zeroRoute) {
+        List<SaraEdge> saraRoute = new ArrayList<>();
+        for (SaraEdge zeroEdge : zeroRoute) {
+            SaraEdge saraEdge = this.mapEdge(zeroEdge);
+            saraRoute.add(saraEdge);
+        }
+        return saraRoute;
+    }
+
+    public SaraEdge mapEdge(SaraEdge zeroEdge) {
+        long id = Math.abs(zeroEdge.getId());
+        SaraEdge saraEdge = this.saraGraph.getEdgeById(id);
+        return saraEdge;
+    }
 
     /**
      * adds next level partition.
