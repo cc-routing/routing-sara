@@ -58,7 +58,7 @@ public class SqliteRouteDAO implements RouteDataDAO {
         N node = route.getSource();
         for ( E edge : route.getEdges() ) {
             try {
-                rs = database.read( "SELECT ST_AsText(geom) AS geom FROM edges WHERE id = " + edge.getId() + ";" );
+                rs = database.read( "SELECT ST_AsText(geom) AS geom, metric_length, metric_speed_forward FROM edges WHERE id = " + edge.getId() + ";" );
                 if ( rs.next() ) {
                     List<Coordinate> coordinates = GeometryUtils.toCoordinatesFromWktLinestring( rs.getString( "geom" ) );
                     if ( node.equals( edge.getTarget() ) ) {
@@ -68,8 +68,12 @@ public class SqliteRouteDAO implements RouteDataDAO {
                         node = (N) edge.getTarget();
                     }
                     coordinateMap.put( edge, coordinates );
-                    length.add( new Length( LengthUnits.METERS, (long) edge.getLength( Metric.LENGTH ).getValue() ) );
-                    time.add( new Time( TimeUnits.SECONDS, (long) edge.getLength( Metric.TIME ).getValue() ) );
+                    // length in meters, speed in kmph, CAUTION - convert here
+                    double len = rs.getDouble( "metric_length" );
+                    double speedFw = rs.getDouble( "metric_speed_forward" );// todo take into consideration direction
+                    double ti = len / ( speedFw / 3.6 );
+                    length.add( new Length( LengthUnits.METERS, (long) len ) );
+                    time.add( new Time( TimeUnits.SECONDS, (long) ti ) );
                 }
             } catch ( SQLException ex ) {
                 throw new IOException( ex );

@@ -6,11 +6,13 @@
 package cz.certicon.routing.model;
 
 import cz.certicon.routing.model.graph.Edge;
+import cz.certicon.routing.model.graph.Node;
 import cz.certicon.routing.model.values.Length;
 import cz.certicon.routing.model.values.Time;
 import cz.certicon.routing.model.values.Coordinate;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
@@ -59,5 +61,19 @@ public class RouteData<E extends Edge> {
             edges.add( entry.getKey() );
         }
         return edges;
+    }
+
+    public <N extends Node<N, E>> List<Coordinate> getCoordinates( Route<N, E> route ) {
+        List<Coordinate> coordinates = new ArrayList<>();
+        N node = route.getSource();
+        for ( E edge : route.getEdges() ) {
+            List<Coordinate> c = getCoordiantes( edge );
+            if ( edge.getTarget().equals( node ) ) {
+                Collections.reverse( c );
+            }
+            node = (N) edge.getOtherNode( node );
+            coordinates.addAll( c );
+        }
+        return coordinates;
     }
 }

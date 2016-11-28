@@ -17,6 +17,7 @@ import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
+import java.io.InputStream;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Properties;
@@ -36,9 +37,12 @@ public class OptimizedGraphDAOTest {
     @BeforeClass
     public static void setUpBefore() throws Exception {
         properties = new Properties();
-        properties.setProperty( "driver", "org.sqlite.JDBC" );
-        properties.setProperty( "url", "jdbc:sqlite:C:\\Users\\blaha\\Documents\\NetBeansProjects\\RoutingParser\\routing_sara_prague.sqlite" );
-        properties.setProperty( "spatialite_path", "C:/Routing/Utils/mod_spatialite-4.3.0a-win-amd64/mod_spatialite.dll" );
+        InputStream in = OptimizedGraphDAOTest.class.getClassLoader().getResourceAsStream( "test.properties" );
+        properties.load( in );
+        in.close();
+//        properties.setProperty( "driver", "org.sqlite.JDBC" );
+//        properties.setProperty( "url", "jdbc:sqlite:C:\\Users\\blaha\\Documents\\NetBeansProjects\\RoutingParser\\routing_sara_prague.sqlite" );
+//        properties.setProperty( "spatialite_path", "C:/Routing/Utils/mod_spatialite-4.3.0a-win-amd64/mod_spatialite.dll" );
         GraphDAO graphDAO = new SqliteGraphDAO( properties );
         graph = graphDAO.loadGraph();
     }
