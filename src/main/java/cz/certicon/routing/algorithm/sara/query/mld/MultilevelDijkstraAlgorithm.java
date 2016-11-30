@@ -71,9 +71,13 @@ public class MultilevelDijkstraAlgorithm implements RoutingAlgorithm<SaraNode, S
         SaraEdge singleEdgePath = null;
         ZeroNode sourceNode = null;
         ZeroEdge sourceEdge = null;
-        if ( source.isCrossroad() ) {
+        if ( !source.isCrossroad() && !source.getEdge().get().getSource().getParent().equals( source.getEdge().get().getTarget().getParent() ) ) {
+            sourceNode = overlayGraph.getZeroNode( source.getEdge().get().getTarget() );
+            putNodeDistance( nodeDistanceMap, pqueue, new State<SaraNode, SaraEdge>( sourceNode, null ), Distance.newInstance( 0 ) );
+        } else if ( source.isCrossroad() ) {
             sourceNode = overlayGraph.getZeroNode( source.getNode().get() );
             putNodeDistance( nodeDistanceMap, pqueue, new State<SaraNode, SaraEdge>( sourceNode, null ), Distance.newInstance( 0 ) );
+//            System.out.println( "source = " + sourceNode );
         } else {
             sourceNode = overlayGraph.getZeroNode( source.getEdge().get().getTarget() );
             for ( SaraEdge e : sourceNode.getEdges() ) {
@@ -97,18 +101,32 @@ public class MultilevelDijkstraAlgorithm implements RoutingAlgorithm<SaraNode, S
             if ( !sourceEdge.isOneWay() ) {
                 putNodeDistance( nodeDistanceMap, pqueue, new State( sourceEdge.getSource(), sourceEdge ), source.getDistanceToSource( metric ).orElse( Distance.newZeroDistance() ) );
             }
+//            System.out.println( "source = " + sourceEdge );
         }
-        ZeroNode destinationNode = overlayGraph.getZeroNode( destination.isCrossroad() ? destination.getNode().get() : destination.getEdge().get().getSource() );
+        EndCondition endCondition = null;
+        ZeroNode destinationNode = null;
         ZeroEdge destinationEdge = null;
-        if ( !destination.isCrossroad() ) {
+        if ( !destination.isCrossroad() && !destination.getEdge().get().getSource().getParent().equals( destination.getEdge().get().getTarget().getParent() ) ) {
+            destinationNode = overlayGraph.getZeroNode( destination.getEdge().get().getSource() );
+            endCondition = new NodeEndCondition( destinationNode );
+        } else if ( destination.isCrossroad() ) {
+            destinationNode = overlayGraph.getZeroNode( destination.getNode().get() );
+            endCondition = new NodeEndCondition( destinationNode );
+        } else {
+            destinationNode = overlayGraph.getZeroNode( destination.getEdge().get().getSource() );
             for ( SaraEdge e : destinationNode.getEdges() ) {
                 if ( Math.abs( e.getId() ) == destination.getEdge().get().getId() ) {
                     destinationEdge = (ZeroEdge) e;
                     break;
                 }
             }
+            endCondition = new EdgeEndCondition( destinationEdge );
         }
-        EndCondition endCondition = destination.isCrossroad() ? new NodeEndCondition( destinationNode ) : new EdgeEndCondition( destinationEdge );
+//        if ( destination.isCrossroad() ) {
+//            System.out.println( "destination = " + destinationNode );
+//        } else {
+//            System.out.println( "destination = " + destinationEdge );
+//        }
         return route( metric, nodeDistanceMap, pqueue, sourceNode, destinationNode, endCondition );
     }
 
@@ -184,7 +202,6 @@ public class MultilevelDijkstraAlgorithm implements RoutingAlgorithm<SaraNode, S
                 State<OverlayNode, SaraEdge> overlayState = overlayPqueue.extractMin();
                 Distance distance = overlayNodeDistanceMap.get( overlayState );
                 closedOverlayStates.add( overlayState );
-
 
                 //relax neighboring nodes, i.e. exit points in the particular cell + corresponding border edge
                 Iterator<OverlayEdge> edges = overlayState.getNode().getOutgoingEdges();
@@ -275,6 +292,7 @@ public class MultilevelDijkstraAlgorithm implements RoutingAlgorithm<SaraNode, S
 
         @Override
         public boolean shouldTerminate( State<SaraNode, SaraEdge> currentState ) {
+//            System.out.println( "should terminate? final edge = " + finalEdge.getId() + ", current edge = " + currentState.getEdge().getId() + ", result = " + ( Math.abs( currentState.getEdge().getId() ) == Math.abs( finalEdge.getId() ) ) );
             return Math.abs( currentState.getEdge().getId() ) == Math.abs( finalEdge.getId() );
         }
     }
