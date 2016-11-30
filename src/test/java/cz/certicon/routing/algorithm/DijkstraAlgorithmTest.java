@@ -6,6 +6,7 @@
 package cz.certicon.routing.algorithm;
 
 import cz.certicon.routing.model.Route;
+import cz.certicon.routing.model.RoutingPoint;
 import cz.certicon.routing.model.graph.Edge;
 import cz.certicon.routing.model.graph.Graph;
 import cz.certicon.routing.model.graph.Metric;
@@ -19,6 +20,8 @@ import java8.util.Optional;
 import java.util.EnumSet;
 import java.util.HashMap;
 import java.util.Map;
+
+import java8.util.function.Supplier;
 import org.junit.After;
 import org.junit.AfterClass;
 import org.junit.Before;
@@ -69,7 +72,7 @@ public class DijkstraAlgorithmTest {
      * Test of route method, of class DijkstraAlgorithm.
      */
     @Test
-    public void testRoute_3args_1() {
+    public void testRoute_3args_1() throws Throwable {
         System.out.println( "route" );
         Node source = nodeMap.get( 0L );
         Node destination = nodeMap.get( 3L );

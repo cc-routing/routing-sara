@@ -98,12 +98,14 @@ public class MultilevelDijkstraAlgorithm implements RoutingAlgorithm<SaraNode, S
                 putNodeDistance( nodeDistanceMap, pqueue, new State( sourceEdge.getSource(), sourceEdge ), source.getDistanceToSource( metric ).orElse( Distance.newZeroDistance() ) );
             }
         }
-        ZeroNode destinationNode = overlayGraph.getZeroNode( destination.getNode().orElse( destination.getEdge().get().getSource() ) );
+        ZeroNode destinationNode = overlayGraph.getZeroNode( destination.isCrossroad() ? destination.getNode().get() : destination.getEdge().get().getSource() );
         ZeroEdge destinationEdge = null;
-        for ( SaraEdge e : destinationNode.getEdges() ) {
-            if ( Math.abs( e.getId() ) == destination.getEdge().get().getId() ) {
-                destinationEdge = (ZeroEdge) e;
-                break;
+        if ( !destination.isCrossroad() ) {
+            for ( SaraEdge e : destinationNode.getEdges() ) {
+                if ( Math.abs( e.getId() ) == destination.getEdge().get().getId() ) {
+                    destinationEdge = (ZeroEdge) e;
+                    break;
+                }
             }
         }
         EndCondition endCondition = destination.isCrossroad() ? new NodeEndCondition( destinationNode ) : new EdgeEndCondition( destinationEdge );

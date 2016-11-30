@@ -8,6 +8,7 @@ import cz.certicon.routing.model.graph.Metric;
 import cz.certicon.routing.model.graph.Node;
 import cz.certicon.routing.model.values.Distance;
 import java8.util.Optional;
+import lombok.NonNull;
 
 import java.util.EnumMap;
 import java.util.HashMap;
@@ -30,11 +31,11 @@ public class RoutingPoint<N extends Node<N, E>, E extends Edge<N, E>> {
         this.toTargetDistanceMap = toTargetDistanceMap;
     }
 
-    public static <N extends Node<N, E>, E extends Edge<N, E>> RoutingPoint<N, E> of( N node ) {
+    public static <N extends Node<N, E>, E extends Edge<N, E>> RoutingPoint<N, E> of( @NonNull N node ) {
         return new RoutingPoint<>( node, null, new EnumMap<Metric, Distance>( Metric.class ), new EnumMap<Metric, Distance>( Metric.class ) );
     }
 
-    public static <N extends Node<N, E>, E extends Edge<N, E>> RoutingPoint<N, E> of( E edge, final Metric metric, final Distance toSourceDistance, final Distance toTargetDistance ) {
+    public static <N extends Node<N, E>, E extends Edge<N, E>> RoutingPoint<N, E> of( @NonNull E edge, @NonNull final Metric metric, @NonNull final Distance toSourceDistance, @NonNull final Distance toTargetDistance ) {
         return new RoutingPoint<>( null, edge, new EnumMap<Metric, Distance>( Metric.class ) {{
             put( metric, toSourceDistance );
         }}, new HashMap<Metric, Distance>() {{
@@ -43,7 +44,7 @@ public class RoutingPoint<N extends Node<N, E>, E extends Edge<N, E>> {
     }
 
 
-    public static <N extends Node<N, E>, E extends Edge<N, E>> RoutingPoint<N, E> of( E edge, final Metric metric1, final Distance toSourceDistance1, final Distance toTargetDistance1, final Metric metric2, final Distance toSourceDistance2, final Distance toTargetDistance2 ) {
+    public static <N extends Node<N, E>, E extends Edge<N, E>> RoutingPoint<N, E> of( @NonNull E edge, final Metric metric1, @NonNull final Distance toSourceDistance1, @NonNull final Distance toTargetDistance1, @NonNull final Metric metric2, @NonNull final Distance toSourceDistance2, @NonNull final Distance toTargetDistance2 ) {
         return new RoutingPoint<>( null, edge, new EnumMap<Metric, Distance>( Metric.class ) {{
             put( metric1, toSourceDistance1 );
             put( metric2, toSourceDistance2 );
@@ -53,7 +54,7 @@ public class RoutingPoint<N extends Node<N, E>, E extends Edge<N, E>> {
         }} );
     }
 
-    public static <N extends Node<N, E>, E extends Edge<N, E>> RoutingPoint<N, E> of( E edge, final Metric metric1, final Distance toSourceDistance1, final Distance toTargetDistance1, final Metric metric2, final Distance toSourceDistance2, final Distance toTargetDistance2, final Metric metric3, final Distance toSourceDistance3, final Distance toTargetDistance3 ) {
+    public static <N extends Node<N, E>, E extends Edge<N, E>> RoutingPoint<N, E> of( @NonNull E edge, final Metric metric1, @NonNull final Distance toSourceDistance1, @NonNull final Distance toTargetDistance1, @NonNull final Metric metric2, @NonNull final Distance toSourceDistance2, @NonNull final Distance toTargetDistance2, @NonNull final Metric metric3, @NonNull final Distance toSourceDistance3, @NonNull final Distance toTargetDistance3 ) {
         return new RoutingPoint<>( null, edge, new EnumMap<Metric, Distance>( Metric.class ) {{
             put( metric1, toSourceDistance1 );
             put( metric2, toSourceDistance2 );
@@ -65,7 +66,7 @@ public class RoutingPoint<N extends Node<N, E>, E extends Edge<N, E>> {
         }} );
     }
 
-    public static <N extends Node<N, E>, E extends Edge<N, E>> RoutingPoint<N, E> of( E edge, final Trinity<Metric, Distance, Distance>... metricStartEndTrinity ) {
+    public static <N extends Node<N, E>, E extends Edge<N, E>> RoutingPoint<N, E> of( @NonNull E edge, final Trinity<Metric, Distance, Distance>... metricStartEndTrinity ) {
         Map<Metric, Distance> toSourceDistanceMap = new EnumMap<>( Metric.class );
         Map<Metric, Distance> toTargetDistanceMap = new EnumMap<>( Metric.class );
         for ( Trinity<Metric, Distance, Distance> trinity : metricStartEndTrinity ) {
@@ -75,7 +76,7 @@ public class RoutingPoint<N extends Node<N, E>, E extends Edge<N, E>> {
         return new RoutingPoint<>( null, edge, toSourceDistanceMap, toTargetDistanceMap );
     }
 
-    public static <N extends Node<N, E>, E extends Edge<N, E>> RoutingPoint<N, E> of( PointSearcher.PointSearchResult pointSearchResult, Set<Metric> metrics, Graph<N, E> graph ) {
+    public static <N extends Node<N, E>, E extends Edge<N, E>> RoutingPoint<N, E> of( @NonNull PointSearcher.PointSearchResult pointSearchResult, Set<Metric> metrics, @NonNull Graph<N, E> graph ) {
         if ( pointSearchResult.isCrossroad() ) {
             return of( graph.getNodeById( pointSearchResult.getNodeId() ) );
         }
@@ -89,7 +90,7 @@ public class RoutingPoint<N extends Node<N, E>, E extends Edge<N, E>> {
     }
 
 
-    public static <N extends Node<N, E>, E extends Edge<N, E>> RoutingPoint<N, E> of( E edge, Map<Metric, Distance> toSourceDistanceMap, Map<Metric, Distance> toTargetDistanceMap ) {
+    public static <N extends Node<N, E>, E extends Edge<N, E>> RoutingPoint<N, E> of( @NonNull E edge, Map<Metric, Distance> toSourceDistanceMap, @NonNull Map<Metric, Distance> toTargetDistanceMap ) {
         return new RoutingPoint<>( null, edge, new EnumMap<>( toSourceDistanceMap ), new EnumMap<>( toTargetDistanceMap ) );
     }
 
