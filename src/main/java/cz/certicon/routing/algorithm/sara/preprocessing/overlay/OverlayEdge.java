@@ -11,6 +11,7 @@ import cz.certicon.routing.model.graph.Metric;
 import cz.certicon.routing.model.graph.SaraEdge;
 import cz.certicon.routing.model.graph.TurnTable;
 import cz.certicon.routing.model.values.Distance;
+import java.util.ArrayList;
 import java.util.List;
 import lombok.Getter;
 
@@ -32,15 +33,24 @@ public class OverlayEdge extends AbstractEdge<OverlayNode, OverlayEdge> implemen
     /**
      * devel: in memory storage (in L1) of the caluclated shortcut in L0
      */
-    public List<SaraEdge> saraWay;
+    private List<SaraEdge>[] zeroRoutes;
 
     /**
      * devel: in memory storage (in LN2+) of the caluclated shortcut in LN-1
      */
-    public List<OverlayEdge> overWay;
+    private List<OverlayEdge>[] overlayRoutes;
 
-    public OverlayEdge(OverlayGraph graph, long id, OverlayNode source, OverlayNode target) {
+    private OverlayEdge(OverlayGraph graph, long id, OverlayNode source, OverlayNode target) {
         super(graph, id, true, source, target, -1, -1);
+    }
+
+    public OverlayEdge(OverlayGraph graph, OverlayNode source, OverlayNode target) {
+        super(graph, graph.getLayer().getNextEdgeId(), true, source, target, -1, -1);
+        if (OverlayBuilder.keepShortcuts) {
+            int len = Metric.values().length;
+            this.zeroRoutes = new ArrayList[len];
+            this.overlayRoutes = new ArrayList[len];
+        }
     }
 
     public OverlayEdge(OverlayGraph graph, OverlayLift lift, OverlayNode source, OverlayNode target) {
@@ -53,7 +63,6 @@ public class OverlayEdge extends AbstractEdge<OverlayNode, OverlayEdge> implemen
             Distance distance = lift.getEdge().getLength(metric);
             this.setLength(metric, distance);
         }
-
     }
 
     @Override
@@ -65,7 +74,6 @@ public class OverlayEdge extends AbstractEdge<OverlayNode, OverlayEdge> implemen
     protected OverlayEdge newInstance(Graph<OverlayNode, OverlayEdge> newGraph, long id, boolean oneway, OverlayNode newSource, OverlayNode newTarget, int sourceIndex, int targetIndex) {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
-
 
     @Override
     public BorderData<OverlayNode, OverlayEdge> getBorder() {
@@ -79,5 +87,39 @@ public class OverlayEdge extends AbstractEdge<OverlayNode, OverlayEdge> implemen
 
     public OverlayBorder border() {
         return this.oBorder;
+    }
+
+    public void setZeroRoute(Metric metric, List<SaraEdge> route) {
+        int idx = metric.ordinal();
+        this.zeroRoutes[idx] = route;
+    }
+
+    public void setOverlayRoute(Metric metric, List<OverlayEdge> route) {
+        int idx = metric.ordinal();
+        this.overlayRoutes[idx] = route;
+    }
+
+    public List<SaraEdge> getZeroRoute(Metric metric) {
+        if (this.zeroRoutes == null)
+        {
+            return null;
+        }
+        else
+        {
+            int idx = metric.ordinal();
+            return this.zeroRoutes[idx];
+        }
+    }
+
+    public List<OverlayEdge> getOverlayRoute(Metric metric) {
+        if (this.overlayRoutes == null)
+        {
+            return null;
+        }
+        else
+        {
+            int idx = metric.ordinal();
+            return this.overlayRoutes[idx];
+        }
     }
 }

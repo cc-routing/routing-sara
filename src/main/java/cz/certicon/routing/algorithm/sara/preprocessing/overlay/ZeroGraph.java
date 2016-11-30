@@ -211,7 +211,7 @@ public class ZeroGraph extends SaraGraph {
                         List<SaraEdge> edges = result.get().getEdgeList();
                         distance = this.sumSaraDistance(edges, metric);
                         if (OverlayBuilder.keepShortcuts) {
-                            cellEdge.saraWay = edges;
+                            cellEdge.setZeroRoute(metric, edges);
                         }
                         data.getLayer().validRoutes++;
 

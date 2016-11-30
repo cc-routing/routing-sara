@@ -46,7 +46,7 @@ public class MLDFullMemoryRouteUnpacker<N extends Node<N, E>, E extends Edge<N, 
                     }
                     skipSaraEdge = false;
                 } else {
-                    unpackOverlays( builder, (OverlayEdge) currentState.getEdge(), overlayGraph );
+                    unpackOverlays( builder, (OverlayEdge) currentState.getEdge(), overlayGraph, metric);
                     skipSaraEdge = true;
                 }
                 currentState = predecessors.get( currentState );
@@ -59,14 +59,18 @@ public class MLDFullMemoryRouteUnpacker<N extends Node<N, E>, E extends Edge<N, 
         }
     }
 
-    private void unpackOverlays( Route.RouteBuilder<N, E> builder, OverlayEdge overlayEdge, OverlayBuilder overlayGraph ) {
-        if ( overlayEdge.saraWay != null ) {
-            for ( int i = overlayEdge.saraWay.size() - 2; i >= 0; i-- ) {
-                builder.addAsFirst( (E) overlayGraph.mapEdge( overlayEdge.saraWay.get( i ) ) );
+    private void unpackOverlays( Route.RouteBuilder<N, E> builder, OverlayEdge overlayEdge, OverlayBuilder overlayGraph, Metric metric) {
+        List<SaraEdge> zeroRoute = overlayEdge.getZeroRoute(metric);
+        if (zeroRoute != null) {
+            for (int i = zeroRoute.size() - 2; i >= 0; i--) {
+                builder.addAsFirst((E) overlayGraph.mapEdge(zeroRoute.get(i)));
             }
-        } else if ( overlayEdge.overWay != null ) {
-            for ( int i = overlayEdge.overWay.size() - 1; i >= 0; i-- ) {
-                unpackOverlays( builder, overlayEdge.overWay.get( i ), overlayGraph );
+        } else {
+            List<OverlayEdge> overlayRoute = overlayEdge.getOverlayRoute(metric);
+            if (overlayRoute != null) {
+                for (int i = overlayRoute.size() - 1; i >= 0; i--) {
+                    unpackOverlays(builder, overlayRoute.get(i), overlayGraph, metric);
+                }
             }
         }
     }

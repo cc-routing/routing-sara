@@ -40,7 +40,7 @@ public class OverlayGraph extends AbstractUndirectedGraph<OverlayNode, OverlayEd
     }
 
     public OverlayEdge addEdge(OverlayNode source, OverlayNode target) {
-        OverlayEdge edge = new OverlayEdge(this, this.getLayer().getNextEdgeId(), source, target);
+        OverlayEdge edge = new OverlayEdge(this, source, target);
         this.addEdge(edge);
         return edge;
     }
@@ -149,7 +149,7 @@ public class OverlayGraph extends AbstractUndirectedGraph<OverlayNode, OverlayEd
             Route<OverlayNode, OverlayEdge> route = result.get();
             List<OverlayEdge> edges = route.getEdgeList();
             if (OverlayBuilder.keepShortcuts) {
-                cellEdge.overWay = edges;
+                cellEdge.setOverlayRoute(metric, edges);
             }
             distance = this.sumOverlayDistance(edges, metric);
             this.cell.getLayer().validRoutes++;
