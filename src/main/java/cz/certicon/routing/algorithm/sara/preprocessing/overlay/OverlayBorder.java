@@ -6,7 +6,7 @@
 package cz.certicon.routing.algorithm.sara.preprocessing.overlay;
 
 /**
- *
+ * BorderData shared by Overlay exit and entry parallel border edges.
  * @author Blahoslav Potoček <potocek@merica.cz>
  */
 public class OverlayBorder extends BorderData<OverlayNode, OverlayEdge> {

@@ -18,7 +18,7 @@ import lombok.Getter;
 import lombok.Setter;
 
 /**
- *
+ * Data loader, creates instance of the OverlayBuilder.
  * @author Blahoslav Potoček <potocek@merica.cz>
  */
 public class OverlayCreator {

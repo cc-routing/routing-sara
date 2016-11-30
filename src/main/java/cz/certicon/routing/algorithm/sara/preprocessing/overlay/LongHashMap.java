@@ -11,7 +11,7 @@ import java.util.Iterator;
 import lombok.Getter;
 
 /**
- *
+ * HashMap for long with (@link ReadOnlyLongMap) implementation
  * @author Blahoslav Potoček <potocek@merica.cz>
  */
 public class LongHashMap<T> implements ReadOnlyLongMap<T> {

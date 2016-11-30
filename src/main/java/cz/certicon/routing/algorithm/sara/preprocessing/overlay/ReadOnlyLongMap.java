@@ -6,7 +6,7 @@
 package cz.certicon.routing.algorithm.sara.preprocessing.overlay;
 
 /**
- *
+ * Readonly Long Map interface
  * @author Blahoslav Potoček <potocek@merica.cz>
  */
 public interface ReadOnlyLongMap<T> extends Iterable<T> {

@@ -9,15 +9,19 @@ import cz.certicon.routing.model.graph.Cell;
 import lombok.Getter;
 
 /**
+ * One layer in OverlayGraph. Layers are defined for levels 1-N. OverlayGraph of the
+ * layer is "split" into its cells. Cells of the layer reference the relevant
+ * portion of the OverlayGraph at the particular level. Level 0 has no object.
+ * Cells at layer 1 reference also the related parts of Zero(Sub)Graph from
+ * level 0. Level 0 borders are referenced in OverlayBuilder.zeroBorders.
  *
- * @author Blahoslav Potoček <potocek@merica.cz> Represents one level in overlay
- * data. L0 is created only to preserve level-index consistency, L0 partition is
- * not used, it is represented by basic SaraGraph.
+ * @author Blahoslav Potoček <potocek@merica.cz>
+ *
  */
 public class OverLayer {
 
     /**
-     * root oblect of the overlay data
+     * root object in the Overlay
      */
     @Getter
     private final OverlayBuilder builder;
@@ -29,29 +33,41 @@ public class OverLayer {
     private final int level;
 
     /**
-     * All cells at this level.
+     * Layer cells with borders - contain parts of the graph.
      */
     private final LongHashMap<OverlayCell> cells = new LongHashMap<>();
 
+    /**
+     * Cells without borders.
+     */
     private final LongHashMap<OverlayCell> isolatedCells = new LongHashMap<>();
 
     private long maxNodeId = 0;
+
     private long maxEdgeId = 0;
+
     private boolean lockEdgesById = false;
 
-    /**
-     * overlay graph at this level
-     */
+    // debug info
     long routingCounter = 0;
     int validRoutes = 0;
     int invalidRoutes = 0;
     int forbiddenRoutes = 0;
 
+    /**
+     *
+     * @param builder parent object, Overlay root
+     * @param level
+     */
     public OverLayer(OverlayBuilder builder, int level) {
         this.builder = builder;
         this.level = level;
     }
 
+    /**
+     * Builds the tree cell structure among layers, where cells in this layer
+     * represent sub cells of cells in the upper layer.
+     */
     public void collectSubCells() {
 
         if (this.isTopLayer()) {
@@ -72,24 +88,27 @@ public class OverLayer {
     }
 
     /**
-     * checks whether specified cell is registered in this partiton
+     * checks whether partition cell is already registered in this laeyr
      *
-     * @param cell
-     * @return cell RouteTable
+     * @param partitionCell cell from preprocessing referenced by {
+     * @SaraNode}
      */
-    public void checkCell(Cell cell) {
+    public void checkCell(Cell partitionCell) {
 
-        long id = cell.getId();
+        long id = partitionCell.getId();
 
         if (this.cells.containsKey(id)) {
             return;
         }
 
-        OverlayCell data = new OverlayCell(this, cell);
+        OverlayCell data = new OverlayCell(this, partitionCell);
         this.cells.getMap().put(id, data);
 
     }
 
+    /**
+     * Cells without border are moved to separate collection.
+     */
     public void separateIsolatedCells() {
 
         for (OverlayCell cell : this.cells) {
@@ -103,10 +122,13 @@ public class OverLayer {
         }
     }
 
+    /**
+     * adds OverlayEdges inside cell, matrix entry nodex x exit nodes
+     */
     public void buildCellEdges() {
 
         for (OverlayCell cell : this.getCells()) {
-            cell.getOverlayGraph().addCellEdges();
+            cell.getOverlayGraph().buildCellEdges();
         }
     }
 
@@ -114,6 +136,11 @@ public class OverLayer {
         return this.builder.getLayer(this.level + 1);
     }
 
+    /**
+     * Connects subCells (in layer N-1). Used for customization: Shortcuts
+     * (CellEdges) in a cell at level N are calculated in graph formed by
+     * cell.subCells at level N-1
+     */
     public void connectSubCells() {
 
         for (OverlayCell cell : this.cells) {
@@ -121,6 +148,12 @@ public class OverLayer {
         }
     }
 
+    /**
+     * sets the connection for all cells in this layer
+     *
+     * @param connection true: all cells are connected and form graph over
+     * entire level false: all cells become disconnected, isolated for routing
+     */
     public void setLayerConnection(boolean connection) {
         for (OverlayCell cell : this.cells) {
             cell.setLayerConnection(connection);
@@ -132,16 +165,19 @@ public class OverLayer {
     }
 
     /**
-     * builds overlay graph in this partition.
+     * runs cutomization for this layer, using dijkstra searches shortcuts in
+     * layer N-1, shortcut length is assign to cellEdges at level N for all
+     * metrics
      */
     public void buildCustomization() {
 
         if (this.level == 1) {
             for (OverlayCell cell : this.getCells()) {
+                // cells only at level 1 reference sub Zero Graphs
                 cell.getZeroGraph().customizeFirstLevel();
             }
         } else {
-
+            // layers 2-N calculate shortcuts from N-1
             for (OverlayCell cell : this.getCells()) {
                 cell.getOverlayGraph().customizeUpperLevel();
             }
@@ -156,16 +192,22 @@ public class OverLayer {
         System.out.println(info);
     }
 
-    public long getNextEdgeId() {
+    long getNextEdgeId() {
         this.lockEdgesById = true;
         return ++this.maxEdgeId;
     }
 
-    public long getNextNodeId() {
+    long getNextNodeId() {
         return ++this.maxNodeId;
     }
 
-    public void checkEdgeId(long id) {
+    /**
+     * For BorderEdges ids of underlaying Sara/Zero Edges are used CellEdges
+     * have higher ids
+     *
+     * @param id
+     */
+    void checkEdgeId(long id) {
 
         if (this.lockEdgesById) {
             throw new IllegalStateException("adding OverlayEdge by id is locked");
@@ -177,5 +219,4 @@ public class OverLayer {
             this.maxEdgeId = absId;
         }
     }
-
 }

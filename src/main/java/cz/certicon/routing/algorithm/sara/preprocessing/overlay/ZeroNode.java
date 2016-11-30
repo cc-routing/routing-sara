@@ -11,7 +11,7 @@ import cz.certicon.routing.model.graph.TurnTable;
 import cz.certicon.routing.model.values.Distance;
 
 /**
- *
+ * Node from graph at level 0
  * @author Blahoslav Potoček <potocek@merica.cz>
  */
 public class ZeroNode extends SaraNode {

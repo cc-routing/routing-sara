@@ -9,12 +9,19 @@ import cz.certicon.routing.model.graph.Edge;
 import cz.certicon.routing.model.graph.Node;
 
 /**
- *
+ * interface required for exit or entry edge
  * @author Blahoslav Potoček <potocek@merica.cz>
  */
 public interface BorderEdge<N extends Node, E extends Edge & BorderEdge<N, E>> {
 
+    /**
+     * @return borderData
+     */
     BorderData<N, E> getBorder();
 
-    void setBorder(BorderData<N, E> border);
+    /**
+     * sets the border data
+     * @param borderData
+     */
+    void setBorder(BorderData<N, E> borderData);
 }

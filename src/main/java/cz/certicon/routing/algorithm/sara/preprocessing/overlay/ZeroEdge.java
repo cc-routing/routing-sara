@@ -7,11 +7,10 @@ package cz.certicon.routing.algorithm.sara.preprocessing.overlay;
 
 import cz.certicon.routing.model.graph.Metric;
 import cz.certicon.routing.model.graph.SaraEdge;
-import cz.certicon.routing.model.graph.SaraNode;
 import cz.certicon.routing.model.values.Coordinate;
 
 /**
- *
+ * edge of the level 0 sub graph
  * @author Blahoslav Potoček <potocek@merica.cz>
  */
 public class ZeroEdge extends SaraEdge implements BorderEdge<ZeroNode, ZeroEdge> {

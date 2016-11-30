@@ -8,7 +8,7 @@ package cz.certicon.routing.algorithm.sara.preprocessing.overlay;
 import java.util.ArrayList;
 
 /**
- *
+ * ArrayList with (@ReadonlyList) implementation.
  * @author Blahoslav Potoček <potocek@merica.cz>
  */
 public class DataList<T> extends ArrayList<T> implements ReadOnlyList<T> {

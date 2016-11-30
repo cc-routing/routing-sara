@@ -8,20 +8,32 @@ package cz.certicon.routing.algorithm.sara.preprocessing.overlay;
 import lombok.Getter;
 
 /**
- *
+ * Border data shared by exit and entry Zero border edges at level 0.
  * @author Blahoslav Potoček <potocek@merica.cz>
  */
 public class ZeroBorder extends BorderData<ZeroNode, ZeroEdge> {
 
+    /**
+     * lift over exitEdge.source for forward (source->targte) direction
+     */
     @Getter
     private final OverlayLift exit1;
 
+    /**
+     * lift over exitEdge.target for forward (source->targte) direction
+     */
     @Getter
     private final OverlayLift entry1;
 
+    /**
+     * lift over entryEdge.target for backward (target->source) direction
+     */
     @Getter
     private final OverlayLift exit2;
 
+    /**
+     * lift over entryEdge.source for backward (target->source) direction
+     */
     @Getter
     private final OverlayLift entry2;
 

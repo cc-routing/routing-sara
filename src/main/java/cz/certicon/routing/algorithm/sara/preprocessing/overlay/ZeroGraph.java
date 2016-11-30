@@ -20,7 +20,9 @@ import java8.util.Optional;
 import lombok.Getter;
 
 /**
- *
+ * Portion of the graph at level 0.
+ * Overlay input - SaraGraph is split by cells at level 1.
+ * Each cell at level 1 contains its part of the ZeroGraph.
  * @author Blahoslav Potoček <potocek@merica.cz>
  */
 public class ZeroGraph extends SaraGraph {
@@ -43,34 +45,15 @@ public class ZeroGraph extends SaraGraph {
         })
     };
 
+    /**
+     * related cell, owner of this part of the graph
+     */
     @Getter
     private final OverlayCell cell;
 
     public ZeroGraph(OverlayCell cell) {
         super(cell.getLayer().getBuilder().getMetrics());
         this.cell = cell;
-    }
-
-    public ZeroEdge addEdge(long id, long s, long t) {
-        ZeroNode zs = (ZeroNode) this.getNodeById(s);
-        if (zs == null) {
-            zs = new ZeroNode(this, s, null);
-            this.addNode(zs);
-        }
-        ZeroNode zt = (ZeroNode) this.getNodeById(t);
-        if (zt == null) {
-            zt = new ZeroNode(this, t, null);
-            this.addNode(zt);
-        }
-
-        ZeroEdge edge = new ZeroEdge(this, id, false, zs, zt, zs.getEdgesCount(), zt.getEdgesCount());
-        this.addEdge(edge);
-        edge.setLength(Metric.LENGTH, len);
-
-        zs.setTurnTable(turns[zs.getEdgesCount()]);
-        zt.setTurnTable(turns[zt.getEdgesCount()]);
-
-        return edge;
     }
 
     public OverlayBuilder getBuilder() {
@@ -154,13 +137,15 @@ public class ZeroGraph extends SaraGraph {
         return zEdge;
     }
 
+    /**
+     * calculates shortcuts and assing metrics for CellEdges for level 1
+     */
     public void customizeFirstLevel() {
 
         OverlayCell data = this.cell;
 
         boolean uTurnsAllowed = true;
 
-        // L1 distances are calculated from Sara SubGraphs in cells
         for (Metric metric : this.getMetrics()) {
 
             for (OverlayNode entryNode : data.getEntryNodes()) {
@@ -242,5 +227,21 @@ public class ZeroGraph extends SaraGraph {
         }
 
         return distance;
+    }
+
+    /**
+     * maps finds ZeroEdge relatred to the SaraEdge
+     * @param saraEdge
+     * @return
+     */
+    public ZeroEdge getZeroEdge(SaraEdge saraEdge) {
+
+        long id = saraEdge.getId();
+        SaraEdge zeroEdge = this.getEdgeById(id);
+        if (zeroEdge == null) {
+            zeroEdge = this.getEdgeById(-id);
+        }
+
+        return (ZeroEdge) zeroEdge;
     }
 }

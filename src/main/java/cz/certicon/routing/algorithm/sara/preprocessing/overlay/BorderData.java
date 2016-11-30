@@ -10,10 +10,11 @@ import cz.certicon.routing.model.graph.Node;
 import lombok.Getter;
 
 /**
+ * Data shared by exit and entry border (parallel) edges.
  *
  * @author Blahoslav Potoček <potocek@merica.cz>
  */
-public class BorderData<N extends Node, E extends Edge & BorderEdge<N, E>> {
+public abstract class BorderData<N extends Node, E extends Edge & BorderEdge<N, E>> {
 
     @Getter
     private final long id;
@@ -24,14 +25,24 @@ public class BorderData<N extends Node, E extends Edge & BorderEdge<N, E>> {
     @Getter
     private final E entryEdge;
 
+    /**
+     * blind target node at exit edge
+     */
     @Getter
     private final N exitTarget;
 
+    /**
+     * blind entry source at entry edge
+     */
     @Getter
     private final N entrySource;
 
     private boolean connected = false;
 
+    /**
+     * @param exit  exit parallel edge
+     * @param entry entry parallel edge
+     */
     public BorderData(E exit, E entry) {
 
         if ((exit.getId() < 0) && (Math.abs(exit.getId()) == entry.getId())) {
@@ -48,28 +59,32 @@ public class BorderData<N extends Node, E extends Edge & BorderEdge<N, E>> {
         entry.setBorder(this);
     }
 
+    /**
+     * true: exit and entry edges are parallel, border is available for routing
+     * false: exit and entry edges are ednded by blind nodes, border is not available for routing
+     */
     public boolean isConnected() {
         return this.connected;
     }
 
+    /**
+     * connects exit and entry parallel edges
+     */
     public void connect() {
 
         if (this.connected) {
             return;
         }
 
-        E e1 = this.exitEdge;
-        E e2 = this.entryEdge;
-
-        N ss = (N) e1.getSource();
-        N tt = (N) e2.getTarget();
-
-        e1.setTarget(tt, e2.getTargetPosition());
-        e2.setSource(ss, e1.getSourcePosition());
+        exitEdge.setTarget(entryEdge.getTarget(), entryEdge.getTargetPosition());
+        entryEdge.setSource(exitEdge.getSource(), exitEdge.getSourcePosition());
 
         this.connected = true;
     }
 
+    /**
+     * disconectes exit and entry parallel edges
+     */
     public void disconnect() {
         if (!this.connected) {
             return;

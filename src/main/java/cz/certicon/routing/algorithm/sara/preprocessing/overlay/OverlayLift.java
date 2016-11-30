@@ -12,18 +12,21 @@ import lombok.Getter;
 
 /**
  * "Vertical link" object in overlay data model. It is shared by OverlayNodes
- * for different levels created over one border SaraEdge in L0.
+ * for different levels created over one ZeroNode in L0.
  *
  * @author Blahoslav Potoček <potocek@merica.cz>
  */
 public class OverlayLift {
 
     /**
-     * id passed to OverlayNodes, TODO
+     * id realted to the undelying border - SaraEdge
      */
     @Getter
     private final long groupId;
 
+    /**
+     * unique debug info
+     */
     @Getter
     private final String key;
 
@@ -34,20 +37,25 @@ public class OverlayLift {
     private final ZeroEdge edge;
 
     /**
-     * related L0 SaraNode
+     * related L0 ZeroNode
      */
     @Getter
     private final ZeroNode node;
 
+    /**
+     * other border edge node
+     */
     @Getter
     private final ZeroNode otherNode;
 
+    /**
+     * direction fo the underlying edge
+     */
     private final boolean forward;
 
     /**
-     * false: entryPoint, exitPoint direction corresponds to this.edge
-     * source=>target true: entryPoint, exitPoint direction corresponds to
-     * this.edge target=>source
+     * this edge source => target direction true: exitPoint => entryPoint,
+     * false: entryPoint => exitPoint
      */
     private final boolean exit;
 
@@ -55,14 +63,14 @@ public class OverlayLift {
     private final Direction direction;
 
     /**
-     * "vertical" collection of OverlayNodes in a column over this Sara node
+     * "vertical" collection of OverlayNodes in this lift through all layers
      */
     private final List<OverlayNode> nodes = new ArrayList<>();
 
     /**
-     *
-     * @param node SaraNode L0
-     * @param isEntry column role: true=entry, false=exit;
+     *@param edge underlying edge
+     * @param isForward direction in which edge is used
+     * @param isExit exit or entry lift
      */
     public OverlayLift(ZeroEdge edge, boolean isForward, boolean isExit) {
 
@@ -145,6 +153,12 @@ public class OverlayLift {
         return this.nodes.size();
     }
 
+    /**
+     * Dis/conmnects all nodes (resp. borders) in this lift
+     * = lift chnages connection of cells in all layers
+     * used namely to dis/connect top regions fro routing
+     * @param connection
+     */
     public void setConnection(boolean connection) {
 
         this.edge.border().setConnection(connection);

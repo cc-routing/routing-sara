@@ -20,7 +20,7 @@ import java8.util.Optional;
 import lombok.Getter;
 
 /**
- *
+ * Directed OverlayGraph in layers 1-N. Has no turn constrains.
  * @author Blahoslav Potoček <potocek@merica.cz>
  */
 public class OverlayGraph extends AbstractUndirectedGraph<OverlayNode, OverlayEdge> {
@@ -78,16 +78,13 @@ public class OverlayGraph extends AbstractUndirectedGraph<OverlayNode, OverlayEd
     }
 
     /**
-     * calculates shortcuts over cell in L2+
-     *
-     * @param cell
+     * calculates shortcuts and assing metrics for CellEdges for levels 2+
      */
     public void customizeUpperLevel() {
 
-        int level = this.cell.getLevel();
-
         int p = 2;
 
+        //devel only
         boolean byOne = p == 1;
         boolean byMany = p == 2;
 
@@ -141,6 +138,12 @@ public class OverlayGraph extends AbstractUndirectedGraph<OverlayNode, OverlayEd
         }
     }
 
+    /**
+     * Assigns shortcut to CellEdge
+     * @param metric
+     * @param cellEdge
+     * @param result
+     */
     private void setResult(Metric metric, OverlayEdge cellEdge, Optional<Route<OverlayNode, OverlayEdge>> result) {
 
         Distance distance;
@@ -163,7 +166,7 @@ public class OverlayGraph extends AbstractUndirectedGraph<OverlayNode, OverlayEd
     }
 
     /**
-     * sums route distance, first and last edges are ignored - will be included
+     * sums route distance, first and last (border) edges are ignored - will be included
      * by algorithm
      *
      * @param edges
@@ -181,7 +184,10 @@ public class OverlayGraph extends AbstractUndirectedGraph<OverlayNode, OverlayEd
         return distance;
     }
 
-    public void addCellEdges() {
+    /**
+     * edges inside cell are created
+     */
+    public void buildCellEdges() {
 
         for (OverlayNode entry : this.cell.getEntryNodes()) {
             for (OverlayNode exit : this.cell.getExitNodes()) {

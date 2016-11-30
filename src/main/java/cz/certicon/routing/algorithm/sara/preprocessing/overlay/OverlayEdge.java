@@ -16,9 +16,11 @@ import java.util.List;
 import lombok.Getter;
 
 /**
+ * Overlaygraph contains two kind of OverlayEdges: CellEdge - inside cell and
+ * BorderEdge between cells.
  *
  * @author Blahoslav Potoček <potocek@merica.cz> Edge for the OverlayGraph.
- * Always directed, no turn constrains.
+ *
  */
 public class OverlayEdge extends AbstractEdge<OverlayNode, OverlayEdge> implements BorderEdge<OverlayNode, OverlayEdge> {
 
@@ -28,15 +30,16 @@ public class OverlayEdge extends AbstractEdge<OverlayNode, OverlayEdge> implemen
     @Getter
     private ZeroEdge zeroEdge = null;
 
+    // defined only for border edge
     private OverlayBorder oBorder;
 
     /**
-     * devel: in memory storage (in L1) of the caluclated shortcut in L0
+     * in memory storage of shortcuts in L1 caluclated in L0
      */
     private List<SaraEdge>[] zeroRoutes;
 
     /**
-     * devel: in memory storage (in LN2+) of the caluclated shortcut in LN-1
+     * in memory storage of shortcuts in L2+ calculated in N-1
      */
     private List<OverlayEdge>[] overlayRoutes;
 
@@ -100,24 +103,18 @@ public class OverlayEdge extends AbstractEdge<OverlayNode, OverlayEdge> implemen
     }
 
     public List<SaraEdge> getZeroRoute(Metric metric) {
-        if (this.zeroRoutes == null)
-        {
+        if (this.zeroRoutes == null) {
             return null;
-        }
-        else
-        {
+        } else {
             int idx = metric.ordinal();
             return this.zeroRoutes[idx];
         }
     }
 
     public List<OverlayEdge> getOverlayRoute(Metric metric) {
-        if (this.overlayRoutes == null)
-        {
+        if (this.overlayRoutes == null) {
             return null;
-        }
-        else
-        {
+        } else {
             int idx = metric.ordinal();
             return this.overlayRoutes[idx];
         }

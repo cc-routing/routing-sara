@@ -15,13 +15,16 @@ import cz.certicon.routing.model.graph.SaraNode;
 import cz.certicon.routing.utils.collections.ImmutableIterator;
 import cz.certicon.routing.utils.collections.Iterator;
 import java.util.ArrayList;
-import java.util.HashSet;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Set;
 import lombok.Getter;
 
 /**
- * Builds Overlay graphs for all levels. Root object of the overlay data.
+ * Root object for Overlay and Customization. Container of OverLayers for levels
+ * 1-N. Represents entire OverlayGraph.
  *
  * @author Blahoslav Potoček <potocek@merica.cz>
  */
@@ -30,46 +33,56 @@ public class OverlayBuilder {
     /**
      * devel setup whether to keep calculated shortcuts in memory
      */
-    public static boolean keepShortcuts = false;
+    public static boolean keepShortcuts = true;
 
     /**
-     * collection of overlay partitions for each level. Partition at L0 is void,
-     * L0 is represented by basic SaraGraph.
+     * Collection of Layers
      */
     private List<OverLayer> layers;
 
+    /**
+     * layer for level=1
+     */
     @Getter
     private OverLayer firstLayer;
 
+    /**
+     * highest layer used for routing
+     */
     @Getter
     private OverLayer topLayer;
 
     /**
-     * L0 SaraGraph
+     * SaraGraph, input data
      */
     @Getter
     private SaraGraph saraGraph;
 
     /**
-     * Metrics used in L0 SaraGraph.
+     * Used Metrics.
      */
     @Getter
     private Set<Metric> metrics;
 
     /**
-     * shared instance of the DijkstraAlgorithm.
+     * one-one DijkstraAlgorithm used to calculate shortcuts
      */
     @Getter
     private DijkstraAlgorithm oneToOne;
 
+    /**
+     * one-many DijkstraAlgorithm used to calculate shortcuts
+     */
     @Getter
     private DijkstraOneToAllAlgorithm oneToAll;
 
+    /**
+     * collection of all borders detected at level 0
+     */
     private List<ZeroBorder> zeroBorders = new ArrayList<>();
 
     /**
-     *
-     * @param graph L0 SaraGraph
+     * @param graph SaraGraph is the only input for Overlay + Customization
      */
     public OverlayBuilder(SaraGraph graph) {
         this.saraGraph = graph;
@@ -84,19 +97,21 @@ public class OverlayBuilder {
         this.oneToAll = new DijkstraOneToAllAlgorithm();
     }
 
-    public ZeroNode getZeroNode(SaraNode node) {
-        long cellId = node.getParent().getId();
-        ZeroGraph zeroGraph = this.firstLayer.getCell(cellId).getZeroGraph();
-        return (ZeroNode) zeroGraph.getNodeById(node.getId());
-    }
-
-
     public OverLayer getLayer(int level) {
         return this.layers.get(level - 1);
     }
 
+    public Iterator<OverLayer> getLayers() {
+        return new ImmutableIterator<>(this.layers.iterator());
+    }
+
+    public int layerCount() {
+        return this.layers.size();
+    }
+
     /**
-     * Builds overlay graphs in partitions for all levels.
+     * Builds layers 1-N and ZeroGraph for level 0 (referenced by cells at level
+     * 1.
      */
     public void buildOverlays() {
 
@@ -111,6 +126,13 @@ public class OverlayBuilder {
         this.connectLayerGraphs();
     }
 
+    /**
+     * Dic/connectcs cells (=regions) in top layer. Only connected (in future
+     * downloaded) regions are available for routing.
+     *
+     * @param connection
+     * @param ids
+     */
     public void turnTopCells(boolean connection, long... ids) {
         if (ids == null || ids.length == 0) {
             for (OverlayCell cell : this.topLayer.getCells()) {
@@ -124,6 +146,12 @@ public class OverlayBuilder {
         }
     }
 
+    /**
+     * Maps ZeroEdges route to Sara edge route
+     *
+     * @param zeroRoute
+     * @return sara route
+     */
     public List<SaraEdge> mapRoute(List<SaraEdge> zeroRoute) {
         List<SaraEdge> saraRoute = new ArrayList<>();
         for (SaraEdge zeroEdge : zeroRoute) {
@@ -133,6 +161,12 @@ public class OverlayBuilder {
         return saraRoute;
     }
 
+    /**
+     * maps zero edge to sara edge
+     *
+     * @param zeroEdge
+     * @return SaraEdge
+     */
     public SaraEdge mapEdge(SaraEdge zeroEdge) {
         long id = Math.abs(zeroEdge.getId());
         SaraEdge saraEdge = this.saraGraph.getEdgeById(id);
@@ -140,9 +174,51 @@ public class OverlayBuilder {
     }
 
     /**
-     * adds next level partition.
+     * maps saraNode to zero node
      *
-     * @return
+     * @param saraNode
+     * @return zero node
+     */
+    public ZeroNode getZeroNode(SaraNode saraNode) {
+        ZeroGraph zeroGraph = this.getZeroGraph(saraNode);
+        return (ZeroNode) zeroGraph.getNodeById(saraNode.getId());
+    }
+
+    /**
+     * maps sara edge to zerp edge
+     *
+     * @param saraEdge
+     * @return zero edge
+     */
+    public ZeroEdge getZeroEdge(SaraEdge saraEdge) {
+        ZeroGraph sourceGraph = this.getZeroGraph(saraEdge.getSource());
+        ZeroGraph targetGraph = this.getZeroGraph(saraEdge.getTarget());
+
+        ZeroEdge sourceEdge = sourceGraph.getZeroEdge(saraEdge);
+
+        if (sourceGraph == targetGraph || sourceEdge.getId() > 0) {
+            return sourceEdge;
+        } else {
+            ZeroEdge targetEdge = targetGraph.getZeroEdge(saraEdge);
+            return targetEdge;
+        }
+    }
+
+    /**
+     * gets the partial ZeroGraph from L1 cell related to the saraNdoe
+     * @param saraNode
+     * @return related ZeroGraph
+     */
+    private ZeroGraph getZeroGraph(SaraNode saraNode) {
+        long cellId = saraNode.getParent().getId();
+        ZeroGraph zeroGraph = this.firstLayer.getCell(cellId).getZeroGraph();
+        return zeroGraph;
+    }
+
+    /**
+     * adds new layer
+     *
+     * @return new added layer
      */
     private OverLayer addLayer() {
         OverLayer layer = new OverLayer(this, this.layers.size() + 1);
@@ -151,8 +227,8 @@ public class OverlayBuilder {
     }
 
     /**
-     * TODO, tmp assumed cells in all nodes have the same count of levels first
-     * cell is used to create partitions of all levels
+     * it is assumed all SaraNodes have same number of parent cells; first
+     * cell is used to create required layers
      */
     private void createLayers() {
 
@@ -179,6 +255,9 @@ public class OverlayBuilder {
         }
     }
 
+    /**
+     * top layers with cellCount==1 are supressed, they are not useful fro routing
+     */
     private void removeUnusedLayers() {
 
         while (true) {
@@ -192,6 +271,9 @@ public class OverlayBuilder {
         }
     }
 
+    /**
+     * cells, graphs and other data structures are build for all layers
+     */
     private void buildLayers() {
         this.createLayers();
 
@@ -214,12 +296,17 @@ public class OverlayBuilder {
         }
     }
 
+    /**
+     * customization is build, shortcuts are seerched
+     */
     private void runCustomization() {
 
+        // sub graphs for customization are formed
         for (OverLayer layer : this.layers) {
             layer.connectSubCells();
         }
 
+        // shortcuts lengths are calculated fro all metrics
         for (OverLayer layer : this.layers) {
             layer.buildCustomization();
         }
@@ -227,40 +314,42 @@ public class OverlayBuilder {
 
     private void connectLayerGraphs() {
 
+        // graph for entire level 0 is connected
         for (ZeroBorder zBorder : this.zeroBorders) {
             zBorder.connect();
         }
 
+        // graphs for each layer 1-N are connected
         for (OverLayer layer : this.layers) {
             layer.setLayerConnection(true);
         }
     }
 
-
     /**
      * Checks whether specified edge is a border edge between two cells for all
-     * levels.
+     * levels. Core method to find all borders.
      *
-     * @param graph Basic Sara graph.
-     * @param edge Checked edge
+     * @param edge sara edge to check
      */
     private void checkForBorder(SaraEdge edge) {
 
-        SaraNode sNode = edge.getSource();
-        SaraNode tNode = edge.getTarget();
+        SaraNode sourceNode = edge.getSource();
+        SaraNode targetNode = edge.getTarget();
 
-        long sId = sNode.getParent().getId();
-        long tId = tNode.getParent().getId();
+        // cells at level 1 decide whether edge is border or inside a single cell
+        long sourceCellId = sourceNode.getParent().getId();
+        long targetCellId = targetNode.getParent().getId();
 
-        OverlayCell sourceCell = this.firstLayer.getCell(sId);
+        OverlayCell sourceCell = this.firstLayer.getCell(sourceCellId);
         ZeroGraph sourceGraph = sourceCell.getZeroGraph();
 
-        if (sId == tId) {
+        if (sourceCellId == targetCellId) {
+            // no border, edge is in inside cell
             sourceGraph.addEdgeCopy(edge);
             return;
         }
 
-        OverlayCell targetCell = this.firstLayer.getCell(tId);
+        OverlayCell targetCell = this.firstLayer.getCell(targetCellId);
         ZeroGraph targetGraph = targetCell.getZeroGraph();
 
         ZeroEdge zExit = sourceGraph.addExitCopy(edge);
@@ -278,6 +367,7 @@ public class OverlayBuilder {
             OverlayBorder oBorder1 = new OverlayBorder(oExit1, oEntry1);
 
             if (doubleWay) {
+                // double way SaraEdge generates another pair of exit-entry overlay edges
                 OverlayEdge oExit2 = targetCell.getOverlayGraph().addBorder(zBorder.getExit2(), sourceCell);
                 OverlayEdge oEntry2 = sourceCell.getOverlayGraph().addBorder(zBorder.getEntry2(), targetCell);
                 OverlayBorder oBorder2 = new OverlayBorder(oExit2, oEntry2);
@@ -292,12 +382,23 @@ public class OverlayBuilder {
         }
     }
 
+    /**
+     * debug, tracking only
+     */
     public void resetRoutingCounters() {
         for (OverLayer layer : this.layers) {
             layer.routingCounter = 0;
         }
     }
 
+    /**
+     * core method for multilevel routing in backward direction
+     * @param node current route node
+     * @param edge current route edge
+     * @param source route source
+     * @param target route target
+     * @return the highest overlay node available for routing and shortcuts
+     */
     public OverlayNode getMaxExitNode(SaraNode node, ZeroEdge edge, SaraNode source, SaraNode target) {
 
         ZeroBorder border = edge.border();
@@ -325,19 +426,13 @@ public class OverlayBuilder {
         return re;
     }
 
-    public OverlayNode getMaxOverlayNode(SaraNode node, SaraEdge edge, SaraNode source, SaraNode target) {
-        return this.getMaxEntryNode(node, (ZeroEdge) edge, source, target);
-    }
-
     /**
-     * Finds highest level OverlayNode which is not in the same cell with source
-     * and target
-     *
-     * @param node transferNode
-     * @param edge transferEdge
-     * @param source sourceNode
-     * @param target targetNode
-     * @return
+     * core method for multilevel routing in forward direction
+     * @param node current route node
+     * @param edge current route edge
+     * @param source route source
+     * @param target route target
+     * @return the highest overlay node available for routing and shortcuts
      */
     public OverlayNode getMaxEntryNode(SaraNode node, ZeroEdge edge, SaraNode source, SaraNode target) {
 
@@ -366,6 +461,13 @@ public class OverlayBuilder {
         return re;
     }
 
+    /**
+     * auxiliary for tracking
+     * @param re
+     * @param source
+     * @param target
+     * @return
+     */
     private OverlayNode checkMaxNode(OverlayNode re, SaraNode source, SaraNode target) {
 
         re = this.getMaxNode(re, source, target);
@@ -379,14 +481,13 @@ public class OverlayBuilder {
         return re;
     }
 
-    public Iterator<OverLayer> getLayers() {
-        return new ImmutableIterator<>(this.layers.iterator());
-    }
-
-    public int layerCount() {
-        return this.layers.size();
-    }
-
+    /**
+     * finds highest overlay node available for routing
+     * @param node current route node
+     * @param source
+     * @param target
+     * @return overlay node
+     */
     private OverlayNode getMaxNode(OverlayNode node, SaraNode source, SaraNode target) {
 
         OverlayNode max = null;
