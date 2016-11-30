@@ -55,6 +55,10 @@ public class Distance implements Number<Distance> {
         return DISTANCE_INFINITY;
     }
 
+    public static Distance newZeroDistance() {
+        return DISTANCE_ZERO;
+    }
+
     /**
      * Private constructor. Use newInstnace instead.
      *

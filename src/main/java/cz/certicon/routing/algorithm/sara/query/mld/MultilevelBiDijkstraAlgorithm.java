@@ -12,6 +12,7 @@ import cz.certicon.routing.algorithm.sara.preprocessing.overlay.OverlayGraph;
 import cz.certicon.routing.algorithm.sara.preprocessing.overlay.OverlayNode;
 import cz.certicon.routing.algorithm.sara.preprocessing.overlay.ZeroEdge;
 import cz.certicon.routing.model.Route;
+import cz.certicon.routing.model.RoutingPoint;
 import cz.certicon.routing.model.graph.Edge;
 import cz.certicon.routing.model.graph.Graph;
 import cz.certicon.routing.model.graph.Metric;
@@ -37,7 +38,7 @@ import java8.util.Optional;
  * @param <N> node type
  * @param <E> edge type
  */
-public class MultilevelBiDijkstraAlgorithm<N extends Node, E extends Edge> implements RoutingAlgorithm<N, E> {
+public class MultilevelBiDijkstraAlgorithm<N extends Node<N,E>, E extends Edge<N,E>> implements RoutingAlgorithm<N, E> {
 
     State finalState = null;
     State reverseFinalState = null;
@@ -74,6 +75,11 @@ public class MultilevelBiDijkstraAlgorithm<N extends Node, E extends Edge> imple
 
     @Override
     public Optional<Route<N, E>> route(Metric metric, E source, E destination, Distance toSourceStart, Distance toSourceEnd, Distance toDestinationStart, Distance toDestinationEnd) {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+
+    @Override
+    public Optional<Route<N, E>> route( Metric metric, RoutingPoint<N, E> source, RoutingPoint<N, E> destination ) {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 

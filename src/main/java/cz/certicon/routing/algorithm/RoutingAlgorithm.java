@@ -5,6 +5,7 @@
  */
 package cz.certicon.routing.algorithm;
 
+import cz.certicon.routing.model.RoutingPoint;
 import cz.certicon.routing.model.values.Distance;
 import cz.certicon.routing.model.graph.Graph;
 import cz.certicon.routing.model.Route;
@@ -20,7 +21,7 @@ import java8.util.Optional;
  * @param <E> edge type
  * @author Michael Blaha {@literal <blahami2@gmail.com>}
  */
-public interface RoutingAlgorithm<N extends Node, E extends Edge> {
+public interface RoutingAlgorithm<N extends Node<N,E>, E extends Edge<N,E>> {
 
     /**
      * Returns route between source and target using the given metric as a distance metric
@@ -55,4 +56,7 @@ public interface RoutingAlgorithm<N extends Node, E extends Edge> {
      * @return optional route (empty if the route was not found)
      */
     Optional<Route<N, E>> route( Metric metric, E source, E destination, Distance toSourceStart, Distance toSourceEnd, Distance toDestinationStart, Distance toDestinationEnd );
+
+
+    Optional<Route<N, E>> route( Metric metric, RoutingPoint<N, E> source, RoutingPoint<N, E> destination );
 }

@@ -5,6 +5,7 @@
  */
 package cz.certicon.routing.algorithm;
 
+import cz.certicon.routing.model.RoutingPoint;
 import cz.certicon.routing.model.values.Distance;
 import cz.certicon.routing.model.graph.Graph;
 import cz.certicon.routing.model.queue.PriorityQueue;
@@ -32,6 +33,7 @@ public class DijkstraAlgorithm<N extends Node<N, E>, E extends Edge<N, E>> imple
 
     @Override
     public Optional<Route<N, E>> route( Metric metric, N source, N destination ) {
+//        throw new UnsupportedOperationException( "Not implemented" );
         Map<State<N, E>, Distance> nodeDistanceMap = new HashMap<>();
         PriorityQueue<State<N, E>> pqueue = new FibonacciHeap<>();
         Distance upperBound = Distance.newInfinityInstance();
@@ -41,11 +43,13 @@ public class DijkstraAlgorithm<N extends Node<N, E>, E extends Edge<N, E>> imple
 
     @Override
     public Optional<Route<N, E>> route( Metric metric, E source, E destination ) {
+//        throw new UnsupportedOperationException( "Not implemented" );
         return route( metric, source, destination, Distance.newInstance( 0 ), Distance.newInstance( 0 ), Distance.newInstance( 0 ), Distance.newInstance( 0 ) );
     }
 
     @Override
     public Optional<Route<N, E>> route( Metric metric, E source, E destination, Distance toSourceStart, Distance toSourceEnd, Distance toDestinationStart, Distance toDestinationEnd ) {
+//        throw new UnsupportedOperationException( "Not implemented" );
         Map<State<N, E>, Distance> nodeDistanceMap = new HashMap<>();
         PriorityQueue<State<N, E>> pqueue = new FibonacciHeap<>();
         // create upper bound if the edges are equal and mark it
@@ -69,6 +73,38 @@ public class DijkstraAlgorithm<N extends Node<N, E>, E extends Edge<N, E>> imple
             putNodeDistance( nodeDistanceMap, pqueue, new State( source.getSource(), source ), toSourceStart );
         }
         return route( metric, nodeDistanceMap, pqueue, upperBound, new EdgeEndCondition( destination, toDestinationStart, toDestinationEnd ), singleEdgePath, destination );
+    }
+
+    @Override
+    public Optional<Route<N, E>> route( Metric metric, RoutingPoint<N, E> source, RoutingPoint<N, E> destination ) {
+        Map<State<N, E>, Distance> nodeDistanceMap = new HashMap<>();
+        PriorityQueue<State<N, E>> pqueue = new FibonacciHeap<>();
+        Distance upperBound = Distance.newInfinityInstance();
+        E singleEdgePath = null;
+        if ( source.isCrossroad() ) {
+            putNodeDistance( nodeDistanceMap, pqueue, new State<N, E>( source.getNode().get(), null ), Distance.newInstance( 0 ) );
+        } else {
+            if ( source.equals( destination ) ) {
+                Distance substract = source.getDistanceToTarget( metric ).orElse( Distance.newZeroDistance() ).subtract( destination.getDistanceToTarget( metric ).orElse( Distance.newZeroDistance() ) );
+                if ( source.getEdge().get().isOneWay() ) {
+                    // is positive or zero
+                    if ( !substract.isNegative() ) {
+                        upperBound = substract;
+                        singleEdgePath = source.getEdge().orElse( null );
+                    }
+                } else {
+                    upperBound = substract.absolute();
+                    singleEdgePath = source.getEdge().orElse( null );
+                }
+            }
+            E sourceEdge = source.getEdge().get();
+            putNodeDistance( nodeDistanceMap, pqueue, new State( sourceEdge.getTarget(), sourceEdge ), source.getDistanceToTarget( metric ).orElse( Distance.newZeroDistance() ) );
+            if ( !sourceEdge.isOneWay() ) {
+                putNodeDistance( nodeDistanceMap, pqueue, new State( sourceEdge.getSource(), sourceEdge ), source.getDistanceToSource( metric ).orElse( Distance.newZeroDistance() ) );
+            }
+        }
+        EndCondition<N, E> endCondition = destination.isCrossroad() ? new NodeEndCondition( destination.getNode().get() ) : new EdgeEndCondition( destination.getEdge().get(), destination.getDistanceToSource( metric ).orElse( Distance.newZeroDistance() ), destination.getDistanceToTarget( metric ).orElse( Distance.newZeroDistance() ) );
+        return route( metric, nodeDistanceMap, pqueue, upperBound, endCondition, singleEdgePath, destination.getEdge().orElse( null ) );
     }
 
     private Optional<Route<N, E>> route( Metric metric, Map<State<N, E>, Distance> nodeDistanceMap, PriorityQueue<State<N, E>> pqueue, Distance upperBound, EndCondition<N, E> endCondition, E singleEdgePath, E endEdge ) {

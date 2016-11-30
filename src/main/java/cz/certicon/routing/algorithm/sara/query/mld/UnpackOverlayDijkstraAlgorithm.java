@@ -9,6 +9,7 @@ import cz.certicon.routing.algorithm.RoutingAlgorithm;
 import cz.certicon.routing.algorithm.sara.preprocessing.overlay.OverlayEdge;
 import cz.certicon.routing.algorithm.sara.preprocessing.overlay.OverlayNode;
 import cz.certicon.routing.data.SqliteGraphDataDAO;
+import cz.certicon.routing.model.RoutingPoint;
 import cz.certicon.routing.model.values.Distance;
 import cz.certicon.routing.model.graph.SimpleEdge;
 import cz.certicon.routing.model.graph.Graph;
@@ -36,28 +37,30 @@ import java8.util.Optional;
  *
  * @author Michael Blaha {@literal <michael.blaha@certicon.cz>}
  * @author Roman Vaclavik {@literal <vaclavik@merica.cz>}
- * @param <N> node type
- * @param <E> edge type
  */
-public class UnpackOverlayDijkstraAlgorithm<N extends OverlayNode, E extends OverlayEdge> implements RoutingAlgorithm<N, E> {
+public class UnpackOverlayDijkstraAlgorithm implements RoutingAlgorithm<OverlayNode, OverlayEdge> {
 
     @Override
-    public Optional<Route<N, E>> route(Metric metric, N source, N destination) {
+    public Optional<Route<OverlayNode, OverlayEdge>> route(Metric metric, OverlayNode source, OverlayNode destination) {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 
     @Override
-    public Optional<Route<N, E>> route(Metric metric, E source, E destination) {
+    public Optional<Route<OverlayNode, OverlayEdge>> route(Metric metric, OverlayEdge source, OverlayEdge destination) {
         return route(metric, source, destination, Distance.newInstance(0), Distance.newInstance(0), Distance.newInstance(0), Distance.newInstance(0));
     }
 
     @Override
-    public Optional<Route<N, E>> route(Metric metric, E source, E destination, Distance toSourceStart, Distance toSourceEnd, Distance toDestinationStart, Distance toDestinationEnd) {
-        Map<State<N, E>, Distance> nodeDistanceMap = new HashMap<>();
-        PriorityQueue<State<N, E>> pqueue = new FibonacciHeap<>();
+    public Optional<Route<OverlayNode, OverlayEdge>> route( Metric metric, RoutingPoint<OverlayNode, OverlayEdge> source, RoutingPoint<OverlayNode, OverlayEdge> destination ) {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+    @Override
+    public Optional<Route<OverlayNode, OverlayEdge>> route(Metric metric, OverlayEdge source, OverlayEdge destination, Distance toSourceStart, Distance toSourceEnd, Distance toDestinationStart, Distance toDestinationEnd) {
+        Map<State<OverlayNode, OverlayEdge>, Distance> nodeDistanceMap = new HashMap<>();
+        PriorityQueue<State<OverlayNode, OverlayEdge>> pqueue = new FibonacciHeap<>();
         // create upper bound if the edges are equal and mark it
         Distance upperBound = Distance.newInfinityInstance();
-        E singleEdgePath = null;
+        OverlayEdge singleEdgePath = null;
         if (source.equals(destination)) {
             Distance substract = toSourceEnd.subtract(toDestinationEnd);
             if (source.isOneWay()) {
@@ -79,13 +82,13 @@ public class UnpackOverlayDijkstraAlgorithm<N extends OverlayNode, E extends Ove
         return route(metric, nodeDistanceMap, pqueue, upperBound, new EdgeEndCondition(destination, toDestinationStart, toDestinationEnd), singleEdgePath, destination);
     }
 
-    private Optional<Route<N, E>> route(Metric metric, Map<State<N, E>, Distance> nodeDistanceMap, PriorityQueue<State<N, E>> pqueue, Distance upperBound, EndCondition<N, E> endCondition, E singleEdgePath, E endEdge) {
+    private Optional<Route<OverlayNode, OverlayEdge>> route(Metric metric, Map<State<OverlayNode, OverlayEdge>, Distance> nodeDistanceMap, PriorityQueue<State<OverlayNode, OverlayEdge>> pqueue, Distance upperBound, EndCondition<OverlayNode, OverlayEdge> endCondition, OverlayEdge singleEdgePath, OverlayEdge endEdge) {
         Map<State, State> predecessorMap = new HashMap<>();
         Set<State> closedStates = new HashSet<>();
         State finalState = null;
 
         while (!pqueue.isEmpty()) {
-            State<N, E> state = pqueue.extractMin();
+            State<OverlayNode, OverlayEdge> state = pqueue.extractMin();
             Distance distance = nodeDistanceMap.get(state);
             closedStates.add(state);
 
@@ -98,7 +101,7 @@ public class UnpackOverlayDijkstraAlgorithm<N extends OverlayNode, E extends Ove
             }
             for (OverlayEdge edge : state.getNode().getOutgoingEdges()) {
                 OverlayNode targetNode = edge.getOtherNode(state.getNode());
-                State<N, E> targetState = new State(targetNode, edge);
+                State<OverlayNode, OverlayEdge> targetState = new State(targetNode, edge);
 
                 if (!closedStates.contains(targetState) && state.getNode().getLevel() == targetState.getNode().getLevel()) {
                     Distance targetDistance = (nodeDistanceMap.containsKey(targetState)) ? nodeDistanceMap.get(targetState) : Distance.newInfinityInstance();
@@ -111,8 +114,8 @@ public class UnpackOverlayDijkstraAlgorithm<N extends OverlayNode, E extends Ove
             }
         }
         if (finalState != null) {
-            Route.RouteBuilder<N, E> builder = Route.<OverlayNode, OverlayEdge>builder();
-            State<N, E> currentState = finalState;
+            Route.RouteBuilder<OverlayNode, OverlayEdge> builder = Route.<OverlayNode, OverlayEdge>builder();
+            State<OverlayNode, OverlayEdge> currentState = finalState;
             while (currentState != null && !currentState.isFirst()) {
                 builder.addAsFirst(currentState.getEdge());
                 currentState = predecessorMap.get(currentState);
@@ -122,7 +125,7 @@ public class UnpackOverlayDijkstraAlgorithm<N extends OverlayNode, E extends Ove
             }
             return Optional.of(builder.build());
         } else if (singleEdgePath != null) {
-            Route.RouteBuilder<N, E> builder = Route.<OverlayNode, OverlayEdge>builder();
+            Route.RouteBuilder<OverlayNode, OverlayEdge> builder = Route.<OverlayNode, OverlayEdge>builder();
             builder.addAsFirst(singleEdgePath);
             return Optional.of(builder.build());
         } else {
@@ -130,7 +133,7 @@ public class UnpackOverlayDijkstraAlgorithm<N extends OverlayNode, E extends Ove
         }
     }
 
-    private void putNodeDistance(Map<State<N, E>, Distance> nodeDistanceMap, PriorityQueue<State<N, E>> pqueue, State<N, E> node, Distance distance) {
+    private void putNodeDistance(Map<State<OverlayNode, OverlayEdge>, Distance> nodeDistanceMap, PriorityQueue<State<OverlayNode, OverlayEdge>> pqueue, State<OverlayNode, OverlayEdge> node, Distance distance) {
         pqueue.decreaseKey(node, distance.getValue());
         nodeDistanceMap.put(node, distance);
     }
