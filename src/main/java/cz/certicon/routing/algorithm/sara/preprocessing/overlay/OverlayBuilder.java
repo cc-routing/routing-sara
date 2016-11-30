@@ -155,7 +155,7 @@ public class OverlayBuilder {
     public List<SaraEdge> mapRoute(List<SaraEdge> zeroRoute) {
         List<SaraEdge> saraRoute = new ArrayList<>();
         for (SaraEdge zeroEdge : zeroRoute) {
-            SaraEdge saraEdge = this.mapEdge(zeroEdge);
+            SaraEdge saraEdge = this.getSaraEdge(zeroEdge);
             saraRoute.add(saraEdge);
         }
         return saraRoute;
@@ -167,7 +167,7 @@ public class OverlayBuilder {
      * @param zeroEdge
      * @return SaraEdge
      */
-    public SaraEdge mapEdge(SaraEdge zeroEdge) {
+    public SaraEdge getSaraEdge(SaraEdge zeroEdge) {
         long id = Math.abs(zeroEdge.getId());
         SaraEdge saraEdge = this.saraGraph.getEdgeById(id);
         return saraEdge;

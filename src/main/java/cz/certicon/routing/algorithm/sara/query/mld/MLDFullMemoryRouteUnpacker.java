@@ -42,7 +42,7 @@ public class MLDFullMemoryRouteUnpacker<N extends Node<N, E>, E extends Edge<N, 
             while ( currentState != null && !currentState.isFirst() ) {
                 if ( !( currentState.getEdge() instanceof OverlayEdge ) ) {
                     if ( !skipSaraEdge ) {
-                        builder.addAsFirst( (E) overlayGraph.mapEdge( (SaraEdge) currentState.getEdge() ) );
+                        builder.addAsFirst( (E) overlayGraph.getSaraEdge( (SaraEdge) currentState.getEdge() ) );
                     }
                     skipSaraEdge = false;
                 } else {
@@ -63,7 +63,7 @@ public class MLDFullMemoryRouteUnpacker<N extends Node<N, E>, E extends Edge<N, 
         List<SaraEdge> zeroRoute = overlayEdge.getZeroRoute(metric);
         if (zeroRoute != null) {
             for (int i = zeroRoute.size() - 2; i >= 0; i--) {
-                builder.addAsFirst((E) overlayGraph.mapEdge(zeroRoute.get(i)));
+                builder.addAsFirst((E) overlayGraph.getSaraEdge(zeroRoute.get(i)));
             }
         } else {
             List<OverlayEdge> overlayRoute = overlayEdge.getOverlayRoute(metric);
