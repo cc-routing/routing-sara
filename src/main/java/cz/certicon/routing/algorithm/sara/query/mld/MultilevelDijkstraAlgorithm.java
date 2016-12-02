@@ -51,7 +51,13 @@ public class MultilevelDijkstraAlgorithm implements RoutingAlgorithm<SaraNode, S
 
     @Override
     public Optional<Route<SaraNode, SaraEdge>> route( Metric metric, SaraNode source, SaraNode destination ) {
-        throw new UnsupportedOperationException( "Not supported yet." ); //To change body of generated methods, choose Tools | Templates.
+        Map<State<SaraNode, SaraEdge>, Distance> nodeDistanceMap = new HashMap<>();
+        PriorityQueue<State<SaraNode, SaraEdge>> pqueue = new FibonacciHeap<>();
+        ZeroNode sourceNode = overlayGraph.getZeroNode( source );
+        ZeroNode destinationNode = overlayGraph.getZeroNode( destination );
+        putNodeDistance( nodeDistanceMap, pqueue, new State<SaraNode, SaraEdge>( sourceNode, null ), Distance.newInstance( 0 ) );
+        EndCondition endCondition = new NodeEndCondition( destinationNode );
+        return route( metric, nodeDistanceMap, pqueue, sourceNode, destinationNode, endCondition );
     }
 
     @Override
