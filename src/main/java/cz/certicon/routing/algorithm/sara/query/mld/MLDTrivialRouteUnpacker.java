@@ -10,7 +10,6 @@ import cz.certicon.routing.algorithm.sara.preprocessing.overlay.OverlayBuilder;
 import cz.certicon.routing.algorithm.sara.preprocessing.overlay.OverlayNode;
 import cz.certicon.routing.model.Route;
 import cz.certicon.routing.model.graph.Edge;
-import cz.certicon.routing.model.graph.Graph;
 import cz.certicon.routing.model.graph.Metric;
 import cz.certicon.routing.model.graph.Node;
 import cz.certicon.routing.model.graph.State;
@@ -18,6 +17,7 @@ import java.util.Map;
 import java8.util.Optional;
 
 /**
+ * Trivial unpacker which does not use multilevel structure
  *
  * @author Roman Vaclavik {@literal <vaclavik@merica.cz>}
  * @param <N> node type
@@ -26,7 +26,7 @@ import java8.util.Optional;
 public class MLDTrivialRouteUnpacker<N extends Node<N, E>, E extends Edge<N, E>> implements RouteUnpacker<N, E> {
 
     @Override
-    public Optional<Route<N, E>> unpack(OverlayBuilder overlayGraph, Metric metric, State<N, E> endPoint, Map<State<N, E>, State<N, E>> predecessors) {
+    public Optional<Route<N, E>> unpack(OverlayBuilder overlayBuilder, Metric metric, State<N, E> endPoint, Map<State<N, E>, State<N, E>> predecessors) {
         if (endPoint != null) {
             DijkstraAlgorithm dijkstra = new DijkstraAlgorithm();
             Route.RouteBuilder<N, E> builder = Route.<N, E>builder();

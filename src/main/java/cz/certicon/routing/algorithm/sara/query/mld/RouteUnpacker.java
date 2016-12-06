@@ -16,6 +16,7 @@ import java.util.Map;
 import java8.util.Optional;
 
 /**
+ * Interface for unpacking the routes
  *
  * @author Roman Vaclavik {@literal <vaclavik@merica.cz>}
  * @param <N> node type
@@ -23,5 +24,14 @@ import java8.util.Optional;
  */
 public interface RouteUnpacker<N extends Node, E extends Edge> {
 
-    Optional<Route<N, E>> unpack(OverlayBuilder overlayGraph, Metric metric, State<N, E> endPoint, Map<State<N, E>, State<N, E>> predecessors);
+    /**
+     * Unpacks the route
+     *
+     * @param overlayBuilder overlay main class
+     * @param metric metric
+     * @param endPoint last state{node,edge} in the route
+     * @param predecessors map of state predecessors
+     * @return optional route (empty if the route was not found)
+     */
+    Optional<Route<N, E>> unpack(OverlayBuilder overlayBuilder, Metric metric, State<N, E> endPoint, Map<State<N, E>, State<N, E>> predecessors);
 }

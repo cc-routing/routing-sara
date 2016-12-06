@@ -8,32 +8,25 @@ package cz.certicon.routing.algorithm.sara.query.mld;
 import cz.certicon.routing.algorithm.RoutingAlgorithm;
 import cz.certicon.routing.algorithm.sara.preprocessing.overlay.OverlayEdge;
 import cz.certicon.routing.algorithm.sara.preprocessing.overlay.OverlayNode;
-import cz.certicon.routing.data.SqliteGraphDataDAO;
 import cz.certicon.routing.model.RoutingPoint;
 import cz.certicon.routing.model.values.Distance;
-import cz.certicon.routing.model.graph.SimpleEdge;
-import cz.certicon.routing.model.graph.Graph;
-import cz.certicon.routing.model.graph.SimpleNode;
 import cz.certicon.routing.model.queue.PriorityQueue;
 import cz.certicon.routing.model.Route;
 import cz.certicon.routing.model.basic.Pair;
 import cz.certicon.routing.model.graph.Edge;
 import cz.certicon.routing.model.graph.Metric;
 import cz.certicon.routing.model.graph.Node;
-import cz.certicon.routing.model.graph.SaraNode;
 import cz.certicon.routing.model.graph.State;
 import cz.certicon.routing.model.queue.FibonacciHeap;
-import cz.certicon.routing.view.DebugViewer;
-import cz.certicon.routing.view.JxDebugViewer;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.Iterator;
 import java.util.Map;
-import java.util.Properties;
 import java.util.Set;
 import java8.util.Optional;
 
 /**
+ * Modified DijsktraAlgorithm checking the membership to the same level for L1+
+ * graph
  *
  * @author Michael Blaha {@literal <michael.blaha@certicon.cz>}
  * @author Roman Vaclavik {@literal <vaclavik@merica.cz>}
@@ -51,9 +44,10 @@ public class UnpackOverlayDijkstraAlgorithm implements RoutingAlgorithm<OverlayN
     }
 
     @Override
-    public Optional<Route<OverlayNode, OverlayEdge>> route( Metric metric, RoutingPoint<OverlayNode, OverlayEdge> source, RoutingPoint<OverlayNode, OverlayEdge> destination ) {
+    public Optional<Route<OverlayNode, OverlayEdge>> route(Metric metric, RoutingPoint<OverlayNode, OverlayEdge> source, RoutingPoint<OverlayNode, OverlayEdge> destination) {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
+
     @Override
     public Optional<Route<OverlayNode, OverlayEdge>> route(Metric metric, OverlayEdge source, OverlayEdge destination, Distance toSourceStart, Distance toSourceEnd, Distance toDestinationStart, Distance toDestinationEnd) {
         Map<State<OverlayNode, OverlayEdge>, Distance> nodeDistanceMap = new HashMap<>();

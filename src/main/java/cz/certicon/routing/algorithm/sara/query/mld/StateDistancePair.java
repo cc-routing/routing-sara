@@ -5,16 +5,16 @@
  */
 package cz.certicon.routing.algorithm.sara.query.mld;
 
-import cz.certicon.routing.model.graph.SaraEdge;
 import cz.certicon.routing.model.graph.State;
 import lombok.Value;
 
 /**
+ * Structure for storing state{node,edge} together with the criterion
  *
  * @author Roman Vaclavik {@literal <vaclavik@merica.cz>}
  */
 @Value
-public class EdgeDistancePair {
+public class StateDistancePair {
 
     State state;
     double distance;

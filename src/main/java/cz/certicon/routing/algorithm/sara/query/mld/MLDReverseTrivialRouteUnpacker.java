@@ -18,6 +18,8 @@ import java.util.Map;
 import java8.util.Optional;
 
 /**
+ * Trivial unpacker which does not use multilevel structure for the reverse
+ * graph
  *
  * @author Roman Vaclavik {@literal <vaclavik@merica.cz>}
  * @param <N> node type
@@ -34,7 +36,6 @@ public class MLDReverseTrivialRouteUnpacker<N extends Node<N, E>, E extends Edge
 
             while (currentState != null && !currentState.isFirst()) {
                 if (!(currentState.getNode() instanceof OverlayNode)) {
-                    System.out.println(currentState.getEdge().getId());
                     builder.addAsLast(currentState.getEdge());
                 } else {
                     OverlayNode oTo = (OverlayNode) currentState.getNode();
@@ -42,11 +43,10 @@ public class MLDReverseTrivialRouteUnpacker<N extends Node<N, E>, E extends Edge
                     if (!(currentState.getNode() instanceof OverlayNode)) {
                         throw new IllegalStateException("OverlayNode not found. Something is wrong.");
                     }
-                    System.out.println("OVERLAY lvl " + oTo.getLevel() + " from edge " + oTo.getColumn().getEdge().getId() + " to edge " + currentState.getEdge().getId());
+
                     Optional<Route<N, E>> subResult = dijkstra.route(metric, oTo.getColumn().getEdge(), currentState.getEdge());
                     Route<N, E> subRoute = subResult.get();
                     for (int i = subRoute.getEdgeList().size() - 2; i >= 0; i--) {
-                        System.out.println(subRoute.getEdgeList().get(i).getId());
                         builder.addAsLast(subRoute.getEdgeList().get(i));
                     }
                 }
