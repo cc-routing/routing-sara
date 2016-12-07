@@ -220,14 +220,14 @@ public class MultilevelBiDijkstraAlgorithm<N extends Node<N, E>, E extends Edge<
                     OverlayNode borderNode = borderEdge.getOtherNode(cellNode);
 
                     //find OverlayNode at maximal level, where three of nodes are still in different cells
-                    OverlayNode levelNode = overlayBuilder.getMaxEntryNode(borderNode.getColumn().getNode(), borderNode.getColumn().getEdge(), source, target);
+                    OverlayNode levelNode = overlayBuilder.getMaxEntryNode(borderNode.getLift().getNode(), borderNode.getLift().getEdge(), source, target);
 
                     // upper levels can be used further
                     if (levelNode != null) {
-                        State borderState = new State(levelNode, borderNode.getColumn().getEdge());
+                        State borderState = new State(levelNode, borderNode.getLift().getEdge());
                         if (!closedOverlayStates.contains(borderState)) {
                             Distance borderDistance = (overlayNodeDistanceMap.containsKey(borderState)) ? overlayNodeDistanceMap.get(borderState) : Distance.newInfinityInstance();
-                            Distance newDistance = cellDistance.add(borderNode.getColumn().getEdge().getLength(metric));
+                            Distance newDistance = cellDistance.add(borderNode.getLift().getEdge().getLength(metric));
 
                             if (newDistance.isLowerThan(borderDistance)) {
                                 putOverlayNodeDistance(overlayNodeDistanceMap, overlayPqueue, borderState, newDistance, closedOverlayNodes, cellState);
@@ -237,13 +237,13 @@ public class MultilevelBiDijkstraAlgorithm<N extends Node<N, E>, E extends Edge<
                         }
                     } // routing is going back to L0
                     else {
-                        State borderState = new State(borderNode.getColumn().getNode(), borderNode.getColumn().getEdge());
+                        State borderState = new State(borderNode.getLift().getNode(), borderNode.getLift().getEdge());
                         if (!closedStates.contains(borderState)) {
                             Distance borderDistance = (nodeDistanceMap.containsKey(borderState)) ? nodeDistanceMap.get(borderState) : Distance.newInfinityInstance();
-                            Distance newDistance = cellDistance.add(borderNode.getColumn().getEdge().getLength(metric));
+                            Distance newDistance = cellDistance.add(borderNode.getLift().getEdge().getLength(metric));
 
                             //check connection of forward and reverse run
-                            shortestPath = updateShortestPath(shortestPath, reverseClosedSaraNodes, borderNode.getColumn().getNode(), newDistance.getValue());
+                            shortestPath = updateShortestPath(shortestPath, reverseClosedSaraNodes, borderNode.getLift().getNode(), newDistance.getValue());
 
                             if (newDistance.isLowerThan(borderDistance)) {
                                 putNodeDistance(nodeDistanceMap, pqueue, borderState, newDistance, closedSaraNodes);
@@ -333,14 +333,14 @@ public class MultilevelBiDijkstraAlgorithm<N extends Node<N, E>, E extends Edge<
                     OverlayNode borderNode = borderEdge.getOtherNode(cellNode);
 
                     //find OverlayNode at maximal level, where three of nodes are still in different cells
-                    OverlayNode levelNode = overlayBuilder.getMaxExitNode(borderNode.getColumn().getNode(), borderNode.getColumn().getEdge(), source, target);
+                    OverlayNode levelNode = overlayBuilder.getMaxExitNode(borderNode.getLift().getNode(), borderNode.getLift().getEdge(), source, target);
 
                     // upper levels can be used further
                     if (levelNode != null) {
-                        State borderState = new State(levelNode, borderNode.getColumn().getEdge());
+                        State borderState = new State(levelNode, borderNode.getLift().getEdge());
                         if (!reverseClosedOverlayStates.contains(borderState)) {
                             Distance borderDistance = (reverseOverlayNodeDistanceMap.containsKey(borderState)) ? reverseOverlayNodeDistanceMap.get(borderState) : Distance.newInfinityInstance();
-                            Distance newDistance = cellDistance.add(borderNode.getColumn().getEdge().getLength(metric));
+                            Distance newDistance = cellDistance.add(borderNode.getLift().getEdge().getLength(metric));
 
                             if (newDistance.isLowerThan(borderDistance)) {
                                 putOverlayNodeDistance(reverseOverlayNodeDistanceMap, reverseOverlayPqueue, borderState, newDistance, reverseClosedOverlayNodes, cellState);
@@ -350,13 +350,13 @@ public class MultilevelBiDijkstraAlgorithm<N extends Node<N, E>, E extends Edge<
                         }
                     } // routing is going back to L0
                     else {
-                        State borderState = new State(borderNode.getColumn().getNode(), borderNode.getColumn().getEdge());
+                        State borderState = new State(borderNode.getLift().getNode(), borderNode.getLift().getEdge());
                         if (!reverseClosedStates.contains(borderState)) {
                             Distance borderDistance = (reverseNodeDistanceMap.containsKey(borderState)) ? reverseNodeDistanceMap.get(borderState) : Distance.newInfinityInstance();
-                            Distance newDistance = cellDistance.add(borderNode.getColumn().getEdge().getLength(metric));
+                            Distance newDistance = cellDistance.add(borderNode.getLift().getEdge().getLength(metric));
 
                             //check connection of forward and reverse run
-                            shortestPath = updateShortestPath(shortestPath, closedSaraNodes, borderNode.getColumn().getNode(), newDistance.getValue());
+                            shortestPath = updateShortestPath(shortestPath, closedSaraNodes, borderNode.getLift().getNode(), newDistance.getValue());
 
                             if (newDistance.isLowerThan(borderDistance)) {
                                 putNodeDistance(reverseNodeDistanceMap, reversePqueue, borderState, newDistance, reverseClosedSaraNodes);
