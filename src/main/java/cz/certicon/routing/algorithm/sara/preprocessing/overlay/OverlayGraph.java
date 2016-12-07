@@ -151,7 +151,7 @@ public class OverlayGraph extends AbstractUndirectedGraph<OverlayNode, OverlayEd
         if (result.isPresent()) {
             Route<OverlayNode, OverlayEdge> route = result.get();
             List<OverlayEdge> edges = route.getEdgeList();
-            if (OverlayBuilder.keepShortcuts) {
+            if (this.getBuilder().isKeepShortcuts()) {
                 cellEdge.setOverlayRoute(metric, edges);
             }
             distance = this.sumOverlayDistance(edges, metric);

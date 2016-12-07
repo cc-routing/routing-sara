@@ -13,83 +13,58 @@ import cz.certicon.routing.model.basic.IdSupplier;
 import cz.certicon.routing.model.graph.Graph;
 import cz.certicon.routing.model.graph.SaraGraph;
 import cz.certicon.routing.utils.RandomUtils;
+import java.io.InputStream;
 import java.util.Properties;
 import lombok.Getter;
 import lombok.Setter;
 
 /**
  * Data loader, creates instance of the OverlayBuilder.
+ *
  * @author Blahoslav Potoček <potocek@merica.cz>
  */
 public class OverlayCreator {
 
-    @Getter
-    @Setter
-    public class SaraSetup {
+    private final OverlayCreatorSetup setup;
 
-        long randomSeed = -1;
-        int maxCellSize = 500;
-        double cellRatio = 1;
-        double coreRatio = 0.1;
-        double lowIntervalProbability = 0.03;
-        double lowerIntervalLimit = 0.6;
-        int numberOfAssemblyRuns = 1; //100-1000?
-        boolean runPunch = false;
-        int layerCount = 1;
-        String dbFolder = "D:/";
-        String dbName = "sara-db-data";
-        String spatialModulePath = "";
-    }
-
-    @Getter
-    private final SaraSetup setup;
-
-    public OverlayCreator(SaraSetup setup) {
+    public OverlayCreator(OverlayCreatorSetup setup) {
         this.setup = setup;
-    }
-
-    public OverlayCreator() {
-        this.setup = new SaraSetup();
     }
 
     public SaraGraph getSaraGraph() {
         try {
 
-            if (this.setup.randomSeed > 0) {
-                RandomUtils.setSeed(this.setup.randomSeed);
+            Properties properties = setup.getDaoProperties();
+
+            if (properties == null) {
+                properties = new Properties();
+                InputStream in = getClass().getClassLoader().getResourceAsStream("spatialite.properties");
+                properties.load(in);
+                in.close();
             }
 
-            Properties properties = new Properties();
-            properties.put("driver", "org.sqlite.JDBC");
-            properties.put("url", "jdbc:sqlite:" + setup.dbFolder + setup.dbName + ".sqlite");
-            properties.put("spatialite_path", setup.spatialModulePath);
-
-            //InputStream in = getClass().getClassLoader().getResourceAsStream("spatialite.properties");
-            //properties.load(in);
-            //in.close();
+            String url = properties.getProperty("url");
+            System.out.println(url);
 
             GraphDAO graphDAO = new SqliteGraphDAO(properties);
             SaraGraph sara = null;
 
             IdSupplier cellId = new IdSupplier(0);
 
-            if (this.setup.runPunch) {
-                Graph graph = graphDAO.loadGraph();
+            PreprocessingInput input = setup.getPreprocessingInput();
 
-                PreprocessingInput input = new PreprocessingInput(
-                        this.setup.maxCellSize,
-                        this.setup.cellRatio,
-                        this.setup.coreRatio,
-                        this.setup.lowIntervalProbability,
-                        this.setup.lowerIntervalLimit,
-                        this.setup.numberOfAssemblyRuns,
-                        this.setup.layerCount
-                );
+            if (input == null) {
+
+                sara = graphDAO.loadSaraGraph();
+
+            } else {
+                if (this.setup.randomSeed > 0) {
+                    RandomUtils.setSeed(this.setup.randomSeed);
+                }
+                Graph graph = graphDAO.loadGraph();
                 BottomUpPreprocessor bottomUp = new BottomUpPreprocessor();
                 sara = bottomUp.preprocess(graph, input, cellId);
                 graphDAO.saveGraph(sara);
-            } else {
-                sara = graphDAO.loadSaraGraph();
             }
 
             return sara;
@@ -101,10 +76,7 @@ public class OverlayCreator {
 
     public OverlayBuilder createBuilder() {
         SaraGraph sara = this.getSaraGraph();
-        if (sara == null) {
-            return null;
-        }
-        OverlayBuilder builder = new OverlayBuilder(sara);
+        OverlayBuilder builder = new OverlayBuilder(sara, this.setup.getBuilderSetup());
         return builder;
     }
 

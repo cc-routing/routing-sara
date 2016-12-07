@@ -60,29 +60,6 @@ public class ZeroGraph extends SaraGraph {
         return this.cell.getLayer().getBuilder();
     }
 
-    public String route(long s, long t) {
-        SaraNode sn = this.getNodeById(s);
-        SaraNode tn = this.getNodeById(t);
-
-        return this.route(sn, tn);
-    }
-
-    public String route(SaraNode sn, SaraNode tn) {
-
-        Optional<Route<SaraNode, SaraEdge>> dt
-                = this.getBuilder().getOneToOne().route(Metric.LENGTH, sn, tn);
-        if (!dt.isPresent()) {
-            return "noWay";
-        }
-
-        String re = "";
-
-        for (SaraEdge e : dt.get().getEdgeList()) {
-            re = re + e.getId() + ";";
-        }
-
-        return re;
-    }
 
     private ZeroNode addNodeCopy(SaraNode node) {
         ZeroNode zNode = (ZeroNode) this.getNodeById(node.getId());
@@ -195,7 +172,7 @@ public class ZeroGraph extends SaraGraph {
 
                         List<SaraEdge> edges = result.get().getEdgeList();
                         distance = this.sumSaraDistance(edges, metric);
-                        if (OverlayBuilder.keepShortcuts) {
+                        if (this.getBuilder().isKeepShortcuts()) {
                             cellEdge.setZeroRoute(metric, edges);
                         }
                         data.getLayer().validRoutes++;

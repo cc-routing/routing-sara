@@ -49,7 +49,7 @@ public class OverlayEdge extends AbstractEdge<OverlayNode, OverlayEdge> implemen
 
     public OverlayEdge(OverlayGraph graph, OverlayNode source, OverlayNode target) {
         super(graph, graph.getLayer().getNextEdgeId(), true, source, target, -1, -1);
-        if (OverlayBuilder.keepShortcuts) {
+        if (graph.getBuilder().isKeepShortcuts()) {
             int len = Metric.values().length;
             this.zeroRoutes = new ArrayList[len];
             this.overlayRoutes = new ArrayList[len];
