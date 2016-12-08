@@ -98,12 +98,4 @@ public class OverlayNode extends AbstractNode<OverlayNode, OverlayEdge> {
     protected OverlayNode newInstance(Graph<OverlayNode, OverlayEdge> newGraph, long id) {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
-
-    /**
-     * getLift: backward compatibility only
-     * @return
-     */
-    public OverlayLift getColumn() {
-        return this.lift;
-    }
 }

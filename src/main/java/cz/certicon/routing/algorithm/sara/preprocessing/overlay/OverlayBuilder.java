@@ -15,10 +15,7 @@ import cz.certicon.routing.model.graph.SaraNode;
 import cz.certicon.routing.utils.collections.ImmutableIterator;
 import cz.certicon.routing.utils.collections.Iterator;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
-import java.util.Map.Entry;
 import java.util.Set;
 import lombok.Getter;
 
@@ -29,11 +26,6 @@ import lombok.Getter;
  * @author Blahoslav Potoček <potocek@merica.cz>
  */
 public class OverlayBuilder {
-
-    /**
-     * devel setup whether to keep calculated shortcuts in memory
-     */
-    public static boolean keepShortcuts = true;
 
     /**
      * Collection of Layers
@@ -56,25 +48,28 @@ public class OverlayBuilder {
      * SaraGraph, input data
      */
     @Getter
-    private SaraGraph saraGraph;
+    private final SaraGraph saraGraph;
+
+    @Getter
+    private final boolean keepShortcuts;
 
     /**
      * Used Metrics.
      */
     @Getter
-    private Set<Metric> metrics;
+    private final Set<Metric> metrics;
 
     /**
      * one-one DijkstraAlgorithm used to calculate shortcuts
      */
     @Getter
-    private DijkstraAlgorithm oneToOne;
+    private final DijkstraAlgorithm oneToOne;
 
     /**
      * one-many DijkstraAlgorithm used to calculate shortcuts
      */
     @Getter
-    private DijkstraOneToAllAlgorithm oneToAll;
+    private final DijkstraOneToAllAlgorithm oneToAll;
 
     /**
      * collection of all borders detected at level 0
@@ -84,12 +79,16 @@ public class OverlayBuilder {
     /**
      * @param graph SaraGraph is the only input for Overlay + Customization
      */
-    public OverlayBuilder(SaraGraph graph) {
-        this.saraGraph = graph;
+    public OverlayBuilder(SaraGraph graph, OverlayBuilderSetup setup) {
 
-        this.metrics = graph.getMetrics();
-//        this.metrics = new HashSet<>();
-//        this.metrics.add(Metric.LENGTH);
+        this.saraGraph = graph;
+        this.keepShortcuts = setup.keepSortcuts;
+
+        if (setup.metric == null) {
+            this.metrics = graph.getMetrics();
+        } else {
+            this.metrics = setup.metric;
+        }
 
         this.layers = new ArrayList<>();
 
@@ -206,6 +205,7 @@ public class OverlayBuilder {
 
     /**
      * gets the partial ZeroGraph from L1 cell related to the saraNdoe
+     *
      * @param saraNode
      * @return related ZeroGraph
      */
@@ -227,8 +227,8 @@ public class OverlayBuilder {
     }
 
     /**
-     * it is assumed all SaraNodes have same number of parent cells; first
-     * cell is used to create required layers
+     * it is assumed all SaraNodes have same number of parent cells; first cell
+     * is used to create required layers
      */
     private void createLayers() {
 
@@ -256,7 +256,8 @@ public class OverlayBuilder {
     }
 
     /**
-     * top layers with cellCount==1 are supressed, they are not useful fro routing
+     * top layers with cellCount==1 are supressed, they are not useful fro
+     * routing
      */
     private void removeUnusedLayers() {
 
@@ -393,6 +394,7 @@ public class OverlayBuilder {
 
     /**
      * core method for multilevel routing in backward direction
+     *
      * @param node current route node
      * @param edge current route edge
      * @param source route source
@@ -428,6 +430,7 @@ public class OverlayBuilder {
 
     /**
      * core method for multilevel routing in forward direction
+     *
      * @param node current route node
      * @param edge current route edge
      * @param source route source
@@ -463,6 +466,7 @@ public class OverlayBuilder {
 
     /**
      * auxiliary for tracking
+     *
      * @param re
      * @param source
      * @param target
@@ -483,6 +487,7 @@ public class OverlayBuilder {
 
     /**
      * finds highest overlay node available for routing
+     *
      * @param node current route node
      * @param source
      * @param target

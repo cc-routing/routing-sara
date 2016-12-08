@@ -42,7 +42,7 @@ public class MLDTrivialRouteUnpacker<N extends Node<N, E>, E extends Edge<N, E>>
                         throw new IllegalStateException("OverlayNode not found. Something is wrong.");
                     }
 
-                    Optional<Route<N, E>> subResult = dijkstra.route(metric, currentState.getEdge(), oTo.getColumn().getEdge());
+                    Optional<Route<N, E>> subResult = dijkstra.route(metric, currentState.getEdge(), oTo.getLift().getEdge());
                     Route<N, E> subRoute = subResult.get();
                     for (int i = subRoute.getEdgeList().size() - 2; i >= 0; i--) {
                         builder.addAsFirst(subRoute.getEdgeList().get(i));

@@ -236,14 +236,14 @@ public class MultilevelDijkstraAlgorithm implements RoutingAlgorithm<SaraNode, S
                     OverlayNode borderNode = borderEdge.getOtherNode(cellNode);
 
                     //find OverlayNode at maximal level, where three of nodes are still in different cells
-                    OverlayNode levelNode = overlayBuilder.getMaxEntryNode(borderNode.getColumn().getNode(), borderNode.getColumn().getEdge(), source, target);
+                    OverlayNode levelNode = overlayBuilder.getMaxEntryNode(borderNode.getLift().getNode(), borderNode.getLift().getEdge(), source, target);
 
                     // upper levels can be used further
                     if (levelNode != null) {
-                        State borderState = new State(levelNode, borderNode.getColumn().getEdge());
+                        State borderState = new State(levelNode, borderNode.getLift().getEdge());
                         if (!closedOverlayStates.contains(borderState)) {
                             Distance borderDistance = (overlayNodeDistanceMap.containsKey(borderState)) ? overlayNodeDistanceMap.get(borderState) : Distance.newInfinityInstance();
-                            Distance newDistance = cellDistance.add(borderNode.getColumn().getEdge().getLength(metric));
+                            Distance newDistance = cellDistance.add(borderNode.getLift().getEdge().getLength(metric));
 
                             if (newDistance.isLowerThan(borderDistance)) {
                                 putOverlayNodeDistance(overlayNodeDistanceMap, overlayPqueue, borderState, newDistance);
@@ -253,10 +253,10 @@ public class MultilevelDijkstraAlgorithm implements RoutingAlgorithm<SaraNode, S
                         }
                     } // routing is going back to L0
                     else {
-                        State borderState = new State(borderNode.getColumn().getNode(), borderNode.getColumn().getEdge());
+                        State borderState = new State(borderNode.getLift().getNode(), borderNode.getLift().getEdge());
                         if (!closedStates.contains(borderState)) {
                             Distance borderDistance = (nodeDistanceMap.containsKey(borderState)) ? nodeDistanceMap.get(borderState) : Distance.newInfinityInstance();
-                            Distance newDistance = cellDistance.add(borderNode.getColumn().getEdge().getLength(metric));
+                            Distance newDistance = cellDistance.add(borderNode.getLift().getEdge().getLength(metric));
 
                             if (newDistance.isLowerThan(borderDistance)) {
                                 putNodeDistance(nodeDistanceMap, pqueue, borderState, newDistance);
