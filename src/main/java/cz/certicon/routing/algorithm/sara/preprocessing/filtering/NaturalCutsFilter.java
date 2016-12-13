@@ -28,8 +28,11 @@ import gnu.trove.map.TObjectIntMap;
 import gnu.trove.map.hash.TObjectIntHashMap;
 import gnu.trove.set.TIntSet;
 import gnu.trove.set.hash.TIntHashSet;
+import java8.util.Optional;
 
 import java.util.*;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import lombok.Value;
 import lombok.experimental.NonFinal;
@@ -234,7 +237,12 @@ public class NaturalCutsFilter implements Filter {
         // TODO must contract only neighbors! while nodeGroup notEmpty contractnode with first neighbor
         Set<ContractNode> nodeSet = new HashSet<>();
         for ( N n : nodeGroup ) {
-            nodeSet.add( graph.getNodeById( n.getId() ) );
+            ContractNode nodeById = graph.getNodeById( n.getId() );
+            if ( nodeById != null ) {
+                nodeSet.add( nodeById );
+            } else {
+                //Logger.getLogger( getClass().getName() ).log( Level.INFO, "Graph does not contain id: " + n.getId() );
+            }
         }
         ContractNode node = null;
         while ( !nodeSet.isEmpty() ) {
