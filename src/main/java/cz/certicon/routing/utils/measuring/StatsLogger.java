@@ -85,12 +85,16 @@ public class StatsLogger {
      */
     public enum Statistic {
         /**
-         * Amount of examined (visited) nodes during algorithm execution
+         * Amount of examined nodes during algorithm execution
          */
         NODES_EXAMINED,
         /**
-         * Amount of examined (visited) edges during algorithm execution
+         * Amount of relaxed edges during algorithm execution
          */
-        EDGES_EXAMINED
+        EDGES_RELAXED,
+        /**
+         * Amount of visited (retrieved, not only relaxed) edges during algorithm execution
+         */
+        EDGES_VISITED
     }
 }

@@ -117,7 +117,7 @@ public class TopDownPreprocessor implements Preprocessor {
             graphs = newGraphs;
         }
         // build sara graph
-        SaraGraph saraGraph = new SaraGraph( EnumSet.of( Metric.LENGTH, Metric.TIME ) );
+        SaraGraph saraGraph = new SaraGraph( graph.getMetrics() );
         for ( Pair<UndirectedGraph, Cell> pair : graphs ) {
             UndirectedGraph g = pair.a;
             for ( SimpleNode node : g.getNodes() ) {
@@ -129,8 +129,10 @@ public class TopDownPreprocessor implements Preprocessor {
         for ( E edge : graph.getEdges() ) {
             SaraEdge saraEdge = saraGraph.createEdge( edge.getId(), edge.isOneWay(),
                     saraGraph.getNodeById( edge.getSource().getId() ), saraGraph.getNodeById( edge.getTarget().getId() ),
-                    edge.getSourcePosition(), edge.getTargetPosition(),
-                    new Pair<>( Metric.LENGTH, edge.getLength( Metric.LENGTH ) ), new Pair<>( Metric.TIME, edge.getLength( Metric.TIME ) ) );
+                    edge.getSourcePosition(), edge.getTargetPosition() );
+            for ( Metric metric : graph.getMetrics() ) {
+                saraEdge.setLength( metric, edge.getLength( metric ) );
+            }
         }
         return saraGraph;
     }

@@ -87,7 +87,7 @@ public class BottomUpPreprocessor implements Preprocessor {
                 progressListener.nextStep();
             }
             if ( saraGraph == null ) {
-                saraGraph = new SaraGraph( EnumSet.of( Metric.LENGTH, Metric.TIME ) );
+                saraGraph = new SaraGraph( graph.getMetrics() );
                 for ( ContractNode node : assembled.getNodes() ) {
                     Cell cell = new Cell( cellIdSupplier.next() );
 //                    System.out.println( "putting: " + node.getId() + " -> " + cell.getId() + ", nodes=[" + StreamSupport.stream( node.getNodeIds() ).map( Mappers.identifiableToString ).collect( Collectors.joining( "," ) ) + "]" );
@@ -100,8 +100,10 @@ public class BottomUpPreprocessor implements Preprocessor {
                 for ( E edge : graph.getEdges() ) {
                     SaraEdge saraEdge = saraGraph.createEdge( edge.getId(), edge.isOneWay(),
                             saraGraph.getNodeById( edge.getSource().getId() ), saraGraph.getNodeById( edge.getTarget().getId() ),
-                            edge.getSourcePosition(), edge.getTargetPosition(),
-                            new Pair<>( Metric.LENGTH, edge.getLength( Metric.LENGTH ) ), new Pair<>( Metric.TIME, edge.getLength( Metric.TIME ) ) );
+                            edge.getSourcePosition(), edge.getTargetPosition() );
+                    for ( Metric metric : graph.getMetrics() ) {
+                        saraEdge.setLength( metric, edge.getLength( metric ) );
+                    }
                 }
             } else {
                 for ( ContractNode node : assembled.getNodes() ) {

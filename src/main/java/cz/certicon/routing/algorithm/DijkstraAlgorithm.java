@@ -7,7 +7,6 @@ package cz.certicon.routing.algorithm;
 
 import cz.certicon.routing.model.RoutingPoint;
 import cz.certicon.routing.model.values.Distance;
-import cz.certicon.routing.model.graph.Graph;
 import cz.certicon.routing.model.queue.PriorityQueue;
 import cz.certicon.routing.model.Route;
 import cz.certicon.routing.model.basic.Pair;
@@ -22,6 +21,8 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
+import cz.certicon.routing.utils.measuring.StatsLogger;
+import cz.certicon.routing.utils.measuring.TimeLogger;
 import java8.util.Optional;
 
 /**
@@ -112,7 +113,16 @@ public class DijkstraAlgorithm<N extends Node<N, E>, E extends Edge<N, E>> imple
         Set<State> closedStates = new HashSet<>();
         State finalState = null;
 
+        StatsLogger.log( StatsLogger.Statistic.NODES_EXAMINED, StatsLogger.Command.RESET );
+        StatsLogger.log( StatsLogger.Statistic.EDGES_RELAXED, StatsLogger.Command.RESET );
+        StatsLogger.log( StatsLogger.Statistic.EDGES_VISITED, StatsLogger.Command.RESET );
+        TimeLogger.log( TimeLogger.Event.ROUTING, TimeLogger.Command.START );
+
+
         while ( !pqueue.isEmpty() ) {
+
+            StatsLogger.log( StatsLogger.Statistic.NODES_EXAMINED, StatsLogger.Command.INCREMENT );
+
             State<N, E> state = pqueue.extractMin();
             Distance distance = nodeDistanceMap.get( state );
             closedStates.add( state );
@@ -124,9 +134,15 @@ public class DijkstraAlgorithm<N extends Node<N, E>, E extends Edge<N, E>> imple
                 break;
             }
             for ( E edge : state.getNode().getOutgoingEdges() ) {
+
+                StatsLogger.log( StatsLogger.Statistic.EDGES_VISITED, StatsLogger.Command.INCREMENT );
+
                 N targetNode = edge.getOtherNode( state.getNode() );
                 State targetState = new State( targetNode, edge );
                 if ( !closedStates.contains( targetState ) ) {
+
+                    StatsLogger.log( StatsLogger.Statistic.EDGES_RELAXED, StatsLogger.Command.INCREMENT );
+
                     Distance targetDistance = ( nodeDistanceMap.containsKey( targetState ) ) ? nodeDistanceMap.get( targetState ) : Distance.newInfinityInstance();
                     Distance alternativeDistance = distance.add( edge.getLength( metric ) ).add( state.isFirst() ? Distance.newInstance( 0 ) : state.getNode().getTurnDistance( state.getEdge(), edge ) );
                     if ( alternativeDistance.isLowerThan( targetDistance ) ) {
@@ -136,6 +152,11 @@ public class DijkstraAlgorithm<N extends Node<N, E>, E extends Edge<N, E>> imple
                 }
             }
         }
+
+        TimeLogger.log( TimeLogger.Event.ROUTING, TimeLogger.Command.STOP );
+        TimeLogger.log( TimeLogger.Event.ROUTE_BUILDING, TimeLogger.Command.START );
+
+        Optional<Route<N, E>> result = Optional.empty();
         if ( finalState != null ) {
             Route.RouteBuilder<N, E> builder = Route.<N, E>builder();
             State<N, E> currentState = finalState;
@@ -146,14 +167,16 @@ public class DijkstraAlgorithm<N extends Node<N, E>, E extends Edge<N, E>> imple
             if ( endEdge != null ) {
                 builder.addAsLast( endEdge );
             }
-            return Optional.of( builder.build() );
+            result = Optional.of( builder.build() );
         } else if ( singleEdgePath != null ) {
             Route.RouteBuilder<N, E> builder = Route.<N, E>builder();
             builder.addAsFirst( singleEdgePath );
-            return Optional.of( builder.build() );
-        } else {
-            return Optional.empty();
+            result = Optional.of( builder.build() );
         }
+
+        TimeLogger.log( TimeLogger.Event.ROUTE_BUILDING, TimeLogger.Command.STOP );
+
+        return result;
     }
 
     private void putNodeDistance( Map<State<N, E>, Distance> nodeDistanceMap, PriorityQueue<State<N, E>> pqueue, State<N, E> node, Distance distance ) {

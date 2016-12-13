@@ -6,7 +6,6 @@
 package cz.certicon.routing.view;
 
 /**
- *
  * @author Michael Blaha {@literal <blahami2@gmail.com>}
  */
 public interface DebugViewer {
@@ -24,4 +23,6 @@ public interface DebugViewer {
     void displayNode( long nodeId );
 
     void removeNode( long nodeId );
+
+    void setCentering( boolean center );
 }

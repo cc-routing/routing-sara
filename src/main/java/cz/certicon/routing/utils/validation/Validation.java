@@ -32,6 +32,19 @@ public class Validation {
     }
 
     /**
+     * Validates given validatorExpression
+     *
+     * @param parameterName       parameter to be displayed should the validation fail
+     * @param validatorExpression given validatorExpression
+     */
+    public static void validateThat( String parameterName, ValidatorExpression validatorExpression ) {
+        String validate = validatorExpression.validate();
+        if ( validate != null ) {
+            throw new IllegalArgumentException( ( parameterName == null ? "" : parameterName + " - " ) + validate );
+        }
+    }
+
+    /**
      * Negates given expression
      *
      * @param validatorExpression given expression

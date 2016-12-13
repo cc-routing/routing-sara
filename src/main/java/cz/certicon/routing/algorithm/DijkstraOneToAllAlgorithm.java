@@ -50,7 +50,7 @@ public class DijkstraOneToAllAlgorithm<N extends Node<N, E>, E extends Edge<N, E
                     Distance targetDistance = ( nodeDistanceMap.containsKey( targetState ) ) ? nodeDistanceMap.get( targetState ) : Distance.newInfinityInstance();
                     Distance alternativeDistance = distance
                             .add( edge.getLength( metric ) )
-                            .add( state.isFirst() ? Distance.newInstance( 0 ) : state.getNode().getTurnDistance( state.getEdge(), edge ) );
+                            .add( state.isFirst() ? Distance.newZeroDistance() : state.getNode().getTurnDistance( state.getEdge(), edge ) );
                     if ( alternativeDistance.isLowerThan( targetDistance ) ) {
                         putNodeDistance( nodeDistanceMap, pqueue, targetState, alternativeDistance );
                         predecessorMap.put( targetState, state );
