@@ -53,7 +53,7 @@ public class PreprocessingInput {
         this.cellSizes = new int[numberOfLayers];
         for ( int i = 0; i < cellSizes.length; i++ ) {
             cellSizes[i] = ( i > 0 ? cellSizes[i - 1] : 1 ) * cellSize;
-            if ( cellSizes[i] < 0 ) {
+            if ( cellSizes[i] < cellSize ) {
                 cellSizes[i] = Integer.MAX_VALUE;
             }
         }

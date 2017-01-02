@@ -15,7 +15,7 @@ import lombok.Setter;
  *
  * @author Michael Blaha {@literal <blahami2@gmail.com>}
  */
-public class Cell implements Identifiable {
+public class Cell implements Identifiable, Parentable {
 
     private final long id;
     private Cell parent = null;
@@ -40,6 +40,7 @@ public class Cell implements Identifiable {
      *
      * @return parent of this cell
      */
+    @Override
     public Cell getParent() {
         return parent;
     }
@@ -59,6 +60,7 @@ public class Cell implements Identifiable {
      *
      * @return true if this cell has a parent, false otherwise
      */
+    @Override
     public boolean hasParent() {
         return parent != null;
     }

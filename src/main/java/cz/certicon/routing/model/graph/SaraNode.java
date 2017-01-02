@@ -10,13 +10,18 @@ package cz.certicon.routing.model.graph;
  *
  * @author Michael Blaha {@literal <blahami2@gmail.com>}
  */
-public class SaraNode extends AbstractNode<SaraNode, SaraEdge> {
+public class SaraNode extends AbstractNode<SaraNode, SaraEdge> implements Parentable {
 
     private final Cell parent;
 
-    protected SaraNode(Graph<SaraNode, SaraEdge> graph, long id, Cell parent) {
+    protected SaraNode( Graph<SaraNode, SaraEdge> graph, long id, Cell parent ) {
         super( graph, id );
         this.parent = parent;
+    }
+
+    @Override
+    public boolean hasParent() {
+        return parent != null;
     }
 
     /**
@@ -24,6 +29,7 @@ public class SaraNode extends AbstractNode<SaraNode, SaraEdge> {
      *
      * @return parent cell
      */
+    @Override
     public Cell getParent() {
         return parent;
     }

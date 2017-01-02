@@ -111,6 +111,7 @@ public class TimeLogger {
      * Enumeration for event types
      */
     public enum Event {
+        OVERLAY,
         ASSEMBLING,
         FILTERING,
         /**

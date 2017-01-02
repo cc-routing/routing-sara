@@ -20,6 +20,13 @@ public class TimeMeasurement {
     private long start = -1;
     private long accumulated = 0;
 
+    public TimeMeasurement() {
+    }
+
+    public TimeMeasurement( TimeUnits timeUnits ) {
+        this.timeUnits = timeUnits;
+    }
+
     public void start() {
         accumulated = 0;
         start = System.nanoTime();
