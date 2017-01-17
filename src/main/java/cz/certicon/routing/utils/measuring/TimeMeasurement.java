@@ -85,6 +85,15 @@ public class TimeMeasurement {
     }
 
     /**
+     * Returns the elapsed time. Does not stop the timer (does not save it).
+     *
+     * @return currently elapsed time
+     */
+    public Time getCurrentTime(    ){
+        return new Time( timeUnits, getCurrentTimeElapsed() );
+    }
+
+    /**
      * Restarts measuring ({@link #stop() stop()} {@link #start() start()})
      *
      * @return elapsed time

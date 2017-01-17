@@ -5,7 +5,10 @@
  */
 package cz.certicon.routing.model.values;
 
+import cz.certicon.routing.utils.StringUtils;
+
 import java.util.Objects;
+import java.util.Set;
 
 /**
  * Class representation of time. Supports conversion, formatting, etc.
@@ -98,6 +101,28 @@ public class Time implements Number<Time> {
      */
     public String toString( TimeUnits timeUnits ) {
         return getValue( timeUnits ) + " " + timeUnits.getUnit();
+    }
+
+    /**
+     * Returns string representing the time passed contained in this object, using the requested units
+     *
+     * @param timeUnitsSet set of requested units
+     * @return formatted string, e.g. 3 years, 4 months, 2 days, 10 hours, 55 minutes, 53 seconds
+     */
+    public String toString(Set<TimeUnits> timeUnitsSet){
+        StringBuilder sb = new StringBuilder();
+        long nanos = nanoseconds;
+        TimeUnits[] timeUnits = TimeUnits.values();
+        for(int i = timeUnits.length - 1; i >= 0; i--){
+            if(timeUnitsSet.contains( timeUnits[i] )){
+                long count = timeUnits[i].fromNano( nanos );
+                sb.append( count ).append( " " ).append( timeUnits[i].getUnit() ).append( ", " );
+                nanos -= timeUnits[i].toNano( count );
+            }
+        }
+        StringUtils.replaceLast( sb, sb.length() > 0, "" );
+        StringUtils.replaceLast( sb, sb.length() > 0, "." );
+        return sb.toString();
     }
 
     @Override

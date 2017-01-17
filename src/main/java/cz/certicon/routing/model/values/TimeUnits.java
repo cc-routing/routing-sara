@@ -11,7 +11,9 @@ package cz.certicon.routing.model.values;
  * @author Michael Blaha {@literal <blahami2@gmail.com>}
  */
 public enum TimeUnits {
-    NANOSECONDS( 1, "ns" ), MICROSECONDS( NANOSECONDS.getDivisor() * 1000, "mcs" ), MILLISECONDS( MICROSECONDS.getDivisor() * 1000, "ms" ), SECONDS( MILLISECONDS.getDivisor() * 1000, "s" ), MINUTES( SECONDS.getDivisor() * 60, "min" ), HOURS( MINUTES.getDivisor() * 60, "h" ), DAYS( HOURS.getDivisor() * 24, "days" );
+    NANOSECONDS( 1, "ns" ), MICROSECONDS( NANOSECONDS.getDivisor() * 1000, "mcs" ), MILLISECONDS( MICROSECONDS.getDivisor() * 1000, "ms" ),
+    SECONDS( MILLISECONDS.getDivisor() * 1000, "s" ), MINUTES( SECONDS.getDivisor() * 60, "min" ), HOURS( MINUTES.getDivisor() * 60, "h" ),
+    DAYS( HOURS.getDivisor() * 24, "days" ), MONTHS( DAYS.getDivisor() * 30, "months" ), YEARS( MONTHS.getDivisor() * 12, "years" );
 
     private final long nanoDivisor;
     private final String unit;
